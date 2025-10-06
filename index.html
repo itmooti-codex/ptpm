@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Peter the Possum & Bird Man Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                50: "#f1f5ff",
+                100: "#dbe3ff",
+                200: "#b2c5ff",
+                300: "#86a6ff",
+                400: "#5a86ff",
+                500: "#2d66ff",
+                600: "#174de6",
+                700: "#103ab4",
+                800: "#0b2782",
+                900: "#051551",
+              },
+              slateblue: "#1C3F8C",
+            },
+            boxShadow: {
+              card: "0 10px 40px rgba(15, 23, 42, 0.05)",
+            },
+          },
+          fontFamily: {
+            sans: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+          },
+        },
+      };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-slate-100 font-sans text-slate-900">
+        <!-- Main content -->
+        <main class="flex flex-col space-y-6">
+          <header
+            class="flex items-center justify-between bg-slateblue px-7 py-6 text-white shadow-card"
+          >
+            <div class="flex items-center gap-4">
+             <img src="assets/navbar-image.png">
+            </div>
+            <div class="relative w-1/2 max-w-xl">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="11" cy="11" r="7" />
+                <path d="m20 20-3.5-3.5" />
+              </svg>
+              <input
+                type="text"
+                placeholder="Search all records by ID, name, email, contact or address..."
+                class="w-full rounded-2xl bg-white/10 py-3 pl-12 pr-4 text-sm text-white placeholder:text-blue-100 outline-none focus:bg-white/20"
+              />
+            </div>
+            <div class="flex items-center gap-4">
+              <button
+                class="flex items-center gap-2 rounded-2xl bg-white px-4 py-2 text-sm font-semibold text-slateblue transition hover:bg-blue-50"
+              >
+                <span>Create</span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 3a.75.75 0 01.75.75V9.25h5.5a.75.75 0 010 1.5h-5.5v5.5a.75.75 0 01-1.5 0v-5.5H3.75a.75.75 0 010-1.5h5.5V3.75A.75.75 0 0110 3z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </button>
+              <button
+                class="rounded-2xl border border-white/40 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10"
+              >
+                Print
+              </button>
+              <button
+                class="rounded-2xl border border-white/40 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10"
+              >
+                Batch Actions
+              </button>
+              <button
+                class="relative rounded-full bg-white/10 p-3 text-white hover:bg-white/20"
+              >
+                <span
+                  class="absolute right-0 top-0 inline-flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-semibold"
+                  >3</span
+                >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M10 2a6 6 0 00-6 6v2.586l-.707.707A1 1 0 004 13h12a1 1 0 00.707-1.707L16 10.586V8a6 6 0 00-6-6z"
+                  />
+                  <path d="M7 15a3 3 0 006 0H7z" />
+                </svg>
+              </button>
+              <div
+                class="flex items-center gap-2 rounded-2xl bg-white/10 px-4 py-2"
+              >
+                <div class="h-10 w-10 rounded-full bg-white">
+                  <img
+                    src="https://i.pravatar.cc/60?img=47"
+                    alt="Rita Ora"
+                    class="h-10 w-10 rounded-full object-cover"
+                  />
+                </div>
+                <div class="text-sm">
+                  <p class="font-semibold">Rita Ora</p>
+                  <p class="text-blue-100">Administrator</p>
+                </div>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4 text-blue-100"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M5.23 7.21a.75.75 0 011.06.02L10 11.21l3.71-3.98a.75.75 0 111.08 1.04l-4.25 4.56a.75.75 0 01-1.1 0L5.21 8.27a.75.75 0 01.02-1.06z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </div>
+            </div>
+          </header>
+
+          <div class="flex gap-3">
+            <!-- Filters -->
+            <aside class="w-80 flex-shrink-0">
+              <div class="rounded-3xl border border-slate-200 bg-white shadow-sm">
+                <div class="flex items-center justify-between px-5 py-4">
+                  <h2 class="text-base font-semibold text-slate-900">All Filters</h2>
+                  <button
+                    class="rounded-lg bg-brand-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-800"
+                  >
+                    Apply Filters
+                  </button>
+                </div>
+                <div class="space-y-4 border-t border-slate-200 p-5">
+                  <button
+                    type="button"
+                    class="flex w-full items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-left text-sm font-medium text-slate-600 transition hover:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                  >
+                    <span>Status</span>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4 text-slate-400"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M5.23 7.21a.75.75 0 011.06.02L10 11.21l3.71-3.98a.75.75 0 111.08 1.04l-4.25 4.56a.75.75 0 01-1.1 0L5.21 8.27a.75.75 0 01.02-1.06z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </button>
+
+                  <label for="filter-account-name" class="relative block">
+                    <span class="sr-only">Account Name</span>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <circle cx="11" cy="11" r="7" />
+                      <path d="m20 20-3.5-3.5" />
+                    </svg>
+                    <textarea
+                      id="filter-account-name"
+                      rows="1"
+                      placeholder="Account Name"
+                      class="w-full resize-none rounded-xl border border-slate-200 bg-white px-4 py-3 pr-11 text-sm font-medium text-slate-600 placeholder:text-slate-400 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                    ></textarea>
+                  </label>
+
+                  <label for="filter-resident-search" class="relative block">
+                    <span class="sr-only">Resident Search</span>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <circle cx="11" cy="11" r="7" />
+                      <path d="m20 20-3.5-3.5" />
+                    </svg>
+                    <textarea
+                      id="filter-resident-search"
+                      rows="1"
+                      placeholder="Resident Search"
+                      class="w-full resize-none rounded-xl border border-slate-200 bg-white px-4 py-3 pr-11 text-sm font-medium text-slate-600 placeholder:text-slate-400 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                    ></textarea>
+                  </label>
+
+                  <label for="filter-address" class="relative block">
+                    <span class="sr-only">Address</span>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <circle cx="11" cy="11" r="7" />
+                      <path d="m20 20-3.5-3.5" />
+                    </svg>
+                    <textarea
+                      id="filter-address"
+                      rows="1"
+                      placeholder="Address"
+                      class="w-full resize-none rounded-xl border border-slate-200 bg-white px-4 py-3 pr-11 text-sm font-medium text-slate-600 placeholder:text-slate-400 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                    ></textarea>
+                  </label>
+
+                  <button
+                    type="button"
+                    class="flex w-full items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-left text-sm font-medium text-slate-600 transition hover:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                  >
+                    <span>Account Type</span>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4 text-slate-400"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M5.23 7.21a.75.75 0 011.06.02L10 11.21l3.71-3.98a.75.75 0 111.08 1.04l-4.25 4.56a.75.75 0 01-1.1 0L5.21 8.27a.75.75 0 01.02-1.06z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </button>
+
+                  <button
+                    type="button"
+                    class="flex w-full items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-left text-sm font-medium text-slate-600 transition hover:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                  >
+                    <span>Taken By</span>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4 text-slate-400"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M5.23 7.21a.75.75 0 011.06.02L10 11.21l3.71-3.98a.75.75 0 111.08 1.04l-4.25 4.56a.75.75 0 01-1.1 0L5.21 8.27a.75.75 0 01.02-1.06z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </button>
+
+                  <button
+                    type="button"
+                    class="flex w-full items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-left text-sm font-medium text-slate-600 transition hover:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                  >
+                    <span>Source</span>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4 text-slate-400"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M5.23 7.21a.75.75 0 011.06.02L10 11.21l3.71-3.98a.75.75 0 111.08 1.04l-4.25 4.56a.75.75 0 01-1.1 0L5.21 8.27a.75.75 0 01.02-1.06z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </button>
+
+                  <div
+                    class="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-300"
+                    aria-disabled="true"
+                  >
+                    <span>Serviceman</span>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M5.23 7.21a.75.75 0 011.06.02L10 11.21l3.71-3.98a.75.75 0 111.08 1.04l-4.25 4.56a.75.75 0 01-1.1 0L5.21 8.27a.75.75 0 01.02-1.06z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </div>
+
+                  <div class="grid grid-cols-2 gap-3">
+                    <div
+                      class="flex items-center rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500 focus-within:border-brand-200 focus-within:ring-2 focus-within:ring-brand-100"
+                    >
+                      <label for="filter-start-date" class="sr-only">Start date</label>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-4 w-4 text-slate-400"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path d="M6 2v2m12-2v2M4 7h16M5 5h14a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2z" />
+                      </svg>
+                      <input
+                        id="filter-start-date"
+                        type="text"
+                        placeholder="Start date"
+                        class="ml-2 w-full bg-transparent text-sm font-medium text-slate-600 placeholder:text-slate-400 outline-none"
+                      />
+                    </div>
+                    <div
+                      class="flex items-center rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500 focus-within:border-brand-200 focus-within:ring-2 focus-within:ring-brand-100"
+                    >
+                      <label for="filter-end-date" class="sr-only">End date</label>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-4 w-4 text-slate-400"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path d="M6 2v2m12-2v2M4 7h16M5 5h14a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2z" />
+                      </svg>
+                      <input
+                        id="filter-end-date"
+                        type="text"
+                        placeholder="End date"
+                        class="ml-2 w-full bg-transparent text-sm font-medium text-slate-600 placeholder:text-slate-400 outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    class="flex w-full items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-left text-sm font-medium text-slate-600 transition hover:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                  >
+                    <span>Filter by: All Dates</span>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4 text-slate-400"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M5.23 7.21a.75.75 0 011.06.02L10 11.21l3.71-3.98a.75.75 0 111.08 1.04l-4.25 4.56a.75.75 0 01-1.1 0L5.21 8.27a.75.75 0 01.02-1.06z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </button>
+
+                  <input
+                    type="text"
+                    placeholder="Quote Number"
+                    class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-600 placeholder:text-slate-400 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                  />
+
+                  <input
+                    type="text"
+                    placeholder="Invoice Number"
+                    class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-600 placeholder:text-slate-400 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                  />
+
+                  <input
+                    type="text"
+                    placeholder="Recommendation"
+                    class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-600 placeholder:text-slate-400 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                  />
+
+                  <div class="space-y-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
+                    <div class="flex items-center justify-between text-xs font-semibold uppercase tracking-wide text-slate-400">
+                      <span>Price Range</span>
+                      <span class="text-slate-500">$100 - $500</span>
+                    </div>
+                    <div class="relative h-2 rounded-full bg-slate-200">
+                      <div class="absolute left-10 right-16 top-0 h-2 rounded-full bg-brand-200"></div>
+                      <div class="absolute -top-1.5 left-10 h-5 w-5 rounded-full border-2 border-white bg-brand-500 shadow"></div>
+                      <div class="absolute -top-1.5 right-16 h-5 w-5 rounded-full border-2 border-white bg-brand-500 shadow"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </aside>
+
+            <aside class="w-[1-1-70]">
+              <!-- Top navigation -->
+
+              <!-- Calendar summary -->
+              <section class="flex min-h-[200px] items-center justify-center rounded-3xl border-2 border-dashed border-slate-200 bg-white text-center text-sm font-medium text-slate-400 shadow-card">
+                <p>Calendar module placeholder - drop your schedule widget here.</p>
+              </section>
+
+              <!-- Tabs and chips -->
+              <section class="rounded-3xl bg-white p-6 shadow-card">
+                <div class="flex flex-wrap items-center justify-between gap-4">
+                  <div class="flex items-center gap-6">
+                    <nav
+                      class="flex items-center gap-6 text-sm font-semibold text-slate-500"
+                    >
+                      <a href="#" class="text-slate-900">Inquiry</a>
+                      <a href="#" class="hover:text-slate-900">Quote</a>
+                      <a href="#" class="hover:text-slate-900">Jobs</a>
+                      <a href="#" class="hover:text-slate-900">Payment</a>
+                      <a
+                        href="#"
+                        class="flex items-center gap-2 text-emerald-600"
+                      >
+                        <span
+                          class="h-2 w-2 rounded-full bg-emerald-500"
+                        ></span>
+                        Active Jobs
+                      </a>
+                      <a href="#" class="flex items-center gap-2 text-rose-500">
+                        <span class="h-2 w-2 rounded-full bg-rose-500"></span>
+                        Urgent Calls
+                        <span
+                          class="rounded-full bg-rose-100 px-2 py-0.5 text-[11px] font-semibold text-rose-600"
+                          >23</span
+                        >
+                      </a>
+                    </nav>
+                    <button
+                      class="rounded-full border border-slate-200 px-4 py-1.5 text-sm font-semibold text-slate-600 transition hover:border-brand-300"
+                    >
+                      Customers
+                    </button>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <button
+                      class="rounded-full border border-slate-200 px-4 py-1.5 text-sm font-semibold text-slate-600 transition hover:border-brand-300"
+                    >
+                      Edit Columns
+                    </button>
+                    <button
+                      class="rounded-full bg-brand-500 px-4 py-1.5 text-sm font-semibold text-white transition hover:bg-brand-600"
+                    >
+                      Save View As
+                    </button>
+                  </div>
+                </div>
+                <div class="mt-5 flex flex-wrap items-center gap-3 text-sm">
+                  <span
+                    class="inline-flex items-center gap-2 rounded-full bg-brand-50 px-3 py-1 font-medium text-brand-700"
+                  >
+                    Quoted Date: 28 Sep - 8 Oct, 2023
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                  <span
+                    class="inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1 font-medium text-blue-700"
+                  >
+                    Completed
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                  <span
+                    class="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 font-medium text-emerald-700"
+                  >
+                    Job Street: Brisbane
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                  <span
+                    class="inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-1 font-medium text-indigo-700"
+                  >
+                    Status: Won
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                  <button
+                    class="rounded-full px-3 py-1 text-sm font-semibold text-slate-500 hover:text-slate-700"
+                  >
+                    Clear All
+                  </button>
+                </div>
+
+                <!-- Data table -->
+                <div
+                  class="mt-6 overflow-hidden rounded-2xl border border-slate-200"
+                >
+                  <table class="min-w-full divide-y divide-slate-200 text-sm">
+                    <thead
+                      class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500"
+                    >
+                      <tr>
+                        <th
+                          scope="col"
+                          class="px-6 py-4 text-left font-semibold"
+                        >
+                          Unique ID
+                        </th>
+                        <th
+                          scope="col"
+                          class="px-6 py-4 text-left font-semibold"
+                        >
+                          Client Info
+                        </th>
+                        <th
+                          scope="col"
+                          class="px-6 py-4 text-left font-semibold"
+                        >
+                          Created Date
+                        </th>
+                        <th
+                          scope="col"
+                          class="px-6 py-4 text-left font-semibold"
+                        >
+                          Serviceman
+                        </th>
+                        <th
+                          scope="col"
+                          class="px-6 py-4 text-left font-semibold"
+                        >
+                          Follow Up Date
+                        </th>
+                        <th
+                          scope="col"
+                          class="px-6 py-4 text-left font-semibold"
+                        >
+                          Source
+                        </th>
+                        <th
+                          scope="col"
+                          class="px-6 py-4 text-left font-semibold"
+                        >
+                          Service Inquiry
+                        </th>
+                        <th
+                          scope="col"
+                          class="px-6 py-4 text-left font-semibold"
+                        >
+                          Type
+                        </th>
+                        <th
+                          scope="col"
+                          class="px-6 py-4 text-left font-semibold"
+                        >
+                          Status
+                        </th>
+                        <th
+                          scope="col"
+                          class="px-6 py-4 text-left font-semibold"
+                        >
+                          Action
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200 bg-white">
+                      <tr class="hover:bg-slate-50">
+                        <td class="px-6 py-4 font-semibold text-brand-600">#482910</td>
+                        <td class="px-6 py-4">
+                          <p class="font-semibold">Sophie Grant</p>
+                          <div class="mt-2 flex items-center gap-3 text-slate-400">
+                            <button class="rounded-full border border-slate-200 p-1.5 text-slate-500 hover:border-brand-300 hover:text-brand-500" aria-label="Call">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M2.003 5.884l3.245-.62a1 1 0 011.066.553l1.284 2.568a1 1 0 01-.23 1.149l-1.516 1.513a11.037 11.037 0 005.004 5.004l1.513-1.516a1 1 0 011.149-.23l2.568 1.284a1 1 0 01.553 1.066l-.62 3.245a1 1 0 01-.979.815A14.978 14.978 0 012 5.863a1 1 0 01.003.021z" />
+                              </svg>
+                            </button>
+                            <button class="rounded-full border border-slate-200 p-1.5 text-slate-500 hover:border-brand-300 hover:text-brand-500" aria-label="Email">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M2.94 6.342A2 2 0 014.564 5h10.872a2 2 0 011.624.842l-7.06 5.297-7.06-5.297z" />
+                                <path d="M18 8.118l-6.76 5.07a1.5 1.5 0 01-1.76 0L2.72 8.118A1.994 1.994 0 002 9.874V14a2 2 0 002 2h12a2 2 0 002-2V9.874c0-.603-.272-1.175-.74-1.756z" />
+                              </svg>
+                            </button>
+                            <button class="rounded-full border border-slate-200 p-1.5 text-slate-500 hover:border-brand-300 hover:text-brand-500" aria-label="Location">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a.75.75 0 01-.53-.22c-.862-.864-2.392-2.56-3.55-4.383C4.746 11.425 4 9.666 4 8a6 6 0 1112 0c0 1.666-.746 3.425-1.92 5.397-1.158 1.822-2.688 3.519-3.55 4.383A.75.75 0 0110 18zm0-8.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" clip-rule="evenodd" />
+                              </svg>
+                            </button>
+                          </div>
+                        </td>
+                        <td class="px-6 py-4 text-slate-600">04 Jun 2024</td>
+                        <td class="px-6 py-4 font-semibold text-slate-600">Rita Ora</td>
+                        <td class="px-6 py-4 text-slate-600">05 Jun 2024</td>
+                        <td class="px-6 py-4 text-slate-600">Web Form</td>
+                        <td class="px-6 py-4 text-slate-600">Roof Inspection</td>
+                        <td class="px-6 py-4 text-slate-600">General Inquiry</td>
+                        <td class="px-6 py-4">
+                          <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold bg-rose-50 text-rose-500">New Inquiry</span>
+                        </td>
+                        <td class="px-6 py-4">
+                          <div class="flex items-center gap-3 text-slate-400">
+                            <button aria-label="View" class="rounded-full border border-slate-200 p-1.5 text-slate-500 hover:border-brand-300 hover:text-brand-500">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M10 3c-4.5 0-8 4.5-8 7s3.5 7 8 7 8-4.5 8-7-3.5-7-8-7zm0 12a3 3 0 110-6 3 3 0 010 6z" />
+                              </svg>
+                            </button>
+                            <button aria-label="Delete" class="rounded-full border border-slate-200 p-1.5 text-slate-500 hover:border-rose-300 hover:text-rose-500">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M6 8a.75.75 0 011.5 0v6a.75.75 0 01-1.5 0V8zm3.75 0a.75.75 0 011.5 0v6a.75.75 0 01-1.5 0V8zM16.25 5h-12.5a.75.75 0 010-1.5h3.5l.447-.894A1.5 1.5 0 018.06 2h3.88a1.5 1.5 0 011.363.606L13.75 3.5h3.5a.75.75 0 010 1.5zm-1.3 1.5a.45.45 0 01.45.476l-.7 8.4A1.75 1.75 0 0112.96 17H7.04a1.75 1.75 0 01-1.74-1.624l-.7-8.4a.45.45 0 01.45-.476h9.9z" clip-rule="evenodd" />
+                              </svg>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr class="hover:bg-slate-50">
+                        <td class="px-6 py-4 font-semibold text-brand-600">#482911</td>
+                        <td class="px-6 py-4">
+                          <p class="font-semibold">Liam Hart</p>
+                          <div class="mt-2 flex items-center gap-3 text-slate-400">
+                            <button class="rounded-full border border-slate-200 p-1.5 text-slate-500 hover:border-brand-300 hover:text-brand-500" aria-label="Call">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M2.003 5.884l3.245-.62a1 1 0 011.066.553l1.284 2.568a1 1 0 01-.23 1.149l-1.516 1.513a11.037 11.037 0 005.004 5.004l1.513-1.516a1 1 0 011.149-.23l2.568 1.284a1 1 0 01.553 1.066l-.62 3.245a1 1 0 01-.979.815A14.978 14.978 0 012 5.863a1 1 0 01.003.021z" />
+                              </svg>
+                            </button>
+                            <button class="rounded-full border border-slate-200 p-1.5 text-slate-500 hover:border-brand-300 hover:text-brand-500" aria-label="Email">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M2.94 6.342A2 2 0 014.564 5h10.872a2 2 0 011.624.842l-7.06 5.297-7.06-5.297z" />
+                                <path d="M18 8.118l-6.76 5.07a1.5 1.5 0 01-1.76 0L2.72 8.118A1.994 1.994 0 002 9.874V14a2 2 0 002 2h12a2 2 0 002-2V9.874c0-.603-.272-1.175-.74-1.756z" />
+                              </svg>
+                            </button>
+                            <button class="rounded-full border border-slate-200 p-1.5 text-slate-500 hover:border-brand-300 hover:text-brand-500" aria-label="Location">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a.75.75 0 01-.53-.22c-.862-.864-2.392-2.56-3.55-4.383C4.746 11.425 4 9.666 4 8a6 6 0 1112 0c0 1.666-.746 3.425-1.92 5.397-1.158 1.822-2.688 3.519-3.55 4.383A.75.75 0 0110 18zm0-8.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" clip-rule="evenodd" />
+                              </svg>
+                            </button>
+                          </div>
+                        </td>
+                        <td class="px-6 py-4 text-slate-600">06 Jun 2024</td>
+                        <td class="px-6 py-4 font-semibold text-slate-600">Savannah Nguyen</td>
+                        <td class="px-6 py-4 text-slate-600">07 Jun 2024</td>
+                        <td class="px-6 py-4 text-slate-600">SMS</td>
+                        <td class="px-6 py-4 text-slate-600">Possum Removal</td>
+                        <td class="px-6 py-4 text-slate-600">Service Request</td>
+                        <td class="px-6 py-4">
+                          <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold bg-amber-50 text-amber-600">Awaiting Quote</span>
+                        </td>
+                        <td class="px-6 py-4">
+                          <div class="flex items-center gap-3 text-slate-400">
+                            <button aria-label="View" class="rounded-full border border-slate-200 p-1.5 text-slate-500 hover:border-brand-300 hover:text-brand-500">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M10 3c-4.5 0-8 4.5-8 7s3.5 7 8 7 8-4.5 8-7-3.5-7-8-7zm0 12a3 3 0 110-6 3 3 0 010 6z" />
+                              </svg>
+                            </button>
+                            <button aria-label="Delete" class="rounded-full border border-slate-200 p-1.5 text-slate-500 hover:border-rose-300 hover:text-rose-500">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M6 8a.75.75 0 011.5 0v6a.75.75 0 01-1.5 0V8zm3.75 0a.75.75 0 011.5 0v6a.75.75 0 01-1.5 0V8zM16.25 5h-12.5a.75.75 0 010-1.5h3.5l.447-.894A1.5 1.5 0 018.06 2h3.88a1.5 1.5 0 011.363.606L13.75 3.5h3.5a.75.75 0 010 1.5zm-1.3 1.5a.45.45 0 01.45.476l-.7 8.4A1.75 1.75 0 0112.96 17H7.04a1.75 1.75 0 01-1.74-1.624l-.7-8.4a.45.45 0 01.45-.476h9.9z" clip-rule="evenodd" />
+                              </svg>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr class="hover:bg-slate-50">
+                        <td class="px-6 py-4 font-semibold text-brand-600">#482912</td>
+                        <td class="px-6 py-4">
+                          <p class="font-semibold">Mia Alvarez</p>
+                          <div class="mt-2 flex items-center gap-3 text-slate-400">
+                            <button class="rounded-full border border-slate-200 p-1.5 text-slate-500 hover:border-brand-300 hover:text-brand-500" aria-label="Call">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M2.003 5.884l3.245-.62a1 1 0 011.066.553l1.284 2.568a1 1 0 01-.23 1.149l-1.516 1.513a11.037 11.037 0 005.004 5.004l1.513-1.516a1 1 0 011.149-.23l2.568 1.284a1 1 0 01.553 1.066l-.62 3.245a1 1 0 01-.979.815A14.978 14.978 0 012 5.863a1 1 0 01.003.021z" />
+                              </svg>
+                            </button>
+                            <button class="rounded-full border border-slate-200 p-1.5 text-slate-500 hover:border-brand-300 hover:text-brand-500" aria-label="Email">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M2.94 6.342A2 2 0 014.564 5h10.872a2 2 0 011.624.842l-7.06 5.297-7.06-5.297z" />
+                                <path d="M18 8.118l-6.76 5.07a1.5 1.5 0 01-1.76 0L2.72 8.118A1.994 1.994 0 002 9.874V14a2 2 0 002 2h12a2 2 0 002-2V9.874c0-.603-.272-1.175-.74-1.756z" />
+                              </svg>
+                            </button>
+                            <button class="rounded-full border border-slate-200 p-1.5 text-slate-500 hover:border-brand-300 hover:text-brand-500" aria-label="Location">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a.75.75 0 01-.53-.22c-.862-.864-2.392-2.56-3.55-4.383C4.746 11.425 4 9.666 4 8a6 6 0 1112 0c0 1.666-.746 3.425-1.92 5.397-1.158 1.822-2.688 3.519-3.55 4.383A.75.75 0 0110 18zm0-8.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" clip-rule="evenodd" />
+                              </svg>
+                            </button>
+                          </div>
+                        </td>
+                        <td class="px-6 py-4 text-slate-600">07 Jun 2024</td>
+                        <td class="px-6 py-4 font-semibold text-slate-600">Cameron Williamson</td>
+                        <td class="px-6 py-4 text-slate-600">10 Jun 2024</td>
+                        <td class="px-6 py-4 text-slate-600">Phone Call</td>
+                        <td class="px-6 py-4 text-slate-600">Gutter Clean</td>
+                        <td class="px-6 py-4 text-slate-600">General Inquiry</td>
+                        <td class="px-6 py-4">
+                          <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold bg-indigo-50 text-indigo-600">Contact Client</span>
+                        </td>
+                        <td class="px-6 py-4">
+                          <div class="flex items-center gap-3 text-slate-400">
+                            <button aria-label="View" class="rounded-full border border-slate-200 p-1.5 text-slate-500 hover:border-brand-300 hover:text-brand-500">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M10 3c-4.5 0-8 4.5-8 7s3.5 7 8 7 8-4.5 8-7-3.5-7-8-7zm0 12a3 3 0 110-6 3 3 0 010 6z" />
+                              </svg>
+                            </button>
+                            <button aria-label="Delete" class="rounded-full border border-slate-200 p-1.5 text-slate-500 hover:border-rose-300 hover:text-rose-500">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M6 8a.75.75 0 011.5 0v6a.75.75 0 01-1.5 0V8zm3.75 0a.75.75 0 011.5 0v6a.75.75 0 01-1.5 0V8zM16.25 5h-12.5a.75.75 0 010-1.5h3.5l.447-.894A1.5 1.5 0 018.06 2h3.88a1.5 1.5 0 011.363.606L13.75 3.5h3.5a.75.75 0 010 1.5zm-1.3 1.5a.45.45 0 01.45.476l-.7 8.4A1.75 1.75 0 0112.96 17H7.04a1.75 1.75 0 01-1.74-1.624l-.7-8.4a.45.45 0 01.45-.476h9.9z" clip-rule="evenodd" />
+                              </svg>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr class="hover:bg-slate-50">
+                        <td class="px-6 py-4 font-semibold text-brand-600">#482913</td>
+                        <td class="px-6 py-4">
+                          <p class="font-semibold">Noah Patel</p>
+                          <div class="mt-2 flex items-center gap-3 text-slate-400">
+                            <button class="rounded-full border border-slate-200 p-1.5 text-slate-500 hover:border-brand-300 hover:text-brand-500" aria-label="Call">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M2.003 5.884l3.245-.62a1 1 0 011.066.553l1.284 2.568a1 1 0 01-.23 1.149l-1.516 1.513a11.037 11.037 0 005.004 5.004l1.513-1.516a1 1 0 011.149-.23l2.568 1.284a1 1 0 01.553 1.066l-.62 3.245a1 1 0 01-.979.815A14.978 14.978 0 012 5.863a1 1 0 01.003.021z" />
+                              </svg>
+                            </button>
+                            <button class="rounded-full border border-slate-200 p-1.5 text-slate-500 hover:border-brand-300 hover:text-brand-500" aria-label="Email">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M2.94 6.342A2 2 0 014.564 5h10.872a2 2 0 011.624.842l-7.06 5.297-7.06-5.297z" />
+                                <path d="M18 8.118l-6.76 5.07a1.5 1.5 0 01-1.76 0L2.72 8.118A1.994 1.994 0 002 9.874V14a2 2 0 002 2h12a2 2 0 002-2V9.874c0-.603-.272-1.175-.74-1.756z" />
+                              </svg>
+                            </button>
+                            <button class="rounded-full border border-slate-200 p-1.5 text-slate-500 hover:border-brand-300 hover:text-brand-500" aria-label="Location">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a.75.75 0 01-.53-.22c-.862-.864-2.392-2.56-3.55-4.383C4.746 11.425 4 9.666 4 8a6 6 0 1112 0c0 1.666-.746 3.425-1.92 5.397-1.158 1.822-2.688 3.519-3.55 4.383A.75.75 0 0110 18zm0-8.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" clip-rule="evenodd" />
+                              </svg>
+                            </button>
+                          </div>
+                        </td>
+                        <td class="px-6 py-4 text-slate-600">08 Jun 2024</td>
+                        <td class="px-6 py-4 font-semibold text-slate-600">Rita Ora</td>
+                        <td class="px-6 py-4 text-slate-600">12 Jun 2024</td>
+                        <td class="px-6 py-4 text-slate-600">Email</td>
+                        <td class="px-6 py-4 text-slate-600">Bird Proofing</td>
+                        <td class="px-6 py-4 text-slate-600">Site Visit</td>
+                        <td class="px-6 py-4">
+                          <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold bg-emerald-50 text-emerald-600">Scheduled</span>
+                        </td>
+                        <td class="px-6 py-4">
+                          <div class="flex items-center gap-3 text-slate-400">
+                            <button aria-label="View" class="rounded-full border border-slate-200 p-1.5 text-slate-500 hover:border-brand-300 hover:text-brand-500">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M10 3c-4.5 0-8 4.5-8 7s3.5 7 8 7 8-4.5 8-7-3.5-7-8-7zm0 12a3 3 0 110-6 3 3 0 010 6z" />
+                              </svg>
+                            </button>
+                            <button aria-label="Delete" class="rounded-full border border-slate-200 p-1.5 text-slate-500 hover:border-rose-300 hover:text-rose-500">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M6 8a.75.75 0 011.5 0v6a.75.75 0 01-1.5 0V8zm3.75 0a.75.75 0 011.5 0v6a.75.75 0 01-1.5 0V8zM16.25 5h-12.5a.75.75 0 010-1.5h3.5l.447-.894A1.5 1.5 0 018.06 2h3.88a1.5 1.5 0 011.363.606L13.75 3.5h3.5a.75.75 0 010 1.5zm-1.3 1.5a.45.45 0 01.45.476l-.7 8.4A1.75 1.75 0 0112.96 17H7.04a1.75 1.75 0 01-1.74-1.624l-.7-8.4a.45.45 0 01.45-.476h9.9z" clip-rule="evenodd" />
+                              </svg>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr class="hover:bg-slate-50">
+                        <td class="px-6 py-4 font-semibold text-brand-600">#482914</td>
+                        <td class="px-6 py-4">
+                          <p class="font-semibold">Olivia Spencer</p>
+                          <div class="mt-2 flex items-center gap-3 text-slate-400">
+                            <button class="rounded-full border border-slate-200 p-1.5 text-slate-500 hover:border-brand-300 hover:text-brand-500" aria-label="Call">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M2.003 5.884l3.245-.62a1 1 0 011.066.553l1.284 2.568a1 1 0 01-.23 1.149l-1.516 1.513a11.037 11.037 0 005.004 5.004l1.513-1.516a1 1 0 011.149-.23l2.568 1.284a1 1 0 01.553 1.066l-.62 3.245a1 1 0 01-.979.815A14.978 14.978 0 012 5.863a1 1 0 01.003.021z" />
+                              </svg>
+                            </button>
+                            <button class="rounded-full border border-slate-200 p-1.5 text-slate-500 hover:border-brand-300 hover:text-brand-500" aria-label="Email">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M2.94 6.342A2 2 0 014.564 5h10.872a2 2 0 011.624.842l-7.06 5.297-7.06-5.297z" />
+                                <path d="M18 8.118l-6.76 5.07a1.5 1.5 0 01-1.76 0L2.72 8.118A1.994 1.994 0 002 9.874V14a2 2 0 002 2h12a2 2 0 002-2V9.874c0-.603-.272-1.175-.74-1.756z" />
+                              </svg>
+                            </button>
+                            <button class="rounded-full border border-slate-200 p-1.5 text-slate-500 hover:border-brand-300 hover:text-brand-500" aria-label="Location">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a.75.75 0 01-.53-.22c-.862-.864-2.392-2.56-3.55-4.383C4.746 11.425 4 9.666 4 8a6 6 0 1112 0c0 1.666-.746 3.425-1.92 5.397-1.158 1.822-2.688 3.519-3.55 4.383A.75.75 0 0110 18zm0-8.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" clip-rule="evenodd" />
+                              </svg>
+                            </button>
+                          </div>
+                        </td>
+                        <td class="px-6 py-4 text-slate-600">09 Jun 2024</td>
+                        <td class="px-6 py-4 font-semibold text-slate-600">Darlene Robertson</td>
+                        <td class="px-6 py-4 text-slate-600">14 Jun 2024</td>
+                        <td class="px-6 py-4 text-slate-600">Referral</td>
+                        <td class="px-6 py-4 text-slate-600">Termite Check</td>
+                        <td class="px-6 py-4 text-slate-600">Follow Up</td>
+                        <td class="px-6 py-4">
+                          <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold bg-sky-50 text-sky-600">In Progress</span>
+                        </td>
+                        <td class="px-6 py-4">
+                          <div class="flex items-center gap-3 text-slate-400">
+                            <button aria-label="View" class="rounded-full border border-slate-200 p-1.5 text-slate-500 hover:border-brand-300 hover:text-brand-500">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M10 3c-4.5 0-8 4.5-8 7s3.5 7 8 7 8-4.5 8-7-3.5-7-8-7zm0 12a3 3 0 110-6 3 3 0 010 6z" />
+                              </svg>
+                            </button>
+                            <button aria-label="Delete" class="rounded-full border border-slate-200 p-1.5 text-slate-500 hover:border-rose-300 hover:text-rose-500">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M6 8a.75.75 0 011.5 0v6a.75.75 0 01-1.5 0V8zm3.75 0a.75.75 0 011.5 0v6a.75.75 0 01-1.5 0V8zM16.25 5h-12.5a.75.75 0 010-1.5h3.5l.447-.894A1.5 1.5 0 018.06 2h3.88a1.5 1.5 0 011.363.606L13.75 3.5h3.5a.75.75 0 010 1.5zm-1.3 1.5a.45.45 0 01.45.476l-.7 8.4A1.75 1.75 0 0112.96 17H7.04a1.75 1.75 0 01-1.74-1.624l-.7-8.4a.45.45 0 01.45-.476h9.9z" clip-rule="evenodd" />
+                              </svg>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr class="hover:bg-slate-50">
+                        <td class="px-6 py-4 font-semibold text-brand-600">#482915</td>
+                        <td class="px-6 py-4">
+                          <p class="font-semibold">Ethan Brooks</p>
+                          <div class="mt-2 flex items-center gap-3 text-slate-400">
+                            <button class="rounded-full border border-slate-200 p-1.5 text-slate-500 hover:border-brand-300 hover:text-brand-500" aria-label="Call">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M2.003 5.884l3.245-.62a1 1 0 011.066.553l1.284 2.568a1 1 0 01-.23 1.149l-1.516 1.513a11.037 11.037 0 005.004 5.004l1.513-1.516a1 1 0 011.149-.23l2.568 1.284a1 1 0 01.553 1.066l-.62 3.245a1 1 0 01-.979.815A14.978 14.978 0 012 5.863a1 1 0 01.003.021z" />
+                              </svg>
+                            </button>
+                            <button class="rounded-full border border-slate-200 p-1.5 text-slate-500 hover:border-brand-300 hover:text-brand-500" aria-label="Email">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M2.94 6.342A2 2 0 014.564 5h10.872a2 2 0 011.624.842l-7.06 5.297-7.06-5.297z" />
+                                <path d="M18 8.118l-6.76 5.07a1.5 1.5 0 01-1.76 0L2.72 8.118A1.994 1.994 0 002 9.874V14a2 2 0 002 2h12a2 2 0 002-2V9.874c0-.603-.272-1.175-.74-1.756z" />
+                              </svg>
+                            </button>
+                            <button class="rounded-full border border-slate-200 p-1.5 text-slate-500 hover:border-brand-300 hover:text-brand-500" aria-label="Location">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a.75.75 0 01-.53-.22c-.862-.864-2.392-2.56-3.55-4.383C4.746 11.425 4 9.666 4 8a6 6 0 1112 0c0 1.666-.746 3.425-1.92 5.397-1.158 1.822-2.688 3.519-3.55 4.383A.75.75 0 0110 18zm0-8.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" clip-rule="evenodd" />
+                              </svg>
+                            </button>
+                          </div>
+                        </td>
+                        <td class="px-6 py-4 text-slate-600">10 Jun 2024</td>
+                        <td class="px-6 py-4 font-semibold text-slate-600">Cameron Williamson</td>
+                        <td class="px-6 py-4 text-slate-600">18 Jun 2024</td>
+                        <td class="px-6 py-4 text-slate-600">Mobile App</td>
+                        <td class="px-6 py-4 text-slate-600">Insulation Repair</td>
+                        <td class="px-6 py-4 text-slate-600">General Inquiry</td>
+                        <td class="px-6 py-4">
+                          <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold bg-slate-100 text-slate-600">Closed</span>
+                        </td>
+                        <td class="px-6 py-4">
+                          <div class="flex items-center gap-3 text-slate-400">
+                            <button aria-label="View" class="rounded-full border border-slate-200 p-1.5 text-slate-500 hover:border-brand-300 hover:text-brand-500">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M10 3c-4.5 0-8 4.5-8 7s3.5 7 8 7 8-4.5 8-7-3.5-7-8-7zm0 12a3 3 0 110-6 3 3 0 010 6z" />
+                              </svg>
+                            </button>
+                            <button aria-label="Delete" class="rounded-full border border-slate-200 p-1.5 text-slate-500 hover:border-rose-300 hover:text-rose-500">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M6 8a.75.75 0 011.5 0v6a.75.75 0 01-1.5 0V8zm3.75 0a.75.75 0 011.5 0v6a.75.75 0 01-1.5 0V8zM16.25 5h-12.5a.75.75 0 010-1.5h3.5l.447-.894A1.5 1.5 0 018.06 2h3.88a1.5 1.5 0 011.363.606L13.75 3.5h3.5a.75.75 0 010 1.5zm-1.3 1.5a.45.45 0 01.45.476l-.7 8.4A1.75 1.75 0 0112.96 17H7.04a1.75 1.75 0 01-1.74-1.624l-.7-8.4a.45.45 0 01.45-.476h9.9z" clip-rule="evenodd" />
+                              </svg>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <!-- Pagination -->
+                <div
+                  class="flex items-center justify-between px-6 py-4 text-sm text-slate-600"
+                >
+                  <span>Showing 9 of 45 results</span>
+                  <div class="flex items-center gap-1">
+                    <button
+                      class="rounded-full border border-slate-200 px-3 py-1.5 text-sm font-semibold text-slate-500 hover:border-brand-300 hover:text-brand-500"
+                    >
+                      &lt;
+                    </button>
+                    <button
+                      class="rounded-full border border-slate-200 px-3 py-1.5 text-sm font-semibold text-slate-500 hover:border-brand-300 hover:text-brand-500"
+                    >
+                      Previous
+                    </button>
+                    <button
+                      class="rounded-full border border-slate-200 px-3 py-1.5 text-sm font-semibold text-slate-500 hover:border-brand-300 hover:text-brand-500"
+                    >
+                      1
+                    </button>
+                    <button
+                      class="rounded-full bg-brand-500 px-3 py-1.5 text-sm font-semibold text-white"
+                    >
+                      2
+                    </button>
+                    <button
+                      class="rounded-full border border-slate-200 px-3 py-1.5 text-sm font-semibold text-slate-500 hover:border-brand-300 hover:text-brand-500"
+                    >
+                      3
+                    </button>
+                    <span class="px-2">...</span>
+                    <button
+                      class="rounded-full border border-slate-200 px-3 py-1.5 text-sm font-semibold text-slate-500 hover:border-brand-300 hover:text-brand-500"
+                    >
+                      4
+                    </button>
+                    <button
+                      class="rounded-full border border-slate-200 px-3 py-1.5 text-sm font-semibold text-slate-500 hover:border-brand-300 hover:text-brand-500"
+                    >
+                      Next
+                    </button>
+                    <button
+                      class="rounded-full border border-slate-200 px-3 py-1.5 text-sm font-semibold text-slate-500 hover:border-brand-300 hover:text-brand-500"
+                    >
+                      &gt;
+                    </button>
+                  </div>
+                </div>
+              </section>
+            </aside>
+          </div>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>
