@@ -11,18 +11,18 @@
           extend: {
             colors: {
               brand: {
-                50: '#f1f5ff',
-                100: '#dbe3ff',
-                200: '#b2c5ff',
-                300: '#86a6ff',
-                400: '#5a86ff',
-                500: '#2d66ff',
-                600: '#174de6',
-                700: '#103ab4',
-                800: '#0b2782',
-                900: '#051551',
+                50: '#e8f0fb',
+                100: '#cedef5',
+                200: '#9bbced',
+                300: '#689be5',
+                400: '#346adc',
+                500: '#003882',
+                600: '#002f6b',
+                700: '#002555',
+                800: '#001c3f',
+                900: '#00122a',
               },
-              slateblue: '#1C3F8C',
+              slateblue: '#003882',
             },
             boxShadow: {
               card: '0 10px 40px rgba(15, 23, 42, 0.05)',
@@ -43,27 +43,16 @@
   </head>
   <body class="bg-slate-100 font-sans text-slate-900">
         <!-- Main content -->
-        <main class="flex flex-col space-y-6">
-          <header class="border border-sky-950 bg-sky-900 px-6 py-4 text-white shadow-card">
+        <main class="flex flex-col space-y-6 mb-4">
+          <header class="border border-sky-950 bg-[#003882] px-6 py-4 text-white shadow-card">
             <div class="flex flex-wrap items-center justify-between gap-6">
               <div class="flex items-center gap-4">
-                <div class="grid grid-cols-6 gap-[2px] rounded-full bg-yellow-400/90 p-2">
-                  <span class="h-2 w-2 rounded-sm bg-white"></span>
-                  <span class="h-2 w-2 rounded-sm bg-sky-900"></span>
-                  <span class="col-span-2 h-2 w-4 rounded-sm bg-white"></span>
-                  <span class="h-2 w-2 rounded-sm bg-yellow-300"></span>
-                  <span class="h-2 w-2 rounded-sm bg-white"></span>
-                  <span class="col-span-3 h-2 w-full rounded-sm bg-sky-900"></span>
-                  <span class="h-2 w-2 rounded-sm bg-white"></span>
-                  <span class="h-2 w-2 rounded-sm bg-yellow-300"></span>
-                </div>
                 <div>
-                  <p class="text-sm font-semibold uppercase tracking-wide text-sky-200">Peter the Possum &amp; Bird Man</p>
-                  <p class="text-xs text-sky-100">Customer Dashboard</p>
+                  <img src="../ptpm/assets/images/navbar-image.png" alt="company-icon">
                 </div>
               </div>
 
-              <div class="flex min-w-[320px] flex-1 items-center gap-3">
+              <div class="flex min-w-[320px] items-center gap-3">
                 <div class="relative w-full">
                   <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M8.5 3a5.5 5.5 0 014.267 8.97l3.131 3.132a.75.75 0 11-1.06 1.06l-3.132-3.131A5.5 5.5 0 118.5 3zm0 1.5a4 4 0 100 8 4 4 0 000-8z" clip-rule="evenodd" />
@@ -71,12 +60,12 @@
                   <input
                     type="search"
                     placeholder="Search all records by ID, name, email, contact or address..."
-                    class="w-full rounded border border-sky-700 bg-white px-11 py-3 text-sm text-slate-600 placeholder:text-slate-400 focus:border-white focus:outline-none focus:ring-2 focus:ring-sky-300"
+                    class="w-[504px] justify-center rounded border border-sky-700 bg-white px-11 py-3 text-sm text-slate-600 placeholder:text-slate-400 focus:border-white focus:outline-none focus:ring-2 focus:ring-sky-300"
                   />
                 </div>
               </div>
 
-              <div class="flex flex-wrap items-center gap-5">
+              <div class="flex flex-wrap items-center gap-9">
                 <div class="flex items-center gap-3">
                   <button class="flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-sky-900 transition hover:bg-slate-100">
                     <span>Create</span>
@@ -99,30 +88,33 @@
                       <path d="M7 15a3 3 0 006 0H7z" />
                     </svg>
                   </button>
-                  <div class="flex items-center gap-3 rounded bg-white/10 px-3 py-2">
-                    <img src="https://i.pravatar.cc/40?img=47" alt="Rita Ora" class="h-8 w-8 rounded-full border border-white/30 object-cover" />
-                    <div class="text-sm leading-tight">
-                      <p class="font-semibold">Rita Ora</p>
-                      <p class="text-xs text-sky-200">Administrator</p>
+                  <div class="h-8 inline-flex justify-start items-center gap-5">
+                    <img class="w-6 h-6 relative rounded-[35px] border border-white" src="https://placehold.co/24x24" />
+                   
+                    <div class="self-center text-white text-sm font-medium font-['Inter'] leading-none">
+                      Rita Ora
                     </div>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-sky-200" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.21l3.71-3.98a.75.75 0 111.08 1.04l-4.25 4.56a.75.75 0 01-1.1 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
-                    </svg>
-                  </div>
+                    
+                    <div data-property-1="out" class="w-4 h-4 overflow-hidden invert brightness-200">
+                      <img src="../ptpm/assets/logout-image.png" alt="logout">
+                      </div>
+                   
+                    </div>
+                    </div>
                 </div>
               </div>
             </div>
           </header>
 
-          <div class="flex gap-3">
+          <div class="flex gap-3 mx-2">
             <!-- Filters -->
             <aside class="w-72 flex-shrink-0">
               <div class="flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
                 <div class="flex items-center justify-between border-b border-slate-200 px-3 py-3">
-                  <h2 class="text-base font-semibold text-slate-800">All Filters</h2>
-                  <button class="rounded-lg bg-sky-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-sky-800">
-                    Apply Filters
-                  </button>
+                  <div class="justify-center  text-base font-semibold font-['Inter'] leading-tight">All Filters</div>
+                  <div data-lead-icon="false" data-size="medium" data-state="Default" data-text="true" data-trail-icon="false" data-type="main" class="px-4 py-3 bg-brand-600 rounded outline outline-1 outline-offset-[-1px] outline-sky-900 inline-flex justify-center items-center gap-2 overflow-hidden">
+                    <div class="justify-start text-white text-sm font-medium font-['Inter'] leading-none">Apply Filters</div>
+                  </div>
                 </div>
                 <div class="flex-1 space-y-0 overflow-y-auto">
                   <div class="space-y-3 border-b border-slate-200 px-3 py-4">
@@ -202,7 +194,7 @@
                         </div>
                       </div>
                     </div>
-                    <button type="button" class="flex w-full items-center justify-between rounded border border-slate-200 px-4 py-3 text-left text-sm font-medium text-slate-600 transition hover:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-100">
+                    <button type="button" class="flex w-full items-center justify-between rounded border border-slate-200 px-4 py-3 text-left text-sm font-medium text-slate-400 transition hover:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-100">
                       <span>Filter by: All Dates</span>
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.21l3.71-3.98a.75.75 0 111.08 1.04l-4.25 4.56a.75.75 0 01-1.1 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
@@ -211,310 +203,166 @@
                   </div>
 
                   <div class="space-y-3 border-b border-slate-200 px-3 py-4">
-                    <button class="w-full rounded border border-slate-200 px-4 py-3 text-left text-sm font-medium text-slate-600 transition hover:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-100">Quote Number</button>
-                    <button class="w-full rounded border border-slate-200 px-4 py-3 text-left text-sm font-medium text-slate-600 transition hover:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-100">Invoice Number</button>
-                    <button class="w-full rounded border border-slate-200 px-4 py-3 text-left text-sm font-medium text-slate-600 transition hover:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-100">Recommendation</button>
+                    <button class="w-full rounded border border-slate-200 px-4 py-3 text-left text-sm font-medium text-slate-400 transition hover:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-100">Quote Number</button>
+                    <button class="w-full rounded border border-slate-200 px-4 py-3 text-left text-sm font-medium text-slate-400 transition hover:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-100">Invoice Number</button>
+                    <button class="w-full rounded border border-slate-200 px-4 py-3 text-left text-sm font-medium text-slate-400 transition hover:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-100">Recommendation</button>
                   </div>
 
-                  <div class="space-y-3 px-3 py-4">
-                    <div class="flex items-center justify-between text-sm.font-medium text-slate-600">
-                      <span>Price Range</span>
-                      <span class="text-slate-400">$180 - $520</span>
-                    </div>
-                    <div class="space-y-4">
-                      <div class="relative mt-2 h-2 rounded-full bg-slate-200">
-                        <div class="absolute left-14 right-12 top-0 h-2 rounded-full bg-sky-300"></div>
-                        <span class="absolute -top-2 left-14 flex h-5 w-5 items-center justify-center rounded-full.border border-white bg-white text-xs font-semibold text-sky-900 shadow-md">$</span>
-                        <span class="absolute -top-2 right-12 flex h-5 w-5 items-center justify-center rounded-full border border-white bg-white text-xs font-semibold text-sky-900 shadow-md">$</span>
+                  <div class="space-y-4 px-3 py-4">
+                    <span class="text-sm font-medium text-slate-400">Price Range</span>
+                    <div class="flex flex-col gap-3">
+                      <div class="relative h-2 rounded-full bg-slate-200">
+                        <div class="absolute inset-y-0 left-16 right-16 rounded-full bg-slate-300"></div>
+                        <span class="absolute -top-3 left-12 flex h-6 w-6 items-center justify-center rounded-full border border-slate-300 bg-white shadow-sm"></span>
+                        <span class="absolute -top-3 right-12 flex h-6 w-6 items-center justify-center rounded-full border border-slate-300 bg-white shadow-sm"></span>
                       </div>
-                      <div class="flex items-center gap-3">
-                        <span class="flex-1 rounded border border-slate-200 px-4 py-3 text-sm text-slate-500">Min</span>
-                        <span class="flex-1 rounded border border-slate-200 px-4 py-3 text-sm text-slate-500">Max</span>
-                      </div>
-                      <button type="button" class="flex w-full items-center justify-between rounded border border-slate-200 px-4 py-3 text-left text-sm font-medium text-slate-600 transition hover:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-100">
-                        <span>Filter by: Quoted Amount</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
-                          <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.21l3.71-3.98a.75.75 0 111.08 1.04l-4.25 4.56a.75.75 0 01-1.1 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
-                        </svg>
-                      </button>
                     </div>
                   </div>
                 </div>
               </div>
             </aside>
 
-            <aside class="flex flex-col w-[1-1-70] gap-5">
+            <aside class="flex flex-col w-full gap-5">
               <!-- Top navigation -->
 
               <!-- Calendar summary -->
             <section class="rounded-3xl bg-white p-6 shadow-card">
               <div class="flex flex-col gap-4">
-                <header class="flex items-center justify-between">
-                  <div>
-                    <p class="text-sm font-semibold text-slate-500">Upcoming Schedule</p>
-                    <p class="text-lg font-semibold text-slate-900">Select a date to filter inquiries</p>
-                  </div>
-                  <div class="flex items-center gap-3 text-sm text-slate-500">
-                    <div class="flex items-center gap-1">
-                      <span class="h-2 w-2 rounded-full bg-brand-500"></span>
-                      <span>Selected</span>
-                    </div>
-                    <div class="flex items-center gap-1">
-                      <span class="h-2 w-2 rounded-full bg-slate-300"></span>
-                      <span>Available</span>
-                    </div>
-                  </div>
-                </header>
-                <div id="calendar-grid" class="flex flex-col gap-3"></div>
+                <div id="calendar-grid" class="flex w-full flex-nowrap gap-3"></div>
               </div>
             </section>
 
-              <!-- Tabs and chips -->
-              <section class="rounded-3xl bg-white p-6 shadow-card">
-                <div class="flex flex-wrap items-center justify-between gap-4">
-                  <div class="flex items-center gap-6">
-                    <nav
-                      class="flex items-center gap-6 text-sm font-semibold text-slate-500"
-                    >
-                      <a href="#" class="text-slate-900">Inquiry</a>
-                      <a href="#" class="hover:text-slate-900">Quote</a>
-                      <a href="#" class="hover:text-slate-900">Jobs</a>
-                      <a href="#" class="hover:text-slate-900">Payment</a>
-                      <a
-                        href="#"
-                        class="flex items-center gap-2 text-emerald-600"
-                      >
-                        <span
-                          class="h-2 w-2 rounded-full bg-emerald-500"
-                        ></span>
-                        Active Jobs
-                      </a>
-                      <a href="#" class="flex items-center gap-2 text-rose-500">
-                        <span class="h-2 w-2 rounded-full bg-rose-500"></span>
-                        Urgent Calls
-                        <span
-                          class="rounded-full bg-rose-100 px-2 py-0.5 text-[11px] font-semibold text-rose-600"
-                          >23</span
-                        >
-                      </a>
-                    </nav>
-                    <button
-                      class="rounded-full border border-slate-200 px-4 py-1.5 text-sm font-semibold text-slate-600 transition hover:border-brand-300"
-                    >
+            <!-- Tabs and chips -->
+            <section class="rounded-3xl bg-white p-6 shadow-card">
+              <div class="flex flex-col gap-2">
+                <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 pb-4">
+                  <nav class="flex flex-wrap items-center gap-6 text-md font-semibold text-slate-500">
+                    <a href="#" class="pb-3 text-brand-600 border-b-2 border-brand-500">Inquiry</a>
+                    <a href="#" class="pb-3 text-slate-500 border-b-2 border-transparent transition hover:text-brand-600 hover:border-brand-200">Quote</a>
+                    <a href="#" class="pb-3 text-slate-500 border-b-2 border-transparent transition hover:text-brand-600 hover:border-brand-200">Jobs</a>
+                    <a href="#" class="pb-3 text-slate-500 border-b-2 border-transparent transition hover:text-brand-600 hover:border-brand-200">Payment</a>
+                    <a href="#" class="flex items-center gap-2 pb-3 border-b-2 border-transparent hover:text-emerald-700">
+                      <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+                      Active Jobs
+                    </a>
+                    <a href="#" class="flex items-center gap-1 pb-3 border-b-2 border-transparent hover:text-rose-600">
+                      
+                      <svg xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 512 512"
+                          class="w-5 h-6 fill-[#3B4A6B]">
+                        <path d="M391 351c-18.7 0-37-2.9-54.7-8.7-8.2-2.7-17.3-.8-23.5 5.3l-33.1 33.1c-50.7-26.8-91.9-68-118.7-118.7l33.1-33.1c6.2-6.2 8-15.3 5.3-23.5-5.8-17.7-8.7-36-8.7-54.7 0-12.8-10.3-23-23-23H121c-12.8 0-23 10.3-23 23 0 153.8 124.2 278 278 278 12.8 0 23-10.3 23-23v-67.7c0-12.8-10.3-23-23-23z"/>
+                        <path d="M352 96v64c0 8.8 7.2 16 16 16s16-7.2 16-16V128.5l54.8 54.8c6.2 6.2 16.4 6.2 22.6 0s6.2-16.4 0-22.6L406.6 105H432c8.8 0 16-7.2 16-16s-7.2-16-16-16h-80c-8.8 0-16 7.2-16 16z"/>
+                      </svg>
+
+                      Urgent Calls
+                      <span class="rounded-full bg-rose-100 px-2 py-0.5 text-[11px] font-semibold text-rose-600">23</span>
+                    </a>
+                    <button class="inline-flex items-center ml-[70px] rounded-full border border-brand-200 px-4 py-1.5 text-sm font-semibold text-brand-600 transition hover:bg-brand-50">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M8.5 3a5.5 5.5 0 014.267 8.97l3.131 3.132a.75.75 0 11-1.06 1.06l-3.132-3.131A5.5 5.5 0 118.5 3zm0 1.5a4 4 0 100 8 4 4 0 000-8z" clip-rule="evenodd" />
+                      </svg>
                       Customers
                     </button>
-                  </div>
-                  <div class="flex items-center gap-3">
-                    <button
-                      class="rounded-full border border-slate-200 px-4 py-1.5 text-sm font-semibold text-slate-600 transition hover:border-brand-300"
-                    >
+                  </nav>
+                  
+                  <div class="flex flex-wrap items-center gap-3">
+                    
+                    <button class="border border-slate-200 px-4 py-1.5 text-sm font-semibold text-slate-600 transition hover:border-brand-300 hover:text-brand-600">
                       Edit Columns
                     </button>
-                    <button
-                      class="rounded-full bg-brand-500 px-4 py-1.5 text-sm font-semibold text-white transition hover:bg-brand-600"
-                    >
+                    <button class="bg-brand-500 px-4 py-1.5 text-sm font-semibold text-white transition hover:bg-brand-600">
                       Save View As
                     </button>
                   </div>
                 </div>
-                <div class="mt-5 flex flex-wrap items-center gap-3 text-sm">
-                  <span
-                    class="inline-flex items-center gap-2 rounded-full bg-brand-50 px-3 py-1 font-medium text-brand-700"
-                  >
-                    Quoted Date: 28 Sep - 8 Oct, 2023
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="h-4 w-4"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                        clip-rule="evenodd"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    class="inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1 font-medium text-blue-700"
-                  >
-                    Completed
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="h-4 w-4"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                        clip-rule="evenodd"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    class="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 font-medium text-emerald-700"
-                  >
-                    Job Street: Brisbane
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="h-4 w-4"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                        clip-rule="evenodd"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    class="inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-1 font-medium text-indigo-700"
-                  >
-                    Status: Won
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="h-4 w-4"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                        clip-rule="evenodd"
-                      />
-                    </svg>
-                  </span>
-                  <button
-                    class="rounded-full px-3 py-1 text-sm font-semibold text-slate-500 hover:text-slate-700"
-                  >
-                    Clear All
-                  </button>
-                </div>
+                <div class="self-stretch px-4 py-3 inline-flex justify-start items-center gap-4">
+                  <div class="flex justify-start items-center gap-2">
+                      <div data-add-btn="true" data-filter="true" data-icon="true" data-tab="false" data-type="primary" class="px-3 py-2 bg-sky-100 rounded-[20px] outline outline-1 outline-offset-[-1px] outline-blue-700 flex justify-center items-center gap-1">
+                          <div class="justify-end text-blue-700 text-xs font-normal font-['Inter'] leading-3">Quoted Date: 28 Sep –  8 Oct, 2023 </div>
+                          <div data-property-1="outline" class="w-3 h-3 relative overflow-hidden">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 3 24 24" class="w-4 h-4 fill-[#003882]">
+                              <path d="M6.225 4.811a1 1 0 0 0-1.414 1.414L10.586 12l-5.775 5.775a1 1 0 1 0 1.414 1.414L12 13.414l5.775 5.775a1 1 0 0 0 1.414-1.414L13.414 12l5.775-5.775a1 1 0 0 0-1.414-1.414L12 10.586 6.225 4.811z"></path>
+                            </svg>
+                       
+                          </div>
+                      </div>
+                      <div data-add-btn="true" data-filter="true" data-icon="true" data-tab="false" data-type="primary" class="px-3 py-2 bg-sky-100 rounded-[20px] outline outline-1 outline-offset-[-1px] outline-blue-700 flex justify-center items-center gap-1">
+                          <div class="justify-end text-blue-700 text-xs font-normal font-['Inter'] leading-3">Completed</div>
+                          <div data-property-1="outline" class="w-3 h-3 relative overflow-hidden">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 3 24 24" class="w-4 h-4 fill-[#003882]">
+                              <path d="M6.225 4.811a1 1 0 0 0-1.414 1.414L10.586 12l-5.775 5.775a1 1 0 1 0 1.414 1.414L12 13.414l5.775 5.775a1 1 0 0 0 1.414-1.414L13.414 12l5.775-5.775a1 1 0 0 0-1.414-1.414L12 10.586 6.225 4.811z"></path>
+                            </svg>
+                          </div>
+                      </div>
+                      <div data-add-btn="true" data-filter="true" data-icon="true" data-tab="false" data-type="primary" class="px-3 py-2 bg-sky-100 rounded-[20px] outline outline-1 outline-offset-[-1px] outline-blue-700 flex justify-center items-center gap-1">
+                          <div class="justify-end text-blue-700 text-xs font-normal font-['Inter'] leading-3">Job Street: Brisbane</div>
+                          <div data-property-1="outline" class="w-3 h-3 relative overflow-hidden">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 3 24 24" class="w-4 h-4 fill-[#003882]">
+                              <path d="M6.225 4.811a1 1 0 0 0-1.414 1.414L10.586 12l-5.775 5.775a1 1 0 1 0 1.414 1.414L12 13.414l5.775 5.775a1 1 0 0 0 1.414-1.414L13.414 12l5.775-5.775a1 1 0 0 0-1.414-1.414L12 10.586 6.225 4.811z"></path>
+                            </svg>
+                          </div>
+                      </div>
+                      <div data-add-btn="true" data-filter="true" data-icon="true" data-tab="false" data-type="primary" class="px-3 py-2 bg-sky-100 rounded-[20px] outline outline-1 outline-offset-[-1px] outline-blue-700 flex justify-center items-center gap-1">
+                          <div class="justify-end text-blue-700 text-xs font-normal font-['Inter'] leading-3">Status: Won</div>
+                          <div data-property-1="outline" class="w-3 h-3 relative overflow-hidden">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 3 24 24" class="w-4 h-4 fill-[#003882]">
+                              <path d="M6.225 4.811a1 1 0 0 0-1.414 1.414L10.586 12l-5.775 5.775a1 1 0 1 0 1.414 1.414L12 13.414l5.775 5.775a1 1 0 0 0 1.414-1.414L13.414 12l5.775-5.775a1 1 0 0 0-1.414-1.414L12 10.586 6.225 4.811z"></path>
+                            </svg>
+                          </div>
+                      </div>
+                      <div data-lead-icon="false" data-size="medium" data-state="Default" data-text="true" data-trail-icon="false" data-type="Ghost" class="rounded flex justify-center items-center gap-2 overflow-hidden">
+                          <div class="justify-start text-slate-500 text-sm font-medium font-['Inter'] leading-none">Clear All</div>
+                      </div>
+                  </div>
+              </div>
 
                 <!-- Data table -->
-                <div
-                  class="mt-6 overflow-hidden rounded-2xl border border-slate-200"
-                >
-                  <table class="min-w-full divide-y divide-slate-200 text-sm">
-                    <thead
-                      class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500"
-                    >
+                <div class="mt-1 overflow-hidden rounded-xl border border-slate-200 shadow-sm">
+                  <table class="min-w-full text-sm text-slate-700">
+                    <thead class="bg-[#f5f8ff] text-xs font-semibold uppercase tracking-wide border-b border-slate-200">
                       <tr>
-                        <th
-                          scope="col"
-                          class="px-6 py-4 text-left font-semibold"
-                        >
-                          Unique ID
+                        <th scope="col" class="px-6 py-4 text-left">Unique ID</th>
+                        <th scope="col" class="px-6 py-4 text-left">Client Info</th>
+                        <th scope="col" class="px-6 py-4 text-left">
+                          <span class="inline-flex items-center gap-1">
+                            Created Date
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-brand-400" viewBox="0 0 20 20" fill="none">
+                              <path d="M7 8l3-3 3 3M7 12l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                          </span>
                         </th>
-                        <th
-                          scope="col"
-                          class="px-6 py-4 text-left font-semibold"
-                        >
-                          Client Info
+                        <th scope="col" class="px-6 py-4 text-left">Serviceman</th>
+                        <th scope="col" class="px-6 py-4 text-left">
+                          <span class="inline-flex items-center gap-1">
+                            Follow Up Date
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-brand-400" viewBox="0 0 20 20" fill="none">
+                              <path d="M7 8l3-3 3 3M7 12l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                          </span>
                         </th>
-                        <th
-                          scope="col"
-                          class="px-6 py-4 text-left font-semibold"
-                        >
-                          Created Date
-                        </th>
-                        <th
-                          scope="col"
-                          class="px-6 py-4 text-left font-semibold"
-                        >
-                          Serviceman
-                        </th>
-                        <th
-                          scope="col"
-                          class="px-6 py-4 text-left font-semibold"
-                        >
-                          Follow Up Date
-                        </th>
-                        <th
-                          scope="col"
-                          class="px-6 py-4 text-left font-semibold"
-                        >
-                          Source
-                        </th>
-                        <th
-                          scope="col"
-                          class="px-6 py-4 text-left font-semibold"
-                        >
-                          Service Inquiry
-                        </th>
-                        <th
-                          scope="col"
-                          class="px-6 py-4 text-left font-semibold"
-                        >
-                          Type
-                        </th>
-                        <th
-                          scope="col"
-                          class="px-6 py-4 text-left font-semibold"
-                        >
-                          Status
-                        </th>
-                        <th
-                          scope="col"
-                          class="px-6 py-4 text-left font-semibold"
-                        >
-                          Action
-                        </th>
+                        <th scope="col" class="px-6 py-4 text-left">Source</th>
+                        <th scope="col" class="px-6 py-4 text-left">Service Inquiry</th>
+                        <th scope="col" class="px-6 py-4 text-left">Type</th>
+                        <th scope="col" class="px-6 py-4 text-center">Status</th>
+                        <th scope="col" class="px-6 py-4 text-center">Action</th>
                       </tr>
                     </thead>
-                    <tbody id="inquiry-table-body" class="divide-y divide-slate-200 bg-white"></tbody>
+                    <tbody id="inquiry-table-body" class="bg-white"></tbody>
                   </table>
                 </div>
 
                 <!-- Pagination -->
-                <div
-                  class="flex items-center justify-between px-6 py-4 text-sm text-slate-600"
-                >
-                  <span>Showing 9 of 45 results</span>
-                  <div class="flex items-center gap-1">
-                    <button
-                      class="rounded-full border border-slate-200 px-3 py-1.5 text-sm font-semibold text-slate-500 hover:border-brand-300 hover:text-brand-500"
-                    >
-                      &lt;
-                    </button>
-                    <button
-                      class="rounded-full border border-slate-200 px-3 py-1.5 text-sm font-semibold text-slate-500 hover:border-brand-300 hover:text-brand-500"
-                    >
-                      Previous
-                    </button>
-                    <button
-                      class="rounded-full border border-slate-200 px-3 py-1.5 text-sm font-semibold text-slate-500 hover:border-brand-300 hover:text-brand-500"
-                    >
-                      1
-                    </button>
-                    <button
-                      class="rounded-full bg-brand-500 px-3 py-1.5 text-sm font-semibold text-white"
-                    >
-                      2
-                    </button>
-                    <button
-                      class="rounded-full border border-slate-200 px-3 py-1.5 text-sm font-semibold text-slate-500 hover:border-brand-300 hover:text-brand-500"
-                    >
-                      3
-                    </button>
-                    <span class="px-2">...</span>
-                    <button
-                      class="rounded-full border border-slate-200 px-3 py-1.5 text-sm font-semibold text-slate-500 hover:border-brand-300 hover:text-brand-500"
-                    >
-                      4
-                    </button>
-                    <button
-                      class="rounded-full border border-slate-200 px-3 py-1.5 text-sm font-semibold text-slate-500 hover:border-brand-300 hover:text-brand-500"
-                    >
-                      Next
-                    </button>
-                    <button
-                      class="rounded-full border border-slate-200 px-3 py-1.5 text-sm font-semibold text-slate-500 hover:border-brand-300 hover:text-brand-500"
-                    >
-                      &gt;
-                    </button>
+                <div class="mt-4 flex items-center justify-center border-t border-slate-200 px-6 py-4 text-sm text-slate-600">
+                  <div class="flex items-center gap-2">
+                    <button class="rounded-full border border-slate-200 px-3 py-1.5 text-sm font-semibold text-slate-500 transition hover:border-brand-300 hover:text-brand-600">&lt;</button>
+                    <button class="rounded-full border border-slate-200 px-3 py-1.5 text-sm font-semibold text-slate-500 transition hover:border-brand-300 hover:text-brand-600">Previous</button>
+                    <button class="rounded-full border border-slate-200 px-3 py-1.5 text-sm font-semibold text-slate-500 transition hover:border-brand-300 hover:text-brand-600">1</button>
+                    <button class="rounded-full bg-brand-500 px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-brand-600">2</button>
+                    <button class="rounded-full border border-slate-200 px-3 py-1.5 text-sm font-semibold text-slate-500 transition hover:border-brand-300 hover:text-brand-600">3</button>
+                    <button class="rounded-full border border-slate-200 px-3 py-1.5 text-sm font-semibold text-slate-500 transition hover:border-brand-300 hover:text-brand-600">4</button>
+                    <span class="px-1 text-slate-400">...</span>
+                    <button class="rounded-full border border-slate-200 px-3 py-1.5 text-sm font-semibold text-slate-500 transition hover:border-brand-300 hover:text-brand-600">Next</button>
+                    <button class="rounded-full border border-slate-200 px-3 py-1.5 text-sm font-semibold text-slate-500 transition hover:border-brand-300 hover:text-brand-600">&gt;</button>
                   </div>
                 </div>
               </section>
@@ -524,200 +372,6 @@
       </div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
-  <script>
-  const statusClasses = {
-    'New Inquiry': 'bg-rose-50 text-rose-500',
-    'Awaiting Quote': 'bg-amber-50 text-amber-600',
-    'Contact Client': 'bg-indigo-50 text-indigo-600',
-    Scheduled: 'bg-emerald-50 text-emerald-600',
-    'In Progress': 'bg-sky-50 text-sky-600',
-    Closed: 'bg-slate-100 text-slate-600',
-  };
-
-  const iconButtonGroup = `
-    <div class="mt-2 flex items-center gap-3 text-slate-400">
-      <button class="rounded-full border border-slate-200 p-1.5 text-slate-500 hover:border-brand-300 hover:text-brand-500" aria-label="Call">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-          <path d="M2.003 5.884l3.245-.62a1 1 0 011.066.553l1.284 2.568a1 1 0 01-.23 1.149l-1.516 1.513a11.037 11.037 0 005.004 5.004l1.513-1.516a1 1 0 011.149-.23l2.568 1.284a1 1 0 01.553 1.066l-.62 3.245a1 1 0 01-.979.815A14.978 14.978 0 012 5.863a1 1 0 01.003.021z" />
-        </svg>
-      </button>
-      <button class="rounded-full border border-slate-200 p-1.5 text-slate-500 hover:border-brand-300 hover:text-brand-500" aria-label="Email">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-          <path d="M2.94 6.342A2 2 0 014.564 5h10.872a2 2 0 011.624.842l-7.06 5.297-7.06-5.297z" />
-          <path d="M18 8.118l-6.76 5.07a1.5 1.5 0 01-1.76 0L2.72 8.118A1.994 1.994 0 002 9.874V14a2 2 0 002 2h12a2 2 0 002-2V9.874c0-.603-.272-1.175-.74-1.756z" />
-        </svg>
-      </button>
-      <button class="rounded-full border border-slate-200 p-1.5 text-slate-500 hover:border-brand-300 hover:text-brand-500" aria-label="Location">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M10 18a.75.75 0 01-.53-.22c-.862-.864-2.392-2.56-3.55-4.383C4.746 11.425 4 9.666 4 8a6 6 0 1112 0c0 1.666-.746 3.425-1.92 5.397-1.158 1.822-2.688 3.519-3.55 4.383A.75.75 0 0110 18zm0-8.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" clip-rule="evenodd" />
-        </svg>
-      </button>
-    </div>
-  `;
-
-  const actionButtons = `
-    <div class="flex items-center gap-3 text-slate-400">
-      <button aria-label="View" class="rounded-full border border-slate-200 p-1.5 text-slate-500 hover:border-brand-300 hover:text-brand-500">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-          <path d="M10 3c-4.5 0-8 4.5-8 7s3.5 7 8 7 8-4.5 8-7-3.5-7-8-7zm0 12a3 3 0 110-6 3 3 0 010 6z" />
-        </svg>
-      </button>
-      <button aria-label="Delete" class="rounded-full border border-slate-200 p-1.5 text-slate-500 hover:border-rose-300 hover:text-rose-500">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M6 8a.75.75 0 011.5 0v6a.75.75 0 01-1.5 0V8zm3.75 0a.75.75 0 011.5 0v6a.75.75 0 01-1.5 0V8zM16.25 5h-12.5a.75.75 0 010-1.5h3.5l.447-.894A1.5 1.5 0 018.06 2h3.88a1.5 1.5 0 011.363.606L13.75 3.5h3.5a.75.75 0 010 1.5zm-1.3 1.5a.45.45 0 01.45.476l-.7 8.4A1.75 1.75 0 0112.96 17H7.04a1.75 1.75 0 01-1.74-1.624l-.7-8.4a.45.45 0 01.45-.476h9.9z" clip-rule="evenodd" />
-        </svg>
-      </button>
-    </div>
-  `;
-
-  const calendarContainer = document.getElementById('calendar-grid');
-  const tableBody = document.getElementById('inquiry-table-body');
-
-  const dayCount = 17;
-  const startDate = dayjs();
-  const calendarDays = Array.from({ length: dayCount }, (_, index) => {
-    const current = startDate.add(index, 'day');
-    return {
-      iso: current.format('YYYY-MM-DD'),
-      label: current.format('ddd D/M'),
-      total: Math.floor(Math.random() * 15) + 5,
-    };
-  });
-
-  const sampleRows = [
-    {
-      id: '#482910',
-      client: 'Sophie Grant',
-      created: '04 Jun 2024',
-      serviceman: 'Rita Ora',
-      followUp: '05 Jun 2024',
-      source: 'Web Form',
-      service: 'Roof Inspection',
-      type: 'General Inquiry',
-      status: 'New Inquiry',
-    },
-    {
-      id: '#482911',
-      client: 'Liam Hart',
-      created: '06 Jun 2024',
-      serviceman: 'Savannah Nguyen',
-      followUp: '07 Jun 2024',
-      source: 'SMS',
-      service: 'Possum Removal',
-      type: 'Service Request',
-      status: 'Awaiting Quote',
-    },
-    {
-      id: '#482912',
-      client: 'Mia Alvarez',
-      created: '07 Jun 2024',
-      serviceman: 'Cameron Williamson',
-      followUp: '10 Jun 2024',
-      source: 'Phone Call',
-      service: 'Gutter Clean',
-      type: 'General Inquiry',
-      status: 'Contact Client',
-    },
-  ];
-
-  const inquiryDataByDate = {
-    [calendarDays[0].iso]: sampleRows,
-    [calendarDays[3].iso]: sampleRows.slice(0, 2),
-    [calendarDays[5].iso]: sampleRows.slice(1),
-  };
-
-  let selectedDate = calendarDays[0].iso;
-
-  function getStatusClass(status) {
-    return statusClasses[status] ?? 'bg-slate-100 text-slate-600';
-  }
-
-  function renderCalendar() {
-    const firstRow = calendarDays.slice(0, 9);
-    const secondRow = calendarDays.slice(9);
-
-    function renderRow(row) {
-      return row
-        .map((day) => {
-          const isSelected = day.iso === selectedDate;
-          const baseClasses = 'flex-1 rounded-2xl border px-4 py-3 text-center transition';
-          const stateClasses = isSelected
-            ? 'border-brand-500 bg-brand-50 text-brand-700 shadow-md'
-            : 'border-slate-200 text-slate-600 hover:border-brand-300 hover:text-brand-700';
-          return `
-            <button type="button" class="${baseClasses} ${stateClasses}" data-date="${day.iso}">
-              <span class="block text-xs font-semibold uppercase">${day.label}</span>
-              <span class="mt-2 block text-lg font-bold">${day.total}</span>
-              <span class="mt-1 inline-flex items-center justify-center rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-500">Total</span>
-            </button>
-          `;
-        })
-        .join('');
-    }
-
-    calendarContainer.innerHTML = `
-      <div class="flex gap-3">
-        ${renderRow(firstRow)}
-      </div>
-      <div class="flex gap-3">
-        ${renderRow(secondRow)}
-      </div>
-    `;
-  }
-
-  function renderTable(dateIso) {
-    const rows = inquiryDataByDate[dateIso] ?? [];
-
-    if (!rows.length) {
-      tableBody.innerHTML = `
-        <tr>
-          <td colspan="10" class="px-6 py-6 text-center text-sm text-slate-500">
-            No inquiries scheduled for ${dayjs(dateIso).format('D MMM YYYY')}.
-          </td>
-        </tr>
-      `;
-      return;
-    }
-
-    tableBody.innerHTML = rows
-      .map((row) => `
-        <tr class="hover:bg-slate-50">
-          <td class="px-6 py-4 font-semibold text-brand-600">${row.id}</td>
-          <td class="px-6 py-4">
-            <p class="font-semibold">${row.client}</p>
-            ${iconButtonGroup}
-          </td>
-          <td class="px-6 py-4 text-slate-600">${row.created}</td>
-          <td class="px-6 py-4 font-semibold text-slate-600">${row.serviceman}</td>
-          <td class="px-6 py-4 text-slate-600">${row.followUp}</td>
-          <td class="px-6 py-4 text-slate-600">${row.source}</td>
-          <td class="px-6 py-4 text-slate-600">${row.service}</td>
-          <td class="px-6 py-4 text-slate-600">${row.type}</td>
-          <td class="px-6 py-4">
-            <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold ${getStatusClass(row.status)}">${row.status}</span>
-          </td>
-          <td class="px-6 py-4">
-            ${actionButtons}
-          </td>
-        </tr>
-      `)
-      .join('');
-  }
-
-  function handleDateClick(event) {
-    const button = event.target.closest('button[data-date]');
-    if (!button) return;
-    const { date } = button.dataset;
-    if (date === selectedDate) return;
-    selectedDate = date;
-    renderCalendar();
-    renderTable(selectedDate);
-  }
-
-  calendarContainer.addEventListener('click', handleDateClick);
-
-  renderCalendar();
-  renderTable(selectedDate);
-  </script>
+  <script type="module" src="./js/app.js"></script>
 </body>
 </html>
