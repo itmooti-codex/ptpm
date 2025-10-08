@@ -5,22 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Inquiry Information</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module" src="../js/app.js"></script>
   </head>
 
   <body class="bg-slate-50">
     <main class="flex min-h-screen flex-col">
       <!-- Header -->
-      <header class="w-full border-b border-gray-300 bg-sky-900">
+      <header class="w-full border-b border-gray-300 bg-[#003882]">
         <div class="flex items-center justify-between px-6 py-4">
           <h1 class="text-xl font-medium text-white">Inquiry Information</h1>
           <div class="flex items-center gap-4 text-sm font-medium text-white">
             <button
+              id="cancel-btn"
               type="button"
               class="rounded border border-white px-4 py-3 transition hover:bg-white/10"
             >
               Cancel
             </button>
             <button
+              id="reset-btn"
               type="button"
               class="inline-flex items-center gap-2 rounded border border-white px-4 py-3 transition hover:bg-white/10"
             >
@@ -97,14 +100,16 @@
               >
                 Contact Details
               </div>
-              <div class="flex-inline gap-2 mt-4">
+              <div class="flex-inline gap-2 mt-3">
                 <button
+                  id="individual"
                   type="button"
-                  class="rounded-full bg-white px-4 py-1 text-xs font-semibold text-sky-600 shadow-sm ring-1 ring-sky-200"
+                  class="rounded-full bg-blue-700 px-4 py-1 text-xs font-semibold text-white shadow-sm"
                 >
                   Individual
                 </button>
                 <button
+                  id="entity"
                   type="button"
                   class="rounded-full px-4 py-1 text-xs font-semibold text-slate-500 transition hover:text-sky-600"
                 >
@@ -256,24 +261,25 @@
 
             <div class="rounded-2xl border border-slate-200">
               <div
-                class="flex border-b border-slate-200 text-sm font-semibold p-3 justify-around"
+                class="flex border-b border-slate-200 text-sm font-semibold p-3 justify-around outline-none focus:outline-none"
               >
                 <div
-                  class="text-center justify-start align-center text-sky-900 text-base font-medium font-sans leading-none"
+                  class="text-center text-sky-900 text-base font-medium font-sans leading-none"
                 >
                   Related Properties
                 </div>
                 <div
-                  class="text-center justify-start text-neutral-700 text-base font-medium font-sans leading-none"
+                  class="text-center text-neutral-700 text-base font-medium font-sans leading-none"
                 >
                   Related Jobs
                 </div>
                 <div
-                  class="text-center justify-start text-neutral-700 text-base font-medium font-sans leading-none"
+                  class="text-center text-neutral-700 text-base font-medium font-sans leading-none"
                 >
                   Previous Inquiries
                 </div>
               </div>
+
               <div
                 class="flex flex-col items-center justify-center gap-4 text-slate-500"
               >
@@ -776,6 +782,7 @@
                   class="px-4 py-3 rounded outline outline-1 outline-offset-[-1px] outline-sky-900 inline-flex justify-center items-center gap-2 overflow-hidden"
                 >
                   <div
+                    id="add-contact-btn"
                     class="justify-start text-sky-900 text-sm font-medium font-sans leading-none"
                   >
                     Add Contact
@@ -785,7 +792,7 @@
 
               <div class="overflow-hidden rounded-xl border border-slate-200">
                 <div
-                  class="flex justify-around border-b border-slate-200 bg-slate-50 px-4 py-3 text-xs font-semibold uppercase text-slate-500"
+                  class="flex justify-around border-b border-slate-200 bg-slate-50 px-4 py-3 text-xs font-semibold text-slate-500"
                 >
                   <span>Role</span>
                   <span>Contact</span>

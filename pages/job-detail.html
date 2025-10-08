@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body>
+    <header>
+      <div class="flex bg-[#003882] p-4 justify-between">
+        <div class="flex gap-28 justify-around items-center">
+          <div class="flex gap-2 justify-start items-center">
+            <div class="flex flex-inline gap-3 justify-around items-center">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="white"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M22 12.3335C22 12.5545 21.9122 12.7665 21.7559 12.9228C21.5997 13.079 21.3877 13.1668 21.1667 13.1668H4.84535L10.9233 19.2437C11.0007 19.3211 11.0621 19.4131 11.104 19.5142C11.1459 19.6154 11.1675 19.7238 11.1675 19.8333C11.1675 19.9428 11.1459 20.0512 11.104 20.1523C11.0621 20.2535 11.0007 20.3454 10.9233 20.4228C10.8459 20.5003 10.7539 20.5617 10.6528 20.6036C10.5516 20.6455 10.4432 20.667 10.3337 20.667C10.2242 20.667 10.1158 20.6455 10.0146 20.6036C9.91349 20.5617 9.82157 20.5003 9.74415 20.4228L2.2444 12.9231C2.16692 12.8457 2.10546 12.7538 2.06352 12.6526C2.02158 12.5515 2 12.443 2 12.3335C2 12.224 2.02158 12.1156 2.06352 12.0144C2.10546 11.9133 2.16692 11.8214 2.2444 11.744L9.74415 4.24421C9.90051 4.08784 10.1126 4 10.3337 4C10.5548 4 10.7669 4.08784 10.9233 4.24421C11.0796 4.40057 11.1675 4.61264 11.1675 4.83377C11.1675 5.0549 11.0796 5.26697 10.9233 5.42333L4.84535 11.5002H21.1667C21.3877 11.5002 21.5997 11.588 21.7559 11.7443C21.9122 11.9006 22 12.1125 22 12.3335Z"
+                  fill="white"
+                />
+              </svg>
+              <div
+                class="justify-end text-white text-lg font-small font-sans leading-normal"
+              >
+                Job Details
+              </div>
+            </div>
+          </div>
+          <div class="flex gap-2 justify-start items-center">
+            <div class="flex flex-inline gap-1 justify-around items-center">
+              <div
+                class="justify-end text-white text-sm font-small font-sans leading-normal"
+              >
+                General Emails
+              </div>
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 14 14"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M12.678 4.98899L7.37519 10.2918C7.32594 10.3411 7.26746 10.3802 7.20308 10.4069C7.13871 10.4335 7.06971 10.4473 7.00002 10.4473C6.93033 10.4473 6.86133 10.4335 6.79696 10.4069C6.73258 10.3802 6.6741 10.3411 6.62485 10.2918L1.32209 4.98899C1.22259 4.88949 1.16669 4.75454 1.16669 4.61382C1.16669 4.47311 1.22259 4.33815 1.32209 4.23865C1.42159 4.13915 1.55654 4.08325 1.69726 4.08325C1.83797 4.08325 1.97293 4.13915 2.07243 4.23865L7.00002 9.16691L11.9276 4.23865C11.9769 4.18938 12.0354 4.1503 12.0997 4.12364C12.1641 4.09698 12.2331 4.08325 12.3028 4.08325C12.3725 4.08325 12.4415 4.09698 12.5058 4.12364C12.5702 4.1503 12.6287 4.18938 12.678 4.23865C12.7272 4.28792 12.7663 4.34641 12.793 4.41078C12.8196 4.47515 12.8334 4.54415 12.8334 4.61382C12.8334 4.6835 12.8196 4.75249 12.793 4.81686C12.7663 4.88124 12.7272 4.93973 12.678 4.98899Z"
+                  fill="white"
+                />
+              </svg>
+            </div>
+            <div class="flex flex-inline gap-1 justify-around items-center">
+              <div
+                class="justify-end text-white text-sm font-small font-sans leading-normal"
+              >
+                Quote Emails
+              </div>
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 14 14"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M12.678 4.98899L7.37519 10.2918C7.32594 10.3411 7.26746 10.3802 7.20308 10.4069C7.13871 10.4335 7.06971 10.4473 7.00002 10.4473C6.93033 10.4473 6.86133 10.4335 6.79696 10.4069C6.73258 10.3802 6.6741 10.3411 6.62485 10.2918L1.32209 4.98899C1.22259 4.88949 1.16669 4.75454 1.16669 4.61382C1.16669 4.47311 1.22259 4.33815 1.32209 4.23865C1.42159 4.13915 1.55654 4.08325 1.69726 4.08325C1.83797 4.08325 1.97293 4.13915 2.07243 4.23865L7.00002 9.16691L11.9276 4.23865C11.9769 4.18938 12.0354 4.1503 12.0997 4.12364C12.1641 4.09698 12.2331 4.08325 12.3028 4.08325C12.3725 4.08325 12.4415 4.09698 12.5058 4.12364C12.5702 4.1503 12.6287 4.18938 12.678 4.23865C12.7272 4.28792 12.7663 4.34641 12.793 4.41078C12.8196 4.47515 12.8334 4.54415 12.8334 4.61382C12.8334 4.6835 12.8196 4.75249 12.793 4.81686C12.7663 4.88124 12.7272 4.93973 12.678 4.98899Z"
+                  fill="white"
+                />
+              </svg>
+            </div>
+            <div class="flex flex-inline gap-1 justify-around items-center">
+              <div
+                class="justify-end text-white text-sm font-small font-sans leading-normal"
+              >
+                Invoice Emails
+              </div>
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 14 14"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M12.678 4.98899L7.37519 10.2918C7.32594 10.3411 7.26746 10.3802 7.20308 10.4069C7.13871 10.4335 7.06971 10.4473 7.00002 10.4473C6.93033 10.4473 6.86133 10.4335 6.79696 10.4069C6.73258 10.3802 6.6741 10.3411 6.62485 10.2918L1.32209 4.98899C1.22259 4.88949 1.16669 4.75454 1.16669 4.61382C1.16669 4.47311 1.22259 4.33815 1.32209 4.23865C1.42159 4.13915 1.55654 4.08325 1.69726 4.08325C1.83797 4.08325 1.97293 4.13915 2.07243 4.23865L7.00002 9.16691L11.9276 4.23865C11.9769 4.18938 12.0354 4.1503 12.0997 4.12364C12.1641 4.09698 12.2331 4.08325 12.3028 4.08325C12.3725 4.08325 12.4415 4.09698 12.5058 4.12364C12.5702 4.1503 12.6287 4.18938 12.678 4.23865C12.7272 4.28792 12.7663 4.34641 12.793 4.41078C12.8196 4.47515 12.8334 4.54415 12.8334 4.61382C12.8334 4.6835 12.8196 4.75249 12.793 4.81686C12.7663 4.88124 12.7272 4.93973 12.678 4.98899Z"
+                  fill="white"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
+        <div class="flex gap-3 justify-around items-center">
+          <div class="flex flex-inline gap-1">
+            <div
+              class="justify-start text-white text-sm font-medium font-sans leading-none"
+            >
+              Copy Link
+            </div>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M13.1038 7.6462C13.1502 7.69264 13.1871 7.74778 13.2123 7.80848C13.2374 7.86918 13.2504 7.93424 13.2504 7.99995C13.2504 8.06566 13.2374 8.13072 13.2123 8.19142C13.1871 8.25212 13.1502 8.30726 13.1038 8.3537L7.97563 13.4787C7.31914 14.1351 6.42877 14.5038 5.50041 14.5038C4.57204 14.5037 3.68173 14.1349 3.02532 13.4784C2.36891 12.8219 2.00017 11.9315 2.00023 11.0032C2.00029 10.0748 2.36913 9.18449 3.02563 8.52807L9.22938 2.23308C9.69807 1.76389 10.3339 1.50011 10.9971 1.49976C11.6603 1.4994 12.2964 1.76251 12.7656 2.2312C13.2348 2.69989 13.4986 3.33576 13.4989 3.99894C13.4993 4.66211 13.2362 5.29827 12.7675 5.76745L6.5625 12.0625C6.28071 12.3442 5.89852 12.5026 5.5 12.5026C5.10149 12.5026 4.7193 12.3442 4.4375 12.0625C4.15571 11.7807 3.9974 11.3985 3.9974 11C3.9974 10.6014 4.15571 10.2192 4.4375 9.93745L9.64375 4.6487C9.68936 4.60005 9.74424 4.56101 9.80516 4.53389C9.86608 4.50676 9.93181 4.4921 9.99848 4.49075C10.0651 4.48941 10.1314 4.50142 10.1934 4.52607C10.2553 4.55072 10.3117 4.58752 10.3593 4.6343C10.4068 4.68107 10.4445 4.73689 10.4701 4.79845C10.4958 4.86001 10.5088 4.92607 10.5085 4.99276C10.5083 5.05944 10.4946 5.1254 10.4685 5.18674C10.4423 5.24808 10.4042 5.30358 10.3563 5.34995L5.14938 10.6443C5.10276 10.6906 5.06571 10.7456 5.04033 10.8061C5.01496 10.8667 5.00177 10.9317 5.00151 10.9973C5.00125 11.063 5.01392 11.1281 5.03881 11.1889C5.0637 11.2496 5.10032 11.3049 5.14657 11.3515C5.19282 11.3981 5.2478 11.4352 5.30837 11.4606C5.36894 11.4859 5.43391 11.4991 5.49958 11.4994C5.56525 11.4996 5.63032 11.487 5.69109 11.4621C5.75186 11.4372 5.80713 11.4006 5.85375 11.3543L12.0581 5.06245C12.3399 4.78124 12.4985 4.3996 12.4989 4.0015C12.4993 3.60339 12.3415 3.22143 12.0603 2.93964C11.7791 2.65785 11.3975 2.49931 10.9994 2.4989C10.6013 2.49848 10.2193 2.65624 9.9375 2.93745L3.735 9.22995C3.50265 9.46194 3.31826 9.73742 3.19236 10.0407C3.06647 10.3439 3.00154 10.669 3.00128 10.9973C3.00102 11.3257 3.06543 11.6509 3.19084 11.9543C3.31625 12.2578 3.5002 12.5335 3.73219 12.7659C3.96418 12.9982 4.23966 13.1826 4.54291 13.3085C4.84616 13.4344 5.17124 13.4993 5.49958 13.4996C5.82792 13.4999 6.1531 13.4355 6.45655 13.31C6.76 13.1846 7.03577 13.0007 7.26813 12.7687L12.3969 7.6437C12.491 7.55033 12.6183 7.49815 12.7508 7.49862C12.8834 7.49909 13.0103 7.55217 13.1038 7.6462Z"
+                fill="white"
+              />
+            </svg>
+          </div>
+          <div
+            data-lead-icon="false"
+            data-size="medium"
+            data-state="Default"
+            data-text="true"
+            data-trail-icon="true"
+            data-type="outline"
+            class="px-4 py-3 rounded outline outline-1 outline-offset-[-1px] outline-white inline-flex justify-center items-center gap-2 overflow-hidden"
+          >
+            <div
+              class="justify-start text-white text-sm font-medium font-sans leading-none"
+            >
+              Job Actions
+            </div>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12.6779 4.98899L7.37517 10.2918C7.32593 10.3411 7.26744 10.3802 7.20307 10.4069C7.13869 10.4335 7.06969 10.4473 7 10.4473C6.93032 10.4473 6.86131 10.4335 6.79694 10.4069C6.73257 10.3802 6.67408 10.3411 6.62483 10.2918L1.32207 4.98899C1.22257 4.88949 1.16667 4.75454 1.16667 4.61382C1.16667 4.47311 1.22257 4.33815 1.32207 4.23865C1.42157 4.13915 1.55653 4.08325 1.69724 4.08325C1.83796 4.08325 1.97291 4.13915 2.07241 4.23865L7 9.16691L11.9276 4.23865C11.9769 4.18938 12.0354 4.1503 12.0997 4.12364C12.1641 4.09698 12.2331 4.08325 12.3028 4.08325C12.3724 4.08325 12.4414 4.09698 12.5058 4.12364C12.5702 4.1503 12.6287 4.18938 12.6779 4.23865C12.7272 4.28792 12.7663 4.34641 12.793 4.41078C12.8196 4.47515 12.8333 4.54415 12.8333 4.61382C12.8333 4.6835 12.8196 4.75249 12.793 4.81686C12.7663 4.88124 12.7272 4.93973 12.6779 4.98899Z" fill="white"/>
+                </svg>
+          </div>
+          <div
+          data-lead-icon="false"
+          data-size="medium"
+          data-state="Default"
+          data-text="true"
+          data-trail-icon="true"
+          data-type="outline"
+          class="px-4 py-3 rounded outline outline-1 outline-offset-[-1px] outline-white inline-flex justify-center items-center gap-2 overflow-hidden"
+        >
+          <div
+            class="justify-start text-white text-sm font-medium font-sans leading-none"
+          >
+            Review
+          </div>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12.6779 4.98899L7.37517 10.2918C7.32593 10.3411 7.26744 10.3802 7.20307 10.4069C7.13869 10.4335 7.06969 10.4473 7 10.4473C6.93032 10.4473 6.86131 10.4335 6.79694 10.4069C6.73257 10.3802 6.67408 10.3411 6.62483 10.2918L1.32207 4.98899C1.22257 4.88949 1.16667 4.75454 1.16667 4.61382C1.16667 4.47311 1.22257 4.33815 1.32207 4.23865C1.42157 4.13915 1.55653 4.08325 1.69724 4.08325C1.83796 4.08325 1.97291 4.13915 2.07241 4.23865L7 9.16691L11.9276 4.23865C11.9769 4.18938 12.0354 4.1503 12.0997 4.12364C12.1641 4.09698 12.2331 4.08325 12.3028 4.08325C12.3724 4.08325 12.4414 4.09698 12.5058 4.12364C12.5702 4.1503 12.6287 4.18938 12.6779 4.23865C12.7272 4.28792 12.7663 4.34641 12.793 4.41078C12.8196 4.47515 12.8333 4.54415 12.8333 4.61382C12.8333 4.6835 12.8196 4.75249 12.793 4.81686C12.7663 4.88124 12.7272 4.93973 12.6779 4.98899Z" fill="white"/>
+              </svg>
+        </div>
+
+        <div
+          data-lead-icon="true"
+          data-size="medium"
+          data-state="Default"
+          data-text="true"
+          data-trail-icon="true"
+          data-type="main"
+          class="px-4 py-3 bg-white rounded outline outline-1 outline-offset-[-1px] outline-white inline-flex justify-center items-center gap-2 overflow-hidden"
+        >
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M9.77754 5.63909C10.588 5.63909 11.3652 5.96103 11.9383 6.53409C12.5113 7.10715 12.8333 7.88438 12.8333 8.69481C12.8333 9.50524 12.5113 10.2825 11.9383 10.8555C11.3652 11.4286 10.588 11.7505 9.77754 11.7505C8.96712 11.7505 8.18988 11.4286 7.61683 10.8555C7.04377 10.2825 6.72183 9.50524 6.72183 8.69481C6.72183 7.88438 7.04377 7.10715 7.61683 6.53409C8.18988 5.96103 8.96712 5.63909 9.77754 5.63909ZM11.2476 7.38696L8.97417 9.66097L8.33302 8.80593C8.28882 8.74699 8.22301 8.70802 8.15008 8.6976C8.07714 8.68718 8.00306 8.70616 7.94411 8.75037C7.88517 8.79458 7.84621 8.86038 7.83579 8.93332C7.82537 9.00625 7.84435 9.08034 7.88856 9.13928L8.72193 10.2504C8.74584 10.2823 8.77631 10.3087 8.81129 10.3277C8.84627 10.3468 8.88493 10.3581 8.92466 10.3608C8.9644 10.3636 9.00426 10.3579 9.04156 10.3439C9.07886 10.3299 9.11272 10.3081 9.14084 10.2799L11.641 7.77976C11.6916 7.72737 11.7196 7.6572 11.7189 7.58436C11.7183 7.51153 11.6891 7.44185 11.6376 7.39035C11.5861 7.33884 11.5164 7.30963 11.4436 7.309C11.3707 7.30836 11.3 7.33636 11.2476 7.38696ZM6.17736 8.41702H1.72156L1.65656 8.42091C1.51595 8.43763 1.38702 8.50742 1.29613 8.61601C1.20525 8.7246 1.15925 8.8638 1.16755 9.00516C1.17585 9.14653 1.23781 9.27939 1.34078 9.3766C1.44375 9.47381 1.57996 9.52803 1.72156 9.52819H6.26292C6.17688 9.16449 6.14783 8.78963 6.1768 8.41702M6.44348 7.30585H1.72156C1.57996 7.30569 1.44375 7.25147 1.34078 7.15426C1.23781 7.05705 1.17585 6.92419 1.16755 6.78282C1.15925 6.64146 1.20525 6.50226 1.29613 6.39367C1.38702 6.28508 1.51595 6.21529 1.65656 6.19857L1.72156 6.19468H7.17185C6.86223 6.51679 6.61563 6.89356 6.44348 7.30585ZM1.72156 5.08351C1.57996 5.08335 1.44375 5.02913 1.34078 4.93192C1.23781 4.83471 1.17585 4.70185 1.16755 4.56048C1.15925 4.41912 1.20525 4.27992 1.29613 4.17133C1.38702 4.06274 1.51595 3.99295 1.65656 3.97623L1.72156 3.97234H11.7221C11.8637 3.9725 11.9999 4.02672 12.1029 4.12393C12.2058 4.22114 12.2678 4.354 12.2761 4.49536C12.2844 4.63673 12.2384 4.77593 12.1475 4.88452C12.0566 4.99311 11.9277 5.0629 11.7871 5.07962L11.7221 5.08351H1.72156ZM11.7221 1.75H1.72156L1.65656 1.75389C1.51595 1.77061 1.38702 1.8404 1.29613 1.94899C1.20525 2.05758 1.15925 2.19678 1.16755 2.33815C1.17585 2.47951 1.23781 2.61237 1.34078 2.70958C1.44375 2.80679 1.57996 2.86101 1.72156 2.86117H11.7221L11.7871 2.85728C11.9277 2.84056 12.0566 2.77077 12.1475 2.66218C12.2384 2.55359 12.2844 2.41439 12.2761 2.27302C12.2678 2.13166 12.2058 1.9988 12.1029 1.90159C11.9999 1.80438 11.8637 1.75016 11.7221 1.75Z" fill="#003882"/>
+          </svg>
+          
+          <div
+            class="justify-start text-sky-900 text-sm font-medium font-sans leading-none"
+          >
+            Tasks(4)
+          </div>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12.6779 4.98899L7.37516 10.2918C7.32591 10.3411 7.26743 10.3802 7.20305 10.4069C7.13868 10.4335 7.06968 10.4473 6.99999 10.4473C6.9303 10.4473 6.8613 10.4335 6.79693 10.4069C6.73255 10.3802 6.67407 10.3411 6.62482 10.2918L1.32206 4.98899C1.22256 4.88949 1.16666 4.75454 1.16666 4.61382C1.16666 4.47311 1.22256 4.33815 1.32206 4.23865C1.42156 4.13915 1.55651 4.08325 1.69723 4.08325C1.83794 4.08325 1.9729 4.13915 2.0724 4.23865L6.99999 9.16691L11.9276 4.23865C11.9768 4.18938 12.0353 4.1503 12.0997 4.12364C12.1641 4.09698 12.2331 4.08325 12.3028 4.08325C12.3724 4.08325 12.4414 4.09698 12.5058 4.12364C12.5702 4.1503 12.6287 4.18938 12.6779 4.23865C12.7272 4.28792 12.7663 4.34641 12.7929 4.41078C12.8196 4.47515 12.8333 4.54415 12.8333 4.61382C12.8333 4.6835 12.8196 4.75249 12.7929 4.81686C12.7663 4.88124 12.7272 4.93973 12.6779 4.98899Z" fill="#003882"/>
+              </svg>
+              
+        </div>
+
+        <div
+          data-lead-icon="false"
+          data-size="medium"
+          data-state="Default"
+          data-text="true"
+          data-trail-icon="false"
+          data-type="main"
+          class="px-4 py-3 bg-gray-300 rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-center items-center gap-2 overflow-hidden"
+        >
+          <div
+            class="justify-start text-slate-500 text-sm font-medium font-sans leading-none"
+          >
+            Email Job
+          </div>
+        </div>
+
+        <div
+          data-lead-icon="false"
+          data-size="medium"
+          data-state="Default"
+          data-text="true"
+          data-trail-icon="false"
+          data-type="main"
+          class="px-4 py-3 bg-white rounded outline outline-1 outline-offset-[-1px] outline-white inline-flex justify-center items-center gap-2 overflow-hidden"
+        >
+          <div
+            class="justify-start text-sky-900 text-sm font-medium font-sans leading-none"
+          >
+            Print Job Sheet
+          </div>
+        </div>
+          </div>
+
+          
+        </div>
+      </div>
+      <div class="flex"></div>
+    </header>
+<!-- MAIN -->
+<main class="flex px-4 py-6 gap-4">
+    <div class="flex flex-col">
+        <div class="p-4 bg-gray-100 rounded flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+              <div class="w-5 h-5 bg-violet-800"></div>
+              <div class="text-neutral-700 text-lg font-semibold">Inquiry</div>
+            </div>
+  
+            <div class="w-full sm:w-72">
+              <button class="w-full px-4 py-3 bg-white rounded border border-gray-300 inline-flex items-center justify-between">
+                <span class="text-neutral-700 text-sm font-medium">Allocate To Service Provider</span>
+                <div class="w-3.5 h-3.5 bg-slate-500"></div>
+              </button>
+            </div>
+  
+            <div class="flex items-center gap-2">
+              <button class="px-4 py-3 bg-white text-sky-900 rounded border border-sky-900">Deal Info</button>
+              <button class="px-4 py-3 bg-sky-900 text-white rounded border border-sky-900">Edit Inquiry</button>
+            </div>
+        </div>
+        <div>
+            <div class="flex flex-col lg:flex-row gap-6 p-4">
+                <!-- LEFT COLUMN -->
+                <section class="flex-1 flex flex-col gap-4">
+                  <!-- toolbar -->
+                  
+          
+                  <!-- Inquiry Details -->
+                  <div class="p-4 bg-white rounded-lg border border-gray-300 flex flex-col gap-4">
+                    <div class="flex items-start justify-between">
+                      <div class="flex items-center gap-2">
+                        <div class="w-5 h-5 bg-blue-700"></div>
+                        <div class="text-zinc-800 text-base font-medium">Inquiry Details</div>
+                      </div>
+                      <div class="px-2.5 py-0.5 bg-violet-100 rounded-full">
+                        <span class="text-violet-800 text-xs font-medium">New Inquiry</span>
+                      </div>
+                    </div>
+          
+                    <div class="flex flex-col md:flex-row gap-10">
+                      <div class="flex flex-col gap-3">
+                        <div class="flex items-center gap-2 text-sm">
+                          <span class="text-neutral-600">Work Order No:</span>
+                          <span class="text-blue-700 text-base">#3582203</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm">
+                          <span class="text-neutral-600">Job Date:</span>
+                          <span class="text-zinc-800 font-medium">15 May, 2020, 9:00 am</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm">
+                          <span class="text-neutral-600">Job Taken By:</span>
+                          <span class="text-zinc-800 font-medium">Susan Bourne</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm">
+                          <span class="text-neutral-600">Entered By:</span>
+                          <span class="text-zinc-800 font-medium">Vernon</span>
+                        </div>
+                      </div>
+          
+                      <div class="flex flex-col gap-3">
+                        <div class="flex items-center gap-2 text-sm">
+                          <span class="text-neutral-600">Source:</span>
+                          <span class="text-zinc-800 font-medium">Phone Call</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm">
+                          <span class="text-neutral-600">Type:</span>
+                          <span class="text-zinc-800 font-medium">Service request or Quote</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm">
+                          <span class="text-neutral-600">Service:</span>
+                          <span class="text-zinc-800 font-medium">Wasp Removal</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-sm">
+                          <span class="text-neutral-600">Work Requested By:</span>
+                          <span class="text-zinc-800 font-medium">Jan Doherty</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+          
+                  <!-- Resident’s Feedback -->
+                  <div class="p-4 bg-white rounded-lg border border-gray-300 flex flex-col gap-4">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-2">
+                        <div class="w-5 h-5 bg-blue-700"></div>
+                        <div class="text-zinc-800 text-base font-medium">Resident’s Feedback</div>
+                      </div>
+                      <button class="inline-flex items-center gap-1 text-blue-700 text-xs">
+                        <span>View Photos</span>
+                        <div class="w-3.5 h-3.5 bg-blue-700"></div>
+                      </button>
+                    </div>
+          
+                    <div class="flex flex-col gap-4">
+                      <div class="flex flex-wrap gap-x-16 gap-y-3">
+                        <div class="flex flex-col gap-1">
+                          <div class="text-neutral-600 text-sm">Animal</div>
+                          <div class="text-zinc-800 text-sm font-medium">Possum</div>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                          <div class="text-neutral-600 text-sm">Location</div>
+                          <div class="text-zinc-800 text-sm font-medium">Upper Ceiling</div>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                          <div class="text-neutral-600 text-sm">Noises</div>
+                          <div class="text-zinc-800 text-sm font-medium">Hissing</div>
+                        </div>
+                      </div>
+          
+                      <div class="flex flex-wrap gap-6">
+                        <div class="flex flex-col gap-1">
+                          <div class="text-neutral-600 text-sm">Job Required By</div>
+                          <div class="text-zinc-800 text-sm font-medium">15 May, 2020</div>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                          <div class="text-neutral-600 text-sm">Times</div>
+                          <div class="text-zinc-800 text-sm font-medium">Early Morning</div>
+                        </div>
+                      </div>
+          
+                      <div class="flex flex-col gap-1">
+                        <div class="text-sky-900 text-sm">Client Notes</div>
+                        <p class="text-zinc-800 text-sm">
+                          Client prefers communication via email rather than phone calls. Confirm before scheduling a visit. Previous service completed 3 months ago. Confirm before scheduling a visit. Previous service completed 3 months ago.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+          
+                  <!-- Property Contacts (cards in flex-wrap; no absolute/relative) -->
+                  <div class="p-4 bg-white rounded-lg border border-gray-300 flex flex-col gap-4">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-2">
+                        <div class="w-5 h-5 bg-blue-700"></div>
+                        <div class="text-zinc-800 text-base font-medium">Property Contacts</div>
+                      </div>
+                      <button class="inline-flex items-center gap-1 text-blue-700 text-xs">
+                        <div class="w-3.5 h-3.5 bg-blue-700"></div>
+                        <span>Add New Contact</span>
+                      </button>
+                    </div>
+          
+                    <div class="flex flex-wrap gap-4">
+                      <!-- card -->
+                      <div class="w-full sm:w-60 bg-white rounded border border-gray-300 flex flex-col">
+                        <div class="px-3 pt-3 pb-2 flex flex-col gap-2">
+                          <div class="flex items-center gap-1.5">
+                            <div class="w-5 h-4 bg-yellow-400"></div>
+                            <div class="text-neutral-700 text-sm font-medium">Owner</div>
+                          </div>
+          
+                          <div class="flex flex-col gap-2">
+                            <div class="flex items-center gap-1">
+                              <div class="w-3.5 h-3.5 bg-sky-900"></div>
+                              <div class="text-neutral-700 text-xs">Ron Potter</div>
+                            </div>
+                            <div class="flex items-center gap-1">
+                              <div class="w-3.5 h-3.5 bg-sky-900"></div>
+                              <div class="text-neutral-700 text-xs">+61 400123123</div>
+                            </div>
+                            <div class="flex items-center gap-1">
+                              <div class="w-3.5 h-2 bg-sky-900"></div>
+                              <div class="text-neutral-700 text-xs">ron@example.com</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="grid grid-cols-2 border-t border-gray-300">
+                          <button class="px-4 py-2">✎</button>
+                          <button class="px-4 py-2 border-l border-gray-300 text-red-600">🗑</button>
+                        </div>
+                      </div>
+          
+                      <!-- card -->
+                      <div class="w-full sm:w-60 bg-white rounded border border-gray-300 flex flex-col">
+                        <div class="px-3 pt-3 pb-2 flex flex-col gap-2">
+                          <div class="flex items-center gap-1.5">
+                            <div class="w-5 h-4 bg-yellow-400"></div>
+                            <div class="text-neutral-700 text-sm font-medium">Property Manager</div>
+                          </div>
+          
+                          <div class="flex flex-col gap-2">
+                            <div class="flex items-center gap-1">
+                              <div class="w-3.5 h-3.5 bg-sky-900"></div>
+                              <div class="text-neutral-700 text-xs">Devon Lane</div>
+                            </div>
+                            <div class="flex items-center gap-1">
+                              <div class="w-3.5 h-3.5 bg-sky-900"></div>
+                              <div class="text-neutral-700 text-xs">+61 400123123</div>
+                            </div>
+                            <div class="flex items-center gap-1">
+                              <div class="w-3.5 h-2 bg-sky-900"></div>
+                              <div class="text-neutral-700 text-xs">devon@example.com</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="grid grid-cols-2 border-t border-gray-300">
+                          <button class="px-4 py-2">✎</button>
+                          <button class="px-4 py-2 border-l border-gray-300 text-red-600">🗑</button>
+                        </div>
+                      </div>
+          
+                      <!-- card -->
+                      <div class="w-full sm:w-60 bg-white rounded border border-gray-300 flex flex-col">
+                        <div class="px-3 pt-3 pb-2 flex flex-col gap-2">
+                          <div class="flex items-center gap-1.5">
+                            <div class="w-4 h-4 border border-slate-500"></div>
+                            <div class="text-neutral-700 text-sm font-medium">Property Manager</div>
+                          </div>
+          
+                          <div class="flex flex-col gap-2">
+                            <div class="flex items-center gap-1">
+                              <div class="w-3.5 h-3.5 bg-sky-900"></div>
+                              <div class="text-neutral-700 text-xs">Ron Potter</div>
+                            </div>
+                            <div class="flex items-center gap-1">
+                              <div class="w-3.5 h-3.5 bg-sky-900"></div>
+                              <div class="text-neutral-700 text-xs">+61 400123123</div>
+                            </div>
+                            <div class="flex items-center gap-1">
+                              <div class="w-3.5 h-2 bg-sky-900"></div>
+                              <div class="text-neutral-700 text-xs">ron@example.com</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="grid grid-cols-2 border-t border-gray-300">
+                          <button class="px-4 py-2">✎</button>
+                          <button class="px-4 py-2 border-l border-gray-300 text-red-600">🗑</button>
+                        </div>
+                      </div>
+          
+                      <!-- card -->
+                      <div class="w-full sm:w-60 bg-white rounded border border-gray-300 flex flex-col">
+                        <div class="px-3 pt-3 pb-2 flex flex-col gap-2">
+                          <div class="flex items-center gap-1.5">
+                            <div class="w-4 h-4 border border-slate-500"></div>
+                            <div class="text-neutral-700 text-sm font-medium">Resident</div>
+                          </div>
+          
+                          <div class="flex flex-col gap-2">
+                            <div class="flex items-center gap-1">
+                              <div class="w-3.5 h-3.5 bg-sky-900"></div>
+                              <div class="text-neutral-700 text-xs">Devon Lane</div>
+                            </div>
+                            <div class="flex items-center gap-1">
+                              <div class="w-3.5 h-3.5 bg-sky-900"></div>
+                              <div class="text-neutral-700 text-xs">+61 400123123</div>
+                            </div>
+                            <div class="flex items-center gap-1">
+                              <div class="w-3.5 h-2 bg-sky-900"></div>
+                              <div class="text-neutral-700 text-xs">devon@example.com</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="grid grid-cols-2 border-t border-gray-300">
+                          <button class="px-4 py-2">✎</button>
+                          <button class="px-4 py-2 border-l border-gray-300 text-red-600">🗑</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+          
+                <!-- RIGHT COLUMN -->
+                <aside class="w-full lg:w-96 flex flex-col gap-4">
+                  <!-- Client Information -->
+                  <div class="p-4 bg-white rounded-lg border border-gray-300 flex flex-col gap-4">
+                    <div class="flex items-center gap-2">
+                      <div class="w-5 h-5 bg-blue-700"></div>
+                      <div class="text-zinc-800 text-base font-medium">Client Information</div>
+                    </div>
+          
+                    <div class="flex flex-col gap-4">
+                      <!-- Job Email -->
+                      <div class="flex flex-col gap-1">
+                        <div class="text-neutral-700 text-sm">Job Email</div>
+                        <div class="flex items-center justify-between px-2.5 py-2 bg-white rounded border border-gray-300">
+                          <div class="text-neutral-700 text-sm">devon@jobmail.com</div>
+                          <div class="w-4 h-4 bg-slate-500"></div>
+                        </div>
+                      </div>
+          
+                      <!-- Account Email -->
+                      <div class="flex flex-col gap-1">
+                        <div class="text-neutral-700 text-sm">Account Email</div>
+                        <div class="flex items-center justify-between px-2.5 py-2 bg-white rounded border border-gray-300">
+                          <div class="text-neutral-700 text-sm">devon@accountmail.com</div>
+                          <div class="w-4 h-4 bg-slate-500"></div>
+                        </div>
+                      </div>
+          
+                      <!-- Property Name -->
+                      <div class="flex items-center justify-between">
+                        <div class="text-neutral-600 text-sm">Property Name:</div>
+                        <div class="text-blue-700 text-sm font-medium text-right">NSW 2482 Mullumbimby, 13 Parakeet Place</div>
+                      </div>
+                    </div>
+                  </div>
+          
+                  <!-- Pop Up Comment -->
+                  <div class="p-4 bg-white rounded-lg border border-gray-300 flex flex-col gap-2">
+                    <div class="flex items-center justify-between">
+                      <div class="inline-flex items-center gap-2">
+                        <div class="text-sky-900 text-sm">Pop Up Comment</div>
+                        <div class="w-3.5 h-3.5 bg-blue-700"></div>
+                      </div>
+                      <div class="w-5 h-5 bg-red-100 rounded-full flex items-center justify-center">
+                        <div class="w-3.5 h-3.5 bg-red-600"></div>
+                      </div>
+                    </div>
+                    <p class="text-zinc-800 text-sm">Client prefers communication via email rather than phone calls.</p>
+                  </div>
+          
+                  <!-- Property Address -->
+                  <div class="p-4 bg-white rounded-lg border border-gray-300 flex flex-col gap-4">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-2">
+                        <div class="w-5 h-5 bg-blue-700"></div>
+                        <div class="text-zinc-800 text-base font-medium">Property Address</div>
+                      </div>
+                      <button class="inline-flex items-center gap-1 text-blue-700 text-xs">
+                        <span>View on Map</span>
+                        <div class="w-3.5 h-3.5 bg-blue-700"></div>
+                      </button>
+                    </div>
+          
+                    <div class="flex flex-col gap-6">
+                      <div class="flex flex-wrap gap-8">
+                        <div class="flex flex-col gap-1">
+                          <div class="text-neutral-600 text-sm">Lot Number</div>
+                          <div class="text-zinc-800 text-sm font-medium">50</div>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                          <div class="text-neutral-600 text-sm">Unit Number</div>
+                          <div class="text-zinc-800 text-sm font-medium">24</div>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                          <div class="text-neutral-600 text-sm">Address</div>
+                          <div class="text-zinc-800 text-sm font-medium">31 Blvd</div>
+                        </div>
+                      </div>
+          
+                      <div class="flex flex-wrap gap-8">
+                        <div class="flex flex-col gap-1">
+                          <div class="text-neutral-600 text-sm">Suburb/ Town</div>
+                          <div class="text-zinc-800 text-sm font-medium">Griffin</div>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                          <div class="text-neutral-600 text-sm">Postal Code</div>
+                          <div class="text-zinc-800 text-sm font-medium">4503</div>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                          <div class="text-neutral-600 text-sm">State</div>
+                          <div class="text-zinc-800 text-sm font-medium">NSW</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+          
+                  <!-- Property Description -->
+                  <div class="p-4 bg-white rounded-lg border border-gray-300 flex flex-col gap-4">
+                    <div class="flex items-center gap-2">
+                      <div class="w-5 h-5 bg-blue-700"></div>
+                      <div class="text-zinc-800 text-base font-medium">Property Description</div>
+                    </div>
+          
+                    <div class="flex flex-col gap-3">
+                      <div class="flex items-center gap-2 text-sm">
+                        <span class="text-neutral-600">Property type:</span>
+                        <span class="text-zinc-800 font-medium">Commercial</span>
+                      </div>
+                      <div class="flex items-center gap-2 text-sm">
+                        <span class="text-neutral-600">Building type:</span>
+                        <span class="text-zinc-800 font-medium">Warehouse</span>
+                      </div>
+          
+                      <div class="flex flex-wrap gap-8">
+                        <div class="flex flex-col gap-1">
+                          <div class="text-neutral-600 text-sm">Storeys</div>
+                          <div class="text-zinc-800 text-sm font-medium">3</div>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                          <div class="text-neutral-600 text-sm">Building Age</div>
+                          <div class="text-zinc-800 text-sm font-medium">5 Years</div>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                          <div class="text-neutral-600 text-sm">Manhole</div>
+                          <div class="text-zinc-800 text-sm font-medium">Yes</div>
+                        </div>
+                      </div>
+          
+                      <div class="flex items-start gap-2 text-sm">
+                        <span class="text-neutral-600">Reno:</span>
+                        <span class="text-zinc-800">Kitchen extended.</span>
+                      </div>
+                      <div class="flex items-start gap-2 text-sm">
+                        <span class="text-neutral-600">Access:</span>
+                        <span class="text-zinc-800">Jan Doherty to meet onsite for access.</span>
+                      </div>
+                    </div>
+                  </div>
+                </aside>
+              </div>
+        </div>
+    </div>
+
+    <div class="max-w-md mx-auto space-y-4 text-slate-700">
+        <!-- Quote Details Card -->
+        <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+          <!-- Header -->
+          <div class="flex items-center gap-2 rounded-t-xl bg-sky-100 px-4 py-3">
+            <svg class="h-4 w-4 text-sky-700" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M20 2H4a2 2 0 0 0-2 2v15.586A1 1 0 0 0 3.707 20L6 17.707V4h14a2 2 0 0 0 0-4Z"/>
+              <path d="M8 8h8M8 12h5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+            <span class="font-semibold text-slate-800">Quote Details</span>
+          </div>
+      
+          <!-- Body -->
+          <div class="p-6">
+            <!-- Illustration -->
+            <div class="flex flex-col items-center justify-center py-10">
+              <svg class="w-52 h-40" viewBox="0 0 320 180" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <!-- ground line -->
+                <path d="M60 132h200" stroke="#98A2B3" stroke-width="4" stroke-linecap="round"/>
+                <!-- clock shadow -->
+                <ellipse cx="140" cy="130" rx="66" ry="6" fill="#E2E8F0"/>
+                <!-- clock body -->
+                <circle cx="136" cy="100" r="48" fill="#1F365F"/>
+                <circle cx="136" cy="100" r="40" fill="#F8FAFC" stroke="#1F365F" stroke-width="3"/>
+                <!-- hands -->
+                <path d="M136 100l-18-10M136 100l10-22" stroke="#1F365F" stroke-width="4" stroke-linecap="round"/>
+                <!-- ticks -->
+                <g stroke="#1F365F" stroke-linecap="round">
+                  <path d="M136 62v6M136 132v-6M98 100h6M168 100h6M113 75l4 4M159 121l4 4M159 79l4-4M113 125l4-4"/>
+                </g>
+                <!-- leaf-ish accent -->
+                <path d="M88 116c-10-18 12-18 26-10-9 14-18 18-26 10Z" fill="#0F2C4E"/>
+                <!-- paper -->
+                <rect x="182" y="78" width="58" height="64" rx="4" fill="#fff" stroke="#98A2B3" stroke-width="2"/>
+                <path d="M230 78l10 10v54" fill="#D0E2FF"/>
+                <text x="188" y="95" font-size="10" font-family="ui-sans-serif,system-ui" fill="#0F2C4E">QUOTE</text>
+                <g stroke="#98A2B3" stroke-width="2" stroke-linecap="round">
+                  <path d="M188 104h44M188 114h44M188 124h28"/>
+                </g>
+              </svg>
+      
+              <p class="mt-6 text-center text-lg text-slate-800">
+                Waiting for a quote to be created.
+              </p>
+      
+              <button class="mt-4 inline-flex items-center gap-2 rounded-md border border-slate-300 px-4 py-2 text-slate-700 hover:bg-slate-50">
+                <span class="grid h-5 w-5 place-items-center rounded border border-slate-300">+</span>
+                <span class="text-sm font-medium">Create Quote</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      
+        <!-- Recommendations Card -->
+        <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+          <div class="flex items-center justify-between px-4 pt-4">
+            <h3 class="text-sm font-medium text-slate-800">Recommendations</h3>
+            <a href="#" class="inline-flex items-center gap-1 text-xs font-medium text-sky-700 hover:underline">
+              <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M14.69 3.16a1.5 1.5 0 0 1 2.12 2.12L8.4 13.69a1.5 1.5 0 0 1-.61.37l-3.07.92a.5.5 0 0 1-.62-.62l.92-3.07a1.5 1.5 0 0 1 .37-.61l8.3-8.3Z"/></svg>
+              Edit Notes
+            </a>
+          </div>
+          <div class="px-4 pb-4 pt-2 text-sm leading-relaxed text-slate-700">
+            Client prefers communication via email rather than phone calls. Confirm before scheduling a visit.
+            Previous service completed 3 months ago. Previous service completed 3 months ago.
+          </div>
+        </div>
+      
+        <!-- Memos Card -->
+        <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+          <div class="flex items-center justify-between px-4 pt-4">
+            <h3 class="text-sm font-medium text-slate-800">Memos</h3>
+            <a href="#" class="text-xs font-medium text-sky-700 hover:underline">View Memo</a>
+          </div>
+      
+          <div class="px-4 pb-4 pt-2">
+            <div class="flex items-start gap-3">
+              <div class="grid h-8 w-8 place-items-center rounded-full bg-amber-100 text-2xl">🧑‍💻</div>
+              <div class="flex-1">
+                <div class="flex items-center gap-2 text-sm">
+                  <span class="font-medium text-slate-800">PTPM Admin</span>
+                  <span class="text-slate-400">7 hours ago</span>
+                </div>
+                <p class="mt-1 text-sm text-slate-700">
+                  Lorem ipsum dolor sit amet consectetur. Quis at commodo aliquam commodo in scelerisque.
+                </p>
+                <a href="#" class="mt-2 inline-block text-xs font-medium text-sky-700 hover:underline">Reply</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      
+    </div>
+    
+    <div class="max-w-md mx-auto space-y-5 relative text-slate-700">
+
+        <!-- Card: Client Job Invoice -->
+        <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+          <!-- Header -->
+          <div class="flex items-center gap-2 rounded-t-xl bg-sky-100 px-4 py-3">
+            <!-- briefcase -->
+            <svg class="h-5 w-5 text-sky-700" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M9 6V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1h3a2 2 0 0 1 2 2v3H4V8a2 2 0 0 1 2-2h3Zm2-1h2v1h-2V5Z"/>
+              <path d="M4 12h16v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-6Zm6 2h4a1 1 0 1 1 0 2h-4a1 1 0 1 1 0-2Z"/>
+            </svg>
+            <span class="font-semibold text-slate-800">Client Job Invoice</span>
+          </div>
+      
+          <!-- Body -->
+          <div class="px-6 pb-8 pt-10">
+            <div class="flex flex-col items-center justify-center">
+              <!-- simple calendar scene -->
+              <svg class="h-36 w-60" viewBox="0 0 320 180" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M50 140h220" stroke="#9AA4B2" stroke-width="3" stroke-linecap="round"/>
+                <rect x="90" y="60" width="140" height="70" rx="6" fill="#E6EEF9" stroke="#1F365F" stroke-width="3"/>
+                <rect x="90" y="60" width="140" height="20" rx="6" fill="#244C84"/>
+                <g fill="#F8FAFC" stroke="#1F365F" stroke-width="3">
+                  <rect x="110" y="90" width="24" height="18" rx="3"/>
+                  <rect x="142" y="90" width="24" height="18" rx="3"/>
+                  <rect x="174" y="90" width="24" height="18" rx="3"/>
+                  <rect x="206" y="90" width="24" height="18" rx="3"/>
+                </g>
+                <!-- person + desk -->
+                <rect x="64" y="117" width="32" height="3" rx="1.5" fill="#1F365F"/>
+                <rect x="224" y="117" width="32" height="3" rx="1.5" fill="#1F365F"/>
+                <circle cx="140" cy="118" r="6" fill="#1F365F"/>
+                <rect x="132" y="110" width="16" height="14" rx="2" fill="#1F365F"/>
+                <rect x="222" y="102" width="22" height="12" rx="2" fill="#EB5757"/>
+              </svg>
+      
+              <p class="mt-6 text-center text-lg text-slate-800">
+                No job scheduled yet.
+              </p>
+            </div>
+          </div>
+        </div>
+      
+        <!-- Card: Service Provider Payment -->
+        <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+          <!-- Header -->
+          <div class="flex items-center gap-2 rounded-t-xl bg-sky-100 px-4 py-3">
+            <!-- card icon -->
+            <svg class="h-5 w-5 text-sky-700" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M3 6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2H3V6Z"/>
+              <path d="M3 10h20v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8Zm4 5h6a1 1 0 1 1 0 2H7a1 1 0 1 1 0-2Z"/>
+            </svg>
+            <span class="font-semibold text-slate-800">Service Provider Payment</span>
+          </div>
+      
+          <!-- Body -->
+          <div class="px-6 pb-10 pt-8">
+            <div class="flex flex-col items-center justify-center">
+              <!-- desk scene -->
+              <svg class="h-36 w-60" viewBox="0 0 320 180" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M60 140h200" stroke="#9AA4B2" stroke-width="3" stroke-linecap="round"/>
+                <rect x="112" y="76" width="96" height="56" rx="6" fill="#F8FAFC" stroke="#1F365F" stroke-width="3"/>
+                <rect x="126" y="88" width="68" height="6" rx="3" fill="#D0DBEA"/>
+                <rect x="126" y="100" width="68" height="6" rx="3" fill="#D0DBEA"/>
+                <rect x="126" y="112" width="46" height="6" rx="3" fill="#D0DBEA"/>
+                <rect x="88" y="122" width="144" height="6" rx="3" fill="#1F365F"/>
+                <!-- person -->
+                <circle cx="214" cy="112" r="10" fill="#1F365F"/>
+                <path d="M205 120c12-8 28-8 40 0v16h-40v-16Z" fill="#244C84"/>
+                <rect x="90" y="126" width="12" height="10" rx="2" fill="#244C84"/>
+              </svg>
+      
+              <p class="mt-6 text-center text-lg text-slate-800">
+                No payment recorded yet.
+              </p>
+            </div>
+          </div>
+        </div>
+      
+        <!-- Floating Action Button with notification -->
+        <button class="absolute -bottom-2 right-3 h-14 w-14 rounded-full bg-sky-800 text-white shadow-lg grid place-items-center">
+          <!-- document/edit icon -->
+          <svg class="h-7 w-7" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M7 3a2 2 0 0 0-2 2v14l3-2 3 2 3-2 3 2V7l-5-4H7Zm7 4h-3V4l3 3Z"/>
+          </svg>
+          <span class="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500 ring-2 ring-white"></span>
+        </button>
+      
+      </div>
+      
+    
+  </main>
+  </body>
+</html>
