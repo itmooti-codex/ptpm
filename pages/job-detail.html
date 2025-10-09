@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module" src="../js/app.js" defer></script>
   </head>
   <body>
     <header>
@@ -233,7 +234,7 @@
             </div>
   
             <div class="flex items-center gap-2">
-              <button class="px-4 py-3 bg-white text-sky-900 rounded border border-sky-900">Deal Info</button>
+              <button id="deal-info-btn"  class="px-4 py-3 bg-white text-sky-900 rounded border border-sky-900">Deal Info</button>
               <button class="px-4 py-3 bg-sky-900 text-white rounded border border-sky-900">Edit Inquiry</button>
             </div>
         </div>
@@ -784,7 +785,10 @@
               </p>
       
               <button class="mt-4 inline-flex items-center gap-2 rounded-md border border-slate-300 px-4 py-2 text-slate-700 hover:bg-slate-50">
-                <span class="grid h-5 w-5 place-items-center rounded border border-slate-300">+</span>
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M7.89744 2.06406C7.89744 1.56767 7.4964 1.16663 7 1.16663C6.50361 1.16663 6.10257 1.56767 6.10257 2.06406V6.10252H2.06411C1.56771 6.10252 1.16667 6.50356 1.16667 6.99996C1.16667 7.49635 1.56771 7.89739 2.06411 7.89739H6.10257V11.9359C6.10257 12.4323 6.50361 12.8333 7 12.8333C7.4964 12.8333 7.89744 12.4323 7.89744 11.9359V7.89739H11.9359C12.4323 7.89739 12.8333 7.49635 12.8333 6.99996C12.8333 6.50356 12.4323 6.10252 11.9359 6.10252H7.89744V2.06406Z" fill="#636D88"/>
+                  </svg>
+                  
                 <span class="text-sm font-medium">Create Quote</span>
               </button>
             </div>
@@ -795,13 +799,13 @@
         <div class="rounded-xl border border-slate-200 bg-white shadow-sm flex-1">
           <div class="flex items-center justify-between px-4 pt-4">
             <h3 class="text-sm font-medium text-slate-800">Recommendations</h3>
-            <a href="#" class="inline-flex items-center gap-1 text-xs font-medium text-sky-700 hover:underline">
+            <button id="edit-note-btn" class="inline-flex items-center gap-1 text-xs font-medium text-sky-700">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12.5593 4.04694L9.95311 1.44012C9.86644 1.35343 9.76355 1.28467 9.6503 1.23775C9.53705 1.19083 9.41567 1.16669 9.29309 1.16669C9.17051 1.16669 9.04913 1.19083 8.93589 1.23775C8.82264 1.28467 8.71974 1.35343 8.63308 1.44012L1.44027 8.63351C1.35323 8.71986 1.28422 8.82265 1.23725 8.93591C1.19029 9.04917 1.1663 9.17063 1.1667 9.29323V11.9001C1.1667 12.1476 1.26503 12.385 1.44005 12.56C1.61508 12.735 1.85247 12.8334 2.09999 12.8334H4.70681C4.82942 12.8337 4.95088 12.8098 5.06414 12.7628C5.17739 12.7158 5.28018 12.6468 5.36654 12.5598L12.5593 5.36697C12.646 5.2803 12.7148 5.17741 12.7617 5.06416C12.8086 4.95091 12.8328 4.82953 12.8328 4.70695C12.8328 4.58437 12.8086 4.46299 12.7617 4.34975C12.7148 4.2365 12.646 4.1336 12.5593 4.04694ZM4.70681 11.9001H2.09999V9.29323L7.23313 4.1601L9.83995 6.76692L4.70681 11.9001ZM10.4997 6.10661L7.89286 3.50037L9.2928 2.10043L11.8996 4.70666L10.4997 6.10661Z" fill="#0052CC"/>
                 </svg>
                 
               Edit Notes
-            </a>
+            </button>
           </div>
           <div class="px-4 pb-4 pt-2 text-sm leading-relaxed text-slate-700">
             Client prefers communication via email rather than phone calls. Confirm before scheduling a visit.
@@ -813,7 +817,7 @@
         <div class="rounded-xl border border-slate-200 bg-white shadow-sm flex-1">
           <div class="flex items-center justify-between px-4 pt-4">
             <h3 class="text-sm font-medium text-slate-800">Memos</h3>
-            <a href="#" class="text-xs font-medium text-sky-700 hover:underline">View Memo</a>
+            <button id="edit-note-btn" class="text-xs font-medium text-sky-700 hover:underline">View Memo</button>
           </div>
       
           <div class="px-4 pb-4 pt-2">
