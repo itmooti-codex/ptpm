@@ -4,11 +4,11 @@ import { NewEnquiryView } from "./views/new-enquiry.js";
 import { initDashboard } from "./controller/dashboard.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-  initDashboard();
+  // initDashboard();
 
-  // let modal = new NewEnquiryModal();
-  // let view = new NewEnquiryView(modal);
-  // let controller = new NewEnquiryController(modal, view);
+  let modal = new NewEnquiryModal();
+  let view = new NewEnquiryView(modal);
+  let controller = new NewEnquiryController(modal, view);
 
-  // controller.init();
+  controller.init();
 });
