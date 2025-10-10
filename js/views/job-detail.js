@@ -734,7 +734,6 @@ export class JobDetailView {
   }
 
   createTasksModal(tasks) {
-    // ---- Demo data (used if none passed) ----
     const demo = [
       {
         title: "Field Inspection and building inspection",
@@ -777,7 +776,6 @@ export class JobDetailView {
       Blocked: "bg-red-100 text-red-700",
     };
 
-    // ---- Wrapper ----
     const modalWrapper = document.createElement("div");
     modalWrapper.id = "tasksModalWrapper";
     modalWrapper.className =

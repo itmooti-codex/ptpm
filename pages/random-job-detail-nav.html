@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>New Direct Job — Flex + Sidebar CSS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-50 text-gray-800">
+    <!-- HEADER -->
+    <header class="sticky top-0 z-10 bg-[#093a7a] text-white">
+      <div class="mx-auto max-w-7xl px-4 py-3 flex items-center gap-3">
+        <h1 class="text-lg font-semibold flex-1">New Direct Job</h1>
+        <button
+          class="px-3 py-2 rounded-lg bg-white/10 hover:bg-white/15 border border-white/20 text-sm"
+        >
+          Cancel
+        </button>
+        <button
+          class="px-3 py-2 rounded-lg bg-white/10 hover:bg-white/15 border border-white/20 text-sm"
+        >
+          Reset Form
+        </button>
+        <button
+          class="px-3 py-2 rounded-lg bg-white/10 hover:bg-white/15 border border-white/20 text-sm"
+        >
+          Save draft
+        </button>
+        <button
+          id="backBtn"
+          class="px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          ← Back
+        </button>
+        <button
+          id="nextBtn"
+          class="px-3 py-2 rounded-lg bg-white text-[#093a7a] font-semibold text-sm flex items-center gap-2"
+        >
+          Next: <span id="nextLabel">Add Activities</span> →
+        </button>
+      </div>
+    </header>
+
+    <!-- MAIN (FLEX, not grid) -->
+    <main class="mx-auto max-w-7xl px-4 py-6 flex gap-6">
+      <!-- SIDEBAR (uses your provided CSS classes) -->
+      <aside class="w-64">
+        <div data-property-1="extendedStep1" class="w-64">
+          <div
+            id="sidebar"
+            class="w-64 h-[920px] pl-4 pr-16 py-6 bg-white shadow-[0px_4px_6px_-4px_rgba(0,0,0,0.10)] shadow-lg inline-flex flex-col justify-start items-start gap-6 overflow-hidden"
+          >
+            <!-- top icon (static, optional) -->
+            <div class="inline-flex justify-start items-center gap-10">
+              <div
+                class="p-3 bg-neutral-100 rounded-lg flex justify-start items-center gap-2"
+              >
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21Z"
+                    stroke="#414042"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M7.25 10L5.5 12L7.25 14M9.5 21V3"
+                    stroke="#414042"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </div>
+            </div>
+
+            <!-- Steps get injected here -->
+            <div
+              id="sidebar-steps"
+              class="flex flex-col justify-start items-start gap-2 w-full"
+            ></div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- CONTENT (flex) -->
+      <section class="flex-1 min-w-0">
+        <!-- Dynamic pane -->
+        <div
+          id="content"
+          class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm min-h-[520px]"
+        ></div>
+      </section>
+    </main>
+
+    <script>
+      /* ============== DATA (drives everything) ============== */
+      const SECTIONS = [
+        {
+          id: "job-information",
+          label: "Job Information",
+          icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M10.29 21.961H9.39C6.142 21.961 4.517 21.961 3.508 20.936C2.499 19.911 2.5 18.261 2.5 14.961V9.961C2.5 6.661 2.5 5.011 3.51 3.987C4.517 2.96 6.142 2.96 9.39 2.96H12.343C15.592 2.96 17.49 3.016 18.499 4.04C19.509 5.066 19.499 6.66 19.499 9.96V11.147M15.945 2V4M10.945 2V4M5.945 2V4M7 15H11M7 10H15" stroke="#0052CC" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path opacity="0.93" d="M20.7601 14.8789C19.8541 13.8639 19.3111 13.9249 18.7081 14.1059C18.2851 14.1659 16.8371 15.8559 16.2331 16.3959C15.2421 17.3739 14.2461 18.3819 14.1811 18.5139C13.9931 18.8189 13.8191 19.3589 13.7341 19.9629C13.5771 20.8689 13.3511 21.8879 13.6371 21.9759C13.9231 22.0639 14.7241 21.8959 15.6291 21.7629C16.2331 21.6529 16.6551 21.5329 16.9571 21.3519C17.3801 21.0979 18.1641 20.2049 19.5171 18.8759C20.3641 17.9829 21.1821 17.3659 21.4241 16.7629C21.6651 15.8569 21.3041 15.3739 20.7601 14.8789Z" stroke="#0052CC" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      `,
+        },
+        {
+          id: "add-activities",
+          label: "Add Activities",
+          icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M2 12C2 7.286 2 4.929 3.464 3.464C4.93 2 7.286 2 12 2C16.714 2 19.071 2 20.535 3.464C22 4.93 22 7.286 22 12C22 16.714 22 19.071 20.535 20.535C19.072 22 16.714 22 12 22C7.286 22 4.929 22 3.464 20.535C2 19.072 2 16.714 2 12Z" stroke="#414042" stroke-width="1.5"/>
+                      <path d="M6 15.8L7.143 17L10 14M6 8.8L7.143 10L10 7" stroke="#414042" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M13 9H18M13 16H18" stroke="#414042" stroke-width="1.5" stroke-linecap="round"/>
+                      </svg>
+                      `,
+        },
+        {
+          id: "materials",
+          label: "Materials",
+          icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M10.0501 10.6069L2.98013 17.6769C2.79418 17.8626 2.64666 18.0832 2.54601 18.326C2.44536 18.5688 2.39355 18.8291 2.39355 19.0919C2.39355 19.3547 2.44536 19.615 2.54601 19.8578C2.64666 20.1006 2.79418 20.3211 2.98013 20.5069C3.35518 20.8818 3.8638 21.0925 4.39413 21.0925C4.92446 21.0925 5.43307 20.8818 5.80813 20.5069L12.8781 13.4349M17.1931 13.7999L21.0711 17.6779C21.4461 18.0529 21.6567 18.5616 21.6567 19.0919C21.6567 19.6222 21.4461 20.1308 21.0711 20.5059C20.6961 20.8808 20.1875 21.0915 19.6571 21.0915C19.1268 21.0915 18.6182 20.8808 18.2431 20.5059L12.0341 14.2979M6.73313 5.90389L4.61013 6.60989L2.49013 3.07489L3.90413 1.66089L7.44013 3.78189L6.73313 5.90389ZM6.73313 5.90389L9.56313 8.73389" stroke="#414042" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M10.0502 10.607C9.20617 8.45396 9.37117 5.62896 11.1112 3.88896C12.8512 2.14896 16.0612 1.76796 17.8282 2.82896L14.7882 5.86896L14.5052 8.97996L17.6162 8.69796L20.6562 5.65696C21.7182 7.42496 21.3362 10.635 19.5962 12.374C17.8562 14.114 15.0322 14.279 12.8792 13.435" stroke="#414042" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      `,
+        },
+        {
+          id: "uploads",
+          label: "Uploads",
+          icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M4 17V19C4 19.5304 4.21071 20.0391 4.58579 20.4142C4.96086 20.7893 5.46957 21 6 21H18C18.5304 21 19.0391 20.7893 19.4142 20.4142C19.7893 20.0391 20 19.5304 20 19V17M7 9L12 4M12 4L17 9M12 4V16" stroke="#414042" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      `,
+        },
+        {
+          id: "invoice",
+          label: "Invoice",
+          icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M20.016 2C18.903 2 18 4.686 18 8H20.016C20.988 8 21.473 8 21.774 7.665C22.074 7.329 22.022 6.887 21.918 6.004C21.64 3.67 20.894 2 20.016 2Z" stroke="#414042" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M18 8.054V18.646C18 20.157 18 20.913 17.538 21.211C16.783 21.697 15.616 20.677 15.029 20.307C14.544 20.001 14.302 19.849 14.033 19.84C13.742 19.83 13.495 19.977 12.971 20.307L11.06 21.512C10.544 21.837 10.287 22 10 22C9.713 22 9.455 21.837 8.94 21.512L7.03 20.307C6.544 20.001 6.302 19.849 6.033 19.84C5.742 19.83 5.495 19.977 4.971 20.307C4.384 20.677 3.217 21.697 2.461 21.211C2 20.913 2 20.158 2 18.646V8.054C2 5.2 2 3.774 2.879 2.887C3.757 2 5.172 2 8 2H20" stroke="#414042" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M10 8C8.895 8 8 8.672 8 9.5C8 10.328 8.895 11 10 11C11.105 11 12 11.672 12 12.5C12 13.328 11.105 14 10 14M10 8C10.87 8 11.612 8.417 11.886 9M10 8V7M10 14C9.13 14 8.388 13.583 8.114 13M10 14V15" stroke="#414042" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      `,
+        },
+      ];
+      const TABS = ["overview", "appointments"];
+
+      let currentSectionIdx = 0;
+      let currentTab = "overview";
+
+      /* ============== DOM refs ============== */
+      const sidebarSteps = document.getElementById("sidebar-steps");
+      const content = document.getElementById("content");
+      const nextBtn = document.getElementById("nextBtn");
+      const backBtn = document.getElementById("backBtn");
+      const nextLabel = document.getElementById("nextLabel");
+
+      function buildStepItem(section, index) {
+        const wrapper = document.createElement("div");
+        wrapper.className = "w-full";
+
+        const row = document.createElement("div");
+        row.className =
+          "inline-flex justify-center items-center gap-2 cursor-pointer select-none";
+        row.setAttribute("data-index", index);
+        row.setAttribute("data-section", section.id);
+
+        const bubble = document.createElement("div");
+        bubble.className =
+          "p-3 bg-neutral-100 rounded-[32px] flex justify-start items-center gap-2 transition-colors";
+
+        // 🔽 icon slot: inject SVG string or fallback outline
+        const iconSlot = document.createElement("span");
+        iconSlot.className =
+          "icon-slot flex items-center justify-center w-6 h-6";
+        iconSlot.innerHTML = section.icon;
+        bubble.appendChild(iconSlot);
+
+        const label = document.createElement("div");
+        label.className =
+          "justify-start text-neutral-700 text-base font-medium leading-none";
+        label.textContent = section.label;
+
+        row.appendChild(bubble);
+        row.appendChild(label);
+        wrapper.appendChild(row);
+
+        if (index < SECTIONS.length - 1) {
+          const connWrap = document.createElement("div");
+          connWrap.className =
+            "pl-6 inline-flex justify-start items-center gap-2";
+          const conn = document.createElement("div");
+          conn.className =
+            "w-6 h-0 origin-top-left rotate-90 outline outline-4 outline-offset-[-2px] outline-neutral-100";
+          connWrap.appendChild(conn);
+          wrapper.appendChild(connWrap);
+        }
+        return wrapper;
+      }
+
+      function renderSidebar() {
+        sidebarSteps.innerHTML = "";
+        SECTIONS.forEach((s, i) => {
+          const node = buildStepItem(s, i);
+          sidebarSteps.appendChild(node);
+        });
+        setSidebarActive(currentSectionIdx);
+      }
+
+      function setSidebarActive(idx) {
+        // deactivate all
+        [...sidebarSteps.querySelectorAll("[data-index]")].forEach((row) => {
+          const bubble = row.querySelector("div.p-3");
+          const conn =
+            row.parentElement.nextElementSibling?.querySelector("div.outline");
+          bubble.classList.remove("bg-sky-100");
+          bubble.classList.add("bg-neutral-100");
+          if (conn) {
+            conn.classList.remove("outline-sky-100");
+            conn.classList.add("outline-neutral-100");
+          }
+        });
+
+        // activate target
+        const activeRow = sidebarSteps.querySelector(`[data-index="${idx}"]`);
+        const activeBubble = activeRow.querySelector("div.p-3");
+        activeBubble.classList.remove("bg-neutral-100");
+        activeBubble.classList.add("bg-sky-100");
+
+        const conn =
+          activeRow.parentElement.nextElementSibling?.querySelector(
+            "div.outline"
+          );
+        if (conn) {
+          conn.classList.remove("outline-neutral-100");
+          conn.classList.add("outline-sky-100");
+        }
+      }
+
+      /* ============== CONTENT (Flex layouts, not grid) ============== */
+      function renderContent() {
+        const s = SECTIONS[currentSectionIdx];
+        const html =
+          currentTab === "overview" ? renderOverview(s) : renderAppointments(s);
+
+        content.innerHTML = html;
+      }
+
+      // Overview per section
+      function renderOverview(section) {
+        if (section.id === "add-activities") return uiActivities();
+        if (section.id === "materials") return uiMaterials();
+        if (section.id === "job-information") return uiJobInfo();
+        return `<div class="text-sm text-gray-600">No UI implemented for <b>${section.label}</b> yet.</div>`;
+      }
+
+      function checkboxRow(label, value) {
+        return `
+          <div class="flex items-center justify-between p-2 border border-slate-200 rounded-lg">
+            <div class="flex items-center gap-2">
+              <input type="checkbox" class="w-4 h-4 text-blue-500 rounded focus:ring-blue-200" checked />
+              <span class="text-slate-700 text-sm font-medium">${label}</span>
+            </div>
+            <span class="text-slate-600 text-sm">${value}</span>
+          </div>
+        `;
+      }
+
+      // FLEX: Job Info (left form + right card)
+      function uiJobInfo() {
+        return `<div class="flex flex-col">
+        <!-- Horizontal tabs -->
+        <div class="mb-4 flex items-center gap-6 border-b border-gray-200">
+          <button
+            data-tab="overview"
+            id="tab-overview"
+            class="inline-flex items-center gap-2 px-1 py-2 -mb-[1px] border-b-2 border-transparent text-gray-600 hover:text-gray-900"
+          >
+            <span class="inline-block w-3 h-3 bg-teal-700 rounded-full"></span>
+            Overview
+          </button>
+
+          <button
+            data-tab="appointments"
+            id="tab-appointments"
+            class="tab px-1 py-3 -mb-[1px] border-b-2 border-transparent text-gray-600 hover:text-gray-900"
+          >
+            Appointments
+            <span class="ml-1 text-sm rounded-full bg-gray-100 px-2 py-0.5">03</span>
+          </button>
+        </div>
+        <div class="flex flex-col">
+          <div id="tab-section" class="flex gap-6 flex-wrap">
+            <div id="overview-section" class="flex flex-col w-full gap-4">
+              <div class="basis-[640px] grow rounded-xl border border-gray-200 p-5 text-neutral-700 text-sm font-medium ">
+                <div class="justify-end text-neutral-700 text-base font-bold font-sans leading-none my-3">Job Details </div>
+                <div class="mb-4 flex items-center gap-2">
+                  <span
+                    class="text-sm rounded-full bg-blue-50 text-blue-700 px-2 py-1"
+                    >Individual</span
+                  >
+                  <span class="text-sm text-gray-500">Entity</span>
+                </div>
+                <div class="flex flex-col gap-4">
+                  ${row("Client", "Search by name, email, phone")} ${row(
+          "PropertySearch",
+          "Search properties"
+        )} ${row("Job Type", "Select one")}
+                  ${row("Priority", "Select one")} ${row(
+          "Job Status",
+          "Select one"
+        )}${row("Payment Status", "Select one")}
+              </div>
+
+              
+                
+                </div>
+<div class="grow rounded-xl border border-gray-200 p-2" >
+                                   ${dateRow("Job Required By")}
+                </div>
+                <div class="mt-4 flex flex-col gap-2">
+                  ${checkboxRow("Mark Complete")} ${checkboxRow("PCA Done")}
+                  ${checkboxRow("Prestart Done")}
+                </div>
+
+              <div class="grow rounded-xl border border-gray-200 p-5">
+                <h3 class="text-sm font-semibold mb-3">Assign Serviceman</h3>
+                <div class="relative">
+                  <input
+                    type="text"
+                    class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"
+                    placeholder="Assign Serviceman"
+                  />
+                  <span class="absolute right-3 top-2.5 text-gray-400">🔎</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Appointments tab content -->
+          <div id="appointment-section" class="min-h-screen bg-neutral-50 hidden">
+  <div class="grid grid-cols-1 lg:grid-cols-[540px_1fr] gap-6">
+
+    <!-- Left: Appointments -->
+    <section class="bg-white rounded-xl border border-neutral-200 shadow-sm">
+      <header class="p-4 md:p-5 border-b border-neutral-200">
+        <h2 class="text-neutral-900 font-semibold">Appointments</h2>
+      </header>
+
+      <div class="p-4 md:p-5 space-y-4">
+
+        <!-- Status -->
+        <div>
+          <label class="block text-sm text-neutral-600 mb-1">Status</label>
+          <div class="relative">
+            <select class="w-full appearance-none rounded-lg border border-neutral-300 pl-3 pr-9 py-2.5 text-sm focus:border-neutral-500 focus:ring-2 focus:ring-neutral-200">
+              <option>Select one</option>
+            </select>
+            <span class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-neutral-500">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+          </div>
+        </div>
+
+        <!-- Type -->
+        <div>
+          <label class="block text-sm text-neutral-600 mb-1">Type</label>
+          <div class="relative">
+            <select class="w-full appearance-none rounded-lg border border-neutral-300 pl-3 pr-9 py-2.5 text-sm focus:border-neutral-500 focus:ring-2 focus:ring-neutral-200">
+              <option>Select one</option>
+            </select>
+            <span class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-neutral-500">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+          </div>
+        </div>
+
+        <!-- Title -->
+        <div>
+          <label class="block text-sm text-neutral-600 mb-1">Title</label>
+          <input type="text" class="w-full rounded-lg border border-neutral-300 pl-3 py-2.5 text-sm placeholder-neutral-400 focus:border-neutral-500 focus:ring-2 focus:ring-neutral-200" />
+        </div>
+
+        <!-- Date/Time -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm text-neutral-600 mb-1">Start Time</label>
+            <div class="relative">
+              <input type="text" placeholder="Select date & time" class="w-full rounded-lg border border-neutral-300 pr-10 pl-3 py-2.5 text-sm placeholder-neutral-400 focus:border-neutral-500 focus:ring-2 focus:ring-neutral-200" />
+              <span class="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-width="2"/><path d="M16 2v4M8 2v4M3 10h18" stroke-width="2" stroke-linecap="round"/></svg>
+              </span>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm text-neutral-600 mb-1">End Time</label>
+            <div class="relative">
+              <input type="text" placeholder="Select date & time" class="w-full rounded-lg border border-neutral-300 pr-10 pl-3 py-2.5 text-sm placeholder-neutral-400 focus:border-neutral-500 focus:ring-2 focus:ring-neutral-200" />
+              <span class="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-width="2"/><path d="M16 2v4M8 2v4M3 10h18" stroke-width="2" stroke-linecap="round"/></svg>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div>
+          <label class="block text-sm text-neutral-600 mb-1">Description</label>
+          <textarea rows="4" class="w-full rounded-lg border border-neutral-300 p-3 text-sm placeholder-neutral-400 focus:border-neutral-500 focus:ring-2 focus:ring-neutral-200"></textarea>
+        </div>
+
+        <!-- Location -->
+        <div>
+          <label class="block text-sm text-neutral-600 mb-1">Location</label>
+          <div class="relative">
+            <select class="w-full appearance-none rounded-lg border border-neutral-300 pl-3 pr-9 py-2.5 text-sm focus:border-neutral-500 focus:ring-2 focus:ring-neutral-200">
+              <option>Select one</option>
+            </select>
+            <span class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-neutral-500">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+          </div>
+        </div>
+
+        <!-- Host -->
+        <div>
+          <label class="block text-sm text-neutral-600 mb-1">Host</label>
+          <div class="relative">
+            <select class="w-full appearance-none rounded-lg border border-neutral-300 pl-3 pr-9 py-2.5 text-sm focus:border-neutral-500 focus:ring-2 focus:ring-neutral-200">
+              <option>Select one</option>
+            </select>
+            <span class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-neutral-500">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+          </div>
+        </div>
+
+        <!-- Primary Guest -->
+        <div class="pb-1">
+          <label class="block text-sm text-neutral-600 mb-1">Primary Guest</label>
+          <div class="relative">
+            <select class="w-full appearance-none rounded-lg border border-neutral-300 pl-3 pr-9 py-2.5 text-sm focus:border-neutral-500 focus:ring-2 focus:ring-neutral-200">
+              <option>Select one</option>
+            </select>
+            <span class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-neutral-500">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Right column -->
+    <div class="space-y-6">
+      <!-- Inquiry or Job Information -->
+      <section class="bg-white rounded-xl border border-neutral-200 shadow-sm">
+        <header class="p-4 md:p-5 border-b border-neutral-200">
+          <h2 class="text-neutral-900 font-semibold">Inquiry or Job Information</h2>
+        </header>
+        <div class="p-4 md:p-5 space-y-4">
+          <div>
+            <label class="block text-sm text-neutral-600 mb-1">Inquiry</label>
+            <div class="relative">
+              <select class="w-full appearance-none rounded-lg border border-neutral-300 pl-3 pr-9 py-2.5 text-sm focus:border-neutral-500 focus:ring-2 focus:ring-neutral-200">
+                <option>Select one</option>
+              </select>
+              <span class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-neutral-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm text-neutral-600 mb-1">Job</label>
+            <div class="relative">
+              <select class="w-full appearance-none rounded-lg border border-neutral-300 pl-3 pr-9 py-2.5 text-sm focus:border-neutral-500 focus:ring-2 focus:ring-neutral-200">
+                <option>Select one</option>
+              </select>
+              <span class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-neutral-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Google Calendar -->
+      <section class="bg-white rounded-xl border border-neutral-200 shadow-sm">
+        <header class="p-4 md:p-5 border-b border-neutral-200">
+          <h2 class="text-neutral-900 font-semibold">Google Calendar</h2>
+        </header>
+        <div class="p-4 md:p-5">
+          <label class="block text-sm text-neutral-600 mb-1">Event Color</label>
+          <div class="relative">
+            <select class="w-full appearance-none rounded-lg border border-neutral-300 pl-3 pr-9 py-2.5 text-sm focus:border-neutral-500 focus:ring-2 focus:ring-neutral-200">
+              <option>Select one</option>
+            </select>
+            <span class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-neutral-500">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Bottom pager -->
+  <div class="fixed inset-x-0 bottom-5 flex justify-center">
+    <div class="bg-neutral-900 text-white rounded-full shadow-lg flex items-center">
+      <button class="px-3 py-2 hover:bg-neutral-800 rounded-l-full" aria-label="Previous">
+        <span class="inline-flex items-center justify-center h-5 w-5">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m15 18-6-6 6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </button>
+      <div class="w-px h-6 bg-white/20"></div>
+      <button class="px-3 py-2 hover:bg-neutral-800 rounded-r-full" aria-label="Next">
+        <span class="inline-flex items-center justify-center h-5 w-5">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 6 6 6-6 6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+
+        </div>
+      </div>`;
+      }
+
+      // FLEX: Activities (left narrow form + right table)
+      function uiActivities() {
+        return `
+              <div class="flex gap-6 flex-wrap">
+                <div class="basis-[380px] grow rounded-xl border border-gray-200 p-5">
+                  <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-semibold">Add New Activity</h3>
+                    <label class="inline-flex items-center gap-2 text-sm">
+                      <input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600"> Invoice to client
+                    </label>
+                  </div>
+
+                  <div class="flex flex-wrap gap-4">
+                    ${selectRow("Task", "Job 1")}
+                    ${selectRow("Options", "Option 1")}
+                    ${selectRow("Service", "Possum")}
+                    ${rowHalf("Quantity", "0")}
+                    ${moneyRow("Activity Price")}
+                    ${selectRow("Activity Text", "Possum")}
+                    ${selectRow("Activity Status", "Select One")}
+                    ${dateRow("Date Required")}
+                    ${moneyRow("Quoted Price")}
+                    ${selectRow("Quoted Text", "")}
+                  </div>
+
+                  <div class="mt-4 flex flex-col gap-3">
+                    ${textareaRow("Quoted Text")}
+                    ${textareaRow("Warranty")}
+                    ${textareaRow("Note")}
+                  </div>
+
+                  <div class="mt-4 flex items-center justify-between">
+                    <div class="flex gap-6 text-sm">
+                      <label class="inline-flex items-center gap-2"><input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600"> Include in Quote</label>
+                      <label class="inline-flex items-center gap-2"><input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600"> Include in Quote Subtotal</label>
+                    </div>
+                    <div class="ml-auto flex gap-3">
+                      <button class="px-3 py-2 text-sm rounded-lg border hover:bg-gray-50">Cancel</button>
+                      <button class="px-3 py-2 text-sm rounded-lg bg-[#0b4ea2] text-white">Add</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="min-w-[520px] flex-1 rounded-xl border border-gray-200 overflow-hidden">
+                  ${tableActivities()}
+                </div>
+              </div>`;
+      }
+
+      function tableActivities() {
+        return `
+              <table class="min-w-full text-sm">
+                <thead class="bg-gray-50 text-gray-600">
+                  <tr>${th("ID")}${th("Services")}${th("Status")}${th(
+          "Price"
+        )}${th("Include in Quote")}${th("Invoice to Client")}${th(
+          "Option"
+        )}${th("Task")}</tr>
+                </thead>
+                <tbody class="divide-y">
+                  ${activityRow(
+                    677,
+                    "Possum Roof Removal",
+                    badge("Quoted", "violet"),
+                    "$4,169.00",
+                    true,
+                    false,
+                    "Option 2",
+                    "Option 2"
+                  )}
+                  ${activityRow(
+                    676,
+                    "Wasp Removal",
+                    badge("To Be Scheduled", "amber"),
+                    "$49.00",
+                    false,
+                    true,
+                    "Option 4",
+                    "Option 4"
+                  )}
+                  ${activityRow(
+                    675,
+                    "Possum Roof",
+                    badge("Rescheduled", "rose"),
+                    "$69.00",
+                    true,
+                    true,
+                    "Option 6",
+                    "Option 6"
+                  )}
+                  ${activityRow(
+                    674,
+                    "Wasp Removal",
+                    badge("Completed", "emerald"),
+                    "$089.00",
+                    true,
+                    false,
+                    "Option 1",
+                    "Option 1"
+                  )}
+                  ${activityRow(
+                    673,
+                    "Possum Roof Removal",
+                    badge("Cancelled", "gray"),
+                    "$608.00",
+                    false,
+                    true,
+                    "Option 3",
+                    "Option 3"
+                  )}
+                </tbody>
+              </table>`;
+      }
+
+      // FLEX: Materials (left stack + payment, right table)
+      function uiMaterials() {
+        return `
+              <div class="flex gap-6 flex-wrap">
+                <div class="basis-[420px] grow flex flex-col gap-4">
+                  <div class="rounded-xl border border-gray-200 p-5">
+                    <h3 class="text-sm font-semibold mb-4">Add Materials</h3>
+                    <div class="flex flex-wrap gap-4">
+                      ${rowFull("Material Name", "Enter material name")}
+                      ${selectRow("Status", "Select One")}
+                      ${moneyRow("Total")}
+                      ${textareaRow("Description", 2)}
+                      ${selectRow("Transaction Type", "Select one")}
+                      ${selectRow("Tax", "Select one")}
+                    </div>
+
+                    <div class="mt-4">
+                      <label class="text-sm text-gray-500">Receipt</label>
+                      <div class="mt-1 flex items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-6 text-sm text-gray-600">
+                        ⬆️ <span class="ml-2 text-blue-700 cursor-pointer">Click to upload</span> <span class="mx-1">or</span> drag and drop
+                      </div>
+                    </div>
+
+                    <div class="mt-4">
+                      ${selectRow("Service Provider", "Select one")}
+                    </div>
+                  </div>
+
+                  <div class="rounded-xl border border-gray-200 p-5">
+                    <h3 class="text-sm font-semibold mb-4">Payment</h3>
+                    <div class="flex flex-wrap gap-4">
+                      ${rowHalf("Batch Code")}
+                      ${rowHalf("Xero Bill ID")}
+                      ${dateRow("Date Scheduled")}
+                      ${dateRow("Date Paid")}
+                    </div>
+                    <div class="mt-4 flex justify-end gap-3">
+                      <button class="px-3 py-2 text-sm rounded-lg border hover:bg-gray-50">Cancel</button>
+                      <button class="px-3 py-2 text-sm rounded-lg bg-[#0b4ea2] text-white">Add</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="min-w-[520px] flex-1 rounded-xl border border-gray-200 overflow-hidden">
+                  ${tableMaterials()}
+                </div>
+              </div>`;
+      }
+
+      function tableMaterials() {
+        return `
+              <table class="min-w-full text-sm">
+                <thead class="bg-gray-50 text-gray-600">
+                  <tr>${th("Date Added")}${th("Status")}${th(
+          "Material Name"
+        )}${th("Total")}${th("Transaction Type")}${th("Tax")}${th(
+          "Service Provider"
+        )}</tr>
+                </thead>
+                <tbody class="divide-y">
+                  ${materialRow(
+                    "Nov 1, 2024",
+                    badge("Quoted", "violet"),
+                    "Shovel",
+                    "$4,169.00",
+                    "Deduct",
+                    "Exempt Expenses",
+                    "Jack Lawson"
+                  )}
+                  ${materialRow(
+                    "Nov 1, 2024",
+                    badge("To Be Scheduled", "amber"),
+                    "Net",
+                    "$49.00",
+                    "Reimburse",
+                    "Input",
+                    "Brooklyn Simmons"
+                  )}
+                  ${materialRow(
+                    "Nov 1, 2024",
+                    badge("Rescheduled", "rose"),
+                    "Mouse Trap",
+                    "$69.00",
+                    "Deduct",
+                    "Exempt Expenses",
+                    "Kathryn Murphy"
+                  )}
+                  ${materialRow(
+                    "Nov 1, 2024",
+                    badge("Completed", "emerald"),
+                    "Glue",
+                    "$089.00",
+                    "Reimburse",
+                    "Input",
+                    "Arlene McCoy"
+                  )}
+                  ${materialRow(
+                    "Nov 1, 2024",
+                    badge("Cancelled", "gray"),
+                    "Tape",
+                    "$608.00",
+                    "Deduct",
+                    "Input",
+                    "Leslie Alexander"
+                  )}
+                </tbody>
+              </table>`;
+      }
+
+      /* ============== tiny UI helpers (flex-friendly) ============== */
+      function row(label, placeholder = "") {
+        return `<label class="flex flex-col gap-1 text-sm text-gray-500">
+              ${label}
+              <input type="text" class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200" placeholder="${placeholder}">
+            </label>`;
+      }
+      function rowHalf(label, placeholder = "") {
+        return `<label class="basis-[160px] grow flex flex-col gap-1 text-sm text-gray-500">
+              ${label}
+              <input type="text" class="mt-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200" placeholder="${placeholder}">
+            </label>`;
+      }
+      function rowFull(label, placeholder = "") {
+        return `<label class="w-full flex flex-col gap-1 text-sm text-gray-500">
+              ${label}
+              <input type="text" class="mt-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200" placeholder="${placeholder}">
+            </label>`;
+      }
+      function selectRow(label, placeholder = "Select one") {
+        return `<label class="basis-[160px] grow flex flex-col gap-1 text-sm text-gray-500">
+              ${label}
+              <div class="relative">
+                <select class="w-full appearance-none rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200">
+                  <option>${placeholder}</option>
+                </select>
+                <span class="pointer-events-none absolute right-3 top-2.5 text-gray-400">⌄</span>
+              </div>
+            </label>`;
+      }
+      function dateRow(label) {
+        return `<label class="basis-[160px] grow flex flex-col gap-1 text-sm text-gray-500">
+              ${label}
+              <div class="relative">
+                <input type="text" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200" placeholder="dd/mm/yyyy">
+                <span class="absolute right-3 top-2.5 text-gray-400">📅</span>
+              </div>
+            </label>`;
+      }
+      function moneyRow(label) {
+        return `<label class="basis-[160px] grow flex flex-col gap-1 text-sm text-gray-500">
+              ${label}
+              <div class="relative">
+                <input type="text" class="w-full rounded-lg border border-gray-300 pl-8 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200" placeholder="$ 0.00">
+                <span class="absolute left-3 top-2.5 text-gray-400">$</span>
+              </div>
+            </label>`;
+      }
+      function textareaRow(label, rows = 3) {
+        return `<label class="w-full flex flex-col gap-1 text-sm text-gray-500">
+              ${label}
+              <textarea rows="${rows}" class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"></textarea>
+            </label>`;
+      }
+      function th(text) {
+        return `<th class="px-4 py-2 text-left font-semibold">${text}</th>`;
+      }
+      function td(text) {
+        return `<td class="px-4 py-3 text-gray-700">${text}</td>`;
+      }
+      function badge(text, tone = "gray") {
+        const map = {
+          violet: "bg-violet-100 text-violet-700",
+          amber: "bg-amber-100  text-amber-700",
+          rose: "bg-rose-100   text-rose-700",
+          emerald: "bg-emerald-100 text-emerald-700",
+          gray: "bg-gray-100   text-gray-600",
+        };
+        return `<span class="inline-flex items-center rounded-full px-2 py-0.5 text-sm font-medium ${
+          map[tone] || map.gray
+        }">${text}</span>`;
+      }
+      function checkbox(on = true) {
+        return `<input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-700" ${
+          on ? "checked" : ""
+        }>`;
+      }
+      function activityRow(
+        id,
+        service,
+        statusBadge,
+        price,
+        includeQuote,
+        invoiceClient,
+        optionTxt,
+        taskTxt
+      ) {
+        return `<tr class="odd:bg-white even:bg-gray-50">
+              ${td(
+                `<a href="#" class="text-blue-700 hover:underline">${id}</a>`
+              )}
+              ${td(service)} ${td(statusBadge)} ${td(price)}
+              ${td(
+                `<div class="flex items-center">${checkbox(includeQuote)}</div>`
+              )}
+              ${td(
+                `<div class="flex items-center">${checkbox(
+                  invoiceClient
+                )}</div>`
+              )}
+              ${td(optionTxt)} ${td(taskTxt)}
+            </tr>`;
+      }
+      function materialRow(
+        date,
+        statusBadge,
+        name,
+        total,
+        trxType,
+        tax,
+        provider
+      ) {
+        return `<tr class="odd:bg-white even:bg-gray-50">
+              ${td(date)} ${td(statusBadge)} ${td(name)} ${td(total)} ${td(
+          trxType
+        )} ${td(tax)} ${td(provider)}
+            </tr>`;
+      }
+
+      /* ============== Header nav state + events ============== */
+      function updateHeaderNav() {
+        backBtn.disabled = currentSectionIdx === 0;
+        const isLast = currentSectionIdx === SECTIONS.length - 1;
+        nextBtn.disabled = isLast;
+        nextBtn.classList.toggle("opacity-60", isLast);
+        nextLabel.textContent = isLast
+          ? "—"
+          : SECTIONS[currentSectionIdx + 1].label;
+      }
+
+      // sidebar click (event delegation)
+      sidebarSteps.addEventListener("click", (e) => {
+        const row = e.target.closest("[data-index]");
+        if (!row) return;
+        currentSectionIdx = Number(row.dataset.index);
+        setSidebarActive(currentSectionIdx);
+        updateHeaderNav();
+        renderContent();
+      });
+
+      //   // top tabs
+      function handleTabsClick() {
+        const tabButtons = {
+          overview: document.getElementById("tab-overview"),
+          appointments: document.getElementById("tab-appointments"),
+        };
+
+        Object.values(tabButtons).forEach((btn) => {
+          btn.addEventListener("click", () => {
+            currentTab = btn.dataset.tab;
+            Object.entries(tabButtons).forEach(([k, el]) => {
+              if (k === currentTab) {
+                el.classList.add("border-blue-600", "text-blue-700");
+                el.classList.remove("text-gray-600", "border-transparent");
+                el.style.borderBottomWidth = "2px";
+              } else {
+                el.classList.remove("border-blue-600", "text-blue-700");
+                el.classList.add("text-gray-600", "border-transparent");
+                el.style.borderBottomWidth = "2px";
+              }
+            });
+            let container = document.getElementById("tab-section");
+            let overviewSection = document.getElementById("overview-section");
+            let appointmentSection = document.getElementById(
+              "appointment-section"
+            );
+            if (currentTab == "overview") {
+              overviewSection.classList.remove("hidden");
+              appointmentSection.classList.add("hidden");
+              // container.innerHTML = html;
+            } else {
+              overviewSection.classList.add("hidden");
+              appointmentSection.classList.remove("hidden");
+            }
+          });
+        });
+      }
+
+      backBtn.addEventListener("click", () => {
+        if (currentSectionIdx === 0) return;
+        currentSectionIdx -= 1;
+        setSidebarActive(currentSectionIdx);
+        updateHeaderNav();
+        renderContent();
+      });
+
+      nextBtn.addEventListener("click", () => {
+        if (currentSectionIdx >= SECTIONS.length - 1) return;
+        currentSectionIdx += 1;
+        setSidebarActive(currentSectionIdx);
+        updateHeaderNav();
+        renderContent();
+      });
+
+      (function init() {
+        renderSidebar();
+        const fromHash = location.hash.replace("#", "");
+        const idxFromHash = SECTIONS.findIndex((s) => s.id === fromHash);
+        if (idxFromHash >= 0) currentSectionIdx = idxFromHash;
+        setSidebarActive(currentSectionIdx);
+        // tabButtons.overview.classList.add("border-blue-600", "text-blue-700");
+        // tabButtons.overview.style.borderBottomWidth = "2px";
+        updateHeaderNav();
+        renderContent();
+        handleTabsClick();
+      })();
+    </script>
+  </body>
+</html>
