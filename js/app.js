@@ -5,37 +5,63 @@ import { DashboardModel } from "./models/dashboard.js";
 import { DashboardView } from "./views/dashboard.js";
 import { DashboardController } from "./controller/dashboard.js";
 
-// import { JobDetailController } from "./controller/job-detail.js";
-// import { JobDetailModal } from "./models/job-detail.js";
-// import { JobDetailView } from "./views/job-detail.js";
+import { config } from "../sdk/config.js";
+import { VitalStatsSDK } from "../sdk/init.js";
 
-export function initDashboard() {
-  const model = new DashboardModel();
-  const view = new DashboardView();
-  const controller = new DashboardController(model, view);
+// Central app bootstrap: instantiate classes once based on page
+(function bootstrap() {
+  const App = {
+    services: {},
+    controllers: {},
+    started: false,
+    start: async function () {
+      if (this.started) return;
+      this.started = true;
 
-  controller.init({
-    calendarContainerId: "calendar-grid",
-    tableBodyId: "inquiry-table-body",
-  });
+      try {
+        // Initialize shared SDK/service once
+        const { slug, apiKey } = config;
+        const sdk = new VitalStatsSDK({ slug, apiKey });
+        this.services.plugin = await sdk.initialize();
+        window.tempPlugin ??= this.services.plugin;
+      } catch (err) {
+        console.error("SDK init failed", err);
+      }
 
-  // If you need it elsewhere:
-  return { model, view, controller };
-}
+      const page = document.body?.dataset?.page || "";
 
-document.addEventListener("DOMContentLoaded", () => {
-  initDashboard();
-  // let modal = new NewEnquiryModal();
-  // let view = new NewEnquiryView(modal);
-  // let controller = new NewEnquiryController(modal, view);
-  // controller.init();
+      // Always-available controllers (if DOM present)
+      this.maybeInitDashboard();
 
-  // let jobDetailModal = new JobDetailModal();
-  // let jobDetailView = new JobDetailView(jobDetailModal);
-  // let jobDetailController = new JobDetailController(
-  //   jobDetailModal,
-  //   jobDetailView
-  // );
+      // Page-specific
+      if (page === "new-enquiry") this.initNewEnquiry();
+      if (page === "dashboard") this.maybeInitDashboard();
+      if (page === "job-detail") {
+      }
+    },
 
-  // jobDetailController.init();
-});
+    maybeInitDashboard() {
+      const hasCalendar = document.getElementById("calendar-grid");
+      const hasTable = document.getElementById("inquiry-table-body");
+      if (!hasCalendar || !hasTable) return;
+      if (this.controllers.dashboard) return; // already initialized
+      const model = new DashboardModel(tempPlugin);
+      const view = new DashboardView();
+      const ctrl = new DashboardController(model, view);
+      ctrl.init();
+      this.controllers.dashboard = ctrl;
+    },
+
+    initNewEnquiry() {
+      if (this.controllers.newEnquiry) return;
+      const model = new NewEnquiryModal();
+      const view = new NewEnquiryView();
+      const ctrl = new NewEnquiryController(model, view);
+      ctrl.init();
+      this.controllers.newEnquiry = ctrl;
+    },
+  };
+
+  document.addEventListener("DOMContentLoaded", () => App.start());
+  window.App = App; // optional: debug access
+})();

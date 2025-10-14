@@ -236,16 +236,16 @@
             <section class="rounded-3xl bg-white p-6 shadow-card">
               <div class="flex flex-col gap-2">
                 <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 pb-4">
-                  <nav class="flex flex-wrap items-center gap-6 text-md font-normal text-slate-500">
-                    <a href="#" class="pb-3 text-brand-600 border-b-2 border-brand-500">Inquiry</a>
-                    <a href="#" class="pb-3 text-slate-500 border-b-2 border-transparent transition hover:text-brand-600 hover:border-brand-200">Quote</a>
-                    <a href="#" class="pb-3 text-slate-500 border-b-2 border-transparent transition hover:text-brand-600 hover:border-brand-200">Jobs</a>
-                    <a href="#" class="pb-3 text-slate-500 border-b-2 border-transparent transition hover:text-brand-600 hover:border-brand-200">Payment</a>
-                    <a href="#" class="flex items-center gap-2 pb-3 border-b-2 border-transparent hover:text-emerald-700">
+                  <nav id="top-tabs" class="flex flex-wrap items-center gap-6 text-md font-normal text-slate-500">
+                    <a href="#" data-tab="inquiry" class="pb-3 text-brand-600 border-b-2 border-brand-500">Inquiry</a>
+                    <a href="#" data-tab="quote" class="pb-3 text-slate-500 border-b-2 border-transparent transition hover:text-brand-600 hover:border-brand-200">Quote</a>
+                    <a href="#" data-tab="jobs" class="pb-3 text-slate-500 border-b-2 border-transparent transition hover:text-brand-600 hover:border-brand-200">Jobs</a>
+                    <a href="#" data-tab="payment" class="pb-3 text-slate-500 border-b-2 border-transparent transition hover:text-brand-600 hover:border-brand-200">Payment</a>
+                    <a href="#" data-tab="active-jobs" class="flex items-center gap-2 pb-3 border-b-2 border-transparent hover:text-emerald-700">
                       <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
                       Active Jobs
                     </a>
-                    <a href="#" class="flex items-center gap-1 pb-3 border-b-2 border-transparent hover:text-rose-600">
+                    <a href="#" data-tab="urgent-calls" class="flex items-center gap-1 pb-3 border-b-2 border-transparent hover:text-rose-600">
                       
                       <svg xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 512 512"
@@ -365,7 +365,17 @@
                     <button class="px-3 py-1.5 text-sm font-semibold text-slate-500 transition hover:border-brand-300 hover:text-brand-600">&gt;</button>
                   </div>
                 </div>
-              </section>
+            </section>
+
+            <!-- Tabbed content (simple p placeholders) -->
+            <section class="rounded-3xl bg-white p-6 shadow-card">
+              <div id="tab-panels">
+               
+                <p data-panel="quote" class="hidden">Quote content</p>
+                <p data-panel="jobs" class="hidden">Jobs content</p>
+                <p data-panel="payment" class="hidden">Payment content</p>
+              </div>
+            </section>
             </aside>
           </div>
         </main>
@@ -373,5 +383,6 @@
   </div>
   <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
   <script type="module" src="./js/app.js"></script>
+  
 </body>
 </html>

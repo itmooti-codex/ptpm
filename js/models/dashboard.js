@@ -4,128 +4,49 @@ if (!dayjsRef) {
   throw new Error("Day.js is required for the dashboard model to operate.");
 }
 
+// Shared config accessible anywhere
+export const DASHBOARD_STATUS_CLASSES = {
+  "New Inquiry": "bg-rose-50 text-rose-500",
+  "Not Allocated": "bg-fuchsia-50 text-fuchsia-600",
+  "Contact Client": "bg-indigo-50 text-indigo-600",
+  "Contact For Site Visit": "bg-sky-50 text-sky-600",
+  "Site Visit Scheduled": "bg-amber-50 text-amber-600",
+  "Site Visit to be Re-Scheduled": "bg-orange-50 text-orange-600",
+  "Generate Quote": "bg-brand-50 text-brand-600",
+  "Quote Created": "bg-emerald-50 text-emerald-600",
+  "Awaiting Quote": "bg-amber-50 text-amber-600",
+  Scheduled: "bg-emerald-50 text-emerald-600",
+  "In Progress": "bg-sky-50 text-sky-600",
+  Closed: "bg-slate-100 text-slate-600",
+};
+
+export const DASHBOARD_DEFAULTS = {
+  dayCount: 14,
+  startDate: dayjsRef("2024-03-15"),
+  totalsPattern: [8, 13, 19, 8, 12, 3, 11, 8, 13, 19, 8, 13, 19, 11],
+  rowTotals: [45, 45],
+};
+
 export class DashboardModel {
-  constructor() {
-    // --- Config / constants the app relies on ---
-    this.statusClasses = {
-      "New Inquiry": "bg-rose-50 text-rose-500",
-      "Not Allocated": "bg-fuchsia-50 text-fuchsia-600",
-      "Contact Client": "bg-indigo-50 text-indigo-600",
-      "Contact For Site Visit": "bg-sky-50 text-sky-600",
-      "Site Visit Scheduled": "bg-amber-50 text-amber-600",
-      "Site Visit to be Re-Scheduled": "bg-orange-50 text-orange-600",
-      "Generate Quote": "bg-brand-50 text-brand-600",
-      "Quote Created": "bg-emerald-50 text-emerald-600",
-      "Awaiting Quote": "bg-amber-50 text-amber-600",
-      Scheduled: "bg-emerald-50 text-emerald-600",
-      "In Progress": "bg-sky-50 text-sky-600",
-      Closed: "bg-slate-100 text-slate-600",
-    };
+  constructor(plugin, overrides = {}) {
+    window.plugin = plugin;
+    window.ptpmDealModel = plugin.switchTo("PeterpmDeal");
+    this.dealQuery = null;
+    this.BuildDealQuery();
 
-    this.dayCount = 14;
-    this.startDate = dayjsRef("2024-03-15");
-    this.totalsPattern = [8, 13, 19, 8, 12, 3, 11, 8, 13, 19, 8, 13, 19, 11];
-    this.rowTotals = [45, 45];
-
-    this.sampleRows = [
-      {
-        id: "#321322",
-        client: "Devon Lane",
-        created: "15 May 2020",
-        serviceman: "Rita Ora",
-        followUp: "15 May 2020",
-        source: "Web Form",
-        service: "Possum Roof Removal",
-        type: "General Inquiry",
-        status: "New Inquiry",
-      },
-      {
-        id: "#321324",
-        client: "Devon Lane",
-        created: "15 May 2020",
-        serviceman: "Savannah Nguyen",
-        followUp: "15 May 2020",
-        source: "SMS",
-        service: "Possum Roof",
-        type: "Service Request of Quote",
-        status: "Not Allocated",
-      },
-      {
-        id: "#321326",
-        client: "Devon Lane",
-        created: "15 May 2020",
-        serviceman: "Darlene Robertson",
-        followUp: "15 May 2020",
-        source: "Phone Call",
-        service: "Possum Roof",
-        type: "General Inquiry",
-        status: "Contact Client",
-      },
-      {
-        id: "#321328",
-        client: "Devon Lane",
-        created: "15 May 2020",
-        serviceman: "Cameron Williamson",
-        followUp: "15 May 2020",
-        source: "Email",
-        service: "Wasp Removal",
-        type: "General Inquiry",
-        status: "Contact For Site Visit",
-      },
-      {
-        id: "#321330",
-        client: "Devon Lane",
-        created: "15 May 2020",
-        serviceman: "Cameron Williamson",
-        followUp: "15 May 2020",
-        source: "Web Form",
-        service: "Wasp Removal",
-        type: "General Inquiry",
-        status: "Site Visit Scheduled",
-      },
-      {
-        id: "#321332",
-        client: "Devon Lane",
-        created: "15 May 2020",
-        serviceman: "Cameron Williamson",
-        followUp: "15 May 2020",
-        source: "Web Form",
-        service: "Wasp Removal",
-        type: "General Inquiry",
-        status: "Site Visit to be Re-Scheduled",
-      },
-      {
-        id: "#321334",
-        client: "Devon Lane",
-        created: "15 May 2020",
-        serviceman: "Cameron Williamson",
-        followUp: "15 May 2020",
-        source: "Web Form",
-        service: "Wasp Removal",
-        type: "General Inquiry",
-        status: "Generate Quote",
-      },
-      {
-        id: "#321336",
-        client: "Devon Lane",
-        created: "15 May 2020",
-        serviceman: "Cameron Williamson",
-        followUp: "15 May 2020",
-        source: "Web Form",
-        service: "Wasp Removal",
-        type: "General Inquiry",
-        status: "Quote Created",
-      },
-    ];
-
-    // --- Derived state ---
+    this.statusClasses = overrides.statusClasses || DASHBOARD_STATUS_CLASSES;
+    this.dayCount = overrides.dayCount || DASHBOARD_DEFAULTS.dayCount;
+    this.startDate = overrides.startDate || DASHBOARD_DEFAULTS.startDate;
+    this.totalsPattern =
+      overrides.totalsPattern || DASHBOARD_DEFAULTS.totalsPattern;
+    this.rowTotals = overrides.rowTotals || DASHBOARD_DEFAULTS.rowTotals;
     this.calendarDays = this.#buildCalendarDays();
-    this.inquiryDataByDate = {
-      [this.calendarDays[0].iso]: this.sampleRows,
-      [this.calendarDays[1].iso]: this.sampleRows.slice(0, 5),
-      [this.calendarDays[7].iso]: this.sampleRows.slice(2),
-    };
-    this.selectedDate = this.calendarDays[6]?.iso ?? this.calendarDays[0].iso;
+    this.selectedDate = this.calendarDays[0]?.iso;
+    this.inquiryDataByDate = {};
+    this.allRows = [];
+
+    this.limit = 500;
+    this.offset = 0;
   }
 
   // PRIVATE: compute calendar days grid
@@ -155,8 +76,13 @@ export class DashboardModel {
   getStatusClasses() {
     return this.statusClasses;
   }
-  getRowsForDate(dateIso) {
-    return this.inquiryDataByDate[dateIso] ?? [];
+  getRowsForDate(dateIso, allRows) {
+    // Filter by created (display string) matching the selected date's display format
+    if (Array.isArray(allRows) && allRows.length) {
+      let selectedDisplay = this.formatDisplayDate(dateIso || "");
+      return allRows.filter((r) => r?.created === selectedDisplay);
+    }
+    return this.inquiryDataByDate?.[dateIso] ?? [];
   }
 
   // --- Mutations ---
@@ -167,5 +93,39 @@ export class DashboardModel {
   // --- Utilities ---
   formatDisplayDate(dateIso) {
     return dayjsRef(dateIso).format("D MMM YYYY");
+  }
+
+  BuildDealQuery() {
+    this.dealQuery = ptpmDealModel
+      .query()
+      .deSelectAll()
+      .select([
+        "Unique_ID",
+        "Date_Added",
+        "Inquiry_Source",
+        "Type",
+        "Inquiry_Status",
+      ])
+      .include("Service_Inquiry", (q) => q.select(["service_name"]))
+      .include("Primary_Contact", (q) =>
+        q.select(["first_name", "last_name", "email", "sms_number", "address"])
+      )
+      .include("Service_Provider", (q) => {
+        q.deSelectAll().include("Contact_Information", (q) => {
+          q.deSelectAll().select(["first_name", "last_name"]);
+        });
+      })
+      .noDestroy();
+  }
+
+  async fetchDeal() {
+    try {
+      return await this.dealQuery
+        .fetch()
+        .pipe(window.toMainInstance?.(true) ?? ((x) => x))
+        .toPromise();
+    } catch (e) {
+      console.log("Fetch deal error", e);
+    }
   }
 }
