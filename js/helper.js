@@ -18,7 +18,7 @@ export class DashboardHelper {
         "client-lastName": data?.Primary_Contact?.last_name || null,
         "client-email": data?.Primary_Contact?.email || null,
         "client-smsNumber": data?.Primary_Contact?.sms_number || null,
-        "client-address": data?.Primary_Contact?.address || null,
+        "client-address": data?.Property?.address_1 || null,
       };
     });
   }

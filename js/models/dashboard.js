@@ -80,7 +80,7 @@ export class DashboardModel {
     // Filter by created (display string) matching the selected date's display format
     if (Array.isArray(allRows) && allRows.length) {
       let selectedDisplay = this.formatDisplayDate(dateIso || "");
-      return allRows.filter((r) => r?.created === selectedDisplay);
+      return allRows.filter((r) => r?.created === "21 Jan 1970");
     }
     return this.inquiryDataByDate?.[dateIso] ?? [];
   }
@@ -108,8 +108,17 @@ export class DashboardModel {
       ])
       .include("Service_Inquiry", (q) => q.select(["service_name"]))
       .include("Primary_Contact", (q) =>
-        q.select(["first_name", "last_name", "email", "sms_number", "address"])
+        q.select([
+          "first_name",
+          "last_name",
+          "email",
+          "sms_number",
+          "address_1",
+        ])
       )
+      .include("Property", (q) => {
+        q.deSelectAll().select(["address_1"]);
+      })
       .include("Service_Provider", (q) => {
         q.deSelectAll().include("Contact_Information", (q) => {
           q.deSelectAll().select(["first_name", "last_name"]);

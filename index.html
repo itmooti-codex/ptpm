@@ -118,60 +118,84 @@
                 </div>
                 <div class="flex-1 space-y-0 overflow-y-auto">
                   <div class="space-y-3 border-b border-slate-200 px-3 py-4">
-                    <button type="button" class="flex w-full items-center justify-between rounded border border-slate-200 px-4 py-3 text-left text-sm font-medium text-slate-600 transition hover:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-100">
-                      <span>Status</span>
+                    <button id="status-filter-btn" type="button" class="relative flex w-full items-center justify-between rounded border border-slate-200 px-4 py-3 text-left text-sm font-medium transition hover:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-100">
+                      <span class="text-slate-500">Status</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.21l3.71-3.98a.75.75 0 111.08 1.04l-4.25 4.56a.75.75 0 01-1.1 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                      </svg>
+                    </button>
+                    <!-- Status dropdown -->
+                    <div id="status-filter-card" class="hidden mt-2 w-full rounded border border-slate-200 bg-white shadow-xl p-2">
+                      <ul class="max-h-64 overflow-auto text-sm text-slate-700 space-y-1">
+                        <li class="px-2 py-1 flex items-center gap-2">
+                          <input id="status-all" type="checkbox" class="h-4 w-4 accent-[#003882]">
+                          <label for="status-all">All</label>
+                        </li>
+                        <li class="px-2 py-1 flex items-center gap-2"><input data-status value="New Inquiry" type="checkbox" class="h-4 w-4 accent-[#003882]" ><span>New Inquiry</span></li>
+                        <li class="px-2 py-1 flex items-center gap-2"><input data-status value="Not Allocated" type="checkbox" class="h-4 w-4 accent-[#003882]" ><span>Not Allocated</span></li>
+                        <li class="px-2 py-1 flex items-center gap-2"><input data-status value="Contact Client" type="checkbox" class="h-4 w-4 accent-[#003882]" ><span>Contact Client</span></li>
+                        <li class="px-2 py-1 flex items-center gap-2"><input data-status value="Contact For Site Visit" type="checkbox" class="h-4 w-4 accent-[#003882]" ><span>Contact For Site Visit</span></li>
+                        <li class="px-2 py-1 flex items-center gap-2"><input data-status value="Site Visit Scheduled" type="checkbox" class="h-4 w-4 accent-[#003882]" ><span>Site Visit Scheduled</span></li>
+                        <li class="px-2 py-1 flex items-center gap-2"><input data-status value="Generate Quote" type="checkbox" class="h-4 w-4 accent-[#003882]" ><span>Generate Quote</span></li>
+                        <li class="px-2 py-1 flex items-center gap-2"><input data-status value="Quote Created" type="checkbox" class="h-4 w-4 accent-[#003882]" ><span>Quote Created</span></li>
+                        <li class="px-2 py-1 flex items-center gap-2"><input data-status value="Completed" type="checkbox" class="h-4 w-4 accent-[#003882]" ><span>Completed</span></li>
+                        <li class="px-2 py-1 flex items-center gap-2"><input data-status value="Cancelled Inquiry" type="checkbox" class="h-4 w-4 accent-[#003882]" ><span>Cancelled Inquiry</span></li>
+                      </ul>
+                    </div>
+
+                    <div class="w-full rounded border border-slate-200 px-4 py-3 text-left text-sm text-slate-500 focus-within:ring-2 focus-within:ring-sky-100 flex items-center gap-2">
+                      <input id="filter-account-name" type="text" placeholder="Account Name" class="flex-1 outline-none text-slate-500 placeholder:text-slate-500" />
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M10.8874 10.3438L8.4828 7.93964C9.17975 7.10291 9.52729 6.02969 9.45311 4.94324C9.37894 3.8568 8.88876 2.84077 8.08455 2.10653C7.28034 1.37228 6.22402 0.976351 5.13533 1.00109C4.04664 1.02584 3.00939 1.46935 2.23937 2.23937C1.46935 3.00939 1.02584 4.04664 1.00109 5.13533C0.976351 6.22402 1.37228 7.28034 2.10653 8.08455C2.84077 8.88876 3.8568 9.37894 4.94324 9.45311C6.02969 9.52729 7.10291 9.17975 7.93964 8.4828L10.3438 10.8874C10.3795 10.9231 10.4218 10.9514 10.4685 10.9707C10.5151 10.9901 10.5651 11 10.6156 11C10.6661 11 10.7161 10.9901 10.7627 10.9707C10.8093 10.9514 10.8517 10.9231 10.8874 10.8874C10.9231 10.8517 10.9514 10.8093 10.9707 10.7627C10.9901 10.7161 11 10.6661 11 10.6156C11 10.5651 10.9901 10.5151 10.9707 10.4685C10.9514 10.4218 10.9231 10.3795 10.8874 10.3438ZM1.77901 5.2368C1.77901 4.55292 1.98181 3.88439 2.36176 3.31576C2.7417 2.74713 3.28174 2.30393 3.91356 2.04222C4.54539 1.78051 5.24064 1.71203 5.91138 1.84545C6.58213 1.97887 7.19825 2.3082 7.68183 2.79178C8.16541 3.27536 8.49473 3.89148 8.62815 4.56222C8.76157 5.23297 8.6931 5.92821 8.43138 6.56004C8.16967 7.19187 7.72648 7.7319 7.15785 8.11185C6.58922 8.4918 5.92069 8.69459 5.2368 8.69459C4.32005 8.69358 3.44114 8.32895 2.7929 7.68071C2.14466 7.03247 1.78003 6.15355 1.77901 5.2368Z" fill="#78829D"/>
+                      </svg>
+
+                    </div>
+
+                    <div class="w-full rounded border border-slate-200 px-4 py-3 text-left text-sm text-slate-500 focus-within:ring-2 focus-within:ring-sky-100 flex items-center gap-2">
+                      <input id="filter-resident" type="text" placeholder="Resident Search" class="flex-1 outline-none text-slate-500 placeholder:text-slate-500" />
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M10.8874 10.3438L8.4828 7.93964C9.17975 7.10291 9.52729 6.02969 9.45311 4.94324C9.37894 3.8568 8.88876 2.84077 8.08455 2.10653C7.28034 1.37228 6.22402 0.976351 5.13533 1.00109C4.04664 1.02584 3.00939 1.46935 2.23937 2.23937C1.46935 3.00939 1.02584 4.04664 1.00109 5.13533C0.976351 6.22402 1.37228 7.28034 2.10653 8.08455C2.84077 8.88876 3.8568 9.37894 4.94324 9.45311C6.02969 9.52729 7.10291 9.17975 7.93964 8.4828L10.3438 10.8874C10.3795 10.9231 10.4218 10.9514 10.4685 10.9707C10.5151 10.9901 10.5651 11 10.6156 11C10.6661 11 10.7161 10.9901 10.7627 10.9707C10.8093 10.9514 10.8517 10.9231 10.8874 10.8874C10.9231 10.8517 10.9514 10.8093 10.9707 10.7627C10.9901 10.7161 11 10.6661 11 10.6156C11 10.5651 10.9901 10.5151 10.9707 10.4685C10.9514 10.4218 10.9231 10.3795 10.8874 10.3438ZM1.77901 5.2368C1.77901 4.55292 1.98181 3.88439 2.36176 3.31576C2.7417 2.74713 3.28174 2.30393 3.91356 2.04222C4.54539 1.78051 5.24064 1.71203 5.91138 1.84545C6.58213 1.97887 7.19825 2.3082 7.68183 2.79178C8.16541 3.27536 8.49473 3.89148 8.62815 4.56222C8.76157 5.23297 8.6931 5.92821 8.43138 6.56004C8.16967 7.19187 7.72648 7.7319 7.15785 8.11185C6.58922 8.4918 5.92069 8.69459 5.2368 8.69459C4.32005 8.69358 3.44114 8.32895 2.7929 7.68071C2.14466 7.03247 1.78003 6.15355 1.77901 5.2368Z" fill="#78829D"/>
+                      </svg>
+
+                    </div>
+
+                    <div class="w-full rounded border border-slate-200 px-4 py-3 text-left text-sm text-slate-500 focus-within:ring-2 focus-within:ring-sky-100 flex items-center gap-2">
+                      <input id="filter-address" type="text" placeholder="Address" class="flex-1 outline-none text-slate-500 placeholder:text-slate-500" />
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M10.8874 10.3438L8.4828 7.93964C9.17975 7.10291 9.52729 6.02969 9.45311 4.94324C9.37894 3.8568 8.88876 2.84077 8.08455 2.10653C7.28034 1.37228 6.22402 0.976351 5.13533 1.00109C4.04664 1.02584 3.00939 1.46935 2.23937 2.23937C1.46935 3.00939 1.02584 4.04664 1.00109 5.13533C0.976351 6.22402 1.37228 7.28034 2.10653 8.08455C2.84077 8.88876 3.8568 9.37894 4.94324 9.45311C6.02969 9.52729 7.10291 9.17975 7.93964 8.4828L10.3438 10.8874C10.3795 10.9231 10.4218 10.9514 10.4685 10.9707C10.5151 10.9901 10.5651 11 10.6156 11C10.6661 11 10.7161 10.9901 10.7627 10.9707C10.8093 10.9514 10.8517 10.9231 10.8874 10.8874C10.9231 10.8517 10.9514 10.8093 10.9707 10.7627C10.9901 10.7161 11 10.6661 11 10.6156C11 10.5651 10.9901 10.5151 10.9707 10.4685C10.9514 10.4218 10.9231 10.3795 10.8874 10.3438ZM1.77901 5.2368C1.77901 4.55292 1.98181 3.88439 2.36176 3.31576C2.7417 2.74713 3.28174 2.30393 3.91356 2.04222C4.54539 1.78051 5.24064 1.71203 5.91138 1.84545C6.58213 1.97887 7.19825 2.3082 7.68183 2.79178C8.16541 3.27536 8.49473 3.89148 8.62815 4.56222C8.76157 5.23297 8.6931 5.92821 8.43138 6.56004C8.16967 7.19187 7.72648 7.7319 7.15785 8.11185C6.58922 8.4918 5.92069 8.69459 5.2368 8.69459C4.32005 8.69358 3.44114 8.32895 2.7929 7.68071C2.14466 7.03247 1.78003 6.15355 1.77901 5.2368Z" fill="#78829D"/>
+                      </svg>
+
+                    </div>
+
+                    <div class="w-full rounded border border-slate-200 px-4 py-3 text-left text-sm text-slate-500 focus-within:ring-2 focus-within:ring-sky-100 flex items-center gap-2">
+                      <input id="filter-type" type="text" placeholder="Account Type" class="flex-1 outline-none text-slate-500 placeholder:text-slate-500" />
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M10.8874 10.3438L8.4828 7.93964C9.17975 7.10291 9.52729 6.02969 9.45311 4.94324C9.37894 3.8568 8.88876 2.84077 8.08455 2.10653C7.28034 1.37228 6.22402 0.976351 5.13533 1.00109C4.04664 1.02584 3.00939 1.46935 2.23937 2.23937C1.46935 3.00939 1.02584 4.04664 1.00109 5.13533C0.976351 6.22402 1.37228 7.28034 2.10653 8.08455C2.84077 8.88876 3.8568 9.37894 4.94324 9.45311C6.02969 9.52729 7.10291 9.17975 7.93964 8.4828L10.3438 10.8874C10.3795 10.9231 10.4218 10.9514 10.4685 10.9707C10.5151 10.9901 10.5651 11 10.6156 11C10.6661 11 10.7161 10.9901 10.7627 10.9707C10.8093 10.9514 10.8517 10.9231 10.8874 10.8874C10.9231 10.8517 10.9514 10.8093 10.9707 10.7627C10.9901 10.7161 11 10.6661 11 10.6156C11 10.5651 10.9901 10.5151 10.9707 10.4685C10.9514 10.4218 10.9231 10.3795 10.8874 10.3438ZM1.77901 5.2368C1.77901 4.55292 1.98181 3.88439 2.36176 3.31576C2.7417 2.74713 3.28174 2.30393 3.91356 2.04222C4.54539 1.78051 5.24064 1.71203 5.91138 1.84545C6.58213 1.97887 7.19825 2.3082 7.68183 2.79178C8.16541 3.27536 8.49473 3.89148 8.62815 4.56222C8.76157 5.23297 8.6931 5.92821 8.43138 6.56004C8.16967 7.19187 7.72648 7.7319 7.15785 8.11185C6.58922 8.4918 5.92069 8.69459 5.2368 8.69459C4.32005 8.69358 3.44114 8.32895 2.7929 7.68071C2.14466 7.03247 1.78003 6.15355 1.77901 5.2368Z" fill="#78829D"/>
+                      </svg>
+
+                    </div>
+
+                    <button type="button" class="flex w-full items-center justify-between rounded border border-slate-200 px-4 py-3 text-left text-sm font-medium text-slate-500 transition hover:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-100">
+                      <span class="text-slate-500">Taken By</span>
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.21l3.71-3.98a.75.75 0 111.08 1.04l-4.25 4.56a.75.75 0 01-1.1 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
                       </svg>
                     </button>
 
-                    <button type="button" class="flex w-full items-center justify-between rounded border border-slate-200 px-4 py-3 text-left text-sm font-medium text-slate-600 transition hover:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-100">
-                      <span>Account Name</span>
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M8.5 3a5.5 5.5 0 014.267 8.97l3.131 3.132a.75.75 0 11-1.06 1.06l-3.132-3.131A5.5 5.5 0 118.5 3zm0 1.5a4 4 0 100 8 4 4 0 000-8z" clip-rule="evenodd" />
+                    <div class="w-full rounded border border-slate-200 px-4 py-3 text-left text-sm text-slate-500 focus-within:ring-2 focus-within:ring-sky-100 flex items-center gap-2">
+                      <input id="filter-source" type="text" placeholder="Source" class="flex-1 outline-none text-slate-500 placeholder:text-slate-500" />
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M10.8874 10.3438L8.4828 7.93964C9.17975 7.10291 9.52729 6.02969 9.45311 4.94324C9.37894 3.8568 8.88876 2.84077 8.08455 2.10653C7.28034 1.37228 6.22402 0.976351 5.13533 1.00109C4.04664 1.02584 3.00939 1.46935 2.23937 2.23937C1.46935 3.00939 1.02584 4.04664 1.00109 5.13533C0.976351 6.22402 1.37228 7.28034 2.10653 8.08455C2.84077 8.88876 3.8568 9.37894 4.94324 9.45311C6.02969 9.52729 7.10291 9.17975 7.93964 8.4828L10.3438 10.8874C10.3795 10.9231 10.4218 10.9514 10.4685 10.9707C10.5151 10.9901 10.5651 11 10.6156 11C10.6661 11 10.7161 10.9901 10.7627 10.9707C10.8093 10.9514 10.8517 10.9231 10.8874 10.8874C10.9231 10.8517 10.9514 10.8093 10.9707 10.7627C10.9901 10.7161 11 10.6661 11 10.6156C11 10.5651 10.9901 10.5151 10.9707 10.4685C10.9514 10.4218 10.9231 10.3795 10.8874 10.3438ZM1.77901 5.2368C1.77901 4.55292 1.98181 3.88439 2.36176 3.31576C2.7417 2.74713 3.28174 2.30393 3.91356 2.04222C4.54539 1.78051 5.24064 1.71203 5.91138 1.84545C6.58213 1.97887 7.19825 2.3082 7.68183 2.79178C8.16541 3.27536 8.49473 3.89148 8.62815 4.56222C8.76157 5.23297 8.6931 5.92821 8.43138 6.56004C8.16967 7.19187 7.72648 7.7319 7.15785 8.11185C6.58922 8.4918 5.92069 8.69459 5.2368 8.69459C4.32005 8.69358 3.44114 8.32895 2.7929 7.68071C2.14466 7.03247 1.78003 6.15355 1.77901 5.2368Z" fill="#78829D"/>
                       </svg>
-                    </button>
 
-                    <button type="button" class="flex w-full items-center justify-between rounded border border-slate-200 px-4 py-3 text-left text-sm font-medium text-slate-600 transition hover:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-100">
-                      <span>Resident Search</span>
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M8.5 3a5.5 5.5 0 014.267 8.97l3.131 3.132a.75.75 0 11-1.06 1.06l-3.132-3.131A5.5 5.5 0 118.5 3zm0 1.5a4 4 0 100 8 4 4 0 000-8z" clip-rule="evenodd" />
-                      </svg>
-                    </button>
+                    </div>
 
-                    <button type="button" class="flex w-full items-center justify-between rounded border border-slate-200 px-4 py-3 text-left text-sm font-medium text-slate-600 transition hover:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-100">
-                      <span>Address</span>
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M8.5 3a5.5 5.5 0 014.267 8.97l3.131 3.132a.75.75 0 11-1.06 1.06l-3.132-3.131A5.5 5.5 0 118.5 3zm0 1.5a4 4 0 100 8 4 4 0 000-8z" clip-rule="evenodd" />
+                    <div class="w-full rounded border border-slate-200 px-4 py-3 text-left text-sm text-slate-500 focus-within:ring-2 focus-within:ring-sky-100 flex items-center gap-2">
+                      <input id="filter-serviceman" type="text" placeholder="Serviceman" class="flex-1 outline-none text-slate-500 placeholder:text-slate-500" />
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M10.8874 10.3438L8.4828 7.93964C9.17975 7.10291 9.52729 6.02969 9.45311 4.94324C9.37894 3.8568 8.88876 2.84077 8.08455 2.10653C7.28034 1.37228 6.22402 0.976351 5.13533 1.00109C4.04664 1.02584 3.00939 1.46935 2.23937 2.23937C1.46935 3.00939 1.02584 4.04664 1.00109 5.13533C0.976351 6.22402 1.37228 7.28034 2.10653 8.08455C2.84077 8.88876 3.8568 9.37894 4.94324 9.45311C6.02969 9.52729 7.10291 9.17975 7.93964 8.4828L10.3438 10.8874C10.3795 10.9231 10.4218 10.9514 10.4685 10.9707C10.5151 10.9901 10.5651 11 10.6156 11C10.6661 11 10.7161 10.9901 10.7627 10.9707C10.8093 10.9514 10.8517 10.9231 10.8874 10.8874C10.9231 10.8517 10.9514 10.8093 10.9707 10.7627C10.9901 10.7161 11 10.6661 11 10.6156C11 10.5651 10.9901 10.5151 10.9707 10.4685C10.9514 10.4218 10.9231 10.3795 10.8874 10.3438ZM1.77901 5.2368C1.77901 4.55292 1.98181 3.88439 2.36176 3.31576C2.7417 2.74713 3.28174 2.30393 3.91356 2.04222C4.54539 1.78051 5.24064 1.71203 5.91138 1.84545C6.58213 1.97887 7.19825 2.3082 7.68183 2.79178C8.16541 3.27536 8.49473 3.89148 8.62815 4.56222C8.76157 5.23297 8.6931 5.92821 8.43138 6.56004C8.16967 7.19187 7.72648 7.7319 7.15785 8.11185C6.58922 8.4918 5.92069 8.69459 5.2368 8.69459C4.32005 8.69358 3.44114 8.32895 2.7929 7.68071C2.14466 7.03247 1.78003 6.15355 1.77901 5.2368Z" fill="#78829D"/>
                       </svg>
-                    </button>
 
-                    <button type="button" class="flex w-full items-center justify-between rounded border border-slate-200 px-4 py-3 text-left text-sm font-medium text-slate-600 transition hover:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-100">
-                      <span>Account Type</span>
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.21l3.71-3.98a.75.75 0 111.08 1.04l-4.25 4.56a.75.75 0 01-1.1 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
-                      </svg>
-                    </button>
-
-                    <button type="button" class="flex w-full items-center justify-between rounded border border-slate-200 px-4 py-3 text-left text-sm font-medium text-slate-600 transition hover:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-100">
-                      <span>Taken By</span>
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.21l3.71-3.98a.75.75 0 111.08 1.04l-4.25 4.56a.75.75 0 01-1.1 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
-                      </svg>
-                    </button>
-
-                    <button type="button" class="flex w-full items-center justify-between rounded border border-slate-200 px-4 py-3 text-left text-sm font-medium text-slate-600 transition hover:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-100">
-                      <span>Source</span>
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.21l3.71-3.98a.75.75 0 111.08 1.04l-4.25 4.56a.75.75 0 01-1.1 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
-                      </svg>
-                    </button>
-
-                    <div class="flex items-center justify-between rounded border border-slate-200 px-4 py-3 text-sm font-medium text-slate-400">
-                      <span>Serviceman</span>
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.21l3.71-3.98a.75.75 0 111.08 1.04l-4.25 4.56a.75.75 0 01-1.1 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
-                      </svg>
                     </div>
                   </div>
 
@@ -203,9 +227,27 @@
                   </div>
 
                   <div class="space-y-3 border-b border-slate-200 px-3 py-4">
-                    <button class="w-full rounded border border-slate-200 px-4 py-3 text-left text-sm font-medium text-slate-400 transition hover:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-100">Quote Number</button>
-                    <button class="w-full rounded border border-slate-200 px-4 py-3 text-left text-sm font-medium text-slate-400 transition hover:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-100">Invoice Number</button>
-                    <button class="w-full rounded border border-slate-200 px-4 py-3 text-left text-sm font-medium text-slate-400 transition hover:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-100">Recommendation</button>
+                    <div class="w-full rounded border border-slate-200 px-4 py-3 text-left text-sm text-slate-500 focus-within:ring-2 focus-within:ring-sky-100 flex items-center gap-2">
+                      <input id="filter-quote-number" type="text" placeholder="Quote Number" class="flex-1 outline-none text-slate-500 placeholder:text-slate-500" />
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M10.8874 10.3438L8.4828 7.93964C9.17975 7.10291 9.52729 6.02969 9.45311 4.94324C9.37894 3.8568 8.88876 2.84077 8.08455 2.10653C7.28034 1.37228 6.22402 0.976351 5.13533 1.00109C4.04664 1.02584 3.00939 1.46935 2.23937 2.23937C1.46935 3.00939 1.02584 4.04664 1.00109 5.13533C0.976351 6.22402 1.37228 7.28034 2.10653 8.08455C2.84077 8.88876 3.8568 9.37894 4.94324 9.45311C6.02969 9.52729 7.10291 9.17975 7.93964 8.4828L10.3438 10.8874C10.3795 10.9231 10.4218 10.9514 10.4685 10.9707C10.5151 10.9901 10.5651 11 10.6156 11C10.6661 11 10.7161 10.9901 10.7627 10.9707C10.8093 10.9514 10.8517 10.9231 10.8874 10.8874C10.9231 10.8517 10.9514 10.8093 10.9707 10.7627C10.9901 10.7161 11 10.6661 11 10.6156C11 10.5651 10.9901 10.5151 10.9707 10.4685C10.9514 10.4218 10.9231 10.3795 10.8874 10.3438ZM1.77901 5.2368C1.77901 4.55292 1.98181 3.88439 2.36176 3.31576C2.7417 2.74713 3.28174 2.30393 3.91356 2.04222C4.54539 1.78051 5.24064 1.71203 5.91138 1.84545C6.58213 1.97887 7.19825 2.3082 7.68183 2.79178C8.16541 3.27536 8.49473 3.89148 8.62815 4.56222C8.76157 5.23297 8.6931 5.92821 8.43138 6.56004C8.16967 7.19187 7.72648 7.7319 7.15785 8.11185C6.58922 8.4918 5.92069 8.69459 5.2368 8.69459C4.32005 8.69358 3.44114 8.32895 2.7929 7.68071C2.14466 7.03247 1.78003 6.15355 1.77901 5.2368Z" fill="#78829D"/>
+</svg>
+
+                    </div>
+                    <div class="w-full rounded border border-slate-200 px-4 py-3 text-left text-sm text-slate-500 focus-within:ring-2 focus-within:ring-sky-100 flex items-center gap-2">
+                      <input id="filter-invoice-number" type="text" placeholder="Invoice Number" class="flex-1 outline-none text-slate-500 placeholder:text-slate-500" />
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M10.8874 10.3438L8.4828 7.93964C9.17975 7.10291 9.52729 6.02969 9.45311 4.94324C9.37894 3.8568 8.88876 2.84077 8.08455 2.10653C7.28034 1.37228 6.22402 0.976351 5.13533 1.00109C4.04664 1.02584 3.00939 1.46935 2.23937 2.23937C1.46935 3.00939 1.02584 4.04664 1.00109 5.13533C0.976351 6.22402 1.37228 7.28034 2.10653 8.08455C2.84077 8.88876 3.8568 9.37894 4.94324 9.45311C6.02969 9.52729 7.10291 9.17975 7.93964 8.4828L10.3438 10.8874C10.3795 10.9231 10.4218 10.9514 10.4685 10.9707C10.5151 10.9901 10.5651 11 10.6156 11C10.6661 11 10.7161 10.9901 10.7627 10.9707C10.8093 10.9514 10.8517 10.9231 10.8874 10.8874C10.9231 10.8517 10.9514 10.8093 10.9707 10.7627C10.9901 10.7161 11 10.6661 11 10.6156C11 10.5651 10.9901 10.5151 10.9707 10.4685C10.9514 10.4218 10.9231 10.3795 10.8874 10.3438ZM1.77901 5.2368C1.77901 4.55292 1.98181 3.88439 2.36176 3.31576C2.7417 2.74713 3.28174 2.30393 3.91356 2.04222C4.54539 1.78051 5.24064 1.71203 5.91138 1.84545C6.58213 1.97887 7.19825 2.3082 7.68183 2.79178C8.16541 3.27536 8.49473 3.89148 8.62815 4.56222C8.76157 5.23297 8.6931 5.92821 8.43138 6.56004C8.16967 7.19187 7.72648 7.7319 7.15785 8.11185C6.58922 8.4918 5.92069 8.69459 5.2368 8.69459C4.32005 8.69358 3.44114 8.32895 2.7929 7.68071C2.14466 7.03247 1.78003 6.15355 1.77901 5.2368Z" fill="#78829D"/>
+</svg>
+
+                    </div>
+                    <div class="w-full rounded border border-slate-200 px-4 py-3 text-left text-sm text-slate-500 focus-within:ring-2 focus-within:ring-sky-100 flex items-center gap-2">
+                      <input id="filter-recommendation" type="text" placeholder="Recommendation" class="flex-1 outline-none text-slate-500 placeholder:text-slate-500" />
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M10.8874 10.3438L8.4828 7.93964C9.17975 7.10291 9.52729 6.02969 9.45311 4.94324C9.37894 3.8568 8.88876 2.84077 8.08455 2.10653C7.28034 1.37228 6.22402 0.976351 5.13533 1.00109C4.04664 1.02584 3.00939 1.46935 2.23937 2.23937C1.46935 3.00939 1.02584 4.04664 1.00109 5.13533C0.976351 6.22402 1.37228 7.28034 2.10653 8.08455C2.84077 8.88876 3.8568 9.37894 4.94324 9.45311C6.02969 9.52729 7.10291 9.17975 7.93964 8.4828L10.3438 10.8874C10.3795 10.9231 10.4218 10.9514 10.4685 10.9707C10.5151 10.9901 10.5651 11 10.6156 11C10.6661 11 10.7161 10.9901 10.7627 10.9707C10.8093 10.9514 10.8517 10.9231 10.8874 10.8874C10.9231 10.8517 10.9514 10.8093 10.9707 10.7627C10.9901 10.7161 11 10.6661 11 10.6156C11 10.5651 10.9901 10.5151 10.9707 10.4685C10.9514 10.4218 10.9231 10.3795 10.8874 10.3438ZM1.77901 5.2368C1.77901 4.55292 1.98181 3.88439 2.36176 3.31576C2.7417 2.74713 3.28174 2.30393 3.91356 2.04222C4.54539 1.78051 5.24064 1.71203 5.91138 1.84545C6.58213 1.97887 7.19825 2.3082 7.68183 2.79178C8.16541 3.27536 8.49473 3.89148 8.62815 4.56222C8.76157 5.23297 8.6931 5.92821 8.43138 6.56004C8.16967 7.19187 7.72648 7.7319 7.15785 8.11185C6.58922 8.4918 5.92069 8.69459 5.2368 8.69459C4.32005 8.69358 3.44114 8.32895 2.7929 7.68071C2.14466 7.03247 1.78003 6.15355 1.77901 5.2368Z" fill="#78829D"/>
+</svg>
+
+                    </div>
                   </div>
 
                   <div class="space-y-4 px-3 py-4">

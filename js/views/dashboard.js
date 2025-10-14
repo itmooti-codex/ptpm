@@ -10,9 +10,9 @@ export class DashboardView {
       overrides.iconButtonGroup ??
       `
       <div class="mt-2 flex items-center gap-2">
-        <button data-action="call" class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-brand-500 shadow-sm transition hover:border-brand-300 hover:text-brand-600" aria-label="Call" title="Call">
+        <a data-action="call" class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-brand-500 shadow-sm transition hover:border-brand-300 hover:text-brand-600" aria-label="Call" title="Call">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M2.003 5.884l3.245-.62a1 1 0 011.066.553l1.284 2.568a1 1 0 01-.23 1.149l-1.516 1.513a11.037 11.037 0 005.004 5.004l1.513-1.516a1 1 0 011.149-.23l2.568 1.284a1 1 0 01.553 1.066l-.62 3.245a1 1 0 01-.979.815A14.978 14.978 0 012 5.863a1 1 0 01.003.021z"/></svg>
-        </button>
+        </a>
         <a data-action="email" class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-brand-500 shadow-sm transition hover:border-brand-300 hover:text-brand-600" aria-label="Email" title="Email">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M2.94 6.342A2 2 0 014.564 5h10.872a2 2 0 011.624.842l-7.06 5.297-7.06-5.297z"/><path d="M18 8.118l-6.76 5.07a1.5 1.5 0 01-1.76 0L2.72 8.118A1.994 1.994 0 002 9.874V14a2 2 0 002 2h12a2 2 0 002-2V9.874c0-.603-.272-1.175-.74-1.756z"/></svg>
         </a>
@@ -128,9 +128,38 @@ export class DashboardView {
             </td>
             <td class="px-6 py-4">
               <div class="font-normal text-slate-700">${row.client}</div>
-              <div class="contact-icons" data-email="${row.meta?.email ?? ''}" data-sms="${row.meta?.sms ?? ''}" data-address="${row.meta?.address ?? ''}">
-                ${this.iconButtonGroup}
-              </div>
+              ${(() => {
+                const email = row.meta?.email || "";
+                const sms = row.meta?.sms || "";
+                const address = row.meta?.address || "";
+                const emailHref = email ? `mailto:${email}` : "#";
+                const mapHref = address
+                  ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                      address
+                    )}`
+                  : "#";
+                const callHref = sms ? `tel:${sms}` : "#";
+                return `
+                <div class="mt-2 flex items-center gap-2">
+                  <a data-action="call" href="${callHref}" ${
+                  sms ? "" : 'aria-disabled="true"'
+                } title="${sms}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M2.003 5.884l3.245-.62a1 1 0 011.066.553l1.284 2.568a1 1 0 01-.23 1.149l-1.516 1.513a11.037 11.037 0 005.004 5.004l1.513-1.516a1 1 0 011.149-.23l2.568 1.284a1 1 0 01.553 1.066l-.62 3.245a1 1 0 01-.979.815A14.978 14.978 0 012 5.863a1 1 0 01.003.021z"/></svg>
+                  </a>
+                  <a data-action="email" href="${emailHref}" ${
+                  email ? "" : 'aria-disabled="true"'
+                } title="${email}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M2.94 6.342A2 2 0 014.564 5h10.872a2 2 0 011.624.842l-7.06 5.297-7.06-5.297z"/><path d="M18 8.118l-6.76 5.07a1.5 1.5 0 01-1.76 0L2.72 8.118A1.994 1.994 0 002 9.874V14a2 2 0 002 2h12a2 2 0 002-2V9.874c0-.603-.272-1.175-.74-1.756z"/></svg>
+                  </a>
+                  <a data-action="address" href="${mapHref}" ${
+                  address
+                    ? 'target="_blank" rel="noopener"'
+                    : 'aria-disabled="true"'
+                } title="${address}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a.75.75 0 01-.53-.22c-.862-.864-2.392-2.56-3.55-4.383C4.746 11.425 4 9.666 4 8a6 6 0 1112 0c0 1.666-.746 3.425-1.92 5.397-1.158 1.822-2.688 3.519-3.55 4.383A.75.75 0 0110 18zm0-8.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" clip-rule="evenodd"/></svg>
+                  </a>
+                </div>`;
+              })()}
             </td>
             <td class="px-6 py-4 text-slate-600">${row.created}</td>
             <td class="px-6 py-4 text-slate-600">${row.serviceman}</td>
@@ -150,48 +179,7 @@ export class DashboardView {
         `;
       })
       .join("");
-    // Post-render: wire up icons per row
-    const rowsEls = tableBody.querySelectorAll('tr');
-    rowsEls.forEach((tr) => {
-      const wrap = tr.querySelector('.contact-icons');
-      if (!wrap) return;
-      const email = wrap.getAttribute('data-email');
-      const sms = wrap.getAttribute('data-sms');
-      const address = wrap.getAttribute('data-address');
-      const emailEl = wrap.querySelector('[data-action="email"]');
-      const callEl = wrap.querySelector('[data-action="call"]');
-      const addrEl = wrap.querySelector('[data-action="address"]');
-
-      if (emailEl) {
-        if (email) {
-          emailEl.setAttribute('href', `mailto:${email}`);
-          emailEl.setAttribute('title', email);
-        } else {
-          emailEl.setAttribute('aria-disabled', 'true');
-        }
-      }
-      if (callEl) {
-        if (sms) {
-          callEl.addEventListener('click', (e) => {
-            e.preventDefault();
-            window.location.href = `tel:${sms}`;
-          });
-          callEl.setAttribute('title', sms);
-        } else {
-          callEl.setAttribute('aria-disabled', 'true');
-        }
-      }
-      if (addrEl) {
-        if (address) {
-          addrEl.setAttribute('href', `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`);
-          addrEl.setAttribute('target', '_blank');
-          addrEl.setAttribute('rel', 'noopener');
-          addrEl.setAttribute('title', address);
-        } else {
-          addrEl.setAttribute('aria-disabled', 'true');
-        }
-      }
-    });
+    // No post-render wiring needed; hrefs are embedded per-row
   }
 
   createNotificationModal(notifications) {
