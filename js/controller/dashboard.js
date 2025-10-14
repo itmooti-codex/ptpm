@@ -196,16 +196,21 @@ export class DashboardController {
       const type = has(r.type);
       const quote = has(r.quoteNumber || r.meta?.quoteNumber || "");
       const invoice = has(r.invoiceNumber || r.meta?.invoiceNumber || "");
-      const recommendation = has(r.recommendation || r.meta?.recommendation || "");
+      const recommendation = has(
+        r.recommendation || r.meta?.recommendation || ""
+      );
       if (need.accountName && !client.includes(need.accountName)) return false;
       if (need.resident && !resident.includes(need.resident)) return false;
       if (need.address && !address.includes(need.address)) return false;
       if (need.source && !source.includes(need.source)) return false;
-      if (need.serviceman && !serviceman.includes(need.serviceman)) return false;
+      if (need.serviceman && !serviceman.includes(need.serviceman))
+        return false;
       if (need.type && !type.includes(need.type)) return false;
       if (need.quoteNumber && !quote.includes(need.quoteNumber)) return false;
-      if (need.invoiceNumber && !invoice.includes(need.invoiceNumber)) return false;
-      if (need.recommendation && !recommendation.includes(need.recommendation)) return false;
+      if (need.invoiceNumber && !invoice.includes(need.invoiceNumber))
+        return false;
+      if (need.recommendation && !recommendation.includes(need.recommendation))
+        return false;
       if (hasStatus && !f.statuses.has(r.status)) return false;
       return true;
     });
@@ -222,22 +227,21 @@ export class DashboardController {
       card.classList.toggle("hidden");
     });
 
-    // Ensure clicks inside the card do not bubble and close it
-    card.addEventListener("click", (e) => {
-      e.stopPropagation();
-    });
-
     // Close on outside click
     document.addEventListener("click", (e) => {
-      const isOpen = !card.classList.contains("hidden");
-      const clickOnBtn = btn.contains(e.target);
-      const clickInsideCard = card.contains(e.target);
-      if (!isOpen || clickOnBtn || clickInsideCard) return;
-      card.classList.add("hidden");
+      if (
+        !card.classList.contains("hidden") &&
+        !card.contains(e.target) &&
+        e.target !== btn
+      ) {
+        card.classList.add("hidden");
+      }
     });
 
-    const allToggle = card.querySelector('#status-all');
-    const statusBoxes = Array.from(card.querySelectorAll('input[type="checkbox"][data-status]'));
+    const allToggle = card.querySelector("#status-all");
+    const statusBoxes = Array.from(
+      card.querySelectorAll('input[type="checkbox"][data-status]')
+    );
 
     const syncAllCheckbox = () => {
       const allChecked = statusBoxes.every((c) => c.checked);
