@@ -222,11 +222,18 @@ export class DashboardController {
       card.classList.toggle("hidden");
     });
 
+    // Ensure clicks inside the card do not bubble and close it
+    card.addEventListener("click", (e) => {
+      e.stopPropagation();
+    });
+
     // Close on outside click
     document.addEventListener("click", (e) => {
-      if (!card.classList.contains("hidden") && !card.contains(e.target) && e.target !== btn) {
-        card.classList.add("hidden");
-      }
+      const isOpen = !card.classList.contains("hidden");
+      const clickOnBtn = btn.contains(e.target);
+      const clickInsideCard = card.contains(e.target);
+      if (!isOpen || clickOnBtn || clickInsideCard) return;
+      card.classList.add("hidden");
     });
 
     const allToggle = card.querySelector('#status-all');
