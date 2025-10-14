@@ -53,8 +53,8 @@
               </div>
 
               <div class="flex min-w-[320px] items-center gap-3">
-                <div class="relative w-full">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
+                <div class="flex flex-inline w-full">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M8.5 3a5.5 5.5 0 014.267 8.97l3.131 3.132a.75.75 0 11-1.06 1.06l-3.132-3.131A5.5 5.5 0 118.5 3zm0 1.5a4 4 0 100 8 4 4 0 000-8z" clip-rule="evenodd" />
                   </svg>
                   <input
@@ -131,15 +131,15 @@
                           <input id="status-all" type="checkbox" class="h-4 w-4 accent-[#003882]">
                           <label for="status-all">All</label>
                         </li>
-                        <li class="px-2 py-1 flex items-center gap-2"><input data-status value="New Inquiry" type="checkbox" class="h-4 w-4 accent-[#003882]" ><span>New Inquiry</span></li>
-                        <li class="px-2 py-1 flex items-center gap-2"><input data-status value="Not Allocated" type="checkbox" class="h-4 w-4 accent-[#003882]" ><span>Not Allocated</span></li>
-                        <li class="px-2 py-1 flex items-center gap-2"><input data-status value="Contact Client" type="checkbox" class="h-4 w-4 accent-[#003882]" ><span>Contact Client</span></li>
-                        <li class="px-2 py-1 flex items-center gap-2"><input data-status value="Contact For Site Visit" type="checkbox" class="h-4 w-4 accent-[#003882]" ><span>Contact For Site Visit</span></li>
-                        <li class="px-2 py-1 flex items-center gap-2"><input data-status value="Site Visit Scheduled" type="checkbox" class="h-4 w-4 accent-[#003882]" ><span>Site Visit Scheduled</span></li>
-                        <li class="px-2 py-1 flex items-center gap-2"><input data-status value="Generate Quote" type="checkbox" class="h-4 w-4 accent-[#003882]" ><span>Generate Quote</span></li>
-                        <li class="px-2 py-1 flex items-center gap-2"><input data-status value="Quote Created" type="checkbox" class="h-4 w-4 accent-[#003882]" ><span>Quote Created</span></li>
-                        <li class="px-2 py-1 flex items-center gap-2"><input data-status value="Completed" type="checkbox" class="h-4 w-4 accent-[#003882]" ><span>Completed</span></li>
-                        <li class="px-2 py-1 flex items-center gap-2"><input data-status value="Cancelled Inquiry" type="checkbox" class="h-4 w-4 accent-[#003882]" ><span>Cancelled Inquiry</span></li>
+                        <li class="px-2 py-1 flex items-center gap-2"><input id="status-new-inquiry" data-status value="New Inquiry" type="checkbox" class="h-4 w-4 accent-[#003882]" ><label for="status-new-inquiry">New Inquiry</label></li>
+                        <li class="px-2 py-1 flex items-center gap-2"><input id="status-not-allocated" data-status value="Not Allocated" type="checkbox" class="h-4 w-4 accent-[#003882]" ><label for="status-not-allocated">Not Allocated</label></li>
+                        <li class="px-2 py-1 flex items-center gap-2"><input id="status-contact-client" data-status value="Contact Client" type="checkbox" class="h-4 w-4 accent-[#003882]" ><label for="status-contact-client">Contact Client</label></li>
+                        <li class="px-2 py-1 flex items-center gap-2"><input id="status-contact-for-site-visit" data-status value="Contact For Site Visit" type="checkbox" class="h-4 w-4 accent-[#003882]" ><label for="status-contact-for-site-visit">Contact For Site Visit</label></li>
+                        <li class="px-2 py-1 flex items-center gap-2"><input id="status-site-visit-scheduled" data-status value="Site Visit Scheduled" type="checkbox" class="h-4 w-4 accent-[#003882]" ><label for="status-site-visit-scheduled">Site Visit Scheduled</label></li>
+                        <li class="px-2 py-1 flex items-center gap-2"><input id="status-generate-quote" data-status value="Generate Quote" type="checkbox" class="h-4 w-4 accent-[#003882]" ><label for="status-generate-quote">Generate Quote</label></li>
+                        <li class="px-2 py-1 flex items-center gap-2"><input id="status-quote-created" data-status value="Quote Created" type="checkbox" class="h-4 w-4 accent-[#003882]" ><label for="status-quote-created">Quote Created</label></li>
+                        <li class="px-2 py-1 flex items-center gap-2"><input id="status-completed" data-status value="Completed" type="checkbox" class="h-4 w-4 accent-[#003882]" ><label for="status-completed">Completed</label></li>
+                        <li class="px-2 py-1 flex items-center gap-2"><input id="status-cancelled-inquiry" data-status value="Cancelled Inquiry" type="checkbox" class="h-4 w-4 accent-[#003882]" ><label for="status-cancelled-inquiry">Cancelled Inquiry</label></li>
                       </ul>
                     </div>
 
