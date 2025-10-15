@@ -105,7 +105,12 @@ export class DashboardModel {
         "Inquiry_Source",
         "Type",
         "Inquiry_Status",
+        "How_did_you_hear",
+        "Admin_Notes",
       ])
+      .include("Company", (q) =>
+        q.deSelectAll().select(["name", "account_type"])
+      )
       .include("Service_Inquiry", (q) => q.select(["service_name"]))
       .include("Primary_Contact", (q) =>
         q.select([
@@ -123,6 +128,9 @@ export class DashboardModel {
         q.deSelectAll().include("Contact_Information", (q) => {
           q.deSelectAll().select(["first_name", "last_name"]);
         });
+      })
+      .include("Jobs", (q) => {
+        q.deSelectAll().select(["invoice_number"]);
       })
       .noDestroy();
   }

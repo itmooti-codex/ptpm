@@ -413,33 +413,53 @@ export class DashboardView {
   } = {}) {
     const nav = document.getElementById(navId);
     const panelsWrap = document.getElementById(panelsId);
-    if (!nav || !panelsWrap) return;
+    if (!nav) return;
 
-    const links = [...nav.querySelectorAll("[data-tab]")];
-    const panels = [...panelsWrap.querySelectorAll("[data-panel]")];
+    // Determine initial active tab using data-active or default
+    const deriveInitialTab = () => {
+      const dataActive = nav.querySelector('[data-tab][data-active="true"]');
+      if (dataActive) return dataActive.getAttribute('data-tab');
+      return defaultTab;
+    };
+
+    // Collect links once and normalize data-active flags
+    const links = [...nav.querySelectorAll('[data-tab]')];
+    links.forEach((a) => {
+      if (!a.hasAttribute('data-active')) a.setAttribute('data-active', 'false');
+    });
+
+    // Panels are optional; gracefully handle when not present
+    const panels = panelsWrap
+      ? [...panelsWrap.querySelectorAll('[data-panel]')]
+      : [];
 
     const setActive = (tab) => {
       links.forEach((a) => {
-        const active = a.getAttribute("data-tab") === tab;
-        a.classList.toggle("text-brand-600", active);
-        a.classList.toggle("border-brand-500", active);
-        a.classList.toggle("border-b-2", true);
-        a.classList.toggle("text-slate-500", !active);
-        a.classList.toggle("border-transparent", !active);
+        const active = a.getAttribute('data-tab') === tab;
+        a.setAttribute('data-active', active ? 'true' : 'false');
+        a.classList.toggle('text-brand-600', active);
+        a.classList.toggle('border-brand-500', active);
+        a.classList.toggle('border-b-2', true);
+        a.classList.toggle('text-slate-500', !active);
+        a.classList.toggle('border-transparent', !active);
       });
-      panels.forEach((p) => {
-        const show = p.getAttribute("data-panel") === tab;
-        p.classList.toggle("hidden", !show);
-      });
+      // Only toggle panels if they exist
+      if (panels.length) {
+        panels.forEach((p) => {
+          const show = p.getAttribute('[data-panel]') === tab;
+          p.classList.toggle('hidden', !show);
+        });
+      }
     };
 
-    nav.addEventListener("click", (e) => {
-      const a = e.target.closest("[data-tab]");
+    // Single click handler works for both cases
+    nav.addEventListener('click', (e) => {
+      const a = e.target.closest('[data-tab]');
       if (!a) return;
       e.preventDefault();
-      setActive(a.getAttribute("data-tab"));
+      setActive(a.getAttribute('data-tab'));
     });
 
-    setActive(defaultTab);
+    setActive(deriveInitialTab());
   }
 }

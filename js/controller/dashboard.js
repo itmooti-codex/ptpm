@@ -49,6 +49,7 @@ export class DashboardController {
     this.onNotificationIconClick();
     this.initFilters();
     this.initStatusDropdown();
+    this.initAccountTypeDropdown();
     // Initialize top navigation tabs (Inquiry/Quote/Jobs/Payment)
     this.view.initTopTabs({ navId, panelsId, defaultTab });
     // Fetch after UI is ready
@@ -150,22 +151,62 @@ export class DashboardController {
       const selected = this.model.getSelectedDate();
       this.renderTable(selected, this.applyActiveFilters(this.deals));
     };
+    // Collect values only when Apply Filters is clicked
     inputs.forEach(([id, setter]) => {
       const el = byId(id);
       if (!el) return;
-      const onChange = (e) => {
-        setter((e.target.value || "").trim());
-        handler();
-      };
-      el.addEventListener("input", onChange);
-      el.addEventListener("change", onChange);
+      // Remove live listeners; we'll read values on Apply click instead
+      el._filterSetter = setter;
     });
 
-    const applyBtn = document.querySelector(
-      '[data-type="main"][data-text="true"]'
-    );
+    const applyBtn = document.getElementById('apply-filters-btn');
+    const resetBtn = document.getElementById('reset-filters-btn');
     if (applyBtn) {
-      applyBtn.addEventListener("click", handler);
+      applyBtn.addEventListener("click", () => {
+        // Read all input values at apply time
+        inputs.forEach(([id, setter]) => {
+          const el = byId(id);
+          if (!el) return;
+          setter((el.value || "").trim());
+        });
+        handler();
+      });
+    }
+
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        // Clear text inputs
+        inputs.forEach(([id, setter]) => {
+          const el = byId(id);
+          if (!el) return;
+          el.value = '';
+          setter('');
+        });
+
+        // Clear Status checkboxes
+        const statusCard = document.getElementById('status-filter-card');
+        if (statusCard) {
+          const statusBoxes = Array.from(statusCard.querySelectorAll('input[type="checkbox"][data-status]'));
+          statusBoxes.forEach((c) => (c.checked = false));
+          const allToggle = statusCard.querySelector('#status-all');
+          if (allToggle) allToggle.checked = false;
+          this.activeFilters.statuses.clear();
+        }
+
+        // Clear Account Type checkboxes and activeFilters.type
+        const typeCard = document.getElementById('account-type-filter-card');
+        if (typeCard) {
+          const typeBoxes = Array.from(typeCard.querySelectorAll('input[type="checkbox"][data-account-type]'));
+          typeBoxes.forEach((c) => (c.checked = false));
+          const allToggle = typeCard.querySelector('#account-type-all');
+          if (allToggle) allToggle.checked = false;
+          this.activeFilters.type = '';
+        }
+
+        // Re-render with no filters
+        const selected = this.model.getSelectedDate();
+        this.renderTable(selected, this.applyActiveFilters(this.deals));
+      });
     }
   }
 
@@ -195,11 +236,10 @@ export class DashboardController {
       const serviceman = has(r.serviceman);
       const type = has(r.type);
       const quote = has(r.quoteNumber || r.meta?.quoteNumber || "");
-      const invoice = has(r.invoiceNumber || r.meta?.invoiceNumber || "");
-      const recommendation = has(
-        r.recommendation || r.meta?.recommendation || ""
-      );
-      if (need.accountName && !client.includes(need.accountName)) return false;
+      const invoice = has(r.invoiceNumber || r.meta?.invoiceNumber || r.meta?.invoiceNumber || "");
+      const recommendation = has(r.recommendation || r.meta?.recommendation || "");
+      const accountName = has(r.meta?.accountName || "");
+      if (need.accountName && !accountName.includes(need.accountName)) return false;
       if (need.resident && !resident.includes(need.resident)) return false;
       if (need.address && !address.includes(need.address)) return false;
       if (need.source && !source.includes(need.source)) return false;
@@ -268,6 +308,60 @@ export class DashboardController {
       allToggle.addEventListener("change", () => {
         const next = !!allToggle.checked;
         statusBoxes.forEach((c) => (c.checked = next));
+        apply();
+      });
+    }
+
+    // Initialize state
+    syncAllCheckbox();
+    apply();
+  }
+
+  initAccountTypeDropdown() {
+    const btn = document.getElementById('account-type-filter-btn');
+    const card = document.getElementById('account-type-filter-card');
+    if (!btn || !card) return;
+
+    // Toggle card visibility
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      card.classList.toggle('hidden');
+    });
+
+    // Close on outside click
+    document.addEventListener('click', (e) => {
+      if (!card.classList.contains('hidden') && !card.contains(e.target) && e.target !== btn) {
+        card.classList.add('hidden');
+      }
+    });
+
+    const allToggle = card.querySelector('#account-type-all');
+    const typeBoxes = Array.from(card.querySelectorAll('input[type="checkbox"][data-account-type]'));
+
+    const apply = () => {
+      // Merge selected account types into the free-text `type` filter as a comma list
+      const selected = typeBoxes.filter(c => c.checked).map(c => c.value);
+      this.activeFilters.type = selected.join(', ');
+      const selectedDate = this.model.getSelectedDate();
+      this.renderTable(selectedDate, this.applyActiveFilters(this.deals));
+    };
+
+    const syncAllCheckbox = () => {
+      const allChecked = typeBoxes.every(c => c.checked);
+      if (allToggle) allToggle.checked = allChecked;
+    };
+
+    typeBoxes.forEach((box) => {
+      box.addEventListener('change', () => {
+        syncAllCheckbox();
+        apply();
+      });
+    });
+
+    if (allToggle) {
+      allToggle.addEventListener('change', () => {
+        const next = !!allToggle.checked;
+        typeBoxes.forEach(c => c.checked = next);
         apply();
       });
     }

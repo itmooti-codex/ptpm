@@ -6,7 +6,7 @@ export class DashboardHelper {
       return {
         uniqueId: data?.unique_id || null,
         "date-added": data?.created_at || null,
-        "inquiry-source": data?.inquiry_source || null,
+        "inquiry-source": data?.how_did_you_hear || null,
         type: data?.type || null,
         "inquiry-status": data?.inquiry_status || null,
         "service-provider-first-name":
@@ -19,6 +19,9 @@ export class DashboardHelper {
         "client-email": data?.Primary_Contact?.email || null,
         "client-smsNumber": data?.Primary_Contact?.sms_number || null,
         "client-address": data?.Property?.address_1 || null,
+        "account-name": data.Company?.name || null,
+        recommendations: data.admin_notes || null,
+        "job-invoice-number": data.Jobs?.invoice_number || null,
       };
     });
   }
@@ -50,6 +53,9 @@ export class DashboardHelper {
         address: r["client-address"] ?? null,
         email: r["client-email"] ?? null,
         sms: r["client-smsNumber"] ?? null,
+        accountName: r["account-name"] ?? null,
+        recommendation: r["recommendations"] ?? null,
+        invoiceNumber: r["job-invoice-number"] ?? null,
       },
     }));
   }
