@@ -13,6 +13,7 @@ export class DashboardController {
     this.dashboardHelper = new DashboardHelper();
     this.deals = [];
     this.activeFilters = {
+      global: "",
       accountName: "",
       resident: "",
       address: "",
@@ -22,6 +23,8 @@ export class DashboardController {
       quoteNumber: "",
       invoiceNumber: "",
       recommendation: "",
+      priceMin: null,
+      priceMax: null,
       statuses: new Set(),
     };
   }
@@ -48,8 +51,9 @@ export class DashboardController {
     this.calendarEl.addEventListener("click", this.onCalendarClick);
     this.onNotificationIconClick();
     this.initFilters();
-    this.initStatusDropdown();
+    this.initGlobalSearch();
     this.initAccountTypeDropdown();
+    this.initStatusDropdown();
     // Initialize top navigation tabs (Inquiry/Quote/Jobs/Payment)
     this.view.initTopTabs({ navId, panelsId, defaultTab });
     // Fetch after UI is ready
@@ -159,8 +163,8 @@ export class DashboardController {
       el._filterSetter = setter;
     });
 
-    const applyBtn = document.getElementById('apply-filters-btn');
-    const resetBtn = document.getElementById('reset-filters-btn');
+    const applyBtn = document.getElementById("apply-filters-btn");
+    const resetBtn = document.getElementById("reset-filters-btn");
     if (applyBtn) {
       applyBtn.addEventListener("click", () => {
         // Read all input values at apply time
@@ -169,39 +173,48 @@ export class DashboardController {
           if (!el) return;
           setter((el.value || "").trim());
         });
+        // price filter removed from controller
         handler();
       });
     }
 
     if (resetBtn) {
-      resetBtn.addEventListener('click', () => {
+      resetBtn.addEventListener("click", () => {
         // Clear text inputs
         inputs.forEach(([id, setter]) => {
           const el = byId(id);
           if (!el) return;
-          el.value = '';
-          setter('');
+          el.value = "";
+          setter("");
         });
 
         // Clear Status checkboxes
-        const statusCard = document.getElementById('status-filter-card');
+        const statusCard = document.getElementById("status-filter-card");
         if (statusCard) {
-          const statusBoxes = Array.from(statusCard.querySelectorAll('input[type="checkbox"][data-status]'));
+          const statusBoxes = Array.from(
+            statusCard.querySelectorAll('input[type="checkbox"][data-status]')
+          );
           statusBoxes.forEach((c) => (c.checked = false));
-          const allToggle = statusCard.querySelector('#status-all');
+          const allToggle = statusCard.querySelector("#status-all");
           if (allToggle) allToggle.checked = false;
           this.activeFilters.statuses.clear();
         }
 
         // Clear Account Type checkboxes and activeFilters.type
-        const typeCard = document.getElementById('account-type-filter-card');
+        const typeCard = document.getElementById("account-type-filter-card");
         if (typeCard) {
-          const typeBoxes = Array.from(typeCard.querySelectorAll('input[type="checkbox"][data-account-type]'));
+          const typeBoxes = Array.from(
+            typeCard.querySelectorAll(
+              'input[type="checkbox"][data-account-type]'
+            )
+          );
           typeBoxes.forEach((c) => (c.checked = false));
-          const allToggle = typeCard.querySelector('#account-type-all');
+          const allToggle = typeCard.querySelector("#account-type-all");
           if (allToggle) allToggle.checked = false;
-          this.activeFilters.type = '';
+          this.activeFilters.type = "";
         }
+
+        // no price filter state to reset in controller
 
         // Re-render with no filters
         const selected = this.model.getSelectedDate();
@@ -210,11 +223,26 @@ export class DashboardController {
     }
   }
 
+  initGlobalSearch() {
+    const input = document.querySelector(
+      'input[placeholder*="Search all records"]'
+    );
+    if (!input) return;
+    const apply = () => {
+      this.activeFilters.global = (input.value || "").trim();
+      const selected = this.model.getSelectedDate();
+      this.renderTable(selected, this.applyActiveFilters(this.deals));
+    };
+    input.addEventListener("input", apply);
+    input.addEventListener("change", apply);
+  }
+
   applyActiveFilters(rows) {
     const f = this.activeFilters;
     const has = (s) => (s ?? "").toString().toLowerCase();
     const term = (k) => has(k).trim();
     const need = {
+      global: term(f.global),
       accountName: term(f.accountName),
       resident: term(f.resident),
       address: term(f.address),
@@ -230,16 +258,40 @@ export class DashboardController {
     if (!any) return rows;
     return rows.filter((r) => {
       const client = has(r.client);
-      const resident = has(r.meta?.resident || r.meta?.client || "");
+      const resident = has(r.client || "");
       const address = has(r.meta?.address);
       const source = has(r.source);
       const serviceman = has(r.serviceman);
       const type = has(r.type);
       const quote = has(r.quoteNumber || r.meta?.quoteNumber || "");
-      const invoice = has(r.invoiceNumber || r.meta?.invoiceNumber || r.meta?.invoiceNumber || "");
-      const recommendation = has(r.recommendation || r.meta?.recommendation || "");
+      const invoice = has(r.invoiceNumber || r.meta?.invoiceNumber || "");
+      const recommendation = has(
+        r.recommendation || r.meta?.recommendation || ""
+      );
       const accountName = has(r.meta?.accountName || "");
-      if (need.accountName && !accountName.includes(need.accountName)) return false;
+
+      // Global search across key fields
+      if (need.global) {
+        const haystack = [
+          r.id,
+          client,
+          resident,
+          address,
+          source,
+          serviceman,
+          type,
+          quote,
+          invoice,
+          recommendation,
+          accountName,
+        ]
+          .filter(Boolean)
+          .join(" | ")
+          .toLowerCase();
+        if (!haystack.includes(need.global)) return false;
+      }
+      if (need.accountName && !accountName.includes(need.accountName))
+        return false;
       if (need.resident && !resident.includes(need.resident)) return false;
       if (need.address && !address.includes(need.address)) return false;
       if (need.source && !source.includes(need.source)) return false;
@@ -251,6 +303,7 @@ export class DashboardController {
         return false;
       if (need.recommendation && !recommendation.includes(need.recommendation))
         return false;
+      // price filtering removed from controller
       if (hasStatus && !f.statuses.has(r.status)) return false;
       return true;
     });
@@ -318,50 +371,56 @@ export class DashboardController {
   }
 
   initAccountTypeDropdown() {
-    const btn = document.getElementById('account-type-filter-btn');
-    const card = document.getElementById('account-type-filter-card');
+    const btn = document.getElementById("account-type-filter-btn");
+    const card = document.getElementById("account-type-filter-card");
     if (!btn || !card) return;
 
     // Toggle card visibility
-    btn.addEventListener('click', (e) => {
+    btn.addEventListener("click", (e) => {
       e.stopPropagation();
-      card.classList.toggle('hidden');
+      card.classList.toggle("hidden");
     });
 
     // Close on outside click
-    document.addEventListener('click', (e) => {
-      if (!card.classList.contains('hidden') && !card.contains(e.target) && e.target !== btn) {
-        card.classList.add('hidden');
+    document.addEventListener("click", (e) => {
+      if (
+        !card.classList.contains("hidden") &&
+        !card.contains(e.target) &&
+        e.target !== btn
+      ) {
+        card.classList.add("hidden");
       }
     });
 
-    const allToggle = card.querySelector('#account-type-all');
-    const typeBoxes = Array.from(card.querySelectorAll('input[type="checkbox"][data-account-type]'));
+    const allToggle = card.querySelector("#account-type-all");
+    const typeBoxes = Array.from(
+      card.querySelectorAll('input[type="checkbox"][data-account-type]')
+    );
 
     const apply = () => {
       // Merge selected account types into the free-text `type` filter as a comma list
-      const selected = typeBoxes.filter(c => c.checked).map(c => c.value);
-      this.activeFilters.type = selected.join(', ');
+      const selected = typeBoxes.filter((c) => c.checked).map((c) => c.value);
+      this.activeFilters.type = selected.join(", ");
       const selectedDate = this.model.getSelectedDate();
       this.renderTable(selectedDate, this.applyActiveFilters(this.deals));
     };
 
     const syncAllCheckbox = () => {
-      const allChecked = typeBoxes.every(c => c.checked);
+      const allChecked = typeBoxes.every((c) => c.checked);
       if (allToggle) allToggle.checked = allChecked;
     };
 
     typeBoxes.forEach((box) => {
-      box.addEventListener('change', () => {
+      box.addEventListener("change", () => {
         syncAllCheckbox();
         apply();
       });
     });
 
     if (allToggle) {
-      allToggle.addEventListener('change', () => {
+      allToggle.addEventListener("change", () => {
         const next = !!allToggle.checked;
-        typeBoxes.forEach(c => c.checked = next);
+        typeBoxes.forEach((c) => (c.checked = next));
         apply();
       });
     }
@@ -370,4 +429,6 @@ export class DashboardController {
     syncAllCheckbox();
     apply();
   }
+
+  // price slider logic lives purely in HTML/CSS now; controller does not handle it
 }

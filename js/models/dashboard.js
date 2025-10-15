@@ -130,7 +130,7 @@ export class DashboardModel {
         });
       })
       .include("Jobs", (q) => {
-        q.deSelectAll().select(["invoice_number"]);
+        q.deSelectAll().select(["invoice_number", "job_total"]);
       })
       .noDestroy();
   }

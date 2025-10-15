@@ -22,6 +22,7 @@ export class DashboardHelper {
         "account-name": data.Company?.name || null,
         recommendations: data.admin_notes || null,
         "job-invoice-number": data.Jobs?.invoice_number || null,
+        price: Object.values(data?.Jobs ?? {})[0]?.job_total ?? null,
       };
     });
   }
@@ -56,6 +57,7 @@ export class DashboardHelper {
         accountName: r["account-name"] ?? null,
         recommendation: r["recommendations"] ?? null,
         invoiceNumber: r["job-invoice-number"] ?? null,
+        price: r["price"] ?? null,
       },
     }));
   }
