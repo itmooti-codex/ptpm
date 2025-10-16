@@ -244,8 +244,8 @@ export class DashboardView {
           <div class="flex items-center gap-2 text-xs text-gray-600 select-none">
             <span>Only show unread</span>
             <button id="notifUnreadToggle" type="button" aria-pressed="false"
-              class="w-10 h-5 inline-flex items-center rounded-full bg-gray-300 transition-all duration-300 relative">
-              <span class="absolute w-4 h-4 bg-white rounded-full left-0.5 transition-all duration-300"></span>
+              class="w-10 h-5 inline-flex items-center rounded-full bg-gray-300 relative">
+              <span class="knob absolute w-4 h-4 bg-white rounded-full left-0.5 transition-transform duration-200 ease-out translate-x-0"></span>
             </button>
           </div>
       </div>
@@ -287,6 +287,7 @@ export class DashboardView {
     // ----- State -----
     let currentTab = "Action Required";
     let onlyUnread = false;
+    let markAllOn = false;
     let selectedIndex = 0;
 
     // ----- Rendering -----
@@ -324,16 +325,22 @@ export class DashboardView {
       // update tab button styles
       const tabAction = document.getElementById("notifTabAction");
       const tabGeneral = document.getElementById("notifTabGeneral");
-      if (currentTab === "Action Required") {
-        tabAction.className =
-          "px-3 py-1.5 rounded-full text-sm font-semibold bg-blue-600 text-white";
-        tabGeneral.className =
-          "px-3 py-1.5 rounded-full text-sm font-semibold text-gray-700 hover:bg-gray-100";
-      } else {
-        tabGeneral.className =
-          "px-3 py-1.5 rounded-full text-sm font-semibold bg-blue-600 text-white";
-        tabAction.className =
-          "px-3 py-1.5 rounded-full text-sm font-semibold text-gray-700 hover:bg-gray-100";
+      const activeCls = "px-3 py-1.5 rounded-full text-sm font-semibold bg-blue-600 text-white shadow-sm";
+      const inactiveCls = "px-3 py-1.5 rounded-full text-sm font-semibold text-gray-700 hover:bg-gray-100";
+      tabAction.className = currentTab === "Action Required" ? activeCls : inactiveCls;
+      tabGeneral.className = currentTab === "General Updates" ? activeCls : inactiveCls;
+
+      // sync unread toggle visuals deterministically
+      const unreadBtn = document.getElementById("notifUnreadToggle");
+      if (unreadBtn) {
+        unreadBtn.setAttribute("aria-pressed", String(onlyUnread));
+        unreadBtn.classList.toggle("bg-blue-600", onlyUnread);
+        unreadBtn.classList.toggle("bg-gray-300", !onlyUnread);
+        const knob = unreadBtn.querySelector(".knob");
+        if (knob) {
+          knob.classList.toggle("translate-x-0", !onlyUnread);
+          knob.classList.toggle("translate-x-5", onlyUnread);
+        }
       }
 
       const items = data
@@ -368,15 +375,7 @@ export class DashboardView {
 
     // Toggle-style button (no native checkbox) for Only show unread
     unreadToggle.addEventListener("click", () => {
-      const pressed = unreadToggle.getAttribute("aria-pressed") === "true";
-      const next = !pressed;
-      unreadToggle.setAttribute("aria-pressed", String(next));
-      // move knob visually
-      const knob = unreadToggle.querySelector("span");
-      if (knob) knob.style.left = next ? "1.25rem" : "0.125rem";
-      unreadToggle.classList.toggle("bg-blue-600", next);
-      unreadToggle.classList.toggle("bg-gray-300", !next);
-      onlyUnread = next;
+      onlyUnread = !onlyUnread;
       render();
     });
 
@@ -392,11 +391,20 @@ export class DashboardView {
       render();
     });
 
-    // Button for Mark all as read with visual check icon
+    // Button for Mark all as read with visual check icon (toggle)
     markAll.addEventListener("click", () => {
       const icon = markAll.querySelector("svg");
-      data.forEach((n) => (n.read = true));
-      if (icon) icon.classList.remove("hidden");
+      markAllOn = !markAllOn;
+      if (markAllOn) {
+        data.forEach((n) => (n.read = true));
+        if (icon) icon.classList.remove("hidden");
+      } else {
+        // toggle off: mark items in current tab as unread again
+        data
+          .filter((n) => n.tab === currentTab)
+          .forEach((n) => (n.read = false));
+        if (icon) icon.classList.add("hidden");
+      }
       render();
     });
 
