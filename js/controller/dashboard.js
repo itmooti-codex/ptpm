@@ -54,6 +54,7 @@ export class DashboardController {
     this.initGlobalSearch();
     this.initAccountTypeDropdown();
     this.initStatusDropdown();
+    this.initPriceRange();
     // Initialize top navigation tabs (Inquiry/Quote/Jobs/Payment)
     this.view.initTopTabs({ navId, panelsId, defaultTab });
     // Fetch after UI is ready
@@ -456,5 +457,54 @@ export class DashboardController {
     // Initialize state
     syncAllCheckbox();
     apply();
+  }
+
+  initPriceRange() {
+    const range = document.getElementById("price-range");
+    const progress = document.getElementById("price-progress");
+    const minSlider = document.getElementById("price-min");
+    const maxSlider = document.getElementById("price-max");
+    const minDisplay = document.getElementById("min-display");
+    const maxDisplay = document.getElementById("max-display");
+    const minLabel = document.getElementById("price-min-label");
+    const maxLabel = document.getElementById("price-max-label");
+    if (!range || !progress || !minSlider || !maxSlider) return;
+
+    const fmt = (n) => `$${Number(n).toLocaleString()}`;
+
+    const updateRange = (evt) => {
+      let minVal = parseInt(minSlider.value, 10);
+      let maxVal = parseInt(maxSlider.value, 10);
+
+      // Enforce minimum gap
+      const GAP = 500;
+      if (maxVal - minVal < GAP) {
+        if (evt && evt.target === minSlider) {
+          minVal = maxVal - GAP;
+          minSlider.value = String(minVal);
+        } else {
+          maxVal = minVal + GAP;
+          maxSlider.value = String(maxVal);
+        }
+      }
+
+      const minPercent = (minVal / parseInt(minSlider.max || 1, 10)) * 100;
+      const maxPercent = 100 - (maxVal / parseInt(maxSlider.max || 1, 10)) * 100;
+      progress.style.left = `${minPercent}%`;
+      progress.style.right = `${maxPercent}%`;
+
+      range.dataset.min = String(minVal);
+      range.dataset.max = String(maxVal);
+
+      if (minDisplay) minDisplay.textContent = fmt(minVal);
+      if (maxDisplay) maxDisplay.textContent = fmt(maxVal);
+      if (minLabel) minLabel.textContent = fmt(0);
+      if (maxLabel) maxLabel.textContent = fmt(parseInt(maxSlider.max || 10000, 10));
+    };
+
+    minSlider.addEventListener("input", updateRange);
+    maxSlider.addEventListener("input", updateRange);
+    // initialize on load
+    updateRange();
   }
 }
