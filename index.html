@@ -348,19 +348,83 @@
                   <div class="space-y-4 px-3 py-4">
                     <span class="text-sm font-medium text-slate-400">Price Range</span>
                     <div class="flex flex-col gap-3">
-                      <div id="price-range" class="relative h-2 rounded-full bg-slate-200" data-min="" data-max="">
-                        <div id="price-progress" class="absolute h-2 rounded-full bg-slate-300" style="left: 0%; right: 0%"></div>
-                        <input id="price-min" type="range" min="0" max="10000" step="50" value="0" class="absolute inset-0 w-full appearance-none bg-transparent pointer-events-auto" />
-                        <input id="price-max" type="range" min="0" max="10000" step="50" value="10000" class="absolute inset-0 w-full appearance-none bg-transparent pointer-events-auto" />
+                      <div id="price-range" class="relative h-2 rounded-full bg-slate-200">
+                        <!-- Progress bar -->
+                        <div
+                          id="price-progress"
+                          class="absolute h-2 rounded-full bg-sky-400 transition-all duration-200"
+                          style="left: 0%; right: 0%"
+                        ></div>
+                      
+                        <!-- Min Slider -->
+                        <input
+                          id="price-min"
+                          type="range"
+                          min="0"
+                          max="10000"
+                          step="50"
+                          value="0"
+                          class="-mt-3 absolute inset-0 w-full appearance-none bg-transparent pointer-events-auto 
+                          [&::-webkit-slider-thumb]:appearance-none 
+                          [&::-webkit-slider-thumb]:h-4 
+                          [&::-webkit-slider-thumb]:w-4 
+                          [&::-webkit-slider-thumb]:rounded-full 
+                          [&::-webkit-slider-thumb]:bg-sky-600 
+                          [&::-webkit-slider-thumb]:border-2 
+                          [&::-webkit-slider-thumb]:border-white 
+                          [&::-webkit-slider-thumb]:cursor-pointer 
+                          [&::-webkit-slider-thumb]:shadow-sm 
+                          [&::-webkit-slider-thumb]:transition-all 
+                          [&::-webkit-slider-thumb]:duration-200
+                          [&::-moz-range-thumb]:h-4 
+                          [&::-moz-range-thumb]:w-4 
+                          [&::-moz-range-thumb]:rounded-full 
+                          [&::-moz-range-thumb]:bg-sky-600 
+                          [&::-moz-range-thumb]:border-2 
+                          [&::-moz-range-thumb]:border-white 
+                          [&::-moz-range-thumb]:cursor-pointer"
+                        />
+                      
+                        <!-- Max Slider -->
+                        <input
+                          id="price-max"
+                          type="range"
+                          min="0"
+                          max="10000"
+                          step="50"
+                          value="10000"
+                          class="-mt-3 absolute inset-0 w-full appearance-none bg-transparent pointer-events-auto 
+                          [&::-webkit-slider-thumb]:appearance-none 
+                          [&::-webkit-slider-thumb]:h-4 
+                          [&::-webkit-slider-thumb]:w-4 
+                          [&::-webkit-slider-thumb]:rounded-full 
+                          [&::-webkit-slider-thumb]:bg-sky-600 
+                          [&::-webkit-slider-thumb]:border-2 
+                          [&::-webkit-slider-thumb]:border-white 
+                          [&::-webkit-slider-thumb]:cursor-pointer 
+                          [&::-webkit-slider-thumb]:shadow-sm 
+                          [&::-webkit-slider-thumb]:transition-all 
+                          [&::-webkit-slider-thumb]:duration-200
+                          [&::-moz-range-thumb]:h-4 
+                          [&::-moz-range-thumb]:w-4 
+                          [&::-moz-range-thumb]:rounded-full 
+                          [&::-moz-range-thumb]:bg-sky-600 
+                          [&::-moz-range-thumb]:border-2 
+                          [&::-moz-range-thumb]:border-white 
+                          [&::-moz-range-thumb]:cursor-pointer"
+                        />
+                      </div>
+                      
+                      <div class="flex justify-between mt-2 text-sm text-slate-600">
+                        <span id="min-display"></span>
+                        <span id="max-display"></span>
                       </div>
                       <style>
-                        /* basic styling for range thumbs/tracks overlapping */
                         #price-range input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; height: 16px; width: 16px; border-radius: 9999px; background: #fff; border: 1px solid #cbd5e1; box-shadow: 0 1px 2px rgba(0,0,0,0.05); position: relative; z-index: 10; }
                         #price-range input[type=range]::-moz-range-thumb { height: 16px; width: 16px; border-radius: 9999px; background: #fff; border: 1px solid #cbd5e1; box-shadow: 0 1px 2px rgba(0,0,0,0.05); position: relative; z-index: 10; }
                         #price-range input[type=range] { pointer-events: none; }
                         #price-range input[type=range]::-webkit-slider-thumb { pointer-events: auto; }
                         #price-range input[type=range]::-moz-range-thumb { pointer-events: auto; }
-                        /* hide native track color so our bar shows */
                         #price-range input[type=range]::-webkit-slider-runnable-track { background: transparent; height: 2px; }
                         #price-range input[type=range]::-moz-range-track { background: transparent; height: 2px; }
                       </style>
@@ -526,6 +590,48 @@
   </div>
   <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
   <script type="module" src="./js/app.js"></script>
+  <script>
+    const range = document.getElementById("price-range");
+    const progress = document.getElementById("price-progress");
+    const minSlider = document.getElementById("price-min");
+    const maxSlider = document.getElementById("price-max");
+  
+    function updateRange() {
+      let minVal = parseInt(minSlider.value);
+      let maxVal = parseInt(maxSlider.value);
+  
+      // Prevent overlap (optional)
+      if (maxVal - minVal < 500) { // 500 is your minimum gap
+        if (event.target === minSlider) {
+          minSlider.value = maxVal - 500;
+          minVal = parseInt(minSlider.value);
+        } else {
+          maxSlider.value = minVal + 500;
+          maxVal = parseInt(maxSlider.value);
+        }
+      }
+  
+      // Calculate progress bar positions
+      const minPercent = (minVal / minSlider.max) * 100;
+      const maxPercent = 100 - (maxVal / maxSlider.max) * 100;
+  
+      progress.style.left = minPercent + "%";
+      progress.style.right = maxPercent + "%";
+  
+      // Update dataset for easy access
+      range.dataset.min = minVal;
+      range.dataset.max = maxVal;
+  
+      console.log(`Min: ${minVal}, Max: ${maxVal}`);
+    }
+  
+    minSlider.addEventListener("input", updateRange);
+    maxSlider.addEventListener("input", updateRange);
+  
+    // Initialize once on load
+    updateRange();
+  </script>
+  
   
 </body>
 </html>

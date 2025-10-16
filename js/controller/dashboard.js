@@ -173,7 +173,15 @@ export class DashboardController {
           if (!el) return;
           setter((el.value || "").trim());
         });
-        // price filter removed from controller
+        // Read price range from sliders if present
+        const minEl = document.getElementById("price-min");
+        const maxEl = document.getElementById("price-max");
+        if (minEl && maxEl) {
+          const minVal = parseFloat(minEl.value);
+          const maxVal = parseFloat(maxEl.value);
+          this.activeFilters.priceMin = isFinite(minVal) ? minVal : null;
+          this.activeFilters.priceMax = isFinite(maxVal) ? maxVal : null;
+        }
         handler();
       });
     }
@@ -214,7 +222,18 @@ export class DashboardController {
           this.activeFilters.type = "";
         }
 
-        // no price filter state to reset in controller
+        // Reset price sliders if present
+        const minEl = document.getElementById("price-min");
+        const maxEl = document.getElementById("price-max");
+        const progress = document.getElementById("price-progress");
+        if (minEl && maxEl && progress) {
+          minEl.value = "0";
+          maxEl.value = maxEl.max || "10000";
+          progress.style.left = "0%";
+          progress.style.right = "0%";
+        }
+        this.activeFilters.priceMin = null;
+        this.activeFilters.priceMax = null;
 
         // Re-render with no filters
         const selected = this.model.getSelectedDate();
@@ -254,7 +273,10 @@ export class DashboardController {
       recommendation: term(f.recommendation),
     };
     const hasStatus = f.statuses && f.statuses.size > 0;
-    const any = Object.values(need).some((v) => v) || hasStatus;
+    const hasPrice =
+      (typeof f.priceMin === "number" && !Number.isNaN(f.priceMin)) ||
+      (typeof f.priceMax === "number" && !Number.isNaN(f.priceMax));
+    const any = Object.values(need).some((v) => v) || hasStatus || hasPrice;
     if (!any) return rows;
     return rows.filter((r) => {
       const client = has(r.client);
@@ -303,7 +325,13 @@ export class DashboardController {
         return false;
       if (need.recommendation && !recommendation.includes(need.recommendation))
         return false;
-      // price filtering removed from controller
+      // Price filter
+      if (hasPrice) {
+        const price = parseFloat(r?.meta?.price ?? r?.price ?? NaN);
+        if (!Number.isFinite(price)) return false;
+        if (typeof f.priceMin === "number" && price < f.priceMin) return false;
+        if (typeof f.priceMax === "number" && price > f.priceMax) return false;
+      }
       if (hasStatus && !f.statuses.has(r.status)) return false;
       return true;
     });
@@ -429,6 +457,4 @@ export class DashboardController {
     syncAllCheckbox();
     apply();
   }
-
-  // price slider logic lives purely in HTML/CSS now; controller does not handle it
 }
