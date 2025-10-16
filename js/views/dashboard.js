@@ -249,9 +249,11 @@ export class DashboardView {
             </button>
           </div>
       </div>
-  
+
       <!-- Tabs -->
       <div class="px-4 pt-3">
+        <!-- Tailwind safelist anchor for dynamic classes used at runtime on Ontraport builds -->
+        <span class="hidden bg-blue-600 bg-gray-300 text-gray-700 text-white shadow-sm translate-x-0 translate-x-5"></span>
         <div class="flex items-center gap-3">
           <button id="notifTabAction" class="px-3 py-1.5 rounded-full text-sm font-medium bg-blue-600 text-white shadow-sm">
             <span class="inline-flex items-center gap-1">
