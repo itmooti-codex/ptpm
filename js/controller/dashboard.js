@@ -107,9 +107,28 @@ export class DashboardController {
   }
 
   onNotificationIconClick() {
-    let element = document.getElementById("notification-btn");
-    element.addEventListener("click", () => {
-      this.view.toggleNotificationPopover();
+    const btn = document.getElementById("notification-btn");
+    if (!btn) return;
+    // Ensure popover exists
+    if (!document.getElementById("notificationPopover")) {
+      this.view.createNotificationModal();
+    }
+    const pop = document.getElementById("notificationPopover");
+    const toggle = () => {
+      const willShow = pop.classList.contains("hidden");
+      this.view.toggleNotificationPopover(willShow);
+    };
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      toggle();
+    });
+    // close when clicking outside
+    document.addEventListener("click", (e) => {
+      if (!pop) return;
+      if (pop.classList.contains("hidden")) return;
+      const target = e.target;
+      if (pop.contains(target) || btn.contains(target)) return;
+      this.view.toggleNotificationPopover(false);
     });
   }
 

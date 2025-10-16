@@ -228,11 +228,11 @@ export class DashboardView {
     const wrap = document.createElement("div");
     wrap.id = "notificationPopover";
     wrap.className =
-      "hidden fixed top-16 right-6 z-50 w-[420px] max-w-sm bg-white rounded-lg shadow-xl border";
+      "hidden fixed top-16 right-6 z-50 w-[420px] max-w-sm bg-white rounded-lg shadow-xl border border-slate-200";
 
     wrap.innerHTML = `
       <!-- Header -->
-      <div class="flex items-center justify-between px-4 py-3 border-b rounded-t-lg">
+      <div class="flex items-center justify-between px-4 py-3 border-b rounded-t-lg bg-white">
           <!-- Title -->
             <div class="flex items-center gap-2">
               <span class="text-[15px] font-semibold text-gray-800">Notification</span>
@@ -254,13 +254,13 @@ export class DashboardView {
       <!-- Tabs -->
       <div class="px-4 pt-3">
         <div class="flex items-center gap-3">
-          <button id="notifTabAction" class="px-3 py-1.5 rounded-full text-sm font-normal bg-blue-600 text-white">
+          <button id="notifTabAction" class="px-3 py-1.5 rounded-full text-sm font-medium bg-blue-600 text-white shadow-sm">
             <span class="inline-flex items-center gap-1">
               <span class="w-2.5 h-2.5 rounded-full bg-red-600"></span>
               Action Required
             </span>
           </button>
-          <button id="notifTabGeneral" class="px-3 py-1.5 rounded-full text-sm font-normal text-gray-700 hover:bg-gray-100">
+          <button id="notifTabGeneral" class="px-3 py-1.5 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-100">
             General Updates
           </button>
         </div>
@@ -273,7 +273,7 @@ export class DashboardView {
       </div>
   
       <!-- List -->
-      <div class="max-h-[380px] overflow-auto  bg-blue-50" id="notifList"></div>
+      <div class="max-h-[380px] overflow-auto" id="notifList"></div>
   
       <!-- Footer -->
       <div class="px-4 py-3 border-t rounded-b-lg text-center">
@@ -295,28 +295,28 @@ export class DashboardView {
         ? `<span class="ml-2 w-2.5 h-2.5 rounded-full bg-red-600"></span>`
         : "";
       return `
-        <div class="px-4 py-3 ${active ? "bg-blue-50" : ""}">
+        <div class="px-4 py-3 ${active ? "bg-blue-50" : "bg-white"} border-b last:border-b-0">
           <div class="flex items-start">
-            <!-- left circle icon -->
             <span class="mt-0.5 mr-3 inline-flex items-center justify-center w-5 h-5">
-              <svg viewBox="0 0 24 24" class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="9" />
-                <path d="M8 12l2.5 2.5L16 9" />
+              <svg viewBox="0 0 24 24" class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M14.31 8l5.74 9.94"></path>
+                <path d="M9.69 8h11.48"></path>
+                <path d="M7.38 12l5.74-9.94"></path>
               </svg>
             </span>
-  
-            <div class="flex-1 min-w-0">
-              <div class="text-sm">
-                <span class="font-semibold text-gray-800">${item.id}</span>
-                <span class="text-gray-700 ml-1">${" - " + item.text}</span>
+            <div class="flex-1">
+              <div class="flex items-center justify-between">
+                <div class="text-sm font-semibold text-slate-800">${item.id}
+                  <span class="font-normal text-slate-600"> - ${item.text}</span>
+                </div>
+                ${unreadDot}
               </div>
-              <div class="text-xs text-gray-500 mt-1">${item.when}</div>
+              <div class="mt-1 text-xs text-slate-500">${item.when}</div>
             </div>
-  
-            ${unreadDot}
           </div>
-        </div>
-      `;
+        </div>`;
     }
 
     function render() {
