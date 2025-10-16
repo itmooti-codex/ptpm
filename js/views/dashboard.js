@@ -233,20 +233,22 @@ export class DashboardView {
     wrap.innerHTML = `
       <!-- Header -->
       <div class="flex items-center justify-between px-4 py-3 border-b rounded-t-lg">
-        <div class="flex items-center gap-2">
-          <span class="text-[15px] font-semibold text-gray-800">Notification</span>
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M13.3965 17.6921C13.3965 17.8622 13.329 18.0252 13.2087 18.1454C13.0885 18.2656 12.9255 18.3332 12.7555 18.3332H7.62727C7.45726 18.3332 7.29421 18.2656 7.174 18.1454C7.05378 18.0252 6.98624 17.8622 6.98624 17.6921C6.98624 17.5221 7.05378 17.3591 7.174 17.2389C7.29421 17.1187 7.45726 17.0511 7.62727 17.0511H12.7555C12.9255 17.0511 13.0885 17.1187 13.2087 17.2389C13.329 17.3591 13.3965 17.5221 13.3965 17.6921ZM17.7082 13.8412C17.2627 13.0752 16.6016 10.9077 16.6016 8.07676C16.6016 6.37665 15.9263 4.74618 14.7241 3.54402C13.5219 2.34187 11.8915 1.6665 10.1914 1.6665C8.49127 1.6665 6.86079 2.34187 5.65864 3.54402C4.45648 4.74618 3.78111 6.37665 3.78111 8.07676C3.78111 10.9085 3.11926 13.0752 2.67454 13.8412C2.56098 14.0359 2.50077 14.2572 2.5 14.4826C2.49923 14.7081 2.55791 14.9297 2.67014 15.1252C2.78236 15.3208 2.94416 15.4832 3.13921 15.5963C3.33426 15.7093 3.55568 15.7689 3.78111 15.7691H16.6016C16.827 15.7688 17.0483 15.7091 17.2432 15.596C17.4382 15.4829 17.5999 15.3204 17.712 15.1249C17.8241 14.9294 17.8827 14.7078 17.8819 14.4824C17.8811 14.257 17.8209 14.0359 17.7074 13.8412H17.7082Z" fill="#636D88"/>
-          </svg>
-
-        </div>
-        <label class="flex items-center gap-2 text-xs text-gray-600">
-          <span>Only show unread</span>
-          <input id="notifUnreadToggle" type="checkbox" class="peer sr-only">
-          <span class="w-10 h-5 rounded-full bg-gray-300 relative transition
-                       after:content-[''] after:absolute after:w-4 after:h-4 after:bg-white after:rounded-full after:top-0.5 after:left-0.5 after:transition
-                       peer-checked:bg-blue-600 peer-checked:after:translate-x-5"></span>
-        </label>
+          <!-- Title -->
+            <div class="flex items-center gap-2">
+              <span class="text-[15px] font-semibold text-gray-800">Notification</span>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
+                xmlns="http://www.w3.org/2000/svg" class="text-gray-500">
+                <path d="M13.3965 17.6921C13.3965 17.8622 13.329 18.0252 13.2087 18.1454C13.0885 18.2656 12.9255 18.3332 12.7555 18.3332H7.62727C7.45726 18.3332 7.29421 18.2656 7.174 18.1454C7.05378 18.0252 6.98624 17.8622 6.98624 17.6921C6.98624 17.5221 7.05378 17.3591 7.174 17.2389C7.29421 17.1187 7.45726 17.0511 7.62727 17.0511H12.7555C12.9255 17.0511 13.0885 17.1187 13.2087 17.2389C13.329 17.3591 13.3965 17.5221 13.3965 17.6921ZM17.7082 13.8412C17.2627 13.0752 16.6016 10.9077 16.6016 8.07676C16.6016 6.37665 15.9263 4.74618 14.7241 3.54402C13.5219 2.34187 11.8915 1.6665 10.1914 1.6665C8.49127 1.6665 6.86079 2.34187 5.65864 3.54402C4.45648 4.74618 3.78111 6.37665 3.78111 8.07676C3.78111 10.9085 3.11926 13.0752 2.67454 13.8412C2.56098 14.0359 2.50077 14.2572 2.5 14.4826C2.49923 14.7081 2.55791 14.9297 2.67014 15.1252C2.78236 15.3208 2.94416 15.4832 3.13921 15.5963C3.33426 15.7093 3.55568 15.7689 3.78111 15.7691H16.6016C16.827 15.7688 17.0483 15.7091 17.2432 15.596C17.4382 15.4829 17.5999 15.3204 17.712 15.1249C17.8241 14.9294 17.8827 14.7078 17.8819 14.4824C17.8811 14.257 17.8209 14.0359 17.7074 13.8412H17.7082Z" fill="currentColor"/>
+              </svg>
+            </div>
+          <label class="flex items-center gap-2 text-xs text-gray-600 select-none cursor-pointer">
+              <span>Only show unread</span>
+              <input id="notifUnreadToggle" type="checkbox" class="hidden peer" />
+              <span class="w-10 h-5 flex items-center rounded-full bg-gray-300 transition-all duration-300
+                          peer-checked:bg-blue-600 relative">
+                <span class="absolute w-4 h-4 bg-white rounded-full left-0.5 transition-all duration-300 peer-checked:left-5"></span>
+              </span>
+          </label>
       </div>
   
       <!-- Tabs -->
@@ -418,46 +420,47 @@ export class DashboardView {
     // Determine initial active tab using data-active or default
     const deriveInitialTab = () => {
       const dataActive = nav.querySelector('[data-tab][data-active="true"]');
-      if (dataActive) return dataActive.getAttribute('data-tab');
+      if (dataActive) return dataActive.getAttribute("data-tab");
       return defaultTab;
     };
 
     // Collect links once and normalize data-active flags
-    const links = [...nav.querySelectorAll('[data-tab]')];
+    const links = [...nav.querySelectorAll("[data-tab]")];
     links.forEach((a) => {
-      if (!a.hasAttribute('data-active')) a.setAttribute('data-active', 'false');
+      if (!a.hasAttribute("data-active"))
+        a.setAttribute("data-active", "false");
     });
 
     // Panels are optional; gracefully handle when not present
     const panels = panelsWrap
-      ? [...panelsWrap.querySelectorAll('[data-panel]')]
+      ? [...panelsWrap.querySelectorAll("[data-panel]")]
       : [];
 
     const setActive = (tab) => {
       links.forEach((a) => {
-        const active = a.getAttribute('data-tab') === tab;
-        a.setAttribute('data-active', active ? 'true' : 'false');
-        a.classList.toggle('text-brand-600', active);
-        a.classList.toggle('border-brand-500', active);
-        a.classList.toggle('border-b-2', true);
-        a.classList.toggle('text-slate-500', !active);
-        a.classList.toggle('border-transparent', !active);
+        const active = a.getAttribute("data-tab") === tab;
+        a.setAttribute("data-active", active ? "true" : "false");
+        a.classList.toggle("text-brand-600", active);
+        a.classList.toggle("border-brand-500", active);
+        a.classList.toggle("border-b-2", true);
+        a.classList.toggle("text-slate-500", !active);
+        a.classList.toggle("border-transparent", !active);
       });
       // Only toggle panels if they exist
       if (panels.length) {
         panels.forEach((p) => {
-          const show = p.getAttribute('[data-panel]') === tab;
-          p.classList.toggle('hidden', !show);
+          const show = p.getAttribute("[data-panel]") === tab;
+          p.classList.toggle("hidden", !show);
         });
       }
     };
 
     // Single click handler works for both cases
-    nav.addEventListener('click', (e) => {
-      const a = e.target.closest('[data-tab]');
+    nav.addEventListener("click", (e) => {
+      const a = e.target.closest("[data-tab]");
       if (!a) return;
       e.preventDefault();
-      setActive(a.getAttribute('data-tab'));
+      setActive(a.getAttribute("data-tab"));
     });
 
     setActive(deriveInitialTab());
