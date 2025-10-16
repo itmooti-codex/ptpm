@@ -299,7 +299,9 @@ export class DashboardView {
         ? `<span class="ml-2 w-2.5 h-2.5 rounded-full bg-red-600"></span>`
         : "";
       return `
-        <div class="px-4 py-3 ${active ? "bg-blue-50" : "bg-white"} border-b last:border-b-0">
+        <div class="px-4 py-3 ${
+          active ? "bg-blue-50" : "bg-white"
+        } border-b last:border-b-0">
           <div class="flex items-start">
             <span class="mt-0.5 mr-3 inline-flex items-center justify-center w-5 h-5">
               <svg viewBox="0 0 24 24" class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor"
@@ -313,7 +315,9 @@ export class DashboardView {
             <div class="flex-1">
               <div class="flex items-center justify-between">
                 <div class="text-sm font-semibold text-slate-800">${item.id}
-                  <span class="font-normal text-slate-600"> - ${item.text}</span>
+                  <span class="font-normal text-slate-600"> - ${
+                    item.text
+                  }</span>
                 </div>
                 ${unreadDot}
               </div>
@@ -323,107 +327,73 @@ export class DashboardView {
         </div>`;
     }
 
+    // Render only the list and visual states — not the entire header/footer
     function render() {
-      // update tab button styles
-      const tabAction = document.getElementById("notifTabAction");
-      const tabGeneral = document.getElementById("notifTabGeneral");
-      const activeCls = "px-3 py-1.5 rounded-full text-sm font-semibold bg-blue-600 text-white shadow-sm";
-      const inactiveCls = "px-3 py-1.5 rounded-full text-sm font-semibold text-gray-700 hover:bg-gray-100";
-      tabAction.className = currentTab === "Action Required" ? activeCls : inactiveCls;
-      tabGeneral.className = currentTab === "General Updates" ? activeCls : inactiveCls;
+      // update tab button classes
+      tabAction.className =
+        currentTab === "Action Required" ? activeCls : inactiveCls;
+      tabGeneral.className =
+        currentTab === "General Updates" ? activeCls : inactiveCls;
 
-      // sync unread toggle visuals deterministically
-      const unreadBtn = document.getElementById("notifUnreadToggle");
-      if (unreadBtn) {
-        unreadBtn.setAttribute("aria-pressed", String(onlyUnread));
-        unreadBtn.classList.toggle("bg-blue-600", onlyUnread);
-        unreadBtn.classList.toggle("bg-gray-300", !onlyUnread);
-        const knob = unreadBtn.querySelector(".knob");
-        if (knob) {
-          knob.classList.toggle("translate-x-0", !onlyUnread);
-          knob.classList.toggle("translate-x-5", onlyUnread);
-        }
-      }
+      // update unread toggle visuals
+      unreadBtn.setAttribute("aria-pressed", String(onlyUnread));
+      unreadBtn.classList.toggle("bg-blue-600", onlyUnread);
+      unreadBtn.classList.toggle("bg-gray-300", !onlyUnread);
+      knob.classList.toggle("translate-x-0", !onlyUnread);
+      knob.classList.toggle("translate-x-5", onlyUnread);
 
+      // build filtered list
       const items = data
         .map((x, i) => ({ ...x, _idx: i }))
         .filter((x) => x.tab === currentTab && (!onlyUnread || !x.read));
 
-      // keep selectedIndex within bounds
-      if (selectedIndex >= items.length) selectedIndex = items.length - 1;
-      if (selectedIndex < 0) selectedIndex = 0;
-
+      // update list
       listEl.innerHTML = items
         .map((item, i) => rowTemplate(item, i === selectedIndex))
         .join("");
 
-      // click to select & mark as read
+      // mark as read on click
       Array.from(listEl.children).forEach((el, i) => {
         el.addEventListener("click", () => {
-          selectedIndex = i;
-          // mark as read on click (optional)
           const originalIndex = items[i]?._idx;
           if (originalIndex != null) data[originalIndex].read = true;
+          selectedIndex = i;
           render();
         });
       });
     }
-
-    // ----- Controls -----
+    // Only do this once
     const unreadToggle = document.getElementById("notifUnreadToggle");
     const markAll = document.getElementById("notifMarkAll");
-    const tabActionBtn = document.getElementById("notifTabAction");
-    const tabGeneralBtn = document.getElementById("notifTabGeneral");
+    const tabAction = document.getElementById("notifTabAction");
+    const tabGeneral = document.getElementById("notifTabGeneral");
 
-    // Toggle-style button (no native checkbox) for Only show unread
     unreadToggle.addEventListener("click", () => {
       onlyUnread = !onlyUnread;
       render();
     });
-
-    tabActionBtn.addEventListener("click", () => {
+    tabAction.addEventListener("click", () => {
       currentTab = "Action Required";
-      selectedIndex = 0;
       render();
     });
-
-    tabGeneralBtn.addEventListener("click", () => {
+    tabGeneral.addEventListener("click", () => {
       currentTab = "General Updates";
-      selectedIndex = 0;
       render();
     });
-
-    // Button for Mark all as read with visual check icon (toggle)
     markAll.addEventListener("click", () => {
-      const icon = markAll.querySelector("svg");
       markAllOn = !markAllOn;
+      const icon = markAll.querySelector("svg");
       if (markAllOn) {
         data.forEach((n) => (n.read = true));
-        if (icon) icon.classList.remove("hidden");
+        icon.classList.remove("hidden");
       } else {
-        // toggle off: mark items in current tab as unread again
         data
           .filter((n) => n.tab === currentTab)
           .forEach((n) => (n.read = false));
-        if (icon) icon.classList.add("hidden");
+        icon.classList.add("hidden");
       }
       render();
     });
-
-    // ----- API -----
-    this.toggleNotificationPopover = (show = true) => {
-      wrap.classList.toggle("hidden", !show);
-    };
-    this.updateNotificationPopover = (next = []) => {
-      // replace data array with next and re-render
-      data.length = 0;
-      next.forEach((n) => data.push(n));
-      selectedIndex = 0;
-      render();
-    };
-
-    // initial render
-    render();
   }
 
   // Top navigation tabs (Inquiry, Quote, Jobs, Payment)
