@@ -32,6 +32,7 @@ export class DashboardModel {
     window.plugin = plugin;
     window.ptpmDealModel = plugin.switchTo("PeterpmDeal");
     this.dealQuery = null;
+    this.quoteQuery = null;
     this.BuildDealQuery();
 
     this.statusClasses = overrides.statusClasses || DASHBOARD_STATUS_CLASSES;
@@ -130,7 +131,41 @@ export class DashboardModel {
       .noDestroy();
   }
 
-  BuildQuoteQuery() {}
+  BuildQuoteQuery() {
+    this.quoteQuery = ptpmDealModel
+      .query()
+      .deSelectAll()
+      .select([
+        "Unique_ID",
+        "Date_Added",
+        "Type",
+        "Inquiry_Status",
+        "How_did_you_hear",
+      ])
+      .where("inquiry_status", "Quote Created")
+      .include("Company", (q) =>
+        q.deSelectAll().select(["name", "account_type"])
+      )
+      .include("Service_Inquiry", (q) => q.select(["service_name"]))
+      .include("Primary_Contact", (q) =>
+        q.select([
+          "first_name",
+          "last_name",
+          "email",
+          "sms_number",
+          "address_1",
+        ])
+      )
+      .include("Property", (q) => {
+        q.deSelectAll().select(["address_1"]);
+      })
+      .include("Service_Provider", (q) => {
+        q.deSelectAll().include("Contact_Information", (q) => {
+          q.deSelectAll().select(["first_name", "last_name"]);
+        });
+      })
+      .noDestroy();
+  }
 
   BuildJobQuery() {}
 
@@ -146,6 +181,17 @@ export class DashboardModel {
         .toPromise();
     } catch (e) {
       console.log("Fetch deal error", e);
+    }
+  }
+
+  async fetchQuotesCreated() {
+    try {
+      return await this.quoteQuery
+        .fetch()
+        .pipe(window.toMainInstance?.(true) ?? ((x) => x))
+        .toPromise();
+    } catch (e) {
+      console.log("Fetch quotes error", e);
     }
   }
 }

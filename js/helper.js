@@ -86,7 +86,7 @@ export class DashboardHelper {
     });
   }
 
-  mapDealsToSampleRows(mappedData, formatDisplayDate) {
+  mapInquirysRows(mappedData, formatDisplayDate) {
     return mappedData.map((r) => ({
       id: `#${r.uniqueId ?? ""}`,
       client:
@@ -119,5 +119,43 @@ export class DashboardHelper {
         price: r["price"] ?? null,
       },
     }));
+  }
+
+  mapQuoteRows(mappedData, formatDisplayDate) {
+    return mappedData.map((records) => {
+      return {
+        id: `#${records.uniqueId ?? ""}`,
+        client:
+          [records["client-firstName"], records["client-lastName"]]
+            .filter(Boolean)
+            .join(" ") || "-",
+        created:
+          records["date-added"] && formatDisplayDate
+            ? formatDisplayDate(records["date-added"])
+            : "-",
+        quoteDate:
+          records["quote-date"] && formatDisplayDate
+            ? formatDisplayDate(records["quote-date"])
+            : "-",
+        service: records["service-name"] ?? "-",
+        type: records.type ?? "-",
+        quoteStatus: records["quote-status"] ?? "-",
+        quoteTotal:
+          records["quote-total"] != null
+            ? `$${records["quote-total"].toFixed(2)}`
+            : "-",
+        dateQuotedAccepted:
+          records["date-quoted-accepted"] && formatDisplayDate
+            ? formatDisplayDate(records["date-quoted-accepted"])
+            : "-",
+        meta: {
+          address: records["client-address"] ?? null,
+          email: records["client-email"] ?? null,
+          sms: records["client-smsNumber"] ?? null,
+          accountName: records["account-name"] ?? null,
+          recommendation: records["recommendations"] ?? null,
+        },
+      };
+    });
   }
 }

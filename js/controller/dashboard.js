@@ -135,10 +135,10 @@ export class DashboardController {
 
   async fetchDealsAndRenderTable() {
     try {
-      const data = await this.model.fetchDeal();
-      const mappedData = this.dashboardHelper.mapDealToTableRow(data);
-      const sampleRows = this.dashboardHelper.mapDealsToSampleRows(
-        mappedData,
+      const dealData = await this.model.fetchDeal();
+      const mappedDealData = this.dashboardHelper.mapDealToTableRow(dealData);
+      const sampleRows = this.dashboardHelper.mapInquirysRows(
+        mappedDealData,
         (iso) => this.model.formatDisplayDate(iso)
       );
       this.deals = sampleRows;
@@ -372,7 +372,8 @@ export class DashboardController {
 
       // Due Today filter (dummy hook: compare to r.dueToday boolean if exists)
       if (Array.isArray(f.dueToday) && f.dueToday.length) {
-        const val = (r.dueToday === true ? "yes" : r.dueToday === false ? "no" : "");
+        const val =
+          r.dueToday === true ? "yes" : r.dueToday === false ? "no" : "";
         if (!f.dueToday.includes(val)) return false;
       }
 
@@ -516,7 +517,11 @@ export class DashboardController {
         card.classList.toggle("hidden");
       });
       document.addEventListener("click", (e) => {
-        if (!card.classList.contains("hidden") && !card.contains(e.target) && e.target !== btn) {
+        if (
+          !card.classList.contains("hidden") &&
+          !card.contains(e.target) &&
+          e.target !== btn
+        ) {
           card.classList.add("hidden");
         }
       });
@@ -542,14 +547,17 @@ export class DashboardController {
     );
 
     // Task Status -> store separately
-    this.activeFilters.taskStatuses = this.activeFilters.taskStatuses || new Set();
+    this.activeFilters.taskStatuses =
+      this.activeFilters.taskStatuses || new Set();
     initDropdown(
       "task-status-filter-btn",
       "task-status-filter-card",
       'input[type="checkbox"][data-task-status]',
       (boxes) => {
         this.activeFilters.taskStatuses.clear();
-        boxes.forEach((c) => c.checked && this.activeFilters.taskStatuses.add(c.value));
+        boxes.forEach(
+          (c) => c.checked && this.activeFilters.taskStatuses.add(c.value)
+        );
       }
     );
 
@@ -581,7 +589,9 @@ export class DashboardController {
     const propInput = document.getElementById("filter-property-search");
     if (propInput) {
       propInput.addEventListener("input", () => {
-        this.activeFilters.propertySearch = propInput.value.trim().toLowerCase();
+        this.activeFilters.propertySearch = propInput.value
+          .trim()
+          .toLowerCase();
         const selectedDate = this.model.getSelectedDate();
         this.renderTable(selectedDate, this.applyActiveFilters(this.deals));
       });
