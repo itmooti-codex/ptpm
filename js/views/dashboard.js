@@ -32,6 +32,68 @@ export class DashboardView {
       </div>
     `;
     this.init();
+    this.previousTab = "";
+
+    this.filtersConfig = {
+      quote: [
+        "status-filter-btn",
+        "account-name-filter",
+        "resident-search-filter",
+        "address-filter",
+        "account-type-filter",
+        "taken-by-filter",
+        "Source-filter",
+        "date-filters",
+        "quote-number-filter",
+        "recommendation-filter",
+        "price-range-filter",
+      ],
+      inquiry: [
+        "status-filter-btn",
+        "account-name-filter",
+        "resident-search-filter",
+        "address-filter",
+        "account-type-filter",
+        "taken-by-filter",
+        "Source-filter",
+      ],
+      jobs: [
+        "status-filter-btn",
+        "account-name-filter",
+        "resident-search-filter",
+        "address-filter",
+        "account-type-filter",
+        "taken-by-filter",
+        "Source-filter",
+        "date-filters",
+        "quote-number-filter",
+        "recommendation-filter",
+        "price-range-filter",
+      ],
+      payment: [
+        "status-filter-btn",
+        "account-name-filter",
+        "resident-search-filter",
+        "address-filter",
+        "account-type-filter",
+        "taken-by-filter",
+        "Source-filter",
+        "date-filters",
+        "quote-number-filter",
+        "recommendation-filter",
+        "price-range-filter",
+      ],
+      "active-jobs": [
+        "status-filter-btn",
+        "account-name-filter",
+        "resident-search-filter",
+        "address-filter",
+        "account-type-filter",
+        "taken-by-filter",
+        "Source-filter",
+      ],
+      "urgent-calls": ["job-filters", "task-filters"],
+    };
   }
 
   init() {
@@ -180,6 +242,104 @@ export class DashboardView {
       })
       .join("");
     // No post-render wiring needed; hrefs are embedded per-row
+  }
+
+  renderQuoteTable(tableBody, rows, statusClasses, formatDisplayDate) {
+    const thead = tableBody.closest("table")?.querySelector("thead");
+    if (thead) {
+      thead.innerHTML = `
+        <tr>
+          <th class="px-6 py-4 text-left">Unique ID</th>
+          <th class="px-6 py-4 text-left">Client Info</th>
+          <th class="px-6 py-4 text-left">Quote Accepted</th>
+          <th class="px-6 py-4 text-left">Services</th>
+          <th class="px-6 py-4 text-left">Quoted Date</th>
+          <th class="px-6 py-4 text-left">Quote Total</th>
+          <th class="px-6 py-4 text-left">Status</th>
+        </tr>`;
+    }
+    const money = (n) => (n == null ? "-" : `$${Number(n).toLocaleString()}`);
+    tableBody.innerHTML = rows
+      .map((row) => {
+        const qa = row["date-quoted-accepted"]
+          ? formatDisplayDate(row["date-quoted-accepted"])
+          : "-";
+        const qd = row["quote-date"]
+          ? formatDisplayDate(row["quote-date"])
+          : "-";
+        const qt = money(row["quote-total"] ?? row?.meta?.quoteTotal);
+        const status = row["quote-status"] ?? row.status ?? "-";
+        return `
+          <tr class="border-b last:border-0">
+            <td class="px-6 py-4">${row.id}</td>
+            <td class="px-6 py-4"><div class="font-normal text-slate-700">${
+              row.client
+            }</div></td>
+            <td class="px-6 py-4 text-slate-600">${qa}</td>
+            <td class="px-6 py-4 text-slate-600">${row.service ?? "-"}</td>
+            <td class="px-6 py-4 text-slate-600">${qd}</td>
+            <td class="px-6 py-4 text-slate-600">${qt}</td>
+            <td class="px-6 py-4 text-left">
+              <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${
+                statusClasses[status] ?? "bg-slate-100 text-slate-600"
+              }">${status}</span>
+            </td>
+          </tr>`;
+      })
+      .join("");
+  }
+
+  renderJobsTable(tableBody, rows, statusClasses, formatDisplayDate) {
+    const thead = tableBody.closest("table")?.querySelector("thead");
+    if (thead) {
+      thead.innerHTML = `
+        <tr>
+          <th class="px-6 py-4 text-left">Unique ID</th>
+          <th class="px-6 py-4 text-left">Client Info</th>
+          <th class="px-6 py-4 text-left">Start Date</th>
+          <th class="px-6 py-4 text-left">Services</th>
+          <th class="px-6 py-4 text-left">Payment Status</th>
+          <th class="px-6 py-4 text-left">Required By</th>
+          <th class="px-6 py-4 text-left">Booked Date</th>
+          <th class="px-6 py-4 text-left">Job Total</th>
+          <th class="px-6 py-4 text-left">Job Status</th>
+        </tr>`;
+    }
+    const money = (n) => (n == null ? "-" : `$${Number(n).toLocaleString()}`);
+    tableBody.innerHTML = rows
+      .map((row) => {
+        const start = row["date-started"]
+          ? formatDisplayDate(row["date-started"])
+          : "-";
+        const req = row["date-job-required-by"]
+          ? formatDisplayDate(row["date-job-required-by"])
+          : "-";
+        const booked = row["date-booked"]
+          ? formatDisplayDate(row["date-booked"])
+          : "-";
+        const total = money(row.price ?? row?.meta?.price);
+        const pstatus = row["payment-status"] ?? "-";
+        const jstatus = row["job-status"] ?? row.status ?? "-";
+        return `
+          <tr class="border-b last:border-0">
+            <td class="px-6 py-4">${row.id}</td>
+            <td class="px-6 py-4"><div class="font-normal text-slate-700">${
+              row.client
+            }</div></td>
+            <td class="px-6 py-4 text-slate-600">${start}</td>
+            <td class="px-6 py-4 text-slate-600">${row.service ?? "-"}</td>
+            <td class="px-6 py-4 text-slate-600">${pstatus}</td>
+            <td class="px-6 py-4 text-slate-600">${req}</td>
+            <td class="px-6 py-4 text-slate-600">${booked}</td>
+            <td class="px-6 py-4 text-slate-600">${total}</td>
+            <td class="px-6 py-4 text-left">
+              <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${
+                statusClasses[jstatus] ?? "bg-slate-100 text-slate-600"
+              }">${jstatus}</span>
+            </td>
+          </tr>`;
+      })
+      .join("");
   }
 
   createNotificationModal(notifications) {
@@ -464,6 +624,23 @@ export class DashboardView {
       : [];
 
     const setActive = (tab) => {
+      if (tab == "urgent-calls") {
+        document.getElementById("related-filters").classList.add("hidden");
+      } else {
+        document.getElementById("related-filters").classList.remove("hidden");
+      }
+      if (this.previousTab != null && this.previousTab !== "") {
+        this.filtersConfig[this.previousTab]?.forEach((id) => {
+          const el = document.getElementById(id);
+          if (el) el.classList.add("hidden");
+        });
+      }
+      const currentiIds = this.filtersConfig[tab];
+      currentiIds.forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove("hidden");
+      });
+
       links.forEach((a) => {
         const active = a.getAttribute("data-tab") === tab;
         a.setAttribute("data-active", active ? "true" : "false");
@@ -480,6 +657,8 @@ export class DashboardView {
           p.classList.toggle("hidden", !show);
         });
       }
+
+      this.previousTab = tab;
     };
 
     // Single click handler works for both cases

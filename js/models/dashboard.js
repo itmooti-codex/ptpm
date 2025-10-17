@@ -102,11 +102,9 @@ export class DashboardModel {
       .select([
         "Unique_ID",
         "Date_Added",
-        "Inquiry_Source",
         "Type",
         "Inquiry_Status",
         "How_did_you_hear",
-        "Admin_Notes",
       ])
       .include("Company", (q) =>
         q.deSelectAll().select(["name", "account_type"])
@@ -129,11 +127,16 @@ export class DashboardModel {
           q.deSelectAll().select(["first_name", "last_name"]);
         });
       })
-      .include("Jobs", (q) => {
-        q.deSelectAll().select(["invoice_number", "job_total"]);
-      })
       .noDestroy();
   }
+
+  BuildQuoteQuery() {}
+
+  BuildJobQuery() {}
+
+  BuildActiveJObsQuery() {}
+
+  BuildUrgentCalls() {}
 
   async fetchDeal() {
     try {

@@ -196,8 +196,8 @@
                   </div>
                 </div>
                 <div class="flex-1 space-y-0 overflow-y-auto">
-                  <div class="space-y-3 border-b border-slate-200 px-3 py-4">
-                    <button id="status-filter-btn" type="button" class="relative flex w-full items-center justify-between rounded border border-slate-200 px-4 py-3 text-left text-sm font-medium transition">
+                  <div class="hidden space-y-3 border-b border-slate-200 px-3 py-4" id="related-filters">
+                    <button id="status-filter-btn" type="button" class="hidden relative flex w-full items-center justify-between rounded border border-slate-200 px-4 py-3 text-left text-sm font-medium transition">
                       <span class="text-slate-500">Status</span>
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.21l3.71-3.98a.75.75 0 111.08 1.04l-4.25 4.56a.75.75 0 01-1.1 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
@@ -222,7 +222,7 @@
                       </ul>
                     </div>
 
-                    <div class="w-full rounded border border-slate-200 px-4  text-left text-sm text-slate-500 focus-within:ring-2 focus-within:ring-sky-100 flex items-center gap-2">
+                    <div id="account-name-filter"  class="hidden w-full rounded border border-slate-200 px-4  text-left text-sm text-slate-500 focus-within:ring-2 focus-within:ring-sky-100 flex items-center gap-2">
                       <input id="filter-account-name" type="text" placeholder="Account Name" class="flex-1 outline-none text-slate-500 placeholder:text-slate-500 text-sm font-sm mb-0  !mb-0" />
                       <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M10.8874 10.3438L8.4828 7.93964C9.17975 7.10291 9.52729 6.02969 9.45311 4.94324C9.37894 3.8568 8.88876 2.84077 8.08455 2.10653C7.28034 1.37228 6.22402 0.976351 5.13533 1.00109C4.04664 1.02584 3.00939 1.46935 2.23937 2.23937C1.46935 3.00939 1.02584 4.04664 1.00109 5.13533C0.976351 6.22402 1.37228 7.28034 2.10653 8.08455C2.84077 8.88876 3.8568 9.37894 4.94324 9.45311C6.02969 9.52729 7.10291 9.17975 7.93964 8.4828L10.3438 10.8874C10.3795 10.9231 10.4218 10.9514 10.4685 10.9707C10.5151 10.9901 10.5651 11 10.6156 11C10.6661 11 10.7161 10.9901 10.7627 10.9707C10.8093 10.9514 10.8517 10.9231 10.8874 10.8874C10.9231 10.8517 10.9514 10.8093 10.9707 10.7627C10.9901 10.7161 11 10.6661 11 10.6156C11 10.5651 10.9901 10.5151 10.9707 10.4685C10.9514 10.4218 10.9231 10.3795 10.8874 10.3438ZM1.77901 5.2368C1.77901 4.55292 1.98181 3.88439 2.36176 3.31576C2.7417 2.74713 3.28174 2.30393 3.91356 2.04222C4.54539 1.78051 5.24064 1.71203 5.91138 1.84545C6.58213 1.97887 7.19825 2.3082 7.68183 2.79178C8.16541 3.27536 8.49473 3.89148 8.62815 4.56222C8.76157 5.23297 8.6931 5.92821 8.43138 6.56004C8.16967 7.19187 7.72648 7.7319 7.15785 8.11185C6.58922 8.4918 5.92069 8.69459 5.2368 8.69459C4.32005 8.69358 3.44114 8.32895 2.7929 7.68071C2.14466 7.03247 1.78003 6.15355 1.77901 5.2368Z" fill="#78829D"/>
@@ -230,7 +230,7 @@
 
                     </div>
 
-                    <div class="w-full rounded border border-slate-200 px-4  text-left text-sm text-slate-500 focus-within:ring-2 focus-within:ring-sky-100 flex items-center gap-2">
+                    <div id="resident-search-filter" class="hidden w-full rounded border border-slate-200 px-4  text-left text-sm text-slate-500 focus-within:ring-2 focus-within:ring-sky-100 flex items-center gap-2">
                       <input id="filter-resident" type="text" placeholder="Resident Search" class="flex-1 outline-none text-slate-500 placeholder:text-slate-500 mb-0  !mb-0" />
                       <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M10.8874 10.3438L8.4828 7.93964C9.17975 7.10291 9.52729 6.02969 9.45311 4.94324C9.37894 3.8568 8.88876 2.84077 8.08455 2.10653C7.28034 1.37228 6.22402 0.976351 5.13533 1.00109C4.04664 1.02584 3.00939 1.46935 2.23937 2.23937C1.46935 3.00939 1.02584 4.04664 1.00109 5.13533C0.976351 6.22402 1.37228 7.28034 2.10653 8.08455C2.84077 8.88876 3.8568 9.37894 4.94324 9.45311C6.02969 9.52729 7.10291 9.17975 7.93964 8.4828L10.3438 10.8874C10.3795 10.9231 10.4218 10.9514 10.4685 10.9707C10.5151 10.9901 10.5651 11 10.6156 11C10.6661 11 10.7161 10.9901 10.7627 10.9707C10.8093 10.9514 10.8517 10.9231 10.8874 10.8874C10.9231 10.8517 10.9514 10.8093 10.9707 10.7627C10.9901 10.7161 11 10.6661 11 10.6156C11 10.5651 10.9901 10.5151 10.9707 10.4685C10.9514 10.4218 10.9231 10.3795 10.8874 10.3438ZM1.77901 5.2368C1.77901 4.55292 1.98181 3.88439 2.36176 3.31576C2.7417 2.74713 3.28174 2.30393 3.91356 2.04222C4.54539 1.78051 5.24064 1.71203 5.91138 1.84545C6.58213 1.97887 7.19825 2.3082 7.68183 2.79178C8.16541 3.27536 8.49473 3.89148 8.62815 4.56222C8.76157 5.23297 8.6931 5.92821 8.43138 6.56004C8.16967 7.19187 7.72648 7.7319 7.15785 8.11185C6.58922 8.4918 5.92069 8.69459 5.2368 8.69459C4.32005 8.69358 3.44114 8.32895 2.7929 7.68071C2.14466 7.03247 1.78003 6.15355 1.77901 5.2368Z" fill="#78829D"/>
@@ -238,15 +238,14 @@
 
                     </div>
 
-                    <div class="w-full rounded border border-slate-200 px-4  text-left text-sm text-slate-500 focus-within:ring-2 focus-within:ring-sky-100 flex items-center gap-2">
+                    <div id="address-filter" class="hidden w-full rounded border border-slate-200 px-4  text-left text-sm text-slate-500 focus-within:ring-2 focus-within:ring-sky-100 flex items-center gap-2">
                       <input id="filter-address" type="text" placeholder="Address" class="flex-1 outline-none text-slate-500 placeholder:text-slate-500 text-sm font-sm mb-0  !mb-0" />
                       <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M10.8874 10.3438L8.4828 7.93964C9.17975 7.10291 9.52729 6.02969 9.45311 4.94324C9.37894 3.8568 8.88876 2.84077 8.08455 2.10653C7.28034 1.37228 6.22402 0.976351 5.13533 1.00109C4.04664 1.02584 3.00939 1.46935 2.23937 2.23937C1.46935 3.00939 1.02584 4.04664 1.00109 5.13533C0.976351 6.22402 1.37228 7.28034 2.10653 8.08455C2.84077 8.88876 3.8568 9.37894 4.94324 9.45311C6.02969 9.52729 7.10291 9.17975 7.93964 8.4828L10.3438 10.8874C10.3795 10.9231 10.4218 10.9514 10.4685 10.9707C10.5151 10.9901 10.5651 11 10.6156 11C10.6661 11 10.7161 10.9901 10.7627 10.9707C10.8093 10.9514 10.8517 10.9231 10.8874 10.8874C10.9231 10.8517 10.9514 10.8093 10.9707 10.7627C10.9901 10.7161 11 10.6661 11 10.6156C11 10.5651 10.9901 10.5151 10.9707 10.4685C10.9514 10.4218 10.9231 10.3795 10.8874 10.3438ZM1.77901 5.2368C1.77901 4.55292 1.98181 3.88439 2.36176 3.31576C2.7417 2.74713 3.28174 2.30393 3.91356 2.04222C4.54539 1.78051 5.24064 1.71203 5.91138 1.84545C6.58213 1.97887 7.19825 2.3082 7.68183 2.79178C8.16541 3.27536 8.49473 3.89148 8.62815 4.56222C8.76157 5.23297 8.6931 5.92821 8.43138 6.56004C8.16967 7.19187 7.72648 7.7319 7.15785 8.11185C6.58922 8.4918 5.92069 8.69459 5.2368 8.69459C4.32005 8.69358 3.44114 8.32895 2.7929 7.68071C2.14466 7.03247 1.78003 6.15355 1.77901 5.2368Z" fill="#78829D"/>
                       </svg>
-
                     </div>
 
-                    <button id="account-type-filter-btn" type="button" class="relative flex w-full items-center justify-between rounded border border-slate-200 px-4 py-3 text-left text-sm font-medium transition">
+                    <button id="account-type-filter" type="button" class=" hidden relative flex w-full items-center justify-between rounded border border-slate-200 px-4 py-3 text-left text-sm font-medium transition">
                       <span class="text-slate-500">Account Type</span>
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.21l3.71-3.98a.75.75 0 111.08 1.04l-4.25 4.56a.75.75 0 01-1.1 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
@@ -270,14 +269,14 @@
                       </ul>
                     </div>
 
-                    <button type="button" class="flex w-full items-center justify-between rounded border border-slate-200 px-4 py-3 text-left text-sm font-medium text-slate-500 transition hover:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-100">
+                    <button id="taken-by-filter" type="button" class="hidden flex w-full items-center justify-between rounded border border-slate-200 px-4 py-3 text-left text-sm font-medium text-slate-500 transition hover:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-100">
                       <span class="text-slate-500">Taken By</span>
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.21l3.71-3.98a.75.75 0 111.08 1.04l-4.25 4.56a.75.75 0 01-1.1 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
                       </svg>
                     </button>
 
-                    <div class="w-full rounded border border-slate-200 px-4  text-left text-sm text-slate-500 focus-within:ring-2 focus-within:ring-sky-100 flex items-center gap-2">
+                    <div id="Source-filter"  class="hidden w-full rounded border border-slate-200 px-4  text-left text-sm text-slate-500 focus-within:ring-2 focus-within:ring-sky-100 flex items-center gap-2">
                       <input id="filter-source" type="text" placeholder="Source" class="flex-1 outline-none text-slate-500 placeholder:text-slate-500 text-sm font-sm mb-0  !mb-0" />
                       <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M10.8874 10.3438L8.4828 7.93964C9.17975 7.10291 9.52729 6.02969 9.45311 4.94324C9.37894 3.8568 8.88876 2.84077 8.08455 2.10653C7.28034 1.37228 6.22402 0.976351 5.13533 1.00109C4.04664 1.02584 3.00939 1.46935 2.23937 2.23937C1.46935 3.00939 1.02584 4.04664 1.00109 5.13533C0.976351 6.22402 1.37228 7.28034 2.10653 8.08455C2.84077 8.88876 3.8568 9.37894 4.94324 9.45311C6.02969 9.52729 7.10291 9.17975 7.93964 8.4828L10.3438 10.8874C10.3795 10.9231 10.4218 10.9514 10.4685 10.9707C10.5151 10.9901 10.5651 11 10.6156 11C10.6661 11 10.7161 10.9901 10.7627 10.9707C10.8093 10.9514 10.8517 10.9231 10.8874 10.8874C10.9231 10.8517 10.9514 10.8093 10.9707 10.7627C10.9901 10.7161 11 10.6661 11 10.6156C11 10.5651 10.9901 10.5151 10.9707 10.4685C10.9514 10.4218 10.9231 10.3795 10.8874 10.3438ZM1.77901 5.2368C1.77901 4.55292 1.98181 3.88439 2.36176 3.31576C2.7417 2.74713 3.28174 2.30393 3.91356 2.04222C4.54539 1.78051 5.24064 1.71203 5.91138 1.84545C6.58213 1.97887 7.19825 2.3082 7.68183 2.79178C8.16541 3.27536 8.49473 3.89148 8.62815 4.56222C8.76157 5.23297 8.6931 5.92821 8.43138 6.56004C8.16967 7.19187 7.72648 7.7319 7.15785 8.11185C6.58922 8.4918 5.92069 8.69459 5.2368 8.69459C4.32005 8.69358 3.44114 8.32895 2.7929 7.68071C2.14466 7.03247 1.78003 6.15355 1.77901 5.2368Z" fill="#78829D"/>
@@ -285,7 +284,7 @@
 
                     </div>
 
-                    <div class="w-full rounded border border-slate-200 px-4  text-left text-sm text-slate-500 focus-within:ring-2 focus-within:ring-sky-100 flex items-center gap-2">
+                    <div id="Service Provider" class="hidden w-full rounded border border-slate-200 px-4  text-left text-sm text-slate-500 focus-within:ring-2 focus-within:ring-sky-100 flex items-center gap-2">
                       <input id="filter-serviceman" type="text" placeholder="Service Provider" class="flex-1 outline-none text-slate-500 placeholder:text-slate-500 text-sm font-sm mb-0  !mb-0" />
                       <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M10.8874 10.3438L8.4828 7.93964C9.17975 7.10291 9.52729 6.02969 9.45311 4.94324C9.37894 3.8568 8.88876 2.84077 8.08455 2.10653C7.28034 1.37228 6.22402 0.976351 5.13533 1.00109C4.04664 1.02584 3.00939 1.46935 2.23937 2.23937C1.46935 3.00939 1.02584 4.04664 1.00109 5.13533C0.976351 6.22402 1.37228 7.28034 2.10653 8.08455C2.84077 8.88876 3.8568 9.37894 4.94324 9.45311C6.02969 9.52729 7.10291 9.17975 7.93964 8.4828L10.3438 10.8874C10.3795 10.9231 10.4218 10.9514 10.4685 10.9707C10.5151 10.9901 10.5651 11 10.6156 11C10.6661 11 10.7161 10.9901 10.7627 10.9707C10.8093 10.9514 10.8517 10.9231 10.8874 10.8874C10.9231 10.8517 10.9514 10.8093 10.9707 10.7627C10.9901 10.7161 11 10.6661 11 10.6156C11 10.5651 10.9901 10.5151 10.9707 10.4685C10.9514 10.4218 10.9231 10.3795 10.8874 10.3438ZM1.77901 5.2368C1.77901 4.55292 1.98181 3.88439 2.36176 3.31576C2.7417 2.74713 3.28174 2.30393 3.91356 2.04222C4.54539 1.78051 5.24064 1.71203 5.91138 1.84545C6.58213 1.97887 7.19825 2.3082 7.68183 2.79178C8.16541 3.27536 8.49473 3.89148 8.62815 4.56222C8.76157 5.23297 8.6931 5.92821 8.43138 6.56004C8.16967 7.19187 7.72648 7.7319 7.15785 8.11185C6.58922 8.4918 5.92069 8.69459 5.2368 8.69459C4.32005 8.69358 3.44114 8.32895 2.7929 7.68071C2.14466 7.03247 1.78003 6.15355 1.77901 5.2368Z" fill="#78829D"/>
@@ -294,26 +293,26 @@
                     </div>
                   </div>
 
-                  <div class="space-y-3 border-b border-slate-200 px-3 py-4">
+                  <div id="date-filters" class="hidden space-y-3 border-b border-slate-200 px-3 py-4">
                     <div class="flex gap-3">
-                      <div class="flex-1 rounded border border-slate-200 px-4 py-3 text-sm text-slate-500">
+                      <div id="start-date" class="flex-1 rounded border border-slate-200 px-4 py-3 text-sm text-slate-500">
                         <div class="flex items-center gap-2">
                           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M6 2v2m12-2v2M4 7h16M5 5h14a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2z" />
                           </svg>
-                          <span class="text-slate-400">Start date</span>
+                          <span class="text-slate-500">Start date</span>
                         </div>
                       </div>
-                      <div class="flex-1 rounded border border-slate-200 px-4 py-3 text-sm text-slate-500">
+                      <div id="end-date"  class="flex-1 rounded border border-slate-200 px-4 py-3 text-sm text-slate-500">
                         <div class="flex items-center gap-2">
                           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M6 2v2m12-2v2M4 7h16M5 5h14a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2z" />
                           </svg>
-                          <span class="text-slate-400">End date</span>
+                          <span class="text-slate-500">End date</span>
                         </div>
                       </div>
                     </div>
-                    <button type="button" class="flex w-full items-center justify-between rounded border border-slate-200 px-4 py-3 text-left text-sm font-medium text-slate-400 transition hover:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-100">
+                    <button id="filter-by-btn" type="button" class="flex w-full items-center justify-between rounded border border-slate-200 px-4 py-3 text-left text-sm font-medium text-slate-500 transition hover:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-100">
                       <span>Filter by: All Dates</span>
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.21l3.71-3.98a.75.75 0 111.08 1.04l-4.25 4.56a.75.75 0 01-1.1 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
@@ -321,22 +320,22 @@
                     </button>
                   </div>
 
-                  <div class="space-y-3 border-b border-slate-200 px-3 py-4">
-                    <div class="w-full rounded border border-slate-200 px-4  text-left text-sm text-slate-500 focus-within:ring-2 focus-within:ring-sky-100 flex items-center gap-2">
+                  <div class="hidden space-y-3 border-b border-slate-200 px-3 py-4">
+                    <div id="quote-number-filter"  class="w-full rounded border border-slate-200 px-4  text-left text-sm text-slate-500 focus-within:ring-2 focus-within:ring-sky-100 flex items-center gap-2">
                       <input id="filter-quote-number" type="text" placeholder="Quote Number" class="flex-1 outline-none text-slate-500 placeholder:text-slate-500 text-sm font-sm mb-0  !mb-0" />
                       <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M10.8874 10.3438L8.4828 7.93964C9.17975 7.10291 9.52729 6.02969 9.45311 4.94324C9.37894 3.8568 8.88876 2.84077 8.08455 2.10653C7.28034 1.37228 6.22402 0.976351 5.13533 1.00109C4.04664 1.02584 3.00939 1.46935 2.23937 2.23937C1.46935 3.00939 1.02584 4.04664 1.00109 5.13533C0.976351 6.22402 1.37228 7.28034 2.10653 8.08455C2.84077 8.88876 3.8568 9.37894 4.94324 9.45311C6.02969 9.52729 7.10291 9.17975 7.93964 8.4828L10.3438 10.8874C10.3795 10.9231 10.4218 10.9514 10.4685 10.9707C10.5151 10.9901 10.5651 11 10.6156 11C10.6661 11 10.7161 10.9901 10.7627 10.9707C10.8093 10.9514 10.8517 10.9231 10.8874 10.8874C10.9231 10.8517 10.9514 10.8093 10.9707 10.7627C10.9901 10.7161 11 10.6661 11 10.6156C11 10.5651 10.9901 10.5151 10.9707 10.4685C10.9514 10.4218 10.9231 10.3795 10.8874 10.3438ZM1.77901 5.2368C1.77901 4.55292 1.98181 3.88439 2.36176 3.31576C2.7417 2.74713 3.28174 2.30393 3.91356 2.04222C4.54539 1.78051 5.24064 1.71203 5.91138 1.84545C6.58213 1.97887 7.19825 2.3082 7.68183 2.79178C8.16541 3.27536 8.49473 3.89148 8.62815 4.56222C8.76157 5.23297 8.6931 5.92821 8.43138 6.56004C8.16967 7.19187 7.72648 7.7319 7.15785 8.11185C6.58922 8.4918 5.92069 8.69459 5.2368 8.69459C4.32005 8.69358 3.44114 8.32895 2.7929 7.68071C2.14466 7.03247 1.78003 6.15355 1.77901 5.2368Z" fill="#78829D"/>
                       </svg>
 
                     </div>
-                    <div class="w-full rounded border border-slate-200 px-4  text-left text-sm text-slate-500 focus-within:ring-2 focus-within:ring-sky-100 flex items-center gap-2">
+                    <div id="invoice-number-filter" class="w-full rounded border border-slate-200 px-4  text-left text-sm text-slate-500 focus-within:ring-2 focus-within:ring-sky-100 flex items-center gap-2">
                       <input id="filter-invoice-number" type="text" placeholder="Invoice Number" class="flex-1 outline-none text-slate-500 placeholder:text-slate-500 text-sm font-sm mb-0  !mb-0" />
                       <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M10.8874 10.3438L8.4828 7.93964C9.17975 7.10291 9.52729 6.02969 9.45311 4.94324C9.37894 3.8568 8.88876 2.84077 8.08455 2.10653C7.28034 1.37228 6.22402 0.976351 5.13533 1.00109C4.04664 1.02584 3.00939 1.46935 2.23937 2.23937C1.46935 3.00939 1.02584 4.04664 1.00109 5.13533C0.976351 6.22402 1.37228 7.28034 2.10653 8.08455C2.84077 8.88876 3.8568 9.37894 4.94324 9.45311C6.02969 9.52729 7.10291 9.17975 7.93964 8.4828L10.3438 10.8874C10.3795 10.9231 10.4218 10.9514 10.4685 10.9707C10.5151 10.9901 10.5651 11 10.6156 11C10.6661 11 10.7161 10.9901 10.7627 10.9707C10.8093 10.9514 10.8517 10.9231 10.8874 10.8874C10.9231 10.8517 10.9514 10.8093 10.9707 10.7627C10.9901 10.7161 11 10.6661 11 10.6156C11 10.5651 10.9901 10.5151 10.9707 10.4685C10.9514 10.4218 10.9231 10.3795 10.8874 10.3438ZM1.77901 5.2368C1.77901 4.55292 1.98181 3.88439 2.36176 3.31576C2.7417 2.74713 3.28174 2.30393 3.91356 2.04222C4.54539 1.78051 5.24064 1.71203 5.91138 1.84545C6.58213 1.97887 7.19825 2.3082 7.68183 2.79178C8.16541 3.27536 8.49473 3.89148 8.62815 4.56222C8.76157 5.23297 8.6931 5.92821 8.43138 6.56004C8.16967 7.19187 7.72648 7.7319 7.15785 8.11185C6.58922 8.4918 5.92069 8.69459 5.2368 8.69459C4.32005 8.69358 3.44114 8.32895 2.7929 7.68071C2.14466 7.03247 1.78003 6.15355 1.77901 5.2368Z" fill="#78829D"/>
                       </svg>
 
                     </div>
-                    <div class="w-full rounded border border-slate-200 px-4  text-left text-sm text-slate-500 focus-within:ring-2 focus-within:ring-sky-100 flex items-center gap-2">
+                    <div id="recommendation-filter" class="w-full rounded border border-slate-200 px-4  text-left text-sm text-slate-500 focus-within:ring-2 focus-within:ring-sky-100 flex items-center gap-2">
                       <input id="filter-recommendation" type="text" placeholder="Recommendation" class="flex-1 outline-none text-slate-500 placeholder:text-slate-500 text-sm font-sm mb-0  !mb-0" />
                       <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M10.8874 10.3438L8.4828 7.93964C9.17975 7.10291 9.52729 6.02969 9.45311 4.94324C9.37894 3.8568 8.88876 2.84077 8.08455 2.10653C7.28034 1.37228 6.22402 0.976351 5.13533 1.00109C4.04664 1.02584 3.00939 1.46935 2.23937 2.23937C1.46935 3.00939 1.02584 4.04664 1.00109 5.13533C0.976351 6.22402 1.37228 7.28034 2.10653 8.08455C2.84077 8.88876 3.8568 9.37894 4.94324 9.45311C6.02969 9.52729 7.10291 9.17975 7.93964 8.4828L10.3438 10.8874C10.3795 10.9231 10.4218 10.9514 10.4685 10.9707C10.5151 10.9901 10.5651 11 10.6156 11C10.6661 11 10.7161 10.9901 10.7627 10.9707C10.8093 10.9514 10.8517 10.9231 10.8874 10.8874C10.9231 10.8517 10.9514 10.8093 10.9707 10.7627C10.9901 10.7161 11 10.6661 11 10.6156C11 10.5651 10.9901 10.5151 10.9707 10.4685C10.9514 10.4218 10.9231 10.3795 10.8874 10.3438ZM1.77901 5.2368C1.77901 4.55292 1.98181 3.88439 2.36176 3.31576C2.7417 2.74713 3.28174 2.30393 3.91356 2.04222C4.54539 1.78051 5.24064 1.71203 5.91138 1.84545C6.58213 1.97887 7.19825 2.3082 7.68183 2.79178C8.16541 3.27536 8.49473 3.89148 8.62815 4.56222C8.76157 5.23297 8.6931 5.92821 8.43138 6.56004C8.16967 7.19187 7.72648 7.7319 7.15785 8.11185C6.58922 8.4918 5.92069 8.69459 5.2368 8.69459C4.32005 8.69358 3.44114 8.32895 2.7929 7.68071C2.14466 7.03247 1.78003 6.15355 1.77901 5.2368Z" fill="#78829D"/>
@@ -345,8 +344,8 @@
                     </div>
                   </div>
 
-                  <div class="space-y-4 px-3 py-4">
-                    <span class="text-sm font-medium text-slate-400">Price Range</span>
+                  <div id="price-range-filter" class=" hidden space-y-4 px-3 py-4">
+                    <span class="text-sm font-medium text-slate-500">Price Range</span>
                     <div class="flex flex-col gap-3">
                       <div id="price-range" class="relative h-2 rounded-full bg-slate-200">
                         <!-- Progress bar -->
@@ -431,6 +430,95 @@
                         #price-range input[type=range]::-moz-range-track { background: transparent; height: 2px; }
                       </style>
                     </div>
+                  </div>
+
+                 <div class="hidden  flex flex-col gap-4 px-3 py-4" id="job-filters">
+                  <label>Job filters</label>
+                  <div class="w-full rounded border border-slate-200 px-4  text-left text-sm text-slate-500 focus-within:ring-2 focus-within:ring-sky-100 flex items-center gap-2">
+                    <input id="filter-address" type="text" placeholder="Job Id" class="flex-1 outline-none text-slate-500 placeholder:text-slate-500 text-sm font-sm mb-0  !mb-0" />
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10.8874 10.3438L8.4828 7.93964C9.17975 7.10291 9.52729 6.02969 9.45311 4.94324C9.37894 3.8568 8.88876 2.84077 8.08455 2.10653C7.28034 1.37228 6.22402 0.976351 5.13533 1.00109C4.04664 1.02584 3.00939 1.46935 2.23937 2.23937C1.46935 3.00939 1.02584 4.04664 1.00109 5.13533C0.976351 6.22402 1.37228 7.28034 2.10653 8.08455C2.84077 8.88876 3.8568 9.37894 4.94324 9.45311C6.02969 9.52729 7.10291 9.17975 7.93964 8.4828L10.3438 10.8874C10.3795 10.9231 10.4218 10.9514 10.4685 10.9707C10.5151 10.9901 10.5651 11 10.6156 11C10.6661 11 10.7161 10.9901 10.7627 10.9707C10.8093 10.9514 10.8517 10.9231 10.8874 10.8874C10.9231 10.8517 10.9514 10.8093 10.9707 10.7627C10.9901 10.7161 11 10.6661 11 10.6156C11 10.5651 10.9901 10.5151 10.9707 10.4685C10.9514 10.4218 10.9231 10.3795 10.8874 10.3438ZM1.77901 5.2368C1.77901 4.55292 1.98181 3.88439 2.36176 3.31576C2.7417 2.74713 3.28174 2.30393 3.91356 2.04222C4.54539 1.78051 5.24064 1.71203 5.91138 1.84545C6.58213 1.97887 7.19825 2.3082 7.68183 2.79178C8.16541 3.27536 8.49473 3.89148 8.62815 4.56222C8.76157 5.23297 8.6931 5.92821 8.43138 6.56004C8.16967 7.19187 7.72648 7.7319 7.15785 8.11185C6.58922 8.4918 5.92069 8.69459 5.2368 8.69459C4.32005 8.69358 3.44114 8.32895 2.7929 7.68071C2.14466 7.03247 1.78003 6.15355 1.77901 5.2368Z" fill="#78829D"/>
+                    </svg>
+                  </div>
+
+                  <div class="w-full rounded border border-slate-200 px-4  text-left text-sm text-slate-500 focus-within:ring-2 focus-within:ring-sky-100 flex items-center gap-2">
+                    <input id="filter-property-search" type="text" placeholder="Property Search" class="flex-1 outline-none text-slate-500 placeholder:text-slate-500 text-sm font-sm mb-0  !mb-0" />
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10.8874 10.3438L8.4828 7.93964C9.17975 7.10291 9.52729 6.02969 9.45311 4.94324C9.37894 3.8568 8.88876 2.84077 8.08455 2.10653C7.28034 1.37228 6.22402 0.976351 5.13533 1.00109C4.04664 1.02584 3.00939 1.46935 2.23937 2.23937C1.46935 3.00939 1.02584 4.04664 1.00109 5.13533C0.976351 6.22402 1.37228 7.28034 2.10653 8.08455C2.84077 8.88876 3.8568 9.37894 4.94324 9.45311C6.02969 9.52729 7.10291 9.17975 7.93964 8.4828L10.3438 10.8874C10.3795 10.9231 10.4218 10.9514 10.4685 10.9707C10.5151 10.9901 10.5651 11 10.6156 11C10.6661 11 10.7161 10.9901 10.7627 10.9707C10.8093 10.9514 10.8517 10.9231 10.8874 10.8874C10.9231 10.8517 10.9514 10.8093 10.9707 10.7627C10.9901 10.7161 11 10.6661 11 10.6156C11 10.5651 10.9901 10.5151 10.9707 10.4685C10.9514 10.4218 10.9231 10.3795 10.8874 10.3438ZM1.77901 5.2368C1.77901 4.55292 1.98181 3.88439 2.36176 3.31576C2.7417 2.74713 3.28174 2.30393 3.91356 2.04222C4.54539 1.78051 5.24064 1.71203 5.91138 1.84545C6.58213 1.97887 7.19825 2.3082 7.68183 2.79178C8.16541 3.27536 8.49473 3.89148 8.62815 4.56222C8.76157 5.23297 8.6931 5.92821 8.43138 6.56004C8.16967 7.19187 7.72648 7.7319 7.15785 8.11185C6.58922 8.4918 5.92069 8.69459 5.2368 8.69459C4.32005 8.69358 3.44114 8.32895 2.7929 7.68071C2.14466 7.03247 1.78003 6.15355 1.77901 5.2368Z" fill="#78829D"/>
+                    </svg>
+                 </div>
+
+                 <div id="account-name-filter" class="w-full rounded border border-slate-200 px-4  text-left text-sm text-slate-500 focus-within:ring-2 focus-within:ring-sky-100 flex items-center gap-2">
+                  <input id="filter-account-name" type="text" placeholder="Account Name" class="flex-1 outline-none text-slate-500 placeholder:text-slate-500 text-sm font-sm mb-0  !mb-0">
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M10.8874 10.3438L8.4828 7.93964C9.17975 7.10291 9.52729 6.02969 9.45311 4.94324C9.37894 3.8568 8.88876 2.84077 8.08455 2.10653C7.28034 1.37228 6.22402 0.976351 5.13533 1.00109C4.04664 1.02584 3.00939 1.46935 2.23937 2.23937C1.46935 3.00939 1.02584 4.04664 1.00109 5.13533C0.976351 6.22402 1.37228 7.28034 2.10653 8.08455C2.84077 8.88876 3.8568 9.37894 4.94324 9.45311C6.02969 9.52729 7.10291 9.17975 7.93964 8.4828L10.3438 10.8874C10.3795 10.9231 10.4218 10.9514 10.4685 10.9707C10.5151 10.9901 10.5651 11 10.6156 11C10.6661 11 10.7161 10.9901 10.7627 10.9707C10.8093 10.9514 10.8517 10.9231 10.8874 10.8874C10.9231 10.8517 10.9514 10.8093 10.9707 10.7627C10.9901 10.7161 11 10.6661 11 10.6156C11 10.5651 10.9901 10.5151 10.9707 10.4685C10.9514 10.4218 10.9231 10.3795 10.8874 10.3438ZM1.77901 5.2368C1.77901 4.55292 1.98181 3.88439 2.36176 3.31576C2.7417 2.74713 3.28174 2.30393 3.91356 2.04222C4.54539 1.78051 5.24064 1.71203 5.91138 1.84545C6.58213 1.97887 7.19825 2.3082 7.68183 2.79178C8.16541 3.27536 8.49473 3.89148 8.62815 4.56222C8.76157 5.23297 8.6931 5.92821 8.43138 6.56004C8.16967 7.19187 7.72648 7.7319 7.15785 8.11185C6.58922 8.4918 5.92069 8.69459 5.2368 8.69459C4.32005 8.69358 3.44114 8.32895 2.7929 7.68071C2.14466 7.03247 1.78003 6.15355 1.77901 5.2368Z" fill="#78829D"></path>
+                  </svg>
+
+                </div>
+
+                <button id="account-type-filter" type="button" class="relative flex w-full items-center justify-between rounded border border-slate-200 px-4 py-3 text-left text-sm font-medium transition">
+                  <span class="text-slate-500">Account Type</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.21l3.71-3.98a.75.75 0 111.08 1.04l-4.25 4.56a.75.75 0 01-1.1 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd"></path>
+                  </svg>
+                </button>
+
+
+                  </div>
+                  <div class="hidden flex flex-col gap-4 px-3 py-4" id="task-filters">
+                    <label> Task Filters</label>
+                    <!-- Task Type dropdown -->
+                  <button id="task-type-filter-btn" type="button" class="relative flex w-full items-center justify-between rounded border border-slate-200 px-4 py-3 text-left text-sm font-medium transition">
+                    <span class="text-slate-500">Task Type</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.21l3.71-3.98a.75.75 0 111.08 1.04l-4.25 4.56a.75.75 0 01-1.1 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                    </svg>
+                  </button>
+                  <div id="task-type-filter-card" class="hidden mt-2 w-full rounded border border-slate-200 bg-white shadow-xl p-2">
+                    <ul class="max-h-64 overflow-auto text-sm text-slate-700 space-y-1">
+                      <li class="px-2 py-1 flex items-center gap-2"><input id="task-type-inspection" data-task-type value="Inspection" type="checkbox" class="h-4 w-4 accent-[#003882]"><label for="task-type-inspection">Inspection</label></li>
+                      <li class="px-2 py-1 flex items-center gap-2"><input id="task-type-repair" data-task-type value="Repair" type="checkbox" class="h-4 w-4 accent-[#003882]"><label for="task-type-repair">Repair</label></li>
+                    </ul>
+                  </div>
+                  <!-- Task Status dropdown -->
+                  <button id="task-status-filter-btn" type="button" class="relative flex w-full items-center justify-between rounded border border-slate-200 px-4 py-3 text-left text-sm font-medium transition">
+                    <span class="text-slate-500">Task Status</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.21l3.71-3.98a.75.75 0 111.08 1.04l-4.25 4.56a.75.75 0 01-1.1 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                    </svg>
+                  </button>
+                  <div id="task-status-filter-card" class="hidden mt-2 w-full rounded border border-slate-200 bg-white shadow-xl p-2">
+                    <ul class="max-h-64 overflow-auto text-sm text-slate-700 space-y-1">
+                      <li class="px-2 py-1 flex items-center gap-2"><input id="task-status-open" data-task-status value="Open" type="checkbox" class="h-4 w-4 accent-[#003882]"><label for="task-status-open">Open</label></li>
+                      <li class="px-2 py-1 flex items-center gap-2"><input id="task-status-closed" data-task-status value="Closed" type="checkbox" class="h-4 w-4 accent-[#003882]"><label for="task-status-closed">Closed</label></li>
+                    </ul>
+                  </div>
+                  <!-- Due Today dropdown -->
+                  <button id="due-today-filter-btn" type="button" class="relative flex w-full items-center justify-between rounded border border-slate-200 px-4 py-3 text-left text-sm font-medium transition">
+                    <span class="text-slate-500">Due Today</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.21l3.71-3.98a.75.75 0 111.08 1.04l-4.25 4.56a.75.75 0 01-1.1 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                    </svg>
+                  </button>
+                  <div id="due-today-filter-card" class="hidden mt-2 w-full rounded border border-slate-200 bg-white shadow-xl p-2">
+                    <ul class="max-h-64 overflow-auto text-sm text-slate-700 space-y-1">
+                      <li class="px-2 py-1 flex items-center gap-2"><input id="due-today-yes" data-due-today value="Yes" type="checkbox" class="h-4 w-4 accent-[#003882]"><label for="due-today-yes">Yes</label></li>
+                      <li class="px-2 py-1 flex items-center gap-2"><input id="due-today-no" data-due-today value="No" type="checkbox" class="h-4 w-4 accent-[#003882]"><label for="due-today-no">No</label></li>
+                    </ul>
+                  </div>
+                  <!-- Assigned To dropdown -->
+                  <button id="assigned-to-filter-btn" type="button" class="relative flex w-full items-center justify-between rounded border border-slate-200 px-4 py-3 text-left text-sm font-medium transition">
+                    <span class="text-slate-500">Assigned To</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.21l3.71-3.98a.75.75 0 111.08 1.04l-4.25 4.56a.75.75 0 01-1.1 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                    </svg>
+                  </button>
+                  <div id="assigned-to-filter-card" class="hidden mt-2 w-full rounded border border-slate-200 bg-white shadow-xl p-2">
+                    <ul class="max-h-64 overflow-auto text-sm text-slate-700 space-y-1">
+                      <li class="px-2 py-1 flex items-center gap-2"><input id="assigned-alice" data-assigned-to value="Alice" type="checkbox" class="h-4 w-4 accent-[#003882]"><label for="assigned-alice">Alice</label></li>
+                      <li class="px-2 py-1 flex items-center gap-2"><input id="assigned-bob" data-assigned-to value="Bob" type="checkbox" class="h-4 w-4 accent-[#003882]"><label for="assigned-bob">Bob</label></li>
+                    </ul>
+                  </div>
                   </div>
                 </div>
               </div>

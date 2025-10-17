@@ -54,6 +54,7 @@ export class DashboardController {
     this.initGlobalSearch();
     this.initAccountTypeDropdown();
     this.initStatusDropdown();
+    this.initTaskFilters();
     this.initPriceRange();
     // Initialize top navigation tabs (Inquiry/Quote/Jobs/Payment)
     this.view.initTopTabs({ navId, panelsId, defaultTab });
@@ -353,6 +354,33 @@ export class DashboardController {
         if (typeof f.priceMax === "number" && price > f.priceMax) return false;
       }
       if (hasStatus && !f.statuses.has(r.status)) return false;
+
+      // Property Search (if present) checks id/address/client fields
+      if (f.propertySearch) {
+        const propHay = [r.id, r.meta?.address, r.client]
+          .filter(Boolean)
+          .join(" | ")
+          .toLowerCase();
+        if (!propHay.includes(String(f.propertySearch))) return false;
+      }
+
+      // Task Status filter (dummy hook: compare to r.taskStatus if exists)
+      if (f.taskStatuses && f.taskStatuses.size) {
+        const ts = (r.taskStatus || r.status || "").toString();
+        if (!f.taskStatuses.has(ts)) return false;
+      }
+
+      // Due Today filter (dummy hook: compare to r.dueToday boolean if exists)
+      if (Array.isArray(f.dueToday) && f.dueToday.length) {
+        const val = (r.dueToday === true ? "yes" : r.dueToday === false ? "no" : "");
+        if (!f.dueToday.includes(val)) return false;
+      }
+
+      // Assigned To filter (dummy hook: compare to r.assignedTo if exists)
+      if (Array.isArray(f.assignedTo) && f.assignedTo.length) {
+        const who = (r.assignedTo || r.meta?.assignedTo || "").toString();
+        if (!f.assignedTo.includes(who)) return false;
+      }
       return true;
     });
   }
@@ -478,6 +506,88 @@ export class DashboardController {
     apply();
   }
 
+  initTaskFilters() {
+    const initDropdown = (btnId, cardId, selector, applyFn) => {
+      const btn = document.getElementById(btnId);
+      const card = document.getElementById(cardId);
+      if (!btn || !card) return;
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        card.classList.toggle("hidden");
+      });
+      document.addEventListener("click", (e) => {
+        if (!card.classList.contains("hidden") && !card.contains(e.target) && e.target !== btn) {
+          card.classList.add("hidden");
+        }
+      });
+      const boxes = Array.from(card.querySelectorAll(selector));
+      const apply = () => {
+        applyFn(boxes);
+        const selectedDate = this.model.getSelectedDate();
+        this.renderTable(selectedDate, this.applyActiveFilters(this.deals));
+      };
+      boxes.forEach((b) => b.addEventListener("change", apply));
+      apply();
+    };
+
+    // Task Type -> reuse `type` free-text filter
+    initDropdown(
+      "task-type-filter-btn",
+      "task-type-filter-card",
+      'input[type="checkbox"][data-task-type]',
+      (boxes) => {
+        const vals = boxes.filter((c) => c.checked).map((c) => c.value);
+        this.activeFilters.type = vals.join(", ");
+      }
+    );
+
+    // Task Status -> store separately
+    this.activeFilters.taskStatuses = this.activeFilters.taskStatuses || new Set();
+    initDropdown(
+      "task-status-filter-btn",
+      "task-status-filter-card",
+      'input[type="checkbox"][data-task-status]',
+      (boxes) => {
+        this.activeFilters.taskStatuses.clear();
+        boxes.forEach((c) => c.checked && this.activeFilters.taskStatuses.add(c.value));
+      }
+    );
+
+    // Due Today -> array of selections
+    initDropdown(
+      "due-today-filter-btn",
+      "due-today-filter-card",
+      'input[type="checkbox"][data-due-today]',
+      (boxes) => {
+        this.activeFilters.dueToday = boxes
+          .filter((c) => c.checked)
+          .map((c) => String(c.value).toLowerCase());
+      }
+    );
+
+    // Assigned To -> array
+    initDropdown(
+      "assigned-to-filter-btn",
+      "assigned-to-filter-card",
+      'input[type="checkbox"][data-assigned-to]',
+      (boxes) => {
+        this.activeFilters.assignedTo = boxes
+          .filter((c) => c.checked)
+          .map((c) => c.value);
+      }
+    );
+
+    // Property Search text input
+    const propInput = document.getElementById("filter-property-search");
+    if (propInput) {
+      propInput.addEventListener("input", () => {
+        this.activeFilters.propertySearch = propInput.value.trim().toLowerCase();
+        const selectedDate = this.model.getSelectedDate();
+        this.renderTable(selectedDate, this.applyActiveFilters(this.deals));
+      });
+    }
+  }
+
   initPriceRange() {
     const range = document.getElementById("price-range");
     const progress = document.getElementById("price-progress");
@@ -508,7 +618,8 @@ export class DashboardController {
       }
 
       const minPercent = (minVal / parseInt(minSlider.max || 1, 10)) * 100;
-      const maxPercent = 100 - (maxVal / parseInt(maxSlider.max || 1, 10)) * 100;
+      const maxPercent =
+        100 - (maxVal / parseInt(maxSlider.max || 1, 10)) * 100;
       progress.style.left = `${minPercent}%`;
       progress.style.right = `${maxPercent}%`;
 
@@ -518,7 +629,8 @@ export class DashboardController {
       if (minDisplay) minDisplay.textContent = fmt(minVal);
       if (maxDisplay) maxDisplay.textContent = fmt(maxVal);
       if (minLabel) minLabel.textContent = fmt(0);
-      if (maxLabel) maxLabel.textContent = fmt(parseInt(maxSlider.max || 10000, 10));
+      if (maxLabel)
+        maxLabel.textContent = fmt(parseInt(maxSlider.max || 10000, 10));
     };
 
     minSlider.addEventListener("input", updateRange);
