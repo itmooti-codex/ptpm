@@ -33,9 +33,10 @@ export class DashboardModel {
     window.ptpmDealModel = plugin.switchTo("PeterpmDeal");
     this.dealQuery = null;
     this.quoteQuery = null;
-    this.BuildDealQuery();
+    this.jobQuery = null;
+    // this.BuildDealQuery();
     this.BuildQuoteQuery();
-
+    // this.BuildJobQuery();
     this.statusClasses = overrides.statusClasses || DASHBOARD_STATUS_CLASSES;
     this.dayCount = overrides.dayCount || DASHBOARD_DEFAULTS.dayCount;
     this.startDate = overrides.startDate || DASHBOARD_DEFAULTS.startDate;
@@ -107,9 +108,22 @@ export class DashboardModel {
     return instance.isValid() ? instance.format("D MMM YYYY") : "";
   }
 
-  BuildDealQuery() {
+  BuildDealQuery(filters = {}) {
+    const f = filters || {};
+    const isNonEmpty = (v) => v != null && String(v).trim() !== "";
+    const hasArray = (arr) => Array.isArray(arr) && arr.length > 0;
+    let accountType = ["Closed Real Estate"];
+    let accountName = "Peter the Possum dfMan";
+    let resident = `%${f.resident}%`;
+    let address = `13 Parakeet Place`;
+    let type = ["Service Request or Quote"];
+    let source = "Other";
+    let status = ["New Inquiry"];
     this.dealQuery = ptpmDealModel
       .query()
+      .where("how_did_you_hear", source)
+      .andWhere("type", "in", type)
+      .andWhere("inquiry_status", "in", status)
       .deSelectAll()
       .select([
         "Unique_ID",
@@ -119,20 +133,29 @@ export class DashboardModel {
         "How_did_you_hear",
       ])
       .include("Company", (q) =>
-        q.deSelectAll().select(["name", "account_type"])
+        q
+          .where("account_type", "in", accountType)
+          .andWhere("name", accountName)
+          .deSelectAll()
+          .select(["name", "account_type"])
       )
       .include("Service_Inquiry", (q) => q.select(["service_name"]))
       .include("Primary_Contact", (q) =>
-        q.select([
-          "first_name",
-          "last_name",
-          "email",
-          "sms_number",
-          "address_1",
-        ])
+        q
+          .where("first_name", "like", resident)
+          .andWhere("last_name", "like", resident)
+          .select([
+            "first_name",
+            "last_name",
+            "email",
+            "sms_number",
+            "address_1",
+          ])
       )
       .include("Property", (q) => {
-        q.deSelectAll().select(["address_1"]);
+        q.where("address_1", "like", address)
+          .deSelectAll()
+          .select(["address_1"]);
       })
       .include("Service_Provider", (q) => {
         q.deSelectAll().include("Contact_Information", (q) => {
@@ -178,14 +201,51 @@ export class DashboardModel {
       .noDestroy();
   }
 
-  BuildJobQuery() {}
+  BuildJobQuery() {
+    this.jobQuery = ptpmDealModel
+      .query()
+      .deSelectAll()
+      .select([
+        "Unique_ID",
+        "Date_Added",
+        "Type",
+        "Inquiry_Status",
+        "How_did_you_hear",
+      ])
+      .where({
+        Jobs: [{ where: { quote_status: "Accepted" } }],
+      })
+      .include("Company", (q) =>
+        q.deSelectAll().select(["name", "account_type"])
+      )
+      .include("Service_Inquiry", (q) => q.select(["service_name"]))
+      .include("Primary_Contact", (q) =>
+        q.select([
+          "first_name",
+          "last_name",
+          "email",
+          "sms_number",
+          "address_1",
+        ])
+      )
+      .include("Property", (q) => {
+        q.deSelectAll().select(["address_1"]);
+      })
+      .include("Service_Provider", (q) => {
+        q.deSelectAll().include("Contact_Information", (q) => {
+          q.deSelectAll().select(["first_name", "last_name"]);
+        });
+      })
+      .noDestroy();
+  }
 
   BuildActiveJObsQuery() {}
 
   BuildUrgentCalls() {}
 
-  async fetchDeal() {
+  async fetchDeal(filters) {
     try {
+      await this.BuildDealQuery(filters);
       return await this.dealQuery
         .fetch()
         .pipe(window.toMainInstance?.(true) ?? ((x) => x))
@@ -203,6 +263,17 @@ export class DashboardModel {
         .toPromise();
     } catch (e) {
       console.log("Fetch quotes error", e);
+    }
+  }
+
+  async fetchJobs() {
+    try {
+      return await this.jobQuery
+        .fetch()
+        .pipe(window.toMainInstance?.(true) ?? ((x) => x))
+        .toPromise();
+    } catch (e) {
+      console.log("Fetch jobs error", e);
     }
   }
 }

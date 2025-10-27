@@ -3,7 +3,8 @@ export class DashboardController {
   constructor(model, view) {
     this.model = model;
     this.view = view;
-
+    this.initStatusDropdown();
+    this.initAccountTypeDropdown();
     // DOM refs (assigned in init)
     this.calendarEl = null;
     this.tableContainerEl = null;
@@ -14,12 +15,7 @@ export class DashboardController {
     this.dashboardHelper = new DashboardHelper();
     this.deals = [];
     this.currentTab = "inquiry";
-    this.tableData = {
-      inquiry: { rows: [], loaded: false, loading: false, promise: null },
-      quote: { rows: [], loaded: false, loading: false, promise: null },
-      jobs: { rows: [], loaded: false, loading: false, promise: null },
-    };
-    this.activeFilters = {
+    this.filters = this.filters || {
       global: "",
       accountName: "",
       resident: "",
@@ -32,7 +28,9 @@ export class DashboardController {
       recommendation: "",
       priceMin: null,
       priceMax: null,
-      statuses: new Set(),
+      statuses: [],
+      dateFrom: null,
+      dateTo: null,
     };
   }
 
@@ -61,12 +59,9 @@ export class DashboardController {
     this.renderCalendar();
     this.calendarEl.addEventListener("click", this.onCalendarClick);
     this.onNotificationIconClick();
-    this.initFilters();
-    this.initGlobalSearch();
-    this.initAccountTypeDropdown();
-    this.initStatusDropdown();
-    this.initTaskFilters();
-    this.initPriceRange();
+    // Client-side filtering disabled; filters will be applied server-side.
+    // Wire Apply Filters to collect UI and refetch with server-side filtering
+    this.bindApplyFilters();
     // Initialize top navigation tabs (Inquiry/Quote/Jobs/Payment)
     this.view.initTopTabs({
       navId,
@@ -74,6 +69,12 @@ export class DashboardController {
       defaultTab,
       onTabChange: (tab) => this.handleTabChange(tab),
     });
+
+    // Bind Clear/Reset button if present
+    const resetBtn = document.getElementById("reset-filters-btn");
+    if (resetBtn) {
+      resetBtn.addEventListener("click", () => this.clearAllFilters());
+    }
   }
 
   destroy() {
@@ -118,12 +119,22 @@ export class DashboardController {
       case "quote":
         await this.fetchQuotesAndRenderTable();
         break;
+      case "payment":
+        await this.fetchPaymentsAndRenderTable();
+        break;
       case "jobs":
         await this.fetchJobsAndRenderTable();
+        break;
+      case "urgent-calls":
+        await this.fetchUrgentCallsAndRenderTable();
         break;
       case "inquiry":
         await this.fetchDealsAndRenderTable();
         break;
+      case "payment":
+
+      case "urgent-calls":
+
       default:
         this.deals = [];
         this.clearTable(tab);
@@ -163,7 +174,7 @@ export class DashboardController {
     const rows = hasExplicitRows ? deals : null;
 
     if (this.currentTab === "quote") {
-      const quoteRows = rows ?? this.tableData.quote.rows ?? [];
+      const quoteRows = rows ?? [];
       this.tableElements = this.view.renderQuoteTable(
         this.tableContainerEl,
         quoteRows,
@@ -173,8 +184,19 @@ export class DashboardController {
       return;
     }
 
+    if (this.currentTab === "payment") {
+      const paymentRows = rows ?? [];
+      this.tableElements = this.view.renderPaymentTable(
+        this.tableContainerEl,
+        paymentRows,
+        statusClasses,
+        formatDisplayDate
+      );
+      return;
+    }
+
     if (this.currentTab === "jobs") {
-      const jobRows = rows ?? this.tableData.jobs.rows ?? [];
+      const jobRows = rows ?? [];
       this.tableElements = this.view.renderJobsTable(
         this.tableContainerEl,
         jobRows,
@@ -184,22 +206,40 @@ export class DashboardController {
       return;
     }
 
-    if (this.currentTab !== "inquiry") {
-      this.tableElements = this.view.renderDataTable({
-        container: this.tableContainerEl,
-        headers: [],
-        rows: rows ?? [],
-        emptyState: "No data available for this tab.",
-      });
+    if (this.currentTab === "urgent-calls") {
+      const urgentRows = rows ?? [];
+      this.tableElements = this.view.renderUrgentCallsTable(
+        this.tableContainerEl,
+        urgentRows,
+        statusClasses,
+        formatDisplayDate
+      );
+      return;
+    }
+    if (this.currentTab === "payment") {
+      const jobRows = rows ?? [];
+      this.tableElements = this.view.renderPaymentTable(
+        this.tableContainerEl,
+        jobRows,
+        statusClasses,
+        formatDisplayDate
+      );
+      return;
+    }
+
+    if (this.currentTab === "urgent-calls") {
+      const jobRows = rows ?? [];
+      this.tableElements = this.view.renderUrgentCallsTable(
+        this.tableContainerEl,
+        jobRows,
+        statusClasses,
+        formatDisplayDate
+      );
       return;
     }
 
     const selectedDate = dateIso ?? this.model.getSelectedDate();
-    const inquiryRows = Array.isArray(rows)
-      ? rows
-      : Array.isArray(this.tableData.inquiry.rows)
-      ? this.tableData.inquiry.rows
-      : [];
+    const inquiryRows = Array.isArray(rows) ? rows : [];
     const scopedRows = inquiryRows;
 
     this.tableElements = this.view.renderTable(
@@ -214,31 +254,20 @@ export class DashboardController {
   reRenderActiveTab() {
     if (!this.tableContainerEl) return;
     if (this.currentTab === "inquiry") {
-      const selected = this.model.getSelectedDate() ?? this.ensureSelectedDate();
-      const baseRows =
-        Array.isArray(this.tableData.inquiry.rows) &&
-        this.tableData.inquiry.rows.length
-          ? this.tableData.inquiry.rows
-          : Array.isArray(this.deals)
-          ? this.deals
-          : [];
-      const sourceRows = Array.isArray(baseRows) ? baseRows : [];
-      const filtered = this.applyActiveFilters(sourceRows);
-      this.renderTable(selected, filtered);
+      const selected =
+        this.model.getSelectedDate() ?? this.ensureSelectedDate();
+      const baseRows = Array.isArray(this.deals) ? this.deals : [];
+      this.renderTable(selected, baseRows);
       return;
     }
     if (this.currentTab === "quote") {
-      const rows = Array.isArray(this.tableData.quote.rows)
-        ? this.tableData.quote.rows
-        : [];
-      this.renderTable(null, Array.isArray(rows) ? rows : []);
+      const rows = Array.isArray(this.deals) ? this.deals : [];
+      this.renderTable(null, rows);
       return;
     }
     if (this.currentTab === "jobs") {
-      const rows = Array.isArray(this.tableData.jobs.rows)
-        ? this.tableData.jobs.rows
-        : [];
-      this.renderTable(null, Array.isArray(rows) ? rows : []);
+      const rows = Array.isArray(this.deals) ? this.deals : [];
+      this.renderTable(null, rows);
       return;
     }
     this.clearTable(this.currentTab);
@@ -268,121 +297,464 @@ export class DashboardController {
     });
   }
 
-  async fetchDealsAndRenderTable({ force = false } = {}) {
-    const state = this.tableData.inquiry;
-    if (state.loading && state.promise) return state.promise;
-    if (state.loaded && !force) {
-      this.deals = state.rows;
+  async fetchDealsAndRenderTable() {
+    try {
+      const dealData =
+        typeof this.model.fetchDeal === "function"
+          ? await this.model.fetchDeal(this.filters)
+          : {};
+      const mappedDealData =
+        this.dashboardHelper.mapDealToTableRow(dealData ?? {}) ?? [];
+      const sampleRows = this.dashboardHelper.mapInquirysRows(
+        mappedDealData,
+        (iso) => this.model.formatDisplayDate(iso)
+      );
+      this.deals = sampleRows;
       this.reRenderActiveTab();
-      return state.rows;
+      return sampleRows;
+    } catch (e) {
+      console.log("fetchDeals render error", e);
+      this.clearTable("inquiry");
+      return [];
     }
-
-    state.loading = true;
-    const task = (async () => {
-      try {
-        const dealData = await this.model.fetchDeal();
-        const mappedDealData =
-          this.dashboardHelper.mapDealToTableRow(dealData ?? {}) ?? [];
-        const sampleRows = this.dashboardHelper.mapInquirysRows(
-          mappedDealData,
-          (iso) => this.model.formatDisplayDate(iso)
-        );
-        this.deals = sampleRows;
-        state.rows = sampleRows;
-        state.loaded = true;
-        this.reRenderActiveTab();
-        return sampleRows;
-      } catch (e) {
-        state.loaded = false;
-        console.log("fetchDeals render error", e);
-        this.clearTable("inquiry");
-        return [];
-      } finally {
-        state.loading = false;
-        state.promise = null;
-      }
-    })();
-
-    state.promise = task;
-    return task;
   }
 
-  async fetchQuotesAndRenderTable({ force = false } = {}) {
-    const state = this.tableData.quote;
-    if (state.loading && state.promise) return state.promise;
-    if (state.loaded && !force) {
-      this.deals = state.rows;
+  async fetchQuotesAndRenderTable() {
+    try {
+      const quoteData =
+        typeof this.model.fetchQuotesCreated === "function"
+          ? await this.model.fetchQuotesCreated(this.filters)
+          : {};
+      const mappedQuoteData =
+        this.dashboardHelper.mapDealToTableRow(quoteData ?? {}) ?? [];
+      const sampleRows = this.dashboardHelper.mapQuoteRows(mappedQuoteData);
+      this.deals = sampleRows;
       this.reRenderActiveTab();
-      return state.rows;
+      return sampleRows;
+    } catch (e) {
+      console.log("fetchQuotes render error", e);
+      this.clearTable("quote");
+      return [];
     }
-
-    state.loading = true;
-    const task = (async () => {
-      try {
-        const quoteData = await this.model.fetchQuotesCreated();
-        const mappedQuoteData =
-          this.dashboardHelper.mapDealToTableRow(quoteData ?? {}) ?? [];
-        const sampleRows = this.dashboardHelper.mapQuoteRows(mappedQuoteData);
-        this.deals = sampleRows;
-        state.rows = sampleRows;
-        state.loaded = true;
-        this.reRenderActiveTab();
-        return sampleRows;
-      } catch (e) {
-        state.loaded = false;
-        console.log("fetchQuotes render error", e);
-        this.clearTable("quote");
-        return [];
-      } finally {
-        state.loading = false;
-        state.promise = null;
-      }
-    })();
-
-    state.promise = task;
-    return task;
   }
 
-  async fetchJobsAndRenderTable({ force = false } = {}) {
-    const state = this.tableData.jobs;
-    if (state.loading && state.promise) return state.promise;
-    if (state.loaded && !force) {
-      this.deals = state.rows;
-      this.reRenderActiveTab();
-      return state.rows;
+  async fetchPaymentsAndRenderTable() {
+    try {
+      // Reuse deal fetch unless a dedicated model method exists
+      const fetcher =
+        typeof this.model.fetchPayments === "function"
+          ? () => this.model.fetchPayments(this.filters)
+          : () => this.model.fetchDeal(this.filters);
+      const paymentData = await fetcher();
+      const mapped =
+        this.dashboardHelper.mapDealToTableRow(paymentData ?? {}) ?? [];
+      const rows = this.dashboardHelper.mapPaymentRows(mapped);
+      this.deals = rows;
+      this.renderTable(null, rows);
+      return rows;
+    } catch (e) {
+      console.log("fetchPayments render error", e);
+      this.clearTable("payment");
+      return [];
     }
-
-    state.loading = true;
-    const task = (async () => {
-      try {
-        const fetcher =
-          typeof this.model.fetchJobs === "function"
-            ? () => this.model.fetchJobs()
-            : () => this.model.fetchDeal();
-        const jobData = await fetcher();
-        const mappedJobData =
-          this.dashboardHelper.mapDealToTableRow(jobData ?? {}) ?? [];
-        const sampleRows = this.dashboardHelper.mapJobRows(mappedJobData);
-        this.deals = sampleRows;
-        state.rows = sampleRows;
-        state.loaded = true;
-        this.reRenderActiveTab();
-        return sampleRows;
-      } catch (e) {
-        state.loaded = false;
-        console.log("fetchJobs render error", e);
-        this.clearTable("jobs");
-        return [];
-      } finally {
-        state.loading = false;
-        state.promise = null;
-      }
-    })();
-
-    state.promise = task;
-    return task;
   }
 
+  async fetchUrgentCallsAndRenderTable() {
+    try {
+      const fetcher =
+        typeof this.model.fetchUrgentCalls === "function"
+          ? () => this.model.fetchUrgentCalls(this.filters)
+          : () => this.model.fetchDeal(this.filters);
+      const urgentData = await fetcher();
+      const mapped =
+        this.dashboardHelper.mapDealToTableRow(urgentData ?? {}) ?? [];
+      const rows = this.dashboardHelper.mapUrgentCallRows(mapped);
+      this.deals = rows;
+      this.renderTable(null, rows);
+      return rows;
+    } catch (e) {
+      console.log("fetchUrgentCalls render error", e);
+      this.clearTable("urgent-calls");
+      return [];
+    }
+  }
+
+  async fetchJobsAndRenderTable() {
+    try {
+      const jobData =
+        typeof this.model.fetchJobs === "function"
+          ? await this.model.fetchJobs(this.filters)
+          : await this.model.fetchDeal(this.filters);
+      const mappedJobData =
+        this.dashboardHelper.mapDealToTableRow(jobData ?? {}) ?? [];
+      const sampleRows = this.dashboardHelper.mapJobRows(mappedJobData);
+      this.deals = sampleRows;
+      this.reRenderActiveTab();
+      return sampleRows;
+    } catch (e) {
+      console.log("fetchJobs render error", e);
+      this.clearTable("jobs");
+      return [];
+    }
+  }
+
+  // Server-side filtering: collect filters and persist across tabs
+  bindApplyFilters() {
+    const applyBtn = document.getElementById("apply-filters-btn");
+    if (!applyBtn) return;
+    applyBtn.addEventListener("click", () => {
+      this.filters = this.collectAllFiltersFromUI();
+      this.handleTabChange(this.currentTab);
+      this.renderAppliedFilters(this.filters);
+    });
+  }
+
+  // Collect all available filters from the sidebar.
+  // Hidden inputs will generally be empty; normalize empties to null.
+  collectAllFiltersFromUI() {
+    const byId = (id) => document.getElementById(id);
+    const val = (id) => (byId(id)?.value || "").trim();
+    const toNum = (x) => {
+      const n = Number(x);
+      return Number.isFinite(n) ? n : null;
+    };
+    const statusCard = document.getElementById("status-filter-card");
+    const statuses = statusCard
+      ? Array.from(
+          statusCard.querySelectorAll(
+            'input[type="checkbox"][data-status]:checked'
+          )
+        ).map((c) => (c.value || "").toString().trim().toLowerCase())
+      : [];
+    // Account Type dropdown selections (if present)
+    const typeCard = document.getElementById("account-type-filter-card");
+    const accountTypes = typeCard
+      ? Array.from(
+          typeCard.querySelectorAll(
+            'input[type="checkbox"][data-account-type]:checked'
+          )
+        )
+          .map((c) => (c.dataset.accountType || c.value || "").trim())
+          .filter(Boolean)
+      : [];
+    // Prefer dropdown selections; fallback to free text type field
+    const typeText = val("filter-type");
+    const typeCombined = accountTypes.length
+      ? accountTypes.join(", ")
+      : typeText || null;
+    // Helper to nullify empty strings
+    const nz = (s) => (s && s.length ? s : null);
+    return {
+      // Global
+      global: nz(val("global-search")),
+      // Common text filters
+      accountName: nz(val("filter-account-name")),
+      resident: nz(val("filter-resident")),
+      address: nz(val("filter-address")),
+      source: nz(val("filter-source")),
+      serviceman: nz(val("filter-serviceman")),
+      accountTypes,
+      // IDs / numbers
+      quoteNumber: nz(val("filter-quote-number")),
+      invoiceNumber: nz(val("filter-invoice-number")),
+      // Notes
+      recommendation: nz(val("filter-recommendation")),
+      // Ranges
+      priceMin: toNum(val("price-min")),
+      priceMax: toNum(val("price-max")),
+      // Status list
+      statuses,
+      // Dates (generic range shown in UI)
+      dateFrom: nz(val("date-from")),
+      dateTo: nz(val("date-to")),
+      // Payment-specific (optional — include if these inputs exist)
+      xeroInvoiceStatus: nz(val("xero-invoice-status")),
+      invoiceDateFrom: nz(val("invoice-date-from")),
+      invoiceDateTo: nz(val("invoice-date-to")),
+      dueDateFrom: nz(val("due-date-from")),
+      dueDateTo: nz(val("due-date-to")),
+      billPaidDateFrom: nz(val("bill-paid-date-from")),
+      billPaidDateTo: nz(val("bill-paid-date-to")),
+      // Urgent/task-related (optional)
+      taskPropertySearch: nz(val("task-property-search")),
+      // Checkboxes for task filters (if present)
+      taskDueToday: !!byId("task-due-today")?.checked || null,
+      taskAssignedToMe: !!byId("task-assigned-to-me")?.checked || null,
+    };
+  }
+
+  // --- Applied filters UI ---
+  renderAppliedFilters(filters) {
+    const root = document.getElementById("filter-applied");
+    if (!root) return;
+    const chips = [];
+    const addChip = (key, label, value) => {
+      if (value == null) return;
+      let text = "";
+      if (Array.isArray(value)) {
+        if (!value.length) return;
+        text = value.join(", ");
+      } else {
+        text = String(value).trim();
+      }
+      if (!text) return;
+      chips.push(`
+        <div data-chip-key="${key}" data-add-btn="true" data-filter="true" data-icon="true" data-tab="false" data-type="primary" class="px-3 py-2 bg-sky-100 rounded-[20px] outline outline-1 outline-offset-[-1px] outline-blue-700 flex justify-center items-center gap-1 mr-2 mb-2">
+          <div class="justify-end text-blue-700 text-xs font-normal font-['Inter'] leading-3">${label}: ${text} </div>
+          <button type="button" class="w-3 h-3 relative overflow-hidden remove-chip" aria-label="Remove ${label}">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 3 24 24" class="w-4 h-4 fill-[#003882]">
+              <path d="M6.225 4.811a1 1 0 0 0-1.414 1.414L10.586 12l-5.775 5.775a1 1 0 1 0 1.414 1.414L12 13.414l5.775 5.775a1 1 0 0 0 1.414-1.414L13.414 12l5.775-5.775a1 1 0 0 0-1.414-1.414L12 10.586 6.225 4.811z"></path>
+            </svg>
+          </button>
+        </div>
+      `);
+    };
+
+    addChip("statuses", "Status", filters.statuses || []);
+    addChip("accountTypes", "Account Types", filters.accountTypes || []);
+    addChip("accountName", "Account Name", filters.accountName);
+    addChip("resident", "Resident", filters.resident);
+    addChip("address", "Address", filters.address);
+    addChip("source", "Source", filters.source);
+    addChip("serviceman", "Serviceman", filters.serviceman);
+    addChip("type", "Type", filters.type);
+    addChip("quoteNumber", "Quote #", filters.quoteNumber);
+    addChip("invoiceNumber", "Invoice #", filters.invoiceNumber);
+    addChip("recommendation", "Recommendation", filters.recommendation);
+    if (filters.priceMin != null || filters.priceMax != null) {
+      const min = filters.priceMin != null ? filters.priceMin : "";
+      const max = filters.priceMax != null ? filters.priceMax : "";
+      addChip("priceRange", "Price", `${min} - ${max}`);
+    }
+    if (filters.dateFrom || filters.dateTo) {
+      addChip("dateRange", "Quoted Date", `${filters.dateFrom || ""} –  ${filters.dateTo || ""}`);
+    }
+    addChip("xeroInvoiceStatus", "Xero Status", filters.xeroInvoiceStatus);
+    if (filters.invoiceDateFrom || filters.invoiceDateTo) {
+      addChip("invoiceDate", "Invoice Date", `${filters.invoiceDateFrom || ""} –  ${filters.invoiceDateTo || ""}`);
+    }
+    if (filters.dueDateFrom || filters.dueDateTo) {
+      addChip("dueDate", "Due Date", `${filters.dueDateFrom || ""} –  ${filters.dueDateTo || ""}`);
+    }
+    if (filters.billPaidDateFrom || filters.billPaidDateTo) {
+      addChip("billPaidDate", "Bill Paid", `${filters.billPaidDateFrom || ""} –  ${filters.billPaidDateTo || ""}`);
+    }
+    addChip("taskPropertySearch", "Task Property", filters.taskPropertySearch);
+    if (filters.taskDueToday) addChip("taskDueToday", "Due Today", "Yes");
+    if (filters.taskAssignedToMe) addChip("taskAssignedToMe", "Assigned To Me", "Yes");
+
+    root.innerHTML = chips.join("") || "";
+
+    // Attach remove handlers
+    root.querySelectorAll(".remove-chip").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const chip = e.currentTarget.closest('[data-chip-key]');
+        if (!chip) return;
+        const key = chip.getAttribute('data-chip-key');
+        this.removeFilterChip(key);
+      });
+    });
+  }
+
+  removeFilterChip(key) {
+    // Update in-memory filters and mirror to UI controls
+    const f = this.filters || {};
+    const setVal = (id, v = "") => {
+      const el = document.getElementById(id);
+      if (el) el.value = v;
+    };
+    const uncheckAll = (selector, root = document) => {
+      Array.from(root.querySelectorAll(selector)).forEach((c) => (c.checked = false));
+    };
+
+    switch (key) {
+      case "statuses":
+        f.statuses = [];
+        {
+          const card = document.getElementById("status-filter-card");
+          if (card) {
+            uncheckAll('input[type="checkbox"][data-status]', card);
+            const allToggle = card.querySelector('#status-all');
+            if (allToggle) allToggle.checked = false;
+          }
+        }
+        break;
+      case "accountTypes":
+        f.accountTypes = [];
+        {
+          const card = document.getElementById("account-type-filter-card");
+          if (card) {
+            uncheckAll('input[type="checkbox"][data-account-type]', card);
+            const allToggle = card.querySelector('#account-type-all');
+            if (allToggle) allToggle.checked = false;
+            const labelSpan = card.querySelector('#account-type-label');
+            if (labelSpan) labelSpan.textContent = 'All';
+          }
+        }
+        break;
+      case "accountName":
+        f.accountName = null; setVal('filter-account-name'); break;
+      case "resident":
+        f.resident = null; setVal('filter-resident'); break;
+      case "address":
+        f.address = null; setVal('filter-address'); break;
+      case "source":
+        f.source = null; setVal('filter-source'); break;
+      case "serviceman":
+        f.serviceman = null; setVal('filter-serviceman'); break;
+      case "type":
+        f.type = null; setVal('filter-type'); break;
+      case "quoteNumber":
+        f.quoteNumber = null; setVal('filter-quote-number'); break;
+      case "invoiceNumber":
+        f.invoiceNumber = null; setVal('filter-invoice-number'); break;
+      case "recommendation":
+        f.recommendation = null; setVal('filter-recommendation'); break;
+      case "priceRange":
+        f.priceMin = null; f.priceMax = null;
+        {
+          const minEl = document.getElementById('price-min');
+          const maxEl = document.getElementById('price-max');
+          const progress = document.getElementById('price-progress');
+          if (minEl) minEl.value = minEl.min || '0';
+          if (maxEl) maxEl.value = maxEl.max || '';
+          if (progress) { progress.style.left = '0%'; progress.style.right = '0%'; }
+        }
+        break;
+      case "dateRange":
+        f.dateFrom = null; f.dateTo = null; setVal('date-from'); setVal('date-to'); break;
+      case "xeroInvoiceStatus":
+        f.xeroInvoiceStatus = null; setVal('xero-invoice-status'); break;
+      case "invoiceDate":
+        f.invoiceDateFrom = null; f.invoiceDateTo = null; setVal('invoice-date-from'); setVal('invoice-date-to'); break;
+      case "dueDate":
+        f.dueDateFrom = null; f.dueDateTo = null; setVal('due-date-from'); setVal('due-date-to'); break;
+      case "billPaidDate":
+        f.billPaidDateFrom = null; f.billPaidDateTo = null; setVal('bill-paid-date-from'); setVal('bill-paid-date-to'); break;
+      case "taskPropertySearch":
+        f.taskPropertySearch = null; setVal('task-property-search'); break;
+      case "taskDueToday":
+        f.taskDueToday = null; {
+          const el = document.getElementById('task-due-today'); if (el) el.checked = false;
+        } break;
+      case "taskAssignedToMe":
+        f.taskAssignedToMe = null; {
+          const el = document.getElementById('task-assigned-to-me'); if (el) el.checked = false;
+        } break;
+      default:
+        break;
+    }
+
+    this.filters = f;
+    // Re-render chips and refetch
+    this.renderAppliedFilters(this.filters);
+    this.handleTabChange(this.currentTab);
+  }
+
+  clearAppliedFiltersUI() {
+    const root = document.getElementById("filter-applied");
+    if (root) root.innerHTML = "";
+  }
+
+  clearAllFilters() {
+    // Text-like inputs
+    const textIds = [
+      "filter-account-name",
+      "filter-resident",
+      "filter-address",
+      "filter-source",
+      "filter-serviceman",
+      "filter-type",
+      "filter-quote-number",
+      "filter-invoice-number",
+      "filter-recommendation",
+      "global-search",
+      "date-from",
+      "date-to",
+      "xero-invoice-status",
+      "invoice-date-from",
+      "invoice-date-to",
+      "due-date-from",
+      "due-date-to",
+      "bill-paid-date-from",
+      "bill-paid-date-to",
+      "task-property-search",
+    ];
+    textIds.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.value = "";
+    });
+
+    // Status checkboxes
+    const statusCard = document.getElementById("status-filter-card");
+    if (statusCard) {
+      Array.from(
+        statusCard.querySelectorAll('input[type="checkbox"][data-status]')
+      ).forEach((c) => (c.checked = false));
+      const allToggle = statusCard.querySelector("#status-all");
+      if (allToggle) allToggle.checked = false;
+    }
+
+    // Account Type checkboxes
+    const typeCard = document.getElementById("account-type-filter-card");
+    if (typeCard) {
+      Array.from(
+        typeCard.querySelectorAll(
+          'input[type="checkbox"][data-account-type]'
+        )
+      ).forEach((c) => (c.checked = false));
+      const allToggle = typeCard.querySelector("#account-type-all");
+      if (allToggle) allToggle.checked = false;
+      const labelSpan = typeCard.querySelector("#account-type-label");
+      if (labelSpan) labelSpan.textContent = "All";
+    }
+
+    // Price range
+    const minEl = document.getElementById("price-min");
+    const maxEl = document.getElementById("price-max");
+    const progress = document.getElementById("price-progress");
+    if (minEl) minEl.value = minEl.min || "0";
+    if (maxEl) maxEl.value = maxEl.max || "";
+    if (progress) {
+      progress.style.left = "0%";
+      progress.style.right = "0%";
+    }
+
+    // Reset in-memory filters
+    this.filters = {
+      global: null,
+      accountName: null,
+      resident: null,
+      address: null,
+      source: null,
+      serviceman: null,
+      type: null,
+      quoteNumber: null,
+      invoiceNumber: null,
+      recommendation: null,
+      priceMin: null,
+      priceMax: null,
+      statuses: [],
+      accountTypes: [],
+      dateFrom: null,
+      dateTo: null,
+      xeroInvoiceStatus: null,
+      invoiceDateFrom: null,
+      invoiceDateTo: null,
+      dueDateFrom: null,
+      dueDateTo: null,
+      billPaidDateFrom: null,
+      billPaidDateTo: null,
+      taskPropertySearch: null,
+      taskDueToday: null,
+      taskAssignedToMe: null,
+    };
+
+    this.clearAppliedFiltersUI();
+    this.handleTabChange(this.currentTab);
+  }
+
+  /*
   initFilters() {
     const byId = (id) => document.getElementById(id);
     const inputs = [
@@ -558,9 +930,7 @@ export class DashboardController {
       const type = toText(r.type);
       const quote = toText(r.quoteNumber ?? r.meta?.quoteNumber);
       const invoice = toText(r.invoiceNumber ?? r.meta?.invoiceNumber);
-      const recommendation = toText(
-        r.recommendation ?? r.meta?.recommendation
-      );
+      const recommendation = toText(r.recommendation ?? r.meta?.recommendation);
       const accountName = toText(r.meta?.accountName);
       const idValue = toText(r.id);
       const statusValue = toText(r.status);
@@ -616,10 +986,7 @@ export class DashboardController {
         if (typeof f.priceMin === "number" && price < f.priceMin) return false;
         if (typeof f.priceMax === "number" && price > f.priceMax) return false;
       }
-      if (
-        statusFilters.length > 0 &&
-        !statusFilters.includes(statusValue)
-      )
+      if (statusFilters.length > 0 && !statusFilters.includes(statusValue))
         return false;
 
       // Property Search (if present) checks id/address/client fields
@@ -914,5 +1281,104 @@ export class DashboardController {
     maxSlider.addEventListener("input", updateRange);
     // initialize on load
     updateRange();
+  }
+  */
+
+  initStatusDropdown() {
+    const btn = document.getElementById("status-filter-btn");
+    const card = document.getElementById("status-filter-card");
+    if (!btn || !card) return;
+
+    // Toggle card
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      card.classList.toggle("hidden");
+    });
+
+    // Close on outside click
+    document.addEventListener("click", (e) => {
+      if (
+        !card.classList.contains("hidden") &&
+        !card.contains(e.target) &&
+        e.target !== btn
+      ) {
+        card.classList.add("hidden");
+      }
+    });
+
+    const allToggle = card.querySelector("#status-all");
+    const statusBoxes = Array.from(
+      card.querySelectorAll('input[type="checkbox"][data-status]')
+    );
+
+    const syncAllCheckbox = () => {
+      const allChecked = statusBoxes.every((c) => c.checked);
+      if (allToggle) allToggle.checked = allChecked;
+    };
+
+    statusBoxes.forEach((box) => {
+      box.addEventListener("change", () => {
+        syncAllCheckbox();
+      });
+    });
+
+    if (allToggle) {
+      allToggle.addEventListener("change", () => {
+        const next = !!allToggle.checked;
+        statusBoxes.forEach((c) => (c.checked = next));
+      });
+    }
+
+    // Initialize state
+    syncAllCheckbox();
+  }
+
+  initAccountTypeDropdown() {
+    const btn = document.getElementById("account-type-filter");
+    const card = document.getElementById("account-type-filter-card");
+    if (!btn || !card) return;
+
+    // Toggle card visibility
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      card.classList.toggle("hidden");
+    });
+
+    // Close on outside click
+    document.addEventListener("click", (e) => {
+      if (
+        !card.classList.contains("hidden") &&
+        !card.contains(e.target) &&
+        e.target !== btn
+      ) {
+        card.classList.add("hidden");
+      }
+    });
+
+    const allToggle = card.querySelector("#account-type-all");
+    const typeBoxes = Array.from(
+      card.querySelectorAll('input[type="checkbox"][data-account-type]')
+    );
+
+    const syncAllCheckbox = () => {
+      const allChecked = typeBoxes.every((c) => c.checked);
+      if (allToggle) allToggle.checked = allChecked;
+    };
+
+    typeBoxes.forEach((box) => {
+      box.addEventListener("change", () => {
+        syncAllCheckbox();
+      });
+    });
+
+    if (allToggle) {
+      allToggle.addEventListener("change", () => {
+        const next = !!allToggle.checked;
+        typeBoxes.forEach((c) => (c.checked = next));
+      });
+    }
+
+    // Initialize state
+    syncAllCheckbox();
   }
 }

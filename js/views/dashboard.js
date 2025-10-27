@@ -510,7 +510,7 @@ export class DashboardView {
       },
       {
         key: "dateQuotedAccepted",
-        label: "Quote Accepted",
+        label: "Quote Accepted Date",
         headerClass: "px-6 py-4 text-left",
         cellClass: "px-6 py-4 text-slate-600",
         render: (row) => {
@@ -552,6 +552,14 @@ export class DashboardView {
           return this.buildStatusBadge({ status }, statusClasses);
         },
       },
+
+      {
+        key: "actions",
+        label: "Action",
+        headerClass: "px-6 py-4 text-center",
+        cellClass: "px-6 py-4 text-center",
+        render: () => this.actionButtons,
+      },
     ];
 
     return this.renderDataTable({
@@ -559,6 +567,49 @@ export class DashboardView {
       headers,
       rows: Array.isArray(rows) ? rows : [],
       emptyState: "No quotes found.",
+      getRowClass: () => "border-b last:border-0",
+    });
+  }
+
+  renderPaymentTable(container, rows, statusClasses, formatDisplayDate) {
+    if (container == null) return null;
+    const money = (n) =>
+      n == null || Number.isNaN(Number(n))
+        ? "-"
+        : `$${Number(n).toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}`;
+
+    const headers = [
+      { key: "id", label: "Unique ID", headerClass: "px-6 py-4 text-left", cellClass: "px-6 py-4" },
+      { key: "client", label: "Client Info", headerClass: "px-6 py-4 text-left", cellClass: "px-6 py-4",
+        render: (row) => `<div class=\"font-normal text-slate-700\">${row.client ?? "-"}</div>` },
+      { key: "invoiceNumber", label: "Invoice No.", headerClass: "px-6 py-4 text-left", cellClass: "px-6 py-4 text-slate-600",
+        render: (row) => row.invoiceNumber ?? row?.meta?.invoiceNumber ?? "-" },
+      { key: "invoiceDate", label: "Invoice Date", headerClass: "px-6 py-4 text-left", cellClass: "px-6 py-4 text-slate-600",
+        render: (row) => row.invoiceDate ? formatDisplayDate(row.invoiceDate) : "-" },
+      { key: "dueDate", label: "Due Date", headerClass: "px-6 py-4 text-left", cellClass: "px-6 py-4 text-slate-600",
+        render: (row) => row.dueDate ? formatDisplayDate(row.dueDate) : "-" },
+      { key: "invoiceTotal", label: "Invoice Total", headerClass: "px-6 py-4 text-left", cellClass: "px-6 py-4 text-slate-600",
+        render: (row) => money(row.invoiceTotal ?? row?.meta?.invoiceTotal) },
+      { key: "billPaidDate", label: "Bill Paid Date", headerClass: "px-6 py-4 text-left", cellClass: "px-6 py-4 text-slate-600",
+        render: (row) => row.billPaidDate ? formatDisplayDate(row.billPaidDate) : "-" },
+      { key: "service", label: "Service", headerClass: "px-6 py-4 text-left", cellClass: "px-6 py-4 text-slate-600",
+        render: (row) => row.service ?? "-" },
+      { key: "adminAmount", label: "Admin Amount", headerClass: "px-6 py-4 text-left", cellClass: "px-6 py-4 text-slate-600",
+        render: (row) => money(row.adminAmount ?? row?.meta?.adminAmount) },
+      { key: "xeroInvoiceStatus", label: "Xero Invoice Status", headerClass: "px-6 py-4 text-left", cellClass: "px-6 py-4 text-left",
+        render: (row) => row.xeroInvoiceStatus ?? "-" },
+      { key: "actions", label: "Action", headerClass: "px-6 py-4 text-center", cellClass: "px-6 py-4 text-center",
+        render: () => this.actionButtons },
+    ];
+
+    return this.renderDataTable({
+      container,
+      headers,
+      rows: Array.isArray(rows) ? rows : [],
+      emptyState: "No payments found.",
       getRowClass: () => "border-b last:border-0",
     });
   }
@@ -599,7 +650,7 @@ export class DashboardView {
         },
       },
       {
-        key: "service",
+        key: "services",
         label: "Services",
         headerClass: "px-6 py-4 text-left",
         cellClass: "px-6 py-4 text-slate-600",
@@ -613,8 +664,8 @@ export class DashboardView {
         render: (row) => row.paymentStatus ?? "-",
       },
       {
-        key: "requiredBy",
-        label: "Required By",
+        key: "jobRequiredBy",
+        label: "Job Required By",
         headerClass: "px-6 py-4 text-left",
         cellClass: "px-6 py-4 text-slate-600",
         render: (row) => {
@@ -633,7 +684,7 @@ export class DashboardView {
         },
       },
       {
-        key: "price",
+        key: "jobTotal",
         label: "Job Total",
         headerClass: "px-6 py-4 text-left",
         cellClass: "px-6 py-4 text-slate-600",
@@ -649,6 +700,13 @@ export class DashboardView {
           return this.buildStatusBadge({ status }, statusClasses);
         },
       },
+      {
+        key: "actions",
+        label: "Action",
+        headerClass: "px-6 py-4 text-center",
+        cellClass: "px-6 py-4 text-center",
+        render: () => this.actionButtons,
+      },
     ];
 
     return this.renderDataTable({
@@ -656,6 +714,34 @@ export class DashboardView {
       headers,
       rows: Array.isArray(rows) ? rows : [],
       emptyState: "No jobs found.",
+      getRowClass: () => "border-b last:border-0",
+    });
+  }
+
+  renderUrgentCallsTable(container, rows, statusClasses, formatDisplayDate) {
+    if (!container) return null;
+    const headers = [
+      { key: "id", label: "Job ID", headerClass: "px-6 py-4 text-left", cellClass: "px-6 py-4" },
+      { key: "client", label: "Client Info", headerClass: "px-6 py-4 text-left", cellClass: "px-6 py-4",
+        render: (row) => `<div class=\"font-normal text-slate-700\">${row.client ?? "-"}</div>` },
+      { key: "property", label: "Property", headerClass: "px-6 py-4 text-left", cellClass: "px-6 py-4 text-slate-600",
+        render: (row) => row?.meta?.address ?? "-" },
+      { key: "services", label: "Services", headerClass: "px-6 py-4 text-left", cellClass: "px-6 py-4 text-slate-600",
+        render: (row) => row.service ?? "-" },
+      { key: "nextDue", label: "Next Due", headerClass: "px-6 py-4 text-left", cellClass: "px-6 py-4 text-slate-600",
+        render: (row) => {
+          const v = row.requiredBy ?? row.bookedDate ?? row.startDate;
+          return v ? formatDisplayDate(v) : "-";
+        } },
+      { key: "actions", label: "Action", headerClass: "px-6 py-4 text-left", cellClass: "px-6 py-4 text-center",
+        render: () => this.actionButtons },
+    ];
+
+    return this.renderDataTable({
+      container,
+      headers,
+      rows: Array.isArray(rows) ? rows : [],
+      emptyState: "No urgent calls found.",
       getRowClass: () => "border-b last:border-0",
     });
   }

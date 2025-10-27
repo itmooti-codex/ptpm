@@ -176,4 +176,47 @@ export class DashboardHelper {
       },
     }));
   }
+
+  mapPaymentRows(mappedData) {
+    const list = Array.isArray(mappedData)
+      ? mappedData
+      : Array.from(Object.values(mappedData ?? {}));
+    const toNumber = (value) =>
+      value != null && !Number.isNaN(Number(value)) ? Number(value) : null;
+    return list.map((records) => ({
+      id: `#${records.uniqueId ?? ""}`,
+      client:
+        [records["client-firstName"], records["client-lastName"]]
+          .filter(Boolean)
+          .join(" ") || "-",
+      invoiceNumber: records["job-invoice-number"] ?? null,
+      invoiceDate: records["invoice-date"] ?? null,
+      dueDate: records["due-date"] ?? null,
+      invoiceTotal: toNumber(records["invoice-total"] ?? null),
+      billPaidDate: records["bill-time-paid"] ?? null,
+      service: records["service-name"] ?? "-",
+      adminAmount: toNumber(records["admin-amount"] ?? null),
+      xeroInvoiceStatus: records["xero-invoice-status"] ?? "-",
+    }));
+  }
+
+  mapUrgentCallRows(mappedData) {
+    const list = Array.isArray(mappedData)
+      ? mappedData
+      : Array.from(Object.values(mappedData ?? {}));
+    return list.map((records) => ({
+      id: `#${records.uniqueId ?? ""}`,
+      client:
+        [records["client-firstName"], records["client-lastName"]]
+          .filter(Boolean)
+          .join(" ") || "-",
+      service: records["service-name"] ?? "-",
+      requiredBy: records["date-job-required-by"] ?? null,
+      bookedDate: records["date-booked"] ?? null,
+      startDate: records["date-started"] ?? null,
+      meta: {
+        address: records["client-address"] ?? null,
+      },
+    }));
+  }
 }
