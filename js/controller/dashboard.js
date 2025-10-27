@@ -6,12 +6,19 @@ export class DashboardController {
 
     // DOM refs (assigned in init)
     this.calendarEl = null;
-    this.tableBodyEl = null;
+    this.tableContainerEl = null;
+    this.tableElements = null;
 
     // Bind once so we can add/remove listeners cleanly
     this.onCalendarClick = this.onCalendarClick.bind(this);
     this.dashboardHelper = new DashboardHelper();
     this.deals = [];
+    this.currentTab = "inquiry";
+    this.tableData = {
+      inquiry: { rows: [], loaded: false, loading: false, promise: null },
+      quote: { rows: [], loaded: false, loading: false, promise: null },
+      jobs: { rows: [], loaded: false, loading: false, promise: null },
+    };
     this.activeFilters = {
       global: "",
       accountName: "",
@@ -31,20 +38,24 @@ export class DashboardController {
 
   init({
     calendarContainerId = "calendar-grid",
-    tableBodyId = "inquiry-table-body",
+    tableContainerId = "inquiry-table-container",
     topTabs: {
       navId = "top-tabs",
       panelsId = "tab-panels",
       defaultTab = "inquiry",
     } = {},
   } = {}) {
-    this.fetchDealsAndRenderTable();
     this.calendarEl = document.getElementById(calendarContainerId);
-    this.tableBodyEl = document.getElementById(tableBodyId);
+    this.tableContainerEl = document.getElementById(tableContainerId);
 
-    if (!this.calendarEl || !this.tableBodyEl) {
+    if (!this.calendarEl || !this.tableContainerEl) {
       // Even if calendar/table missing, we can still init tabs if present
-      this.view.initTopTabs({ navId, panelsId, defaultTab });
+      this.view.initTopTabs({
+        navId,
+        panelsId,
+        defaultTab,
+        onTabChange: (tab) => this.handleTabChange(tab),
+      });
       return;
     }
     this.renderCalendar();
@@ -57,8 +68,12 @@ export class DashboardController {
     this.initTaskFilters();
     this.initPriceRange();
     // Initialize top navigation tabs (Inquiry/Quote/Jobs/Payment)
-    this.view.initTopTabs({ navId, panelsId, defaultTab });
-    // Fetch after UI is ready
+    this.view.initTopTabs({
+      navId,
+      panelsId,
+      defaultTab,
+      onTabChange: (tab) => this.handleTabChange(tab),
+    });
   }
 
   destroy() {
@@ -68,12 +83,13 @@ export class DashboardController {
   }
 
   refresh() {
-    const selected = this.model.getSelectedDate();
+    if (this.currentTab !== "inquiry") return;
     this.renderCalendar();
-    this.renderTable(selected, this.deals);
+    this.reRenderActiveTab();
   }
 
   setSelectedDateAndRender(dateIso) {
+    if (this.currentTab !== "inquiry") return;
     if (!dateIso || dateIso === this.model.getSelectedDate()) return;
     this.model.setSelectedDate(dateIso);
     this.refresh();
@@ -96,21 +112,141 @@ export class DashboardController {
     );
   }
 
+  async handleTabChange(tab) {
+    this.currentTab = tab;
+    switch (tab) {
+      case "quote":
+        await this.fetchQuotesAndRenderTable();
+        break;
+      case "jobs":
+        await this.fetchJobsAndRenderTable();
+        break;
+      case "inquiry":
+        await this.fetchDealsAndRenderTable();
+        break;
+      default:
+        this.deals = [];
+        this.clearTable(tab);
+        break;
+    }
+  }
+
+  clearTable(tab) {
+    if (!this.tableContainerEl) return;
+    const label = tab ? tab.replace(/-/g, " ") : "this tab";
+    this.tableElements = this.view.renderDataTable({
+      container: this.tableContainerEl,
+      headers: [],
+      rows: [],
+      emptyState: `No data available for ${label}.`,
+    });
+  }
+
+  ensureSelectedDate() {
+    let selected = this.model.getSelectedDate?.();
+    if (!selected && this.model.calendarDays?.length) {
+      selected = this.model.calendarDays[0].iso;
+    }
+    if (!selected && window.dayjs) {
+      selected = window.dayjs().format("YYYY-MM-DD");
+    }
+    if (!selected) selected = "1970-01-01";
+    this.model.setSelectedDate(selected);
+    return selected;
+  }
+
   renderTable(dateIso, deals) {
-    if (!this.tableBodyEl) return;
-    this.view.renderTable(
-      this.tableBodyEl,
-      this.model.getRowsForDate(dateIso, deals),
-      this.model.getStatusClasses(),
-      (iso) => this.model.formatDisplayDate(iso),
-      dateIso
+    if (!this.tableContainerEl) return;
+    const statusClasses = this.model.getStatusClasses();
+    const formatDisplayDate = (iso) => this.model.formatDisplayDate(iso);
+    const hasExplicitRows = Array.isArray(deals);
+    const rows = hasExplicitRows ? deals : null;
+
+    if (this.currentTab === "quote") {
+      const quoteRows = rows ?? this.tableData.quote.rows ?? [];
+      this.tableElements = this.view.renderQuoteTable(
+        this.tableContainerEl,
+        quoteRows,
+        statusClasses,
+        formatDisplayDate
+      );
+      return;
+    }
+
+    if (this.currentTab === "jobs") {
+      const jobRows = rows ?? this.tableData.jobs.rows ?? [];
+      this.tableElements = this.view.renderJobsTable(
+        this.tableContainerEl,
+        jobRows,
+        statusClasses,
+        formatDisplayDate
+      );
+      return;
+    }
+
+    if (this.currentTab !== "inquiry") {
+      this.tableElements = this.view.renderDataTable({
+        container: this.tableContainerEl,
+        headers: [],
+        rows: rows ?? [],
+        emptyState: "No data available for this tab.",
+      });
+      return;
+    }
+
+    const selectedDate = dateIso ?? this.model.getSelectedDate();
+    const inquiryRows = Array.isArray(rows)
+      ? rows
+      : Array.isArray(this.tableData.inquiry.rows)
+      ? this.tableData.inquiry.rows
+      : [];
+    const scopedRows = inquiryRows;
+
+    this.tableElements = this.view.renderTable(
+      this.tableContainerEl,
+      this.model.getRowsForDate(selectedDate, scopedRows),
+      statusClasses,
+      formatDisplayDate,
+      selectedDate
     );
+  }
+
+  reRenderActiveTab() {
+    if (!this.tableContainerEl) return;
+    if (this.currentTab === "inquiry") {
+      const selected = this.model.getSelectedDate() ?? this.ensureSelectedDate();
+      const baseRows =
+        Array.isArray(this.tableData.inquiry.rows) &&
+        this.tableData.inquiry.rows.length
+          ? this.tableData.inquiry.rows
+          : Array.isArray(this.deals)
+          ? this.deals
+          : [];
+      const sourceRows = Array.isArray(baseRows) ? baseRows : [];
+      const filtered = this.applyActiveFilters(sourceRows);
+      this.renderTable(selected, filtered);
+      return;
+    }
+    if (this.currentTab === "quote") {
+      const rows = Array.isArray(this.tableData.quote.rows)
+        ? this.tableData.quote.rows
+        : [];
+      this.renderTable(null, Array.isArray(rows) ? rows : []);
+      return;
+    }
+    if (this.currentTab === "jobs") {
+      const rows = Array.isArray(this.tableData.jobs.rows)
+        ? this.tableData.jobs.rows
+        : [];
+      this.renderTable(null, Array.isArray(rows) ? rows : []);
+      return;
+    }
+    this.clearTable(this.currentTab);
   }
 
   onNotificationIconClick() {
     const btn = document.getElementById("notification-btn");
     if (!btn) return;
-    // Ensure popover exists
     if (!document.getElementById("notificationPopover")) {
       this.view.createNotificationModal();
     }
@@ -123,7 +259,6 @@ export class DashboardController {
       e.stopPropagation();
       toggle();
     });
-    // close when clicking outside
     document.addEventListener("click", (e) => {
       if (!pop) return;
       if (pop.classList.contains("hidden")) return;
@@ -133,30 +268,119 @@ export class DashboardController {
     });
   }
 
-  async fetchDealsAndRenderTable() {
-    try {
-      const dealData = await this.model.fetchDeal();
-      const mappedDealData = this.dashboardHelper.mapDealToTableRow(dealData);
-      const sampleRows = this.dashboardHelper.mapInquirysRows(
-        mappedDealData,
-        (iso) => this.model.formatDisplayDate(iso)
-      );
-      this.deals = sampleRows;
-      // Establish a selected date if missing
-      let selected = this.model.getSelectedDate?.();
-      if (!selected && this.model.calendarDays?.length) {
-        selected = this.model.calendarDays[0].iso;
-      }
-      if (!selected && window.dayjs)
-        selected = window.dayjs().format("YYYY-MM-DD");
-      if (!selected) selected = "1970-01-01";
-      this.model.setSelectedDate(selected);
-      this.renderTable(selected, this.applyActiveFilters(this.deals));
-      return sampleRows;
-    } catch (e) {
-      console.log("fetchDeals render error", e);
-      return [];
+  async fetchDealsAndRenderTable({ force = false } = {}) {
+    const state = this.tableData.inquiry;
+    if (state.loading && state.promise) return state.promise;
+    if (state.loaded && !force) {
+      this.deals = state.rows;
+      this.reRenderActiveTab();
+      return state.rows;
     }
+
+    state.loading = true;
+    const task = (async () => {
+      try {
+        const dealData = await this.model.fetchDeal();
+        const mappedDealData =
+          this.dashboardHelper.mapDealToTableRow(dealData ?? {}) ?? [];
+        const sampleRows = this.dashboardHelper.mapInquirysRows(
+          mappedDealData,
+          (iso) => this.model.formatDisplayDate(iso)
+        );
+        this.deals = sampleRows;
+        state.rows = sampleRows;
+        state.loaded = true;
+        this.reRenderActiveTab();
+        return sampleRows;
+      } catch (e) {
+        state.loaded = false;
+        console.log("fetchDeals render error", e);
+        this.clearTable("inquiry");
+        return [];
+      } finally {
+        state.loading = false;
+        state.promise = null;
+      }
+    })();
+
+    state.promise = task;
+    return task;
+  }
+
+  async fetchQuotesAndRenderTable({ force = false } = {}) {
+    const state = this.tableData.quote;
+    if (state.loading && state.promise) return state.promise;
+    if (state.loaded && !force) {
+      this.deals = state.rows;
+      this.reRenderActiveTab();
+      return state.rows;
+    }
+
+    state.loading = true;
+    const task = (async () => {
+      try {
+        const quoteData = await this.model.fetchQuotesCreated();
+        const mappedQuoteData =
+          this.dashboardHelper.mapDealToTableRow(quoteData ?? {}) ?? [];
+        const sampleRows = this.dashboardHelper.mapQuoteRows(mappedQuoteData);
+        this.deals = sampleRows;
+        state.rows = sampleRows;
+        state.loaded = true;
+        this.reRenderActiveTab();
+        return sampleRows;
+      } catch (e) {
+        state.loaded = false;
+        console.log("fetchQuotes render error", e);
+        this.clearTable("quote");
+        return [];
+      } finally {
+        state.loading = false;
+        state.promise = null;
+      }
+    })();
+
+    state.promise = task;
+    return task;
+  }
+
+  async fetchJobsAndRenderTable({ force = false } = {}) {
+    const state = this.tableData.jobs;
+    if (state.loading && state.promise) return state.promise;
+    if (state.loaded && !force) {
+      this.deals = state.rows;
+      this.reRenderActiveTab();
+      return state.rows;
+    }
+
+    state.loading = true;
+    const task = (async () => {
+      try {
+        const fetcher =
+          typeof this.model.fetchJobs === "function"
+            ? () => this.model.fetchJobs()
+            : () => this.model.fetchDeal();
+        const jobData = await fetcher();
+        const mappedJobData =
+          this.dashboardHelper.mapDealToTableRow(jobData ?? {}) ?? [];
+        const sampleRows = this.dashboardHelper.mapJobRows(mappedJobData);
+        this.deals = sampleRows;
+        state.rows = sampleRows;
+        state.loaded = true;
+        this.reRenderActiveTab();
+        return sampleRows;
+      } catch (e) {
+        state.loaded = false;
+        console.log("fetchJobs render error", e);
+        this.clearTable("jobs");
+        return [];
+      } finally {
+        state.loading = false;
+        state.promise = null;
+      }
+    })();
+
+    state.promise = task;
+    return task;
   }
 
   initFilters() {
@@ -173,8 +397,7 @@ export class DashboardController {
       ["filter-recommendation", (v) => (this.activeFilters.recommendation = v)],
     ];
     const handler = () => {
-      const selected = this.model.getSelectedDate();
-      this.renderTable(selected, this.applyActiveFilters(this.deals));
+      this.reRenderActiveTab();
     };
     // Collect values only when Apply Filters is clicked
     inputs.forEach(([id, setter]) => {
@@ -257,8 +480,7 @@ export class DashboardController {
         this.activeFilters.priceMax = null;
 
         // Re-render with no filters
-        const selected = this.model.getSelectedDate();
-        this.renderTable(selected, this.applyActiveFilters(this.deals));
+        this.reRenderActiveTab();
       });
     }
   }
@@ -270,53 +492,91 @@ export class DashboardController {
     if (!input) return;
     const apply = () => {
       this.activeFilters.global = (input.value || "").trim();
-      const selected = this.model.getSelectedDate();
-      this.renderTable(selected, this.applyActiveFilters(this.deals));
+      this.reRenderActiveTab();
     };
     input.addEventListener("input", apply);
     input.addEventListener("change", apply);
   }
 
   applyActiveFilters(rows) {
+    if (!Array.isArray(rows)) return rows;
     const f = this.activeFilters;
-    const has = (s) => (s ?? "").toString().toLowerCase();
-    const term = (k) => has(k).trim();
-    const need = {
-      global: term(f.global),
-      accountName: term(f.accountName),
-      resident: term(f.resident),
-      address: term(f.address),
-      source: term(f.source),
-      serviceman: term(f.serviceman),
-      type: term(f.type),
-      quoteNumber: term(f.quoteNumber),
-      invoiceNumber: term(f.invoiceNumber),
-      recommendation: term(f.recommendation),
+    const toText = (value) => (value ?? "").toString().trim().toLowerCase();
+    const toList = (value) => {
+      if (!value) return [];
+      if (Array.isArray(value)) {
+        return value.map(toText).filter(Boolean);
+      }
+      if (value instanceof Set) {
+        return Array.from(value).map(toText).filter(Boolean);
+      }
+      const textValue = toText(value);
+      if (!textValue) return [];
+      return textValue
+        .split(",")
+        .map((part) => part.trim())
+        .filter(Boolean);
     };
-    const hasStatus = f.statuses && f.statuses.size > 0;
-    const hasPrice =
-      (typeof f.priceMin === "number" && !Number.isNaN(f.priceMin)) ||
-      (typeof f.priceMax === "number" && !Number.isNaN(f.priceMax));
-    const any = Object.values(need).some((v) => v) || hasStatus || hasPrice;
+    const need = {
+      global: toText(f.global),
+      accountName: toText(f.accountName),
+      resident: toText(f.resident),
+      address: toText(f.address),
+      source: toText(f.source),
+      serviceman: toText(f.serviceman),
+      quoteNumber: toText(f.quoteNumber),
+      invoiceNumber: toText(f.invoiceNumber),
+      recommendation: toText(f.recommendation),
+    };
+    const typeFilters = toList(f.type);
+    const statusFilters = toList(f.statuses);
+    const taskStatusFilters = toList(f.taskStatuses);
+    const dueTodayFilters = toList(f.dueToday);
+    const assignedToFilters = toList(f.assignedTo);
+    const propertySearch = toText(f.propertySearch);
+    const hasPriceMin =
+      typeof f.priceMin === "number" && !Number.isNaN(f.priceMin);
+    const hasPriceMax =
+      typeof f.priceMax === "number" && !Number.isNaN(f.priceMax);
+    const hasPrice = hasPriceMin || hasPriceMax;
+    const any =
+      Object.values(need).some(Boolean) ||
+      typeFilters.length > 0 ||
+      statusFilters.length > 0 ||
+      taskStatusFilters.length > 0 ||
+      dueTodayFilters.length > 0 ||
+      assignedToFilters.length > 0 ||
+      Boolean(propertySearch) ||
+      hasPrice;
     if (!any) return rows;
     return rows.filter((r) => {
-      const client = has(r.client);
-      const resident = has(r.client || "");
-      const address = has(r.meta?.address);
-      const source = has(r.source);
-      const serviceman = has(r.serviceman);
-      const type = has(r.type);
-      const quote = has(r.quoteNumber || r.meta?.quoteNumber || "");
-      const invoice = has(r.invoiceNumber || r.meta?.invoiceNumber || "");
-      const recommendation = has(
-        r.recommendation || r.meta?.recommendation || ""
+      const client = toText(r.client);
+      const resident = toText(r.resident ?? r.meta?.resident ?? r.client);
+      const address = toText(r.meta?.address);
+      const source = toText(r.source);
+      const serviceman = toText(r.serviceman);
+      const type = toText(r.type);
+      const quote = toText(r.quoteNumber ?? r.meta?.quoteNumber);
+      const invoice = toText(r.invoiceNumber ?? r.meta?.invoiceNumber);
+      const recommendation = toText(
+        r.recommendation ?? r.meta?.recommendation
       );
-      const accountName = has(r.meta?.accountName || "");
+      const accountName = toText(r.meta?.accountName);
+      const idValue = toText(r.id);
+      const statusValue = toText(r.status);
+      const taskStatusValue = toText(r.taskStatus ?? r.status);
+      const dueTodayValue =
+        r.dueToday === true
+          ? "yes"
+          : r.dueToday === false
+          ? "no"
+          : toText(r.dueToday);
+      const assignedToValue = toText(r.assignedTo ?? r.meta?.assignedTo);
 
       // Global search across key fields
       if (need.global) {
         const haystack = [
-          r.id,
+          idValue,
           client,
           resident,
           address,
@@ -329,8 +589,7 @@ export class DashboardController {
           accountName,
         ]
           .filter(Boolean)
-          .join(" | ")
-          .toLowerCase();
+          .join(" | ");
         if (!haystack.includes(need.global)) return false;
       }
       if (need.accountName && !accountName.includes(need.accountName))
@@ -340,7 +599,11 @@ export class DashboardController {
       if (need.source && !source.includes(need.source)) return false;
       if (need.serviceman && !serviceman.includes(need.serviceman))
         return false;
-      if (need.type && !type.includes(need.type)) return false;
+      if (
+        typeFilters.length > 0 &&
+        !typeFilters.some((value) => type.includes(value))
+      )
+        return false;
       if (need.quoteNumber && !quote.includes(need.quoteNumber)) return false;
       if (need.invoiceNumber && !invoice.includes(need.invoiceNumber))
         return false;
@@ -353,34 +616,42 @@ export class DashboardController {
         if (typeof f.priceMin === "number" && price < f.priceMin) return false;
         if (typeof f.priceMax === "number" && price > f.priceMax) return false;
       }
-      if (hasStatus && !f.statuses.has(r.status)) return false;
+      if (
+        statusFilters.length > 0 &&
+        !statusFilters.includes(statusValue)
+      )
+        return false;
 
       // Property Search (if present) checks id/address/client fields
-      if (f.propertySearch) {
-        const propHay = [r.id, r.meta?.address, r.client]
+      if (propertySearch) {
+        const propHay = [idValue, address, client, resident]
           .filter(Boolean)
-          .join(" | ")
-          .toLowerCase();
-        if (!propHay.includes(String(f.propertySearch))) return false;
+          .join(" | ");
+        if (!propHay.includes(propertySearch)) return false;
       }
 
       // Task Status filter (dummy hook: compare to r.taskStatus if exists)
-      if (f.taskStatuses && f.taskStatuses.size) {
-        const ts = (r.taskStatus || r.status || "").toString();
-        if (!f.taskStatuses.has(ts)) return false;
+      if (
+        taskStatusFilters.length > 0 &&
+        !taskStatusFilters.includes(taskStatusValue)
+      ) {
+        return false;
       }
 
       // Due Today filter (dummy hook: compare to r.dueToday boolean if exists)
-      if (Array.isArray(f.dueToday) && f.dueToday.length) {
-        const val =
-          r.dueToday === true ? "yes" : r.dueToday === false ? "no" : "";
-        if (!f.dueToday.includes(val)) return false;
+      if (
+        dueTodayFilters.length > 0 &&
+        (dueTodayValue === "" || !dueTodayFilters.includes(dueTodayValue))
+      ) {
+        return false;
       }
 
       // Assigned To filter (dummy hook: compare to r.assignedTo if exists)
-      if (Array.isArray(f.assignedTo) && f.assignedTo.length) {
-        const who = (r.assignedTo || r.meta?.assignedTo || "").toString();
-        if (!f.assignedTo.includes(who)) return false;
+      if (
+        assignedToFilters.length > 0 &&
+        !assignedToFilters.includes(assignedToValue)
+      ) {
+        return false;
       }
       return true;
     });
@@ -423,8 +694,7 @@ export class DashboardController {
       statusBoxes.forEach((c) => {
         if (c.checked) this.activeFilters.statuses.add(c.value);
       });
-      const selected = this.model.getSelectedDate();
-      this.renderTable(selected, this.applyActiveFilters(this.deals));
+      this.reRenderActiveTab();
     };
 
     statusBoxes.forEach((box) => {
@@ -478,8 +748,7 @@ export class DashboardController {
       // Merge selected account types into the free-text `type` filter as a comma list
       const selected = typeBoxes.filter((c) => c.checked).map((c) => c.value);
       this.activeFilters.type = selected.join(", ");
-      const selectedDate = this.model.getSelectedDate();
-      this.renderTable(selectedDate, this.applyActiveFilters(this.deals));
+      this.reRenderActiveTab();
     };
 
     const syncAllCheckbox = () => {
@@ -528,8 +797,7 @@ export class DashboardController {
       const boxes = Array.from(card.querySelectorAll(selector));
       const apply = () => {
         applyFn(boxes);
-        const selectedDate = this.model.getSelectedDate();
-        this.renderTable(selectedDate, this.applyActiveFilters(this.deals));
+        this.reRenderActiveTab();
       };
       boxes.forEach((b) => b.addEventListener("change", apply));
       apply();
@@ -592,8 +860,7 @@ export class DashboardController {
         this.activeFilters.propertySearch = propInput.value
           .trim()
           .toLowerCase();
-        const selectedDate = this.model.getSelectedDate();
-        this.renderTable(selectedDate, this.applyActiveFilters(this.deals));
+        this.reRenderActiveTab();
       });
     }
   }

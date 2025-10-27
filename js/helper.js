@@ -117,45 +117,63 @@ export class DashboardHelper {
         recommendation: r["recommendations"] ?? null,
         invoiceNumber: r["job-invoice-number"] ?? null,
         price: r["price"] ?? null,
+        createdIso: r["date-added"] ?? null,
       },
     }));
   }
 
-  mapQuoteRows(mappedData, formatDisplayDate) {
-    return mappedData.map((records) => {
-      return {
-        id: `#${records.uniqueId ?? ""}`,
-        client:
-          [records["client-firstName"], records["client-lastName"]]
-            .filter(Boolean)
-            .join(" ") || "-",
-        created:
-          records["date-added"] && formatDisplayDate
-            ? formatDisplayDate(records["date-added"])
-            : "-",
-        quoteDate:
-          records["quote-date"] && formatDisplayDate
-            ? formatDisplayDate(records["quote-date"])
-            : "-",
-        service: records["service-name"] ?? "-",
-        type: records.type ?? "-",
-        quoteStatus: records["quote-status"] ?? "-",
-        quoteTotal:
-          records["quote-total"] != null
-            ? `$${records["quote-total"].toFixed(2)}`
-            : "-",
-        dateQuotedAccepted:
-          records["date-quoted-accepted"] && formatDisplayDate
-            ? formatDisplayDate(records["date-quoted-accepted"])
-            : "-",
-        meta: {
-          address: records["client-address"] ?? null,
-          email: records["client-email"] ?? null,
-          sms: records["client-smsNumber"] ?? null,
-          accountName: records["account-name"] ?? null,
-          recommendation: records["recommendations"] ?? null,
-        },
-      };
-    });
+  mapQuoteRows(mappedData) {
+    const list = Array.isArray(mappedData)
+      ? mappedData
+      : Array.from(Object.values(mappedData ?? {}));
+    return list.map((records) => ({
+      id: `#${records.uniqueId ?? ""}`,
+      client:
+        [records["client-firstName"], records["client-lastName"]]
+          .filter(Boolean)
+          .join(" ") || "-",
+      created: records["date-added"] ?? null,
+      quoteDate: records["quote-date"] ?? null,
+      service: records["service-name"] ?? "-",
+      type: records.type ?? "-",
+      quoteStatus: records["quote-status"] ?? "-",
+      quoteTotal: records["quote-total"] ?? null,
+      dateQuotedAccepted: records["date-quoted-accepted"] ?? null,
+      meta: {
+        address: records["client-address"] ?? null,
+        email: records["client-email"] ?? null,
+        sms: records["client-smsNumber"] ?? null,
+        accountName: records["account-name"] ?? null,
+        recommendation: records["recommendations"] ?? null,
+      },
+    }));
+  }
+
+  mapJobRows(mappedData) {
+    const list = Array.isArray(mappedData)
+      ? mappedData
+      : Array.from(Object.values(mappedData ?? {}));
+    const toNumber = (value) =>
+      value != null && !Number.isNaN(Number(value)) ? Number(value) : null;
+    return list.map((records) => ({
+      id: `#${records.uniqueId ?? ""}`,
+      client:
+        [records["client-firstName"], records["client-lastName"]]
+          .filter(Boolean)
+          .join(" ") || "-",
+      startDate: records["date-started"] ?? null,
+      service: records["service-name"] ?? "-",
+      paymentStatus: records["payment-status"] ?? "-",
+      requiredBy: records["date-job-required-by"] ?? null,
+      bookedDate: records["date-booked"] ?? null,
+      price: toNumber(records.price ?? null),
+      jobStatus: records["job-status"] ?? "-",
+      meta: {
+        address: records["client-address"] ?? null,
+        email: records["client-email"] ?? null,
+        sms: records["client-smsNumber"] ?? null,
+        price: toNumber(records.price ?? null),
+      },
+    }));
   }
 }

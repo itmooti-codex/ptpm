@@ -1,4 +1,162 @@
 // views/DashboardView.js
+
+/**
+ * Generic table renderer that accepts header definitions and row data.
+ * @param {Object} config
+ * @param {HTMLElement|string} config.container - Element (or selector) to render the table into.
+ * @param {Array} config.headers - Array of header definitions. Each header can be a string or an object with { key, label, headerClass, cellClass, render }.
+ * @param {Array} config.rows - Array of rows. Each row can be an object (matched by header.key) or an array (matched by index).
+ * @param {string|Function} [config.emptyState] - Message or function returning markup when there are no rows.
+ * @param {boolean} [config.zebra=false] - Whether to apply alternating background colors.
+ * @param {Function} [config.getRowClass] - Returns extra class names per row.
+ * @param {string} [config.tableClass] - Class list for the table element.
+ * @param {string} [config.theadClass] - Class list for the thead element.
+ * @param {string} [config.tbodyClass] - Class list for the tbody element.
+ * @param {string} [config.defaultHeaderClass] - Default class for each header cell.
+ * @param {string} [config.defaultCellClass] - Default class for each data cell.
+ * @param {string} [config.emptyCellClass] - Class for the empty-state cell.
+ * @returns {{table: HTMLTableElement, thead: HTMLTableSectionElement, tbody: HTMLTableSectionElement}|null}
+ */
+export function renderDynamicTable({
+  container,
+  headers = [],
+  rows = [],
+  emptyState = "No records found.",
+  zebra = false,
+  getRowClass = null,
+  tableClass = "min-w-full text-sm text-slate-700",
+  theadClass = "bg-[#f5f8ff] text-xs font-semibold uppercase tracking-wide border-b border-slate-200",
+  tbodyClass = "bg-white",
+  defaultHeaderClass = "px-6 py-4 text-left",
+  defaultCellClass = "px-6 py-4 text-slate-600",
+  emptyCellClass = "px-6 py-6 text-center text-sm text-slate-500",
+} = {}) {
+  const root =
+    typeof container === "string"
+      ? document.querySelector(container)
+      : container;
+  if (!root) return null;
+
+  const normalisedHeaders = headers.map((header, index) => {
+    if (typeof header === "string") {
+      return { key: index, label: header };
+    }
+    if (header == null || typeof header !== "object") {
+      return { key: index, label: String(header ?? "") };
+    }
+    if (header.key == null) {
+      return { ...header, key: header.label ?? index };
+    }
+    return header;
+  });
+
+  const createCellContent = (cell, value) => {
+    if (value instanceof Node) {
+      cell.appendChild(value);
+      return;
+    }
+    if (value == null) {
+      cell.textContent = "";
+      return;
+    }
+    if (typeof value === "string") {
+      cell.innerHTML = value;
+      return;
+    }
+    if (
+      typeof value === "object" &&
+      Object.prototype.hasOwnProperty.call(value, "__html")
+    ) {
+      cell.innerHTML = value.__html ?? "";
+      return;
+    }
+    cell.textContent = String(value);
+  };
+
+  root.innerHTML = "";
+  const table = document.createElement("table");
+  table.className = tableClass;
+
+  const thead = document.createElement("thead");
+  thead.className = theadClass;
+  const headRow = document.createElement("tr");
+
+  normalisedHeaders.forEach((header) => {
+    const th = document.createElement("th");
+    th.scope = "col";
+    th.className = header.headerClass ?? defaultHeaderClass;
+    if (header.colSpan != null) th.colSpan = header.colSpan;
+    if (header.rowSpan != null) th.rowSpan = header.rowSpan;
+    if (header.html != null) {
+      th.innerHTML = header.html;
+    } else {
+      th.textContent = header.label ?? "";
+    }
+    headRow.appendChild(th);
+  });
+
+  thead.appendChild(headRow);
+  table.appendChild(thead);
+
+  const tbody = document.createElement("tbody");
+  tbody.className = tbodyClass;
+
+  if (!rows.length) {
+    const emptyRow = document.createElement("tr");
+    const emptyCell = document.createElement("td");
+    emptyCell.colSpan = normalisedHeaders.length || 1;
+    emptyCell.className = emptyCellClass;
+    const emptyValue =
+      typeof emptyState === "function" ? emptyState() : emptyState;
+    createCellContent(emptyCell, emptyValue);
+    emptyRow.appendChild(emptyCell);
+    tbody.appendChild(emptyRow);
+  } else {
+    rows.forEach((row, rowIndex) => {
+      const tr = document.createElement("tr");
+      const zebraClass = zebra
+        ? rowIndex % 2 === 0
+          ? "bg-white"
+          : "bg-[#f5f8ff]"
+        : "";
+      const extraRowClass =
+        typeof getRowClass === "function" ? getRowClass(row, rowIndex) : "";
+      const rowClass = [zebraClass, extraRowClass]
+        .filter(Boolean)
+        .join(" ")
+        .trim();
+      if (rowClass) tr.className = rowClass;
+
+      normalisedHeaders.forEach((header, columnIndex) => {
+        const td = document.createElement("td");
+        td.className = header.cellClass ?? defaultCellClass;
+
+        let cellValue;
+        if (typeof header.render === "function") {
+          cellValue = header.render(row, {
+            rowIndex,
+            columnIndex,
+            header,
+          });
+        } else if (Array.isArray(row)) {
+          cellValue = row[columnIndex];
+        } else if (header.key != null) {
+          cellValue = row[header.key];
+        }
+
+        createCellContent(td, cellValue);
+        tr.appendChild(td);
+      });
+
+      tbody.appendChild(tr);
+    });
+  }
+
+  table.appendChild(tbody);
+  root.appendChild(table);
+  return { table, thead, tbody };
+}
+
 export class DashboardView {
   /**
    * @param {object} [overrides]
@@ -96,6 +254,66 @@ export class DashboardView {
     };
   }
 
+  buildClientContactIcons(meta = {}) {
+    const email = meta.email || "";
+    const sms = meta.sms || "";
+    const address = meta.address || "";
+    const emailHref = email ? `mailto:${email}` : "#";
+    const mapHref = address
+      ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+          address
+        )}`
+      : "#";
+    const callHref = sms ? `tel:${sms}` : "#";
+
+    return `
+      <div class="mt-2 flex items-center gap-2">
+        <a data-action="call" href="${callHref}" ${
+      sms ? "" : 'aria-disabled="true"'
+    } title="${sms}">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M2.003 5.884l3.245-.62a1 1 0 011.066.553l1.284 2.568a1 1 0 01-.23 1.149l-1.516 1.513a11.037 11.037 0 005.004 5.004l1.513-1.516a1 1 0 011.149-.23l2.568 1.284a1 1 0 01.553 1.066l-.62 3.245a1 1 0 01-.979.815A14.978 14.978 0 012 5.863a1 1 0 01.003.021z"/></svg>
+        </a>
+        <a data-action="email" href="${emailHref}" ${
+      email ? "" : 'aria-disabled="true"'
+    } title="${email}">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M2.94 6.342A2 2 0 014.564 5h10.872a2 2 0 011.624.842l-7.06 5.297-7.06-5.297z"/><path d="M18 8.118l-6.76 5.07a1.5 1.5 0 01-1.76 0L2.72 8.118A1.994 1.994 0 002 9.874V14a2 2 0 002 2h12a2 2 0 002-2V9.874c0-.603-.272-1.175-.74-1.756z"/></svg>
+        </a>
+        <a data-action="address" href="${mapHref}" ${
+      address ? 'target="_blank" rel="noopener"' : 'aria-disabled="true"'
+    } title="${address}">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a.75.75 0 01-.53-.22c-.862-.864-2.392-2.56-3.55-4.383C4.746 11.425 4 9.666 4 8a6 6 0 1112 0c0 1.666-.746 3.425-1.92 5.397-1.158 1.822-2.688 3.519-3.55 4.383A.75.75 0 0110 18zm0-8.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" clip-rule="evenodd"/></svg>
+        </a>
+      </div>
+    `;
+  }
+
+  buildClientCell(row) {
+    const meta = row?.meta ?? {};
+    return `
+      <div class="font-normal text-slate-700">${row.client ?? ""}</div>
+      ${this.buildClientContactIcons(meta)}
+    `;
+  }
+
+  buildStatusBadge(row, statusClasses = {}) {
+    const status = row?.status ?? "-";
+    const badgeClass = statusClasses[status] ?? "bg-slate-100 text-slate-600";
+    return `<span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${badgeClass}">${status}</span>`;
+  }
+
+  renderDataTable(config = {}) {
+    return renderDynamicTable({
+      tableClass: "min-w-full text-sm text-slate-700",
+      theadClass:
+        "bg-[#f5f8ff] text-xs font-semibold uppercase tracking-wide border-b border-slate-200",
+      tbodyClass: "bg-white",
+      defaultHeaderClass: "px-6 py-4 text-left",
+      defaultCellClass: "px-6 py-4 text-slate-600",
+      emptyCellClass: "px-6 py-6 text-center text-sm text-slate-500",
+      ...config,
+    });
+  }
+
   init() {
     this.createNotificationModal();
   }
@@ -166,180 +384,280 @@ export class DashboardView {
       .join("");
   }
 
-  renderTable(tableBody, rows, statusClasses, formatDisplayDate, dateIso) {
-    if (!rows.length) {
-      tableBody.innerHTML = `
-        <tr>
-          <td colspan="10" class="px-6 py-6 text-center text-sm text-slate-500">
-            No inquiries scheduled for ${formatDisplayDate(dateIso)}.
-          </td>
-        </tr>
-      `;
-      return;
-    }
+  renderTable(container, rows, statusClasses, formatDisplayDate, dateIso) {
+    if (!container) return null;
 
-    tableBody.innerHTML = rows
-      .map((row, idx) => {
-        const zebra = idx % 2 === 0 ? "bg-white" : "bg-[#f5f8ff]";
-        return `
-          <tr class="${zebra} transition-colors hover:bg-brand-50/40">
-            <td class="px-6 py-4">
-              <a href="#" class="font-normal text-[#0052CC] hover:underline">${
-                row.id
-              }</a>
-            </td>
-            <td class="px-6 py-4">
-              <div class="font-normal text-slate-700">${row.client}</div>
-              ${(() => {
-                const email = row.meta?.email || "";
-                const sms = row.meta?.sms || "";
-                const address = row.meta?.address || "";
-                const emailHref = email ? `mailto:${email}` : "#";
-                const mapHref = address
-                  ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                      address
-                    )}`
-                  : "#";
-                const callHref = sms ? `tel:${sms}` : "#";
-                return `
-                <div class="mt-2 flex items-center gap-2">
-                  <a data-action="call" href="${callHref}" ${
-                  sms ? "" : 'aria-disabled="true"'
-                } title="${sms}">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M2.003 5.884l3.245-.62a1 1 0 011.066.553l1.284 2.568a1 1 0 01-.23 1.149l-1.516 1.513a11.037 11.037 0 005.004 5.004l1.513-1.516a1 1 0 011.149-.23l2.568 1.284a1 1 0 01.553 1.066l-.62 3.245a1 1 0 01-.979.815A14.978 14.978 0 012 5.863a1 1 0 01.003.021z"/></svg>
-                  </a>
-                  <a data-action="email" href="${emailHref}" ${
-                  email ? "" : 'aria-disabled="true"'
-                } title="${email}">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M2.94 6.342A2 2 0 014.564 5h10.872a2 2 0 011.624.842l-7.06 5.297-7.06-5.297z"/><path d="M18 8.118l-6.76 5.07a1.5 1.5 0 01-1.76 0L2.72 8.118A1.994 1.994 0 002 9.874V14a2 2 0 002 2h12a2 2 0 002-2V9.874c0-.603-.272-1.175-.74-1.756z"/></svg>
-                  </a>
-                  <a data-action="address" href="${mapHref}" ${
-                  address
-                    ? 'target="_blank" rel="noopener"'
-                    : 'aria-disabled="true"'
-                } title="${address}">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a.75.75 0 01-.53-.22c-.862-.864-2.392-2.56-3.55-4.383C4.746 11.425 4 9.666 4 8a6 6 0 1112 0c0 1.666-.746 3.425-1.92 5.397-1.158 1.822-2.688 3.519-3.55 4.383A.75.75 0 0110 18zm0-8.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" clip-rule="evenodd"/></svg>
-                  </a>
-                </div>`;
-              })()}
-            </td>
-            <td class="px-6 py-4 text-slate-600">${row.created}</td>
-            <td class="px-6 py-4 text-slate-600">${row.serviceman}</td>
-            <td class="px-6 py-4 text-slate-600">${row.followUp}</td>
-            <td class="px-6 py-4 text-slate-600">${row.source}</td>
-            <td class="px-6 py-4 text-slate-600">${row.service}</td>
-            <td class="px-6 py-4 text-slate-600">${row.type}</td>
-            <td class="px-6 py-4 text-center">
-              <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${
-                statusClasses[row.status] ?? "bg-slate-100 text-slate-600"
-              }">${row.status}</span>
-            </td>
-            <td class="px-6 py-4 text-center">
-              ${this.actionButtons}
-            </td>
-          </tr>
-        `;
-      })
-      .join("");
-    // No post-render wiring needed; hrefs are embedded per-row
+    const headers = [
+      {
+        key: "id",
+        label: "Unique ID",
+        headerClass: "px-6 py-4 text-left",
+        cellClass: "px-6 py-4",
+        render: (row) =>
+          `<a href="#" class="font-normal text-[#0052CC] hover:underline">${
+            row.id ?? ""
+          }</a>`,
+      },
+      {
+        key: "client",
+        label: "Client Info",
+        headerClass: "px-6 py-4 text-left",
+        cellClass: "px-6 py-4",
+        render: (row) => this.buildClientCell(row),
+      },
+      {
+        key: "created",
+        headerClass: "px-6 py-4 text-left",
+        cellClass: "px-6 py-4 text-slate-600",
+        html: `
+          <span class="inline-flex items-center gap-1">
+            Created Date
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-brand-400" viewBox="0 0 20 20" fill="none">
+              <path d="M7 8l3-3 3 3M7 12l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </span>
+        `,
+      },
+      {
+        key: "serviceman",
+        label: "Serviceman",
+        headerClass: "px-6 py-4 text-left",
+        cellClass: "px-6 py-4 text-slate-600",
+      },
+      {
+        key: "followUp",
+        headerClass: "px-6 py-4 text-left",
+        cellClass: "px-6 py-4 text-slate-600",
+        html: `
+          <span class="inline-flex items-center gap-1">
+            Follow Up Date
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-brand-400" viewBox="0 0 20 20" fill="none">
+              <path d="M7 8l3-3 3 3M7 12l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </span>
+        `,
+      },
+      {
+        key: "source",
+        label: "Source",
+        headerClass: "px-6 py-4 text-left",
+        cellClass: "px-6 py-4 text-slate-600",
+      },
+      {
+        key: "service",
+        label: "Service Inquiry",
+        headerClass: "px-6 py-4 text-left",
+        cellClass: "px-6 py-4 text-slate-600",
+      },
+      {
+        key: "type",
+        label: "Type",
+        headerClass: "px-6 py-4 text-left",
+        cellClass: "px-6 py-4 text-slate-600",
+      },
+      {
+        key: "status",
+        label: "Status",
+        headerClass: "px-6 py-4 text-center",
+        cellClass: "px-6 py-4 text-center",
+        render: (row) => this.buildStatusBadge(row, statusClasses),
+      },
+      {
+        key: "actions",
+        label: "Action",
+        headerClass: "px-6 py-4 text-center",
+        cellClass: "px-6 py-4 text-center",
+        render: () => this.actionButtons,
+      },
+    ];
+
+    return this.renderDataTable({
+      container,
+      headers,
+      rows: Array.isArray(rows) ? rows : [],
+      emptyState: `No inquiries scheduled for ${formatDisplayDate(dateIso)}.`,
+      getRowClass: (_row, idx) =>
+        `${
+          idx % 2 === 0 ? "bg-white" : "bg-[#f5f8ff]"
+        } transition-colors hover:bg-brand-50/40`,
+    });
   }
 
-  renderQuoteTable(tableBody, rows, statusClasses, formatDisplayDate) {
-    const thead = tableBody.closest("table")?.querySelector("thead");
-    if (thead) {
-      thead.innerHTML = `
-        <tr>
-          <th class="px-6 py-4 text-left">Unique ID</th>
-          <th class="px-6 py-4 text-left">Client Info</th>
-          <th class="px-6 py-4 text-left">Quote Accepted</th>
-          <th class="px-6 py-4 text-left">Services</th>
-          <th class="px-6 py-4 text-left">Quoted Date</th>
-          <th class="px-6 py-4 text-left">Quote Total</th>
-          <th class="px-6 py-4 text-left">Status</th>
-        </tr>`;
-    }
-    const money = (n) => (n == null ? "-" : `$${Number(n).toLocaleString()}`);
-    tableBody.innerHTML = rows
-      .map((row) => {
-        const qa = row["date-quoted-accepted"]
-          ? formatDisplayDate(row["date-quoted-accepted"])
-          : "-";
-        const qd = row["quote-date"]
-          ? formatDisplayDate(row["quote-date"])
-          : "-";
-        const qt = money(row["quote-total"] ?? row?.meta?.quoteTotal);
-        const status = row["quote-status"] ?? row.status ?? "-";
-        return `
-          <tr class="border-b last:border-0">
-            <td class="px-6 py-4">${row.id}</td>
-            <td class="px-6 py-4"><div class="font-normal text-slate-700">${
-              row.client
-            }</div></td>
-            <td class="px-6 py-4 text-slate-600">${qa}</td>
-            <td class="px-6 py-4 text-slate-600">${row.service ?? "-"}</td>
-            <td class="px-6 py-4 text-slate-600">${qd}</td>
-            <td class="px-6 py-4 text-slate-600">${qt}</td>
-            <td class="px-6 py-4 text-left">
-              <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${
-                statusClasses[status] ?? "bg-slate-100 text-slate-600"
-              }">${status}</span>
-            </td>
-          </tr>`;
-      })
-      .join("");
+  renderQuoteTable(container, rows, statusClasses, formatDisplayDate) {
+    if (!container) return null;
+
+    const money = (n) =>
+      n == null || Number.isNaN(Number(n))
+        ? "-"
+        : `$${Number(n).toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}`;
+    const headers = [
+      {
+        key: "id",
+        label: "Unique ID",
+        headerClass: "px-6 py-4 text-left",
+        cellClass: "px-6 py-4",
+      },
+      {
+        key: "client",
+        label: "Client Info",
+        headerClass: "px-6 py-4 text-left",
+        cellClass: "px-6 py-4",
+        render: (row) =>
+          `<div class="font-normal text-slate-700">${row.client ?? "-"}</div>`,
+      },
+      {
+        key: "dateQuotedAccepted",
+        label: "Quote Accepted",
+        headerClass: "px-6 py-4 text-left",
+        cellClass: "px-6 py-4 text-slate-600",
+        render: (row) => {
+          const value = row.dateQuotedAccepted;
+          return value ? formatDisplayDate(value) : "-";
+        },
+      },
+      {
+        key: "service",
+        label: "Services",
+        headerClass: "px-6 py-4 text-left",
+        cellClass: "px-6 py-4 text-slate-600",
+        render: (row) => row.service ?? "-",
+      },
+      {
+        key: "quoteDate",
+        label: "Quoted Date",
+        headerClass: "px-6 py-4 text-left",
+        cellClass: "px-6 py-4 text-slate-600",
+        render: (row) => {
+          const value = row.quoteDate;
+          return value ? formatDisplayDate(value) : "-";
+        },
+      },
+      {
+        key: "quoteTotal",
+        label: "Quote Total",
+        headerClass: "px-6 py-4 text-left",
+        cellClass: "px-6 py-4 text-slate-600",
+        render: (row) => money(row.quoteTotal ?? row?.meta?.quoteTotal),
+      },
+      {
+        key: "quoteStatus",
+        label: "Status",
+        headerClass: "px-6 py-4 text-left",
+        cellClass: "px-6 py-4 text-left",
+        render: (row) => {
+          const status = row.quoteStatus ?? row.status ?? "-";
+          return this.buildStatusBadge({ status }, statusClasses);
+        },
+      },
+    ];
+
+    return this.renderDataTable({
+      container,
+      headers,
+      rows: Array.isArray(rows) ? rows : [],
+      emptyState: "No quotes found.",
+      getRowClass: () => "border-b last:border-0",
+    });
   }
 
-  renderJobsTable(tableBody, rows, statusClasses, formatDisplayDate) {
-    const thead = tableBody.closest("table")?.querySelector("thead");
-    if (thead) {
-      thead.innerHTML = `
-        <tr>
-          <th class="px-6 py-4 text-left">Unique ID</th>
-          <th class="px-6 py-4 text-left">Client Info</th>
-          <th class="px-6 py-4 text-left">Start Date</th>
-          <th class="px-6 py-4 text-left">Services</th>
-          <th class="px-6 py-4 text-left">Payment Status</th>
-          <th class="px-6 py-4 text-left">Required By</th>
-          <th class="px-6 py-4 text-left">Booked Date</th>
-          <th class="px-6 py-4 text-left">Job Total</th>
-          <th class="px-6 py-4 text-left">Job Status</th>
-        </tr>`;
-    }
-    const money = (n) => (n == null ? "-" : `$${Number(n).toLocaleString()}`);
-    tableBody.innerHTML = rows
-      .map((row) => {
-        const start = row["date-started"]
-          ? formatDisplayDate(row["date-started"])
-          : "-";
-        const req = row["date-job-required-by"]
-          ? formatDisplayDate(row["date-job-required-by"])
-          : "-";
-        const booked = row["date-booked"]
-          ? formatDisplayDate(row["date-booked"])
-          : "-";
-        const total = money(row.price ?? row?.meta?.price);
-        const pstatus = row["payment-status"] ?? "-";
-        const jstatus = row["job-status"] ?? row.status ?? "-";
-        return `
-          <tr class="border-b last:border-0">
-            <td class="px-6 py-4">${row.id}</td>
-            <td class="px-6 py-4"><div class="font-normal text-slate-700">${
-              row.client
-            }</div></td>
-            <td class="px-6 py-4 text-slate-600">${start}</td>
-            <td class="px-6 py-4 text-slate-600">${row.service ?? "-"}</td>
-            <td class="px-6 py-4 text-slate-600">${pstatus}</td>
-            <td class="px-6 py-4 text-slate-600">${req}</td>
-            <td class="px-6 py-4 text-slate-600">${booked}</td>
-            <td class="px-6 py-4 text-slate-600">${total}</td>
-            <td class="px-6 py-4 text-left">
-              <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${
-                statusClasses[jstatus] ?? "bg-slate-100 text-slate-600"
-              }">${jstatus}</span>
-            </td>
-          </tr>`;
-      })
-      .join("");
+  renderJobsTable(container, rows, statusClasses, formatDisplayDate) {
+    if (!container) return null;
+
+    const money = (n) =>
+      n == null || Number.isNaN(Number(n))
+        ? "-"
+        : `$${Number(n).toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}`;
+    const headers = [
+      {
+        key: "id",
+        label: "Unique ID",
+        headerClass: "px-6 py-4 text-left",
+        cellClass: "px-6 py-4",
+      },
+      {
+        key: "client",
+        label: "Client Info",
+        headerClass: "px-6 py-4 text-left",
+        cellClass: "px-6 py-4",
+        render: (row) =>
+          `<div class="font-normal text-slate-700">${row.client ?? "-"}</div>`,
+      },
+      {
+        key: "startDate",
+        label: "Start Date",
+        headerClass: "px-6 py-4 text-left",
+        cellClass: "px-6 py-4 text-slate-600",
+        render: (row) => {
+          const value = row.startDate;
+          return value ? formatDisplayDate(value) : "-";
+        },
+      },
+      {
+        key: "service",
+        label: "Services",
+        headerClass: "px-6 py-4 text-left",
+        cellClass: "px-6 py-4 text-slate-600",
+        render: (row) => row.service ?? "-",
+      },
+      {
+        key: "paymentStatus",
+        label: "Payment Status",
+        headerClass: "px-6 py-4 text-left",
+        cellClass: "px-6 py-4 text-slate-600",
+        render: (row) => row.paymentStatus ?? "-",
+      },
+      {
+        key: "requiredBy",
+        label: "Required By",
+        headerClass: "px-6 py-4 text-left",
+        cellClass: "px-6 py-4 text-slate-600",
+        render: (row) => {
+          const value = row.requiredBy;
+          return value ? formatDisplayDate(value) : "-";
+        },
+      },
+      {
+        key: "bookedDate",
+        label: "Booked Date",
+        headerClass: "px-6 py-4 text-left",
+        cellClass: "px-6 py-4 text-slate-600",
+        render: (row) => {
+          const value = row.bookedDate;
+          return value ? formatDisplayDate(value) : "-";
+        },
+      },
+      {
+        key: "price",
+        label: "Job Total",
+        headerClass: "px-6 py-4 text-left",
+        cellClass: "px-6 py-4 text-slate-600",
+        render: (row) => money(row.price ?? row?.meta?.price),
+      },
+      {
+        key: "jobStatus",
+        label: "Job Status",
+        headerClass: "px-6 py-4 text-left",
+        cellClass: "px-6 py-4 text-left",
+        render: (row) => {
+          const status = row.jobStatus ?? row.status ?? "-";
+          return this.buildStatusBadge({ status }, statusClasses);
+        },
+      },
+    ];
+
+    return this.renderDataTable({
+      container,
+      headers,
+      rows: Array.isArray(rows) ? rows : [],
+      emptyState: "No jobs found.",
+      getRowClass: () => "border-b last:border-0",
+    });
   }
 
   createNotificationModal(notifications) {
@@ -612,8 +930,9 @@ export class DashboardView {
     if (tab === "urgent-calls") relatedFilters?.classList.add("hidden");
     else relatedFilters?.classList.remove("hidden");
 
-    if (context.previousTab) {
-      context.filtersConfig[context.previousTab]?.forEach((id) => {
+    const previousTab = context.previousTab;
+    if (previousTab) {
+      context.filtersConfig[previousTab]?.forEach((id) => {
         document.getElementById(id)?.classList.add("hidden");
       });
     }
@@ -639,10 +958,20 @@ export class DashboardView {
       });
     }
 
-    context.previousTab = tab;
+    if (previousTab !== tab) {
+      context.previousTab = tab;
+      this.previousTab = tab;
+      if (typeof context.onTabChange === "function") {
+        context.onTabChange(tab);
+      }
+    } else {
+      context.previousTab = tab;
+      this.previousTab = tab;
+    }
   }
 
   attachClickListeners(nav, links, panels, context) {
+    const setActive = this.setActive.bind(this);
     nav.addEventListener("click", (e) => {
       const a = e.target.closest("[data-tab]");
       if (!a) return;
@@ -656,6 +985,7 @@ export class DashboardView {
     navId = "top-tabs",
     panelsId = "tab-panels",
     defaultTab = "inquiry",
+    onTabChange,
   } = {}) {
     const nav = document.getElementById(navId);
     const panelsWrap = document.getElementById(panelsId);
@@ -669,6 +999,7 @@ export class DashboardView {
     const context = {
       filtersConfig: this.filtersConfig || {},
       previousTab: this.previousTab || null,
+      onTabChange,
     };
 
     this.initializeLinks(links);

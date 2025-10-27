@@ -2,7 +2,7 @@ import { NewEnquiryController } from "./controller/new-enquiry.js";
 import { NewEnquiryModal } from "./models/new-enquiry.js";
 import { NewEnquiryView } from "./views/new-enquiry.js";
 import { DashboardModel } from "./models/dashboard.js";
-import { DashboardView } from "./views/dashboard.js";
+import { DashboardView, renderDynamicTable } from "./views/dashboard.js";
 import { DashboardController } from "./controller/dashboard.js";
 
 import { config } from "../sdk/config.js";
@@ -42,7 +42,7 @@ import { VitalStatsSDK } from "../sdk/init.js";
 
     maybeInitDashboard() {
       const hasCalendar = document.getElementById("calendar-grid");
-      const hasTable = document.getElementById("inquiry-table-body");
+      const hasTable = document.getElementById("inquiry-table-container");
       if (!hasCalendar || !hasTable) return;
       if (this.controllers.dashboard) return; // already initialized
       const model = new DashboardModel(tempPlugin);
@@ -64,4 +64,5 @@ import { VitalStatsSDK } from "../sdk/init.js";
 
   document.addEventListener("DOMContentLoaded", () => App.start());
   window.App = App; // optional: debug access
+  window.renderDynamicTable = renderDynamicTable;
 })();

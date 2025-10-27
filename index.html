@@ -620,37 +620,7 @@
 
                 <!-- Data table -->
                 <div class="mt-1 overflow-hidden rounded-xl border border-slate-200 shadow-sm">
-                  <table class="min-w-full text-sm text-slate-700">
-                    <thead class="bg-[#f5f8ff] text-xs font-semibold uppercase tracking-wide border-b border-slate-200">
-                      <tr>
-                        <th scope="col" class="px-6 py-4 text-left">Unique ID</th>
-                        <th scope="col" class="px-6 py-4 text-left">Client Info</th>
-                        <th scope="col" class="px-6 py-4 text-left">
-                          <span class="inline-flex items-center gap-1">
-                            Created Date
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-brand-400" viewBox="0 0 20 20" fill="none">
-                              <path d="M7 8l3-3 3 3M7 12l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                          </span>
-                        </th>
-                        <th scope="col" class="px-6 py-4 text-left">Serviceman</th>
-                        <th scope="col" class="px-6 py-4 text-left">
-                          <span class="inline-flex items-center gap-1">
-                            Follow Up Date
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-brand-400" viewBox="0 0 20 20" fill="none">
-                              <path d="M7 8l3-3 3 3M7 12l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                          </span>
-                        </th>
-                        <th scope="col" class="px-6 py-4 text-left">Source</th>
-                        <th scope="col" class="px-6 py-4 text-left">Service Inquiry</th>
-                        <th scope="col" class="px-6 py-4 text-left">Type</th>
-                        <th scope="col" class="px-6 py-4 text-center">Status</th>
-                        <th scope="col" class="px-6 py-4 text-center">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody id="inquiry-table-body" class="bg-white"></tbody>
-                  </table>
+                  <div id="inquiry-table-container"></div>
                 </div>
 
                 <!-- Pagination -->

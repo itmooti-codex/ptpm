@@ -22,7 +22,7 @@ export const DASHBOARD_STATUS_CLASSES = {
 
 export const DASHBOARD_DEFAULTS = {
   dayCount: 14,
-  startDate: dayjsRef("2024-03-15"),
+  startDate: dayjsRef("21 Jan 1970"),
   totalsPattern: [8, 13, 19, 8, 12, 3, 11, 8, 13, 19, 8, 13, 19, 11],
   rowTotals: [45, 45],
 };
@@ -34,6 +34,7 @@ export class DashboardModel {
     this.dealQuery = null;
     this.quoteQuery = null;
     this.BuildDealQuery();
+    this.BuildQuoteQuery();
 
     this.statusClasses = overrides.statusClasses || DASHBOARD_STATUS_CLASSES;
     this.dayCount = overrides.dayCount || DASHBOARD_DEFAULTS.dayCount;
@@ -78,12 +79,21 @@ export class DashboardModel {
     return this.statusClasses;
   }
   getRowsForDate(dateIso, allRows) {
-    // Filter by created (display string) matching the selected date's display format
-    if (Array.isArray(allRows) && allRows.length) {
-      let selectedDisplay = this.formatDisplayDate(dateIso || "");
-      return allRows.filter((r) => r?.created === "21 Jan 1970");
+    const rows = Array.isArray(allRows) ? allRows : [];
+    if (rows.length) {
+      const selectedIso = dateIso || this.selectedDate || null;
+      if (!selectedIso) return rows;
+      const display = this.formatDisplayDate("21 Jan 1970");
+      return rows.filter((row) => {
+        const rowIso = row?.meta?.createdIso || row?.createdIso || null;
+        if (rowIso) return rowIso === selectedIso;
+        const createdDisplay = (row?.created ?? "").trim();
+        return display ? createdDisplay === display : true;
+      });
     }
-    return this.inquiryDataByDate?.[dateIso] ?? [];
+    const selected = dateIso || this.selectedDate || null;
+    if (!selected) return [];
+    return this.inquiryDataByDate?.[selected] ?? [];
   }
 
   // --- Mutations ---
@@ -93,7 +103,8 @@ export class DashboardModel {
 
   // --- Utilities ---
   formatDisplayDate(dateIso) {
-    return dayjsRef(dateIso).format("D MMM YYYY");
+    const instance = dayjsRef(dateIso);
+    return instance.isValid() ? instance.format("D MMM YYYY") : "";
   }
 
   BuildDealQuery() {
