@@ -154,74 +154,75 @@ export class DashboardModel {
         (f.dateTo && f.dateTo.trim())
     );
 
-    if (!hasAnyFilter) {
-      this.dealQuery = ptpmDealModel
-        .query()
-        .deSelectAll()
-        .select([
-          "Unique_ID",
-          "Date_Added",
-          "Type",
-          "Inquiry_Status",
-          "How_did_you_hear",
-        ])
-        .include("Company", (q) =>
-          q.deSelectAll().select(["name", "account_type"])
-        )
-        .include("Service_Inquiry", (q) => q.select(["service_name"]))
-        .include("Primary_Contact", (q) =>
-          q.select([
-            "first_name",
-            "last_name",
-            "email",
-            "sms_number",
-            "address_1",
-          ])
-        )
-        .include("Property", (q) => {
-          q.deSelectAll().select(["address_1"]);
-        })
-        .include("Service_Provider", (q) => {
-          q.deSelectAll().include("Contact_Information", (q) => {
-            q.deSelectAll().select(["first_name", "last_name"]);
-          });
-        })
-        .noDestroy();
-      return;
-    }
+    // if (!hasAnyFilter) {
+    //   this.dealQuery = ptpmDealModel
+    //     .query()
+    //     .deSelectAll()
+    //     .select([
+    //       "Unique_ID",
+    //       "Date_Added",
+    //       "Type",
+    //       "Inquiry_Status",
+    //       "How_did_you_hear",
+    //     ])
+    //     .include("Company", (q) =>
+    //       q.deSelectAll().select(["name", "account_type"])
+    //     )
+    //     .include("Service_Inquiry", (q) => q.select(["service_name"]))
+    //     .include("Primary_Contact", (q) =>
+    //       q.select([
+    //         "first_name",
+    //         "last_name",
+    //         "email",
+    //         "sms_number",
+    //         "address_1",
+    //       ])
+    //     )
+    //     .include("Property", (q) => {
+    //       q.deSelectAll().select(["address_1"]);
+    //     })
+    //     .include("Service_Provider", (q) => {
+    //       q.deSelectAll().include("Contact_Information", (q) => {
+    //         q.deSelectAll().select(["first_name", "last_name"]);
+    //       });
+    //     })
+    //     .noDestroy();
+    //   return;
+    // }
 
-    let accountType = f.accountTypes.length != 0 ? f.accountTypes : [""];
-    let accountName = f.accountName ? `%${f.accountName}%` : "";
-    let resident = f.resident ? `%${f.resident}%` : "";
-    let address = f.address ? `%${f.address}%` : "";
-    let source = f.source ? f.source : "";
-    let status = f.statuses.length != 0 ? f.statuses : [""];
-    this.dealQuery = ptpmDealModel
-      .query()
-      .where("how_did_you_hear", source)
-      .andWhere("inquiry_status", "in", status)
-      .andWhere("Company", (q) => {
-        q.where("name", "like", accountName).andWhere(
-          "account_type",
-          "in",
-          accountType
-        );
-      })
-      .andWhere("Primary_Contact", (q) => {
-        q.where("first_name", "like", resident).orWhere(
-          "last_name",
-          "like",
-          resident
-        );
-      })
-      .andWhere("Property", (q) => {
-        q.where("address_1", "like", address);
-      })
-      .andWhere((q) => {
-        if (startEpoch != null)
-          q.andWhere("date_quoted_accepted", ">=", startEpoch);
-        if (endEpoch != null) q.andWhere("quote_valid_until", "<=", endEpoch);
-      })
+    // Build dynamic filters: only apply conditions if provided
+    this.dealQuery = ptpmDealModel.query();
+    if (f.source) {
+      this.dealQuery = this.dealQuery.where("how_did_you_hear", f.source);
+    }
+    if (Array.isArray(f.statuses) && f.statuses.length) {
+      this.dealQuery = this.dealQuery.andWhere("inquiry_status", "in", f.statuses);
+    }
+    if ((f.accountName && f.accountName.trim()) || (Array.isArray(f.accountTypes) && f.accountTypes.length)) {
+      this.dealQuery = this.dealQuery.andWhere("Company", (q) => {
+        if (f.accountName && f.accountName.trim()) {
+          q.where("name", "like", `%${f.accountName}%`);
+        }
+        if (Array.isArray(f.accountTypes) && f.accountTypes.length) {
+          q.andWhere("account_type", "in", f.accountTypes);
+        }
+      });
+    }
+    if (f.resident && f.resident.trim()) {
+      const likeResident = `%${f.resident}%`;
+      this.dealQuery = this.dealQuery.andWhere("Primary_Contact", (q) => {
+        q.where("first_name", "like", likeResident).orWhere("last_name", "like", likeResident);
+      });
+    }
+    if (f.address && f.address.trim()) {
+      this.dealQuery = this.dealQuery.andWhere("Property", (q) => {
+        q.where("address_1", "like", `%${f.address}%`);
+      });
+    }
+    this.dealQuery = this.dealQuery.andWhere((q) => {
+      if (startEpoch != null) q.andWhere("date_quoted_accepted", ">=", startEpoch);
+      if (endEpoch != null) q.andWhere("quote_valid_until", "<=", endEpoch);
+    })
       .deSelectAll()
       .select([
         "Unique_ID",
@@ -318,18 +319,9 @@ export class DashboardModel {
       return;
     }
 
-    // Filtered query
-    let accountType =
-      Array.isArray(f.accountTypes) && f.accountTypes.length
-        ? f.accountTypes
-        : [""];
-    let accountName = f.accountName ? `%${f.accountName}%` : "";
-    let resident = f.resident ? `%${f.resident}%` : "";
-    let address = f.address ? `%${f.address}%` : "";
-    let source = f.source ? f.source : "";
-    let statuses = f.statuses.length != 0 ? f.statuses : [""];
-    let minPrice = f.priceMin ? f.priceMin : 0;
-    let maxPrice = f.priceMax ? f.priceMax : 20000;
+    // Filtered query (dynamic)
+    const minPrice = f.priceMin ?? 0;
+    const maxPrice = f.priceMax ?? 20000;
     const toEpoch = (d, endOfDay = false) => {
       if (!d) return null;
       const m = dayjsRef(d);
@@ -339,34 +331,31 @@ export class DashboardModel {
     const startEpoch =
       toEpoch(f.dateFrom, false) ?? toEpoch("1970-01-01", false);
     const endEpoch = toEpoch(f.dateTo, true) ?? toEpoch("2100-12-31", true);
-    this.quoteQuery = ptpmDealModel
-      .query()
-      .where("how_did_you_hear", source)
-      .andWhere("Company", (q) => {
-        q.where("name", "like", accountName).andWhere(
-          "account_type",
-          "in",
-          accountType
-        );
-      })
-      .andWhere("Primary_Contact", (q) => {
-        q.where("first_name", "like", resident).orWhere(
-          "last_name",
-          "like",
-          resident
-        );
-      })
-      .andWhere("Property", (q) => {
-        q.where("address_1", "like", address);
-      })
-      .andWhere("Jobs", (q) => {
-        q.where("quote_status", "in", statuses)
-          .whereNot("quote_status", "Accepted")
-          .andWhere("quote_total", ">=", minPrice)
-          .andWhere("quote_total", "<=", maxPrice)
-          .andWhere("date_quoted_accepted", ">=", startEpoch)
-          .andWhere("quote_valid_until", "<=", endEpoch);
-      })
+    this.quoteQuery = ptpmDealModel.query();
+    if (f.source) this.quoteQuery = this.quoteQuery.where("how_did_you_hear", f.source);
+    if ((f.accountName && f.accountName.trim()) || (Array.isArray(f.accountTypes) && f.accountTypes.length)) {
+      this.quoteQuery = this.quoteQuery.andWhere("Company", (q) => {
+        if (f.accountName && f.accountName.trim()) q.where("name", "like", `%${f.accountName}%`);
+        if (Array.isArray(f.accountTypes) && f.accountTypes.length) q.andWhere("account_type", "in", f.accountTypes);
+      });
+    }
+    if (f.resident && f.resident.trim()) {
+      const likeResident = `%${f.resident}%`;
+      this.quoteQuery = this.quoteQuery.andWhere("Primary_Contact", (q) => {
+        q.where("first_name", "like", likeResident).orWhere("last_name", "like", likeResident);
+      });
+    }
+    if (f.address && f.address.trim()) {
+      this.quoteQuery = this.quoteQuery.andWhere("Property", (q) => {
+        q.where("address_1", "like", `%${f.address}%`);
+      });
+    }
+    this.quoteQuery = this.quoteQuery.andWhere("Jobs", (q) => {
+      if (Array.isArray(f.statuses) && f.statuses.length) q.where("quote_status", "in", f.statuses);
+      q.whereNot("quote_status", "Accepted");
+      q.andWhere("quote_total", ">=", minPrice).andWhere("quote_total", "<=", maxPrice);
+      q.andWhere("date_quoted_accepted", ">=", startEpoch).andWhere("quote_valid_until", "<=", endEpoch);
+    })
       .deSelectAll()
       .select([
         "Unique_ID",
@@ -470,11 +459,8 @@ export class DashboardModel {
         : [""];
     let accountName = f.accountName ? `%${f.accountName}%` : "";
     let resident = f.resident ? `%${f.resident}%` : "";
-    let address = f.address ? `%${f.address}%` : "";
-    let source = f.source ? f.source : "";
-    let statuses = f.statuses.length != 0 ? f.statuses : [""];
-    let minPrice = f.priceMin ? f.priceMin : 0;
-    let maxPrice = f.priceMax ? f.priceMax : 20000;
+    const minPriceP = f.priceMin ?? 0;
+    const maxPriceP = f.priceMax ?? 20000;
     const toEpoch = (d, endOfDay = false) => {
       if (!d) return null;
       const m = dayjsRef(d);
@@ -625,34 +611,31 @@ export class DashboardModel {
     const startEpoch =
       toEpoch(f.dateFrom, false) ?? toEpoch("1970-01-01", false);
     const endEpoch = toEpoch(f.dateTo, true) ?? toEpoch("2100-12-31", true);
-    this.paymentQuery = ptpmDealModel
-      .query()
-      .where("how_did_you_hear", source)
-      .andWhere("Company", (q) => {
-        q.where("name", "like", accountName).andWhere(
-          "account_type",
-          "in",
-          accountType
-        );
-      })
-      .andWhere("Primary_Contact", (q) => {
-        q.where("first_name", "like", resident).orWhere(
-          "last_name",
-          "like",
-          resident
-        );
-      })
-      .andWhere("Property", (q) => {
-        q.where("address_1", "like", address);
-      })
-      .andWhere("Jobs", (q) => {
-        q.where("quote_status", "in", statuses)
-          .where("quote_status", "Accepted")
-          .andWhere("quote_total", ">=", minPrice)
-          .andWhere("quote_total", "<=", maxPrice)
-          .andWhere("date_quoted_accepted", ">=", startEpoch)
-          .andWhere("quote_valid_until", "<=", endEpoch);
-      })
+    this.paymentQuery = ptpmDealModel.query();
+    if (f.source) this.paymentQuery = this.paymentQuery.where("how_did_you_hear", f.source);
+    if ((f.accountName && f.accountName.trim()) || (Array.isArray(f.accountTypes) && f.accountTypes.length)) {
+      this.paymentQuery = this.paymentQuery.andWhere("Company", (q) => {
+        if (f.accountName && f.accountName.trim()) q.where("name", "like", `%${f.accountName}%`);
+        if (Array.isArray(f.accountTypes) && f.accountTypes.length) q.andWhere("account_type", "in", f.accountTypes);
+      });
+    }
+    if (f.resident && f.resident.trim()) {
+      const likeResident = `%${f.resident}%`;
+      this.paymentQuery = this.paymentQuery.andWhere("Primary_Contact", (q) => {
+        q.where("first_name", "like", likeResident).orWhere("last_name", "like", likeResident);
+      });
+    }
+    if (f.address && f.address.trim()) {
+      this.paymentQuery = this.paymentQuery.andWhere("Property", (q) => {
+        q.where("address_1", "like", `%${f.address}%`);
+      });
+    }
+    this.paymentQuery = this.paymentQuery.andWhere("Jobs", (q) => {
+      if (Array.isArray(f.statuses) && f.statuses.length) q.where("quote_status", "in", f.statuses);
+      q.where("quote_status", "Accepted");
+      q.andWhere("quote_total", ">=", minPriceP).andWhere("quote_total", "<=", maxPriceP);
+      q.andWhere("date_quoted_accepted", ">=", startEpoch).andWhere("quote_valid_until", "<=", endEpoch);
+    })
       .deSelectAll()
       .select(["Unique_ID", "Type", "Inquiry_Status", "How_did_you_hear"])
       .include("Company", (q) =>

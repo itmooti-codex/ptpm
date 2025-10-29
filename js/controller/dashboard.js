@@ -77,8 +77,6 @@ export class DashboardController {
     if (resetBtn) {
       resetBtn.addEventListener("click", () => this.clearAllFilters());
     }
-
-    this.bindMandatoryFieldOutlineCleanup();
   }
 
   destroy() {
@@ -404,94 +402,9 @@ export class DashboardController {
     if (!applyBtn) return;
     applyBtn.addEventListener("click", () => {
       this.filters = this.collectAllFiltersFromUI();
-      if (!this.validateMandatoryFilters(this.filters)) {
-        return; // show warning and do not run query
-      }
       this.handleTabChange(this.currentTab);
       this.renderAppliedFilters(this.filters);
     });
-  }
-
-  // Validate mandatory filters: at least one status, one account type, and source
-  validateMandatoryFilters(filters) {
-    const statusBtn = document.getElementById("status-filter-btn");
-    const typeBtn = document.getElementById("account-type-filter");
-    const sourceInput = document.getElementById("filter-source");
-    const sourceWrap = sourceInput ? sourceInput.parentElement : null;
-
-    const statuses = Array.isArray(filters?.statuses) ? filters.statuses : [];
-    const accountTypes = Array.isArray(filters?.accountTypes)
-      ? filters.accountTypes
-      : [];
-    const source = (filters?.source || "").trim();
-
-    // Helper to toggle red outline
-    const markInvalid = (el, invalid) => {
-      if (!el) return;
-      if (invalid) {
-        el.classList.add("outline", "outline-2", "outline-red-500");
-      } else {
-        el.classList.remove("outline", "outline-2", "outline-red-500");
-      }
-    };
-
-    const missingStatus = statuses.length === 0;
-    const missingType = accountTypes.length === 0;
-    const missingSource = !source;
-
-    markInvalid(statusBtn, missingStatus);
-    markInvalid(typeBtn, missingType);
-    markInvalid(sourceWrap, missingSource);
-
-    if (!(missingStatus || missingType || missingSource)) return true;
-
-    // Show view toast-style popup (consistent with other views)
-    if (this.view?.toggleDashboardWarnModal)
-      this.view.toggleDashboardWarnModal(true);
-    return false;
-  }
-
-  // Remove outlines live when user fixes inputs
-  bindMandatoryFieldOutlineCleanup() {
-    const statusCard = document.getElementById("status-filter-card");
-    const statusBtn = document.getElementById("status-filter-btn");
-    if (statusCard && statusBtn) {
-      statusCard.addEventListener("change", () => {
-        const any = statusCard.querySelector(
-          'input[type="checkbox"][data-status]:checked'
-        );
-        if (any)
-          statusBtn.classList.remove("outline", "outline-2", "outline-red-500");
-      });
-    }
-
-    const typeCard = document.getElementById("account-type-filter-card");
-    const typeBtn = document.getElementById("account-type-filter");
-    if (typeCard && typeBtn) {
-      typeCard.addEventListener("change", () => {
-        const any = typeCard.querySelector(
-          'input[type="checkbox"][data-account-type]:checked'
-        );
-        if (any)
-          typeBtn.classList.remove("outline", "outline-2", "outline-red-500");
-      });
-    }
-
-    const sourceInput = document.getElementById("filter-source");
-    const sourceWrap = sourceInput ? sourceInput.parentElement : null;
-    if (sourceInput && sourceWrap) {
-      const clearIfValue = () => {
-        if ((sourceInput.value || "").trim()) {
-          sourceWrap.classList.remove(
-            "outline",
-            "outline-2",
-            "outline-red-500"
-          );
-        }
-      };
-      sourceInput.addEventListener("input", clearIfValue);
-      sourceInput.addEventListener("change", clearIfValue);
-    }
   }
 
   // Collect all available filters from the sidebar.
