@@ -22,7 +22,10 @@ export class DashboardController {
       address: "",
       source: "",
       serviceman: "",
+      // Keep free-text type for legacy UI, but prefer structured array below
       type: "",
+      // Ensure accountTypes is always an array on first load
+      accountTypes: [],
       quoteNumber: "",
       invoiceNumber: "",
       recommendation: "",
@@ -70,11 +73,12 @@ export class DashboardController {
       onTabChange: (tab) => this.handleTabChange(tab),
     });
 
-    // Bind Clear/Reset button if present
     const resetBtn = document.getElementById("reset-filters-btn");
     if (resetBtn) {
       resetBtn.addEventListener("click", () => this.clearAllFilters());
     }
+
+    this.bindMandatoryFieldOutlineCleanup();
   }
 
   destroy() {
@@ -131,10 +135,6 @@ export class DashboardController {
       case "inquiry":
         await this.fetchDealsAndRenderTable();
         break;
-      case "payment":
-
-      case "urgent-calls":
-
       default:
         this.deals = [];
         this.clearTable(tab);
@@ -206,9 +206,9 @@ export class DashboardController {
       return;
     }
 
-    if (this.currentTab === "urgent-calls") {
+    if (this.currentTab === "inquiry") {
       const urgentRows = rows ?? [];
-      this.tableElements = this.view.renderUrgentCallsTable(
+      this.tableElements = this.view.renderTable(
         this.tableContainerEl,
         urgentRows,
         statusClasses,
@@ -338,13 +338,32 @@ export class DashboardController {
     }
   }
 
+  async fetchJobsAndRenderTable() {
+    try {
+      const jobData =
+        typeof this.model.fetchJobs === "function"
+          ? await this.model.fetchJobs(this.filters)
+          : {};
+      const mappedJobData =
+        this.dashboardHelper.mapDealToTableRow(jobData ?? {}) ?? [];
+      const sampleRows = this.dashboardHelper.mapJobRows(mappedJobData);
+      this.deals = sampleRows;
+      this.reRenderActiveTab();
+      return sampleRows;
+    } catch (e) {
+      console.log("fetchJobs render error", e);
+      this.clearTable("jobs");
+      return [];
+    }
+  }
+
   async fetchPaymentsAndRenderTable() {
     try {
       // Reuse deal fetch unless a dedicated model method exists
       const fetcher =
         typeof this.model.fetchPayments === "function"
           ? () => this.model.fetchPayments(this.filters)
-          : () => this.model.fetchDeal(this.filters);
+          : [];
       const paymentData = await fetcher();
       const mapped =
         this.dashboardHelper.mapDealToTableRow(paymentData ?? {}) ?? [];
@@ -379,34 +398,100 @@ export class DashboardController {
     }
   }
 
-  async fetchJobsAndRenderTable() {
-    try {
-      const jobData =
-        typeof this.model.fetchJobs === "function"
-          ? await this.model.fetchJobs(this.filters)
-          : await this.model.fetchDeal(this.filters);
-      const mappedJobData =
-        this.dashboardHelper.mapDealToTableRow(jobData ?? {}) ?? [];
-      const sampleRows = this.dashboardHelper.mapJobRows(mappedJobData);
-      this.deals = sampleRows;
-      this.reRenderActiveTab();
-      return sampleRows;
-    } catch (e) {
-      console.log("fetchJobs render error", e);
-      this.clearTable("jobs");
-      return [];
-    }
-  }
-
   // Server-side filtering: collect filters and persist across tabs
   bindApplyFilters() {
     const applyBtn = document.getElementById("apply-filters-btn");
     if (!applyBtn) return;
     applyBtn.addEventListener("click", () => {
       this.filters = this.collectAllFiltersFromUI();
+      if (!this.validateMandatoryFilters(this.filters)) {
+        return; // show warning and do not run query
+      }
       this.handleTabChange(this.currentTab);
       this.renderAppliedFilters(this.filters);
     });
+  }
+
+  // Validate mandatory filters: at least one status, one account type, and source
+  validateMandatoryFilters(filters) {
+    const statusBtn = document.getElementById("status-filter-btn");
+    const typeBtn = document.getElementById("account-type-filter");
+    const sourceInput = document.getElementById("filter-source");
+    const sourceWrap = sourceInput ? sourceInput.parentElement : null;
+
+    const statuses = Array.isArray(filters?.statuses) ? filters.statuses : [];
+    const accountTypes = Array.isArray(filters?.accountTypes)
+      ? filters.accountTypes
+      : [];
+    const source = (filters?.source || "").trim();
+
+    // Helper to toggle red outline
+    const markInvalid = (el, invalid) => {
+      if (!el) return;
+      if (invalid) {
+        el.classList.add("outline", "outline-2", "outline-red-500");
+      } else {
+        el.classList.remove("outline", "outline-2", "outline-red-500");
+      }
+    };
+
+    const missingStatus = statuses.length === 0;
+    const missingType = accountTypes.length === 0;
+    const missingSource = !source;
+
+    markInvalid(statusBtn, missingStatus);
+    markInvalid(typeBtn, missingType);
+    markInvalid(sourceWrap, missingSource);
+
+    if (!(missingStatus || missingType || missingSource)) return true;
+
+    // Show view toast-style popup (consistent with other views)
+    if (this.view?.toggleDashboardWarnModal)
+      this.view.toggleDashboardWarnModal(true);
+    return false;
+  }
+
+  // Remove outlines live when user fixes inputs
+  bindMandatoryFieldOutlineCleanup() {
+    const statusCard = document.getElementById("status-filter-card");
+    const statusBtn = document.getElementById("status-filter-btn");
+    if (statusCard && statusBtn) {
+      statusCard.addEventListener("change", () => {
+        const any = statusCard.querySelector(
+          'input[type="checkbox"][data-status]:checked'
+        );
+        if (any)
+          statusBtn.classList.remove("outline", "outline-2", "outline-red-500");
+      });
+    }
+
+    const typeCard = document.getElementById("account-type-filter-card");
+    const typeBtn = document.getElementById("account-type-filter");
+    if (typeCard && typeBtn) {
+      typeCard.addEventListener("change", () => {
+        const any = typeCard.querySelector(
+          'input[type="checkbox"][data-account-type]:checked'
+        );
+        if (any)
+          typeBtn.classList.remove("outline", "outline-2", "outline-red-500");
+      });
+    }
+
+    const sourceInput = document.getElementById("filter-source");
+    const sourceWrap = sourceInput ? sourceInput.parentElement : null;
+    if (sourceInput && sourceWrap) {
+      const clearIfValue = () => {
+        if ((sourceInput.value || "").trim()) {
+          sourceWrap.classList.remove(
+            "outline",
+            "outline-2",
+            "outline-red-500"
+          );
+        }
+      };
+      sourceInput.addEventListener("input", clearIfValue);
+      sourceInput.addEventListener("change", clearIfValue);
+    }
   }
 
   // Collect all available filters from the sidebar.
@@ -437,12 +522,6 @@ export class DashboardController {
           .map((c) => (c.dataset.accountType || c.value || "").trim())
           .filter(Boolean)
       : [];
-    // Prefer dropdown selections; fallback to free text type field
-    const typeText = val("filter-type");
-    const typeCombined = accountTypes.length
-      ? accountTypes.join(", ")
-      : typeText || null;
-    // Helper to nullify empty strings
     const nz = (s) => (s && s.length ? s : null);
     return {
       // Global
@@ -453,7 +532,11 @@ export class DashboardController {
       address: nz(val("filter-address")),
       source: nz(val("filter-source")),
       serviceman: nz(val("filter-serviceman")),
-      accountTypes,
+      accountTypes: Array.isArray(accountTypes)
+        ? accountTypes
+        : accountTypes
+        ? [accountTypes]
+        : [],
       // IDs / numbers
       quoteNumber: nz(val("filter-quote-number")),
       invoiceNumber: nz(val("filter-invoice-number")),
@@ -527,30 +610,47 @@ export class DashboardController {
       addChip("priceRange", "Price", `${min} - ${max}`);
     }
     if (filters.dateFrom || filters.dateTo) {
-      addChip("dateRange", "Quoted Date", `${filters.dateFrom || ""} –  ${filters.dateTo || ""}`);
+      addChip(
+        "dateRange",
+        "Quoted Date",
+        `${filters.dateFrom || ""} –  ${filters.dateTo || ""}`
+      );
     }
     addChip("xeroInvoiceStatus", "Xero Status", filters.xeroInvoiceStatus);
     if (filters.invoiceDateFrom || filters.invoiceDateTo) {
-      addChip("invoiceDate", "Invoice Date", `${filters.invoiceDateFrom || ""} –  ${filters.invoiceDateTo || ""}`);
+      addChip(
+        "invoiceDate",
+        "Invoice Date",
+        `${filters.invoiceDateFrom || ""} –  ${filters.invoiceDateTo || ""}`
+      );
     }
     if (filters.dueDateFrom || filters.dueDateTo) {
-      addChip("dueDate", "Due Date", `${filters.dueDateFrom || ""} –  ${filters.dueDateTo || ""}`);
+      addChip(
+        "dueDate",
+        "Due Date",
+        `${filters.dueDateFrom || ""} –  ${filters.dueDateTo || ""}`
+      );
     }
     if (filters.billPaidDateFrom || filters.billPaidDateTo) {
-      addChip("billPaidDate", "Bill Paid", `${filters.billPaidDateFrom || ""} –  ${filters.billPaidDateTo || ""}`);
+      addChip(
+        "billPaidDate",
+        "Bill Paid",
+        `${filters.billPaidDateFrom || ""} –  ${filters.billPaidDateTo || ""}`
+      );
     }
     addChip("taskPropertySearch", "Task Property", filters.taskPropertySearch);
     if (filters.taskDueToday) addChip("taskDueToday", "Due Today", "Yes");
-    if (filters.taskAssignedToMe) addChip("taskAssignedToMe", "Assigned To Me", "Yes");
+    if (filters.taskAssignedToMe)
+      addChip("taskAssignedToMe", "Assigned To Me", "Yes");
 
     root.innerHTML = chips.join("") || "";
 
     // Attach remove handlers
     root.querySelectorAll(".remove-chip").forEach((btn) => {
       btn.addEventListener("click", (e) => {
-        const chip = e.currentTarget.closest('[data-chip-key]');
+        const chip = e.currentTarget.closest("[data-chip-key]");
         if (!chip) return;
-        const key = chip.getAttribute('data-chip-key');
+        const key = chip.getAttribute("data-chip-key");
         this.removeFilterChip(key);
       });
     });
@@ -564,7 +664,9 @@ export class DashboardController {
       if (el) el.value = v;
     };
     const uncheckAll = (selector, root = document) => {
-      Array.from(root.querySelectorAll(selector)).forEach((c) => (c.checked = false));
+      Array.from(root.querySelectorAll(selector)).forEach(
+        (c) => (c.checked = false)
+      );
     };
 
     switch (key) {
@@ -574,7 +676,7 @@ export class DashboardController {
           const card = document.getElementById("status-filter-card");
           if (card) {
             uncheckAll('input[type="checkbox"][data-status]', card);
-            const allToggle = card.querySelector('#status-all');
+            const allToggle = card.querySelector("#status-all");
             if (allToggle) allToggle.checked = false;
           }
         }
@@ -585,62 +687,110 @@ export class DashboardController {
           const card = document.getElementById("account-type-filter-card");
           if (card) {
             uncheckAll('input[type="checkbox"][data-account-type]', card);
-            const allToggle = card.querySelector('#account-type-all');
+            const allToggle = card.querySelector("#account-type-all");
             if (allToggle) allToggle.checked = false;
-            const labelSpan = card.querySelector('#account-type-label');
-            if (labelSpan) labelSpan.textContent = 'All';
+            const labelSpan = card.querySelector("#account-type-label");
+            if (labelSpan) labelSpan.textContent = "All";
           }
         }
         break;
       case "accountName":
-        f.accountName = null; setVal('filter-account-name'); break;
+        f.accountName = null;
+        setVal("filter-account-name");
+        break;
       case "resident":
-        f.resident = null; setVal('filter-resident'); break;
+        f.resident = null;
+        setVal("filter-resident");
+        break;
       case "address":
-        f.address = null; setVal('filter-address'); break;
+        f.address = null;
+        setVal("filter-address");
+        break;
       case "source":
-        f.source = null; setVal('filter-source'); break;
+        f.source = null;
+        setVal("filter-source");
+        break;
       case "serviceman":
-        f.serviceman = null; setVal('filter-serviceman'); break;
+        f.serviceman = null;
+        setVal("filter-serviceman");
+        break;
       case "type":
-        f.type = null; setVal('filter-type'); break;
+        f.type = null;
+        setVal("filter-type");
+        break;
       case "quoteNumber":
-        f.quoteNumber = null; setVal('filter-quote-number'); break;
+        f.quoteNumber = null;
+        setVal("filter-quote-number");
+        break;
       case "invoiceNumber":
-        f.invoiceNumber = null; setVal('filter-invoice-number'); break;
+        f.invoiceNumber = null;
+        setVal("filter-invoice-number");
+        break;
       case "recommendation":
-        f.recommendation = null; setVal('filter-recommendation'); break;
+        f.recommendation = null;
+        setVal("filter-recommendation");
+        break;
       case "priceRange":
-        f.priceMin = null; f.priceMax = null;
+        f.priceMin = null;
+        f.priceMax = null;
         {
-          const minEl = document.getElementById('price-min');
-          const maxEl = document.getElementById('price-max');
-          const progress = document.getElementById('price-progress');
-          if (minEl) minEl.value = minEl.min || '0';
-          if (maxEl) maxEl.value = maxEl.max || '';
-          if (progress) { progress.style.left = '0%'; progress.style.right = '0%'; }
+          const minEl = document.getElementById("price-min");
+          const maxEl = document.getElementById("price-max");
+          const progress = document.getElementById("price-progress");
+          if (minEl) minEl.value = minEl.min || "0";
+          if (maxEl) maxEl.value = maxEl.max || "";
+          if (progress) {
+            progress.style.left = "0%";
+            progress.style.right = "0%";
+          }
         }
         break;
       case "dateRange":
-        f.dateFrom = null; f.dateTo = null; setVal('date-from'); setVal('date-to'); break;
+        f.dateFrom = null;
+        f.dateTo = null;
+        setVal("date-from");
+        setVal("date-to");
+        break;
       case "xeroInvoiceStatus":
-        f.xeroInvoiceStatus = null; setVal('xero-invoice-status'); break;
+        f.xeroInvoiceStatus = null;
+        setVal("xero-invoice-status");
+        break;
       case "invoiceDate":
-        f.invoiceDateFrom = null; f.invoiceDateTo = null; setVal('invoice-date-from'); setVal('invoice-date-to'); break;
+        f.invoiceDateFrom = null;
+        f.invoiceDateTo = null;
+        setVal("invoice-date-from");
+        setVal("invoice-date-to");
+        break;
       case "dueDate":
-        f.dueDateFrom = null; f.dueDateTo = null; setVal('due-date-from'); setVal('due-date-to'); break;
+        f.dueDateFrom = null;
+        f.dueDateTo = null;
+        setVal("due-date-from");
+        setVal("due-date-to");
+        break;
       case "billPaidDate":
-        f.billPaidDateFrom = null; f.billPaidDateTo = null; setVal('bill-paid-date-from'); setVal('bill-paid-date-to'); break;
+        f.billPaidDateFrom = null;
+        f.billPaidDateTo = null;
+        setVal("bill-paid-date-from");
+        setVal("bill-paid-date-to");
+        break;
       case "taskPropertySearch":
-        f.taskPropertySearch = null; setVal('task-property-search'); break;
+        f.taskPropertySearch = null;
+        setVal("task-property-search");
+        break;
       case "taskDueToday":
-        f.taskDueToday = null; {
-          const el = document.getElementById('task-due-today'); if (el) el.checked = false;
-        } break;
+        f.taskDueToday = null;
+        {
+          const el = document.getElementById("task-due-today");
+          if (el) el.checked = false;
+        }
+        break;
       case "taskAssignedToMe":
-        f.taskAssignedToMe = null; {
-          const el = document.getElementById('task-assigned-to-me'); if (el) el.checked = false;
-        } break;
+        f.taskAssignedToMe = null;
+        {
+          const el = document.getElementById("task-assigned-to-me");
+          if (el) el.checked = false;
+        }
+        break;
       default:
         break;
     }
@@ -699,9 +849,7 @@ export class DashboardController {
     const typeCard = document.getElementById("account-type-filter-card");
     if (typeCard) {
       Array.from(
-        typeCard.querySelectorAll(
-          'input[type="checkbox"][data-account-type]'
-        )
+        typeCard.querySelectorAll('input[type="checkbox"][data-account-type]')
       ).forEach((c) => (c.checked = false));
       const allToggle = typeCard.querySelector("#account-type-all");
       if (allToggle) allToggle.checked = false;

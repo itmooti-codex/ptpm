@@ -10,27 +10,23 @@ export class DashboardHelper {
       const n = parseFloat(cleaned);
       return Number.isFinite(n) ? n : null;
     };
-    const toIsoDate = (v) => {
-      if (!v) return null;
-      // If looks like ISO already
-      if (/^\d{4}-\d{2}-\d{2}/.test(String(v))) return String(v).slice(0, 10);
-      if (dayjsRef) {
-        const d = dayjsRef(v);
-        if (d.isValid()) return d.format("YYYY-MM-DD");
-      }
-      try {
-        const d = new Date(v);
-        if (!isNaN(d)) return d.toISOString().slice(0, 10);
-      } catch {}
-      return null;
-    };
+    function formatUnixDate(unixTimestamp) {
+      if (!unixTimestamp) return null;
+      const date = new Date(unixTimestamp * 1000);
+      const dd = String(date.getUTCDate()).padStart(2, "0");
+      const mm = String(date.getUTCMonth() + 1).padStart(2, "0");
+      const yyyy = date.getUTCFullYear();
+      const hh = String(date.getUTCHours()).padStart(2, "0");
+      const min = String(date.getUTCMinutes()).padStart(2, "0");
+      const ss = String(date.getUTCSeconds()).padStart(2, "0");
+      return `${dd}-${mm}-${yyyy} ${hh}:${min}:${ss}`;
+    }
 
     return Object.values(records).map((data) => {
-      // Some fields live on the first job object within data.Jobs (object keyed by id)
       const firstJob = Object.values(data?.Jobs ?? {})[0] ?? null;
       return {
         uniqueId: data?.unique_id || null,
-        "date-added": toIsoDate(data?.created_at) || null,
+        "date-added": formatUnixDate(data?.created_at) || null,
         "inquiry-source": data?.how_did_you_hear || null,
         type: data?.type || null,
         "inquiry-status": data?.inquiry_status || null,
@@ -48,40 +44,49 @@ export class DashboardHelper {
         recommendations: data.admin_notes || null,
         "job-invoice-number": data.Jobs?.invoice_number || null,
         price: toNumber(firstJob?.job_total ?? null),
-        "date-quoted-accepted": toIsoDate(
-          firstJob?.date_quoted_accepted ?? data?.date_quoted_accepted ?? null
+        "date-quoted-accepted": formatUnixDate(
+          firstJob?.date_quoted_accepted ??
+            firstJob?.date_quoted_accepted ??
+            null
         ),
-        "quote-date": toIsoDate(
-          firstJob?.quote_date ?? data?.quote_date ?? null
+        "quote-date": formatUnixDate(
+          firstJob?.quote_date ?? firstJob?.quote_date ?? null
         ),
         "quote-total": toNumber(
-          firstJob?.quote_total ?? data?.quote_total ?? null
+          firstJob?.quote_total ?? firstJob?.quote_total ?? null
         ),
-        "quote-status": firstJob?.quote_status ?? data?.quote_status ?? null,
-        "date-started": toIsoDate(
-          firstJob?.date_started ?? data?.date_started ?? null
+        "quote-status":
+          firstJob?.quote_status ?? firstJob?.quote_status ?? null,
+        "date-started": formatUnixDate(
+          firstJob?.date_started ?? firstJob?.date_started ?? null
         ),
         "payment-status":
           firstJob?.payment_status ?? data?.payment_status ?? null,
-        "date-job-required-by": toIsoDate(
-          firstJob?.date_job_required_by ?? data?.date_job_required_by ?? null
+        "date-job-required-by": formatUnixDate(
+          firstJob?.date_job_required_by ??
+            firstJob?.date_job_required_by ??
+            null
         ),
-        "date-booked": toIsoDate(
-          firstJob?.date_booked ?? data?.date_booked ?? null
+        "date-booked": formatUnixDate(
+          firstJob?.date_booked ?? firstJob?.date_booked ?? null
         ),
         "job-status": firstJob?.job_status ?? data?.job_status ?? null,
-        "invoice-date": toIsoDate(
-          firstJob?.invoice_date ?? data?.invoice_date ?? null
+        "invoice-date": formatUnixDate(
+          firstJob?.invoice_date ?? firstJob?.invoice_date ?? null
         ),
         "invoice-total": toNumber(
-          firstJob?.invoice_total ?? data?.invoice_total ?? null
+          firstJob?.invoice_total ?? firstJob?.invoice_total ?? null
         ),
-        "bill-time-paid": toIsoDate(
-          firstJob?.bill_time_paid ?? data?.bill_time_paid ?? null
+        "bill-time-paid": formatUnixDate(
+          firstJob?.bill_time_paid ?? firstJob?.bill_time_paid ?? null
         ),
         "xero-invoice-status":
-          firstJob?.xero_invoice_status ?? data?.xero_invoice_status ?? null,
-        "due-date": toIsoDate(firstJob?.due_date ?? data?.due_date ?? null),
+          firstJob?.xero_invoice_status ??
+          firstJob?.xero_invoice_status ??
+          null,
+        "due-date": formatUnixDate(
+          firstJob?.due_date ?? firstJob?.due_date ?? null
+        ),
       };
     });
   }

@@ -316,6 +316,25 @@ export class DashboardView {
 
   init() {
     this.createNotificationModal();
+    // lightweight toast container
+    if (!document.getElementById("dashboardToast")) {
+      const t = document.createElement("div");
+      t.id = "dashboardToast";
+      t.className =
+        "hidden fixed top-6 right-6 z-50 max-w-sm w-[360px] bg-white border border-slate-200 shadow-xl rounded-lg";
+      t.innerHTML = `<div class="px-4 py-3 text-sm text-slate-800 flex items-start gap-2"><svg class="w-5 h-5 text-red-500 mt-0.5" viewBox="0 0 24 24" fill="currentColor"><path d="M11 7h2v6h-2zm0 8h2v2h-2z"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg><div id="dashboardToastMsg" class="flex-1"></div></div>`;
+      document.body.appendChild(t);
+    }
+  }
+
+  showToast(message = "") {
+    const wrap = document.getElementById("dashboardToast");
+    const msg = document.getElementById("dashboardToastMsg");
+    if (!wrap || !msg) return;
+    msg.textContent = message;
+    wrap.classList.remove("hidden");
+    clearTimeout(this._toastTimer);
+    this._toastTimer = setTimeout(() => wrap.classList.add("hidden"), 3000);
   }
 
   renderCalendar(container, calendarDays, rowTotals, selectedDate) {
@@ -505,8 +524,7 @@ export class DashboardView {
         label: "Client Info",
         headerClass: "px-6 py-4 text-left",
         cellClass: "px-6 py-4",
-        render: (row) =>
-          `<div class="font-normal text-slate-700">${row.client ?? "-"}</div>`,
+        render: (row) => this.buildClientCell(row),
       },
       {
         key: "dateQuotedAccepted",
@@ -582,27 +600,84 @@ export class DashboardView {
           })}`;
 
     const headers = [
-      { key: "id", label: "Unique ID", headerClass: "px-6 py-4 text-left", cellClass: "px-6 py-4" },
-      { key: "client", label: "Client Info", headerClass: "px-6 py-4 text-left", cellClass: "px-6 py-4",
-        render: (row) => `<div class=\"font-normal text-slate-700\">${row.client ?? "-"}</div>` },
-      { key: "invoiceNumber", label: "Invoice No.", headerClass: "px-6 py-4 text-left", cellClass: "px-6 py-4 text-slate-600",
-        render: (row) => row.invoiceNumber ?? row?.meta?.invoiceNumber ?? "-" },
-      { key: "invoiceDate", label: "Invoice Date", headerClass: "px-6 py-4 text-left", cellClass: "px-6 py-4 text-slate-600",
-        render: (row) => row.invoiceDate ? formatDisplayDate(row.invoiceDate) : "-" },
-      { key: "dueDate", label: "Due Date", headerClass: "px-6 py-4 text-left", cellClass: "px-6 py-4 text-slate-600",
-        render: (row) => row.dueDate ? formatDisplayDate(row.dueDate) : "-" },
-      { key: "invoiceTotal", label: "Invoice Total", headerClass: "px-6 py-4 text-left", cellClass: "px-6 py-4 text-slate-600",
-        render: (row) => money(row.invoiceTotal ?? row?.meta?.invoiceTotal) },
-      { key: "billPaidDate", label: "Bill Paid Date", headerClass: "px-6 py-4 text-left", cellClass: "px-6 py-4 text-slate-600",
-        render: (row) => row.billPaidDate ? formatDisplayDate(row.billPaidDate) : "-" },
-      { key: "service", label: "Service", headerClass: "px-6 py-4 text-left", cellClass: "px-6 py-4 text-slate-600",
-        render: (row) => row.service ?? "-" },
-      { key: "adminAmount", label: "Admin Amount", headerClass: "px-6 py-4 text-left", cellClass: "px-6 py-4 text-slate-600",
-        render: (row) => money(row.adminAmount ?? row?.meta?.adminAmount) },
-      { key: "xeroInvoiceStatus", label: "Xero Invoice Status", headerClass: "px-6 py-4 text-left", cellClass: "px-6 py-4 text-left",
-        render: (row) => row.xeroInvoiceStatus ?? "-" },
-      { key: "actions", label: "Action", headerClass: "px-6 py-4 text-center", cellClass: "px-6 py-4 text-center",
-        render: () => this.actionButtons },
+      {
+        key: "id",
+        label: "Unique ID",
+        headerClass: "px-6 py-4 text-left",
+        cellClass: "px-6 py-4",
+      },
+      {
+        key: "client",
+        label: "Client Info",
+        headerClass: "px-6 py-4 text-left",
+        cellClass: "px-6 py-4",
+        render: (row) => this.buildClientCell(row),
+      },
+      {
+        key: "invoiceNumber",
+        label: "Invoice No.",
+        headerClass: "px-6 py-4 text-left",
+        cellClass: "px-6 py-4 text-slate-600",
+        render: (row) => row.invoiceNumber ?? row?.meta?.invoiceNumber ?? "-",
+      },
+      {
+        key: "invoiceDate",
+        label: "Invoice Date",
+        headerClass: "px-6 py-4 text-left",
+        cellClass: "px-6 py-4 text-slate-600",
+        render: (row) =>
+          row.invoiceDate ? formatDisplayDate(row.invoiceDate) : "-",
+      },
+      {
+        key: "dueDate",
+        label: "Due Date",
+        headerClass: "px-6 py-4 text-left",
+        cellClass: "px-6 py-4 text-slate-600",
+        render: (row) => (row.dueDate ? formatDisplayDate(row.dueDate) : "-"),
+      },
+      {
+        key: "invoiceTotal",
+        label: "Invoice Total",
+        headerClass: "px-6 py-4 text-left",
+        cellClass: "px-6 py-4 text-slate-600",
+        render: (row) => money(row.invoiceTotal ?? row?.meta?.invoiceTotal),
+      },
+      {
+        key: "billPaidDate",
+        label: "Bill Paid Date",
+        headerClass: "px-6 py-4 text-left",
+        cellClass: "px-6 py-4 text-slate-600",
+        render: (row) =>
+          row.billPaidDate ? formatDisplayDate(row.billPaidDate) : "-",
+      },
+      {
+        key: "service",
+        label: "Service",
+        headerClass: "px-6 py-4 text-left",
+        cellClass: "px-6 py-4 text-slate-600",
+        render: (row) => row.service ?? "-",
+      },
+      {
+        key: "adminAmount",
+        label: "Admin Amount",
+        headerClass: "px-6 py-4 text-left",
+        cellClass: "px-6 py-4 text-slate-600",
+        render: (row) => money(row.adminAmount ?? row?.meta?.adminAmount),
+      },
+      {
+        key: "xeroInvoiceStatus",
+        label: "Xero Invoice Status",
+        headerClass: "px-6 py-4 text-left",
+        cellClass: "px-6 py-4 text-left",
+        render: (row) => row.xeroInvoiceStatus ?? "-",
+      },
+      {
+        key: "actions",
+        label: "Action",
+        headerClass: "px-6 py-4 text-center",
+        cellClass: "px-6 py-4 text-center",
+        render: () => this.actionButtons,
+      },
     ];
 
     return this.renderDataTable({
@@ -636,8 +711,7 @@ export class DashboardView {
         label: "Client Info",
         headerClass: "px-6 py-4 text-left",
         cellClass: "px-6 py-4",
-        render: (row) =>
-          `<div class="font-normal text-slate-700">${row.client ?? "-"}</div>`,
+        render: (row) => this.buildClientCell(row),
       },
       {
         key: "startDate",
@@ -721,20 +795,53 @@ export class DashboardView {
   renderUrgentCallsTable(container, rows, statusClasses, formatDisplayDate) {
     if (!container) return null;
     const headers = [
-      { key: "id", label: "Job ID", headerClass: "px-6 py-4 text-left", cellClass: "px-6 py-4" },
-      { key: "client", label: "Client Info", headerClass: "px-6 py-4 text-left", cellClass: "px-6 py-4",
-        render: (row) => `<div class=\"font-normal text-slate-700\">${row.client ?? "-"}</div>` },
-      { key: "property", label: "Property", headerClass: "px-6 py-4 text-left", cellClass: "px-6 py-4 text-slate-600",
-        render: (row) => row?.meta?.address ?? "-" },
-      { key: "services", label: "Services", headerClass: "px-6 py-4 text-left", cellClass: "px-6 py-4 text-slate-600",
-        render: (row) => row.service ?? "-" },
-      { key: "nextDue", label: "Next Due", headerClass: "px-6 py-4 text-left", cellClass: "px-6 py-4 text-slate-600",
+      {
+        key: "id",
+        label: "Job ID",
+        headerClass: "px-6 py-4 text-left",
+        cellClass: "px-6 py-4",
+      },
+      {
+        key: "client",
+        label: "Client Info",
+        headerClass: "px-6 py-4 text-left",
+        cellClass: "px-6 py-4",
+        render: (row) =>
+          `<div class=\"font-normal text-slate-700\">${
+            row.client ?? "-"
+          }</div>`,
+      },
+      {
+        key: "property",
+        label: "Property",
+        headerClass: "px-6 py-4 text-left",
+        cellClass: "px-6 py-4 text-slate-600",
+        render: (row) => row?.meta?.address ?? "-",
+      },
+      {
+        key: "services",
+        label: "Services",
+        headerClass: "px-6 py-4 text-left",
+        cellClass: "px-6 py-4 text-slate-600",
+        render: (row) => row.service ?? "-",
+      },
+      {
+        key: "nextDue",
+        label: "Next Due",
+        headerClass: "px-6 py-4 text-left",
+        cellClass: "px-6 py-4 text-slate-600",
         render: (row) => {
           const v = row.requiredBy ?? row.bookedDate ?? row.startDate;
           return v ? formatDisplayDate(v) : "-";
-        } },
-      { key: "actions", label: "Action", headerClass: "px-6 py-4 text-left", cellClass: "px-6 py-4 text-center",
-        render: () => this.actionButtons },
+        },
+      },
+      {
+        key: "actions",
+        label: "Action",
+        headerClass: "px-6 py-4 text-left",
+        cellClass: "px-6 py-4 text-center",
+        render: () => this.actionButtons,
+      },
     ];
 
     return this.renderDataTable({
