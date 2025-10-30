@@ -5,6 +5,7 @@ export class DashboardController {
     this.view = view;
     this.initStatusDropdown();
     this.initAccountTypeDropdown();
+    this.initServiceProviderDropdown();
     // DOM refs (assigned in init)
     this.calendarEl = null;
     this.tableContainerEl = null;
@@ -22,9 +23,7 @@ export class DashboardController {
       address: "",
       source: "",
       serviceman: "",
-      // Keep free-text type for legacy UI, but prefer structured array below
       type: "",
-      // Ensure accountTypes is always an array on first load
       accountTypes: [],
       quoteNumber: "",
       invoiceNumber: "",
@@ -32,9 +31,42 @@ export class DashboardController {
       priceMin: null,
       priceMax: null,
       statuses: [],
+      serviceProviders: [],
       dateFrom: null,
       dateTo: null,
     };
+  }
+
+  initServiceProviderDropdown() {
+    const btn = document.getElementById("service-provider-filter-btn");
+    const card = document.getElementById("service-provider-filter-card");
+    if (!btn || !card) return;
+    const allToggle = card.querySelector("#sp-all");
+    const boxes = Array.from(
+      card.querySelectorAll('input[type="checkbox"][data-service-provider]')
+    );
+    const syncAll = () => {
+      if (!allToggle) return;
+      allToggle.checked = boxes.every((b) => b.checked);
+    };
+    if (allToggle) {
+      allToggle.addEventListener("change", () => {
+        const v = allToggle.checked;
+        boxes.forEach((b) => (b.checked = v));
+      });
+    }
+    boxes.forEach((b) => b.addEventListener("change", syncAll));
+    const toggle = () => card.classList.toggle("hidden");
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      toggle();
+    });
+    document.addEventListener("click", (e) => {
+      if (card.classList.contains("hidden")) return;
+      const t = e.target;
+      if (card.contains(t) || btn.contains(t)) return;
+      card.classList.add("hidden");
+    });
   }
 
   init({
@@ -62,10 +94,8 @@ export class DashboardController {
     this.renderCalendar();
     this.calendarEl.addEventListener("click", this.onCalendarClick);
     this.onNotificationIconClick();
-    // Client-side filtering disabled; filters will be applied server-side.
-    // Wire Apply Filters to collect UI and refetch with server-side filtering
+    this.initGlobalSearch();
     this.bindApplyFilters();
-    // Initialize top navigation tabs (Inquiry/Quote/Jobs/Payment)
     this.view.initTopTabs({
       navId,
       panelsId,
@@ -123,6 +153,9 @@ export class DashboardController {
         break;
       case "payment":
         await this.fetchPaymentsAndRenderTable();
+        break;
+      case "active-jobs":
+        await this.fetchActiveJobsAndRenderTable();
         break;
       case "jobs":
         await this.fetchJobsAndRenderTable();
@@ -205,20 +238,21 @@ export class DashboardController {
     }
 
     if (this.currentTab === "inquiry") {
-      const urgentRows = rows ?? [];
+      const inquiryRow = rows ?? [];
       this.tableElements = this.view.renderTable(
         this.tableContainerEl,
-        urgentRows,
+        inquiryRow,
         statusClasses,
         formatDisplayDate
       );
       return;
     }
-    if (this.currentTab === "payment") {
-      const jobRows = rows ?? [];
-      this.tableElements = this.view.renderPaymentTable(
+
+    if (this.currentTab === "active-jobs") {
+      const activeRows = rows ?? [];
+      this.tableElements = this.view.renderActiveJobsTable(
         this.tableContainerEl,
-        jobRows,
+        activeRows,
         statusClasses,
         formatDisplayDate
       );
@@ -226,10 +260,10 @@ export class DashboardController {
     }
 
     if (this.currentTab === "urgent-calls") {
-      const jobRows = rows ?? [];
+      const urgentRows = rows ?? [];
       this.tableElements = this.view.renderUrgentCallsTable(
         this.tableContainerEl,
-        jobRows,
+        urgentRows,
         statusClasses,
         formatDisplayDate
       );
@@ -264,6 +298,16 @@ export class DashboardController {
       return;
     }
     if (this.currentTab === "jobs") {
+      const rows = Array.isArray(this.deals) ? this.deals : [];
+      this.renderTable(null, rows);
+      return;
+    }
+    if (this.currentTab === "active-jobs") {
+      const rows = Array.isArray(this.deals) ? this.deals : [];
+      this.renderTable(null, rows);
+      return;
+    }
+    if (this.currentTab === "payments") {
       const rows = Array.isArray(this.deals) ? this.deals : [];
       this.renderTable(null, rows);
       return;
@@ -323,9 +367,7 @@ export class DashboardController {
         typeof this.model.fetchQuotesCreated === "function"
           ? await this.model.fetchQuotesCreated(this.filters)
           : {};
-      const mappedQuoteData =
-        this.dashboardHelper.mapDealToTableRow(quoteData ?? {}) ?? [];
-      const sampleRows = this.dashboardHelper.mapQuoteRows(mappedQuoteData);
+      const sampleRows = this.dashboardHelper.mapQuoteRows(quoteData);
       this.deals = sampleRows;
       this.reRenderActiveTab();
       return sampleRows;
@@ -342,9 +384,7 @@ export class DashboardController {
         typeof this.model.fetchJobs === "function"
           ? await this.model.fetchJobs(this.filters)
           : {};
-      const mappedJobData =
-        this.dashboardHelper.mapDealToTableRow(jobData ?? {}) ?? [];
-      const sampleRows = this.dashboardHelper.mapJobRows(mappedJobData);
+      const sampleRows = this.dashboardHelper.mapJobRows(jobData);
       this.deals = sampleRows;
       this.reRenderActiveTab();
       return sampleRows;
@@ -358,20 +398,34 @@ export class DashboardController {
   async fetchPaymentsAndRenderTable() {
     try {
       // Reuse deal fetch unless a dedicated model method exists
-      const fetcher =
+      const paymentData =
         typeof this.model.fetchPayments === "function"
-          ? () => this.model.fetchPayments(this.filters)
+          ? await this.model.fetchPayments(this.filters)
           : [];
-      const paymentData = await fetcher();
-      const mapped =
-        this.dashboardHelper.mapDealToTableRow(paymentData ?? {}) ?? [];
-      const rows = this.dashboardHelper.mapPaymentRows(mapped);
+      const rows = this.dashboardHelper.mapPaymentRows(paymentData);
       this.deals = rows;
       this.renderTable(null, rows);
       return rows;
     } catch (e) {
       console.log("fetchPayments render error", e);
       this.clearTable("payment");
+      return [];
+    }
+  }
+
+  async fetchActiveJobsAndRenderTable() {
+    try {
+      const data =
+        typeof this.model.fetchPayments === "function"
+          ? await this.model.fetchActiveJobs(this.filters)
+          : {};
+      const rows = this.dashboardHelper.mapPaymentRows(data);
+      this.deals = rows;
+      this.reRenderActiveTab();
+      return rows;
+    } catch (e) {
+      console.log("fetchActiveJobs render error", e);
+      this.clearTable("active-jobs");
       return [];
     }
   }
@@ -436,6 +490,17 @@ export class DashboardController {
           .filter(Boolean)
       : [];
     const nz = (s) => (s && s.length ? s : null);
+    // Service Provider selections (if present)
+    const spCard = document.getElementById("service-provider-filter-card");
+    const serviceProviders = spCard
+      ? Array.from(
+          spCard.querySelectorAll(
+            'input[type="checkbox"][data-service-provider]:checked'
+          )
+        )
+          .map((c) => (c.value || "").trim())
+          .filter(Boolean)
+      : [];
     return {
       // Global
       global: nz(val("global-search")),
@@ -450,6 +515,8 @@ export class DashboardController {
         : accountTypes
         ? [accountTypes]
         : [],
+      serviceProviders,
+      // serviceProviders,
       // IDs / numbers
       quoteNumber: nz(val("filter-quote-number")),
       invoiceNumber: nz(val("filter-invoice-number")),
@@ -508,6 +575,11 @@ export class DashboardController {
 
     addChip("statuses", "Status", filters.statuses || []);
     addChip("accountTypes", "Account Types", filters.accountTypes || []);
+    addChip(
+      "serviceProviders",
+      "Service Provider",
+      filters.serviceProviders || []
+    );
     addChip("accountName", "Account Name", filters.accountName);
     addChip("resident", "Resident", filters.resident);
     addChip("address", "Address", filters.address);
@@ -607,6 +679,18 @@ export class DashboardController {
           }
         }
         break;
+      case "serviceProviders":
+        f.serviceProviders = [];
+        {
+          const card = document.getElementById("service-provider-filter-card");
+          if (card) {
+            uncheckAll('input[type="checkbox"][data-service-provider]', card);
+            const allToggle = card.querySelector("#sp-all");
+            if (allToggle) allToggle.checked = false;
+          }
+        }
+        break;
+
       case "accountName":
         f.accountName = null;
         setVal("filter-account-name");
@@ -918,18 +1002,7 @@ export class DashboardController {
     }
   }
 
-  initGlobalSearch() {
-    const input = document.querySelector(
-      'input[placeholder*="Search all records"]'
-    );
-    if (!input) return;
-    const apply = () => {
-      this.activeFilters.global = (input.value || "").trim();
-      this.reRenderActiveTab();
-    };
-    input.addEventListener("input", apply);
-    input.addEventListener("change", apply);
-  }
+ 
 
   applyActiveFilters(rows) {
     if (!Array.isArray(rows)) return rows;
@@ -1344,6 +1417,23 @@ export class DashboardController {
     updateRange();
   }
   */
+
+  initGlobalSearch() {
+    const input = document.querySelector(
+      'input[placeholder*="Search all records"]'
+    );
+    if (!input) return;
+    const apply = () => {
+      const val = (input.value || "").trim();
+      this.filters.global = val || null;
+      // Refetch current tab with server-side filtering
+      this.handleTabChange(this.currentTab);
+      // Update chips
+      this.renderAppliedFilters(this.filters);
+    };
+    input.addEventListener("input", apply);
+    input.addEventListener("change", apply);
+  }
 
   initStatusDropdown() {
     const btn = document.getElementById("status-filter-btn");
