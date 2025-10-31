@@ -4,7 +4,6 @@ if (!dayjsRef) {
   throw new Error("Day.js is required for the dashboard model to operate.");
 }
 
-// Shared config accessible anywhere
 export const DASHBOARD_STATUS_CLASSES = {
   "New Inquiry": "bg-rose-50 text-rose-500",
   "Not Allocated": "bg-fuchsia-50 text-fuchsia-600",
@@ -22,9 +21,9 @@ export const DASHBOARD_STATUS_CLASSES = {
 
 export const DASHBOARD_DEFAULTS = {
   dayCount: 14,
-  startDate: dayjsRef("21 Jan 1970"),
-  totalsPattern: [8, 13, 19, 8, 12, 3, 11, 8, 13, 19, 8, 13, 19, 11],
-  rowTotals: [45, 45],
+  startDate: dayjsRef(dayjs().startOf("day")),
+  totalsPattern: Array(14).fill(0),
+  rowTotals: [0, 0],
 };
 
 export class DashboardModel {
@@ -95,12 +94,10 @@ export class DashboardModel {
     return this.inquiryDataByDate?.[selected] ?? [];
   }
 
-  // --- Mutations ---
   setSelectedDate(dateIso) {
     this.selectedDate = dateIso;
   }
 
-  // --- Utilities ---
   formatDisplayDate(input) {
     if (!input || typeof input !== "string") return "";
 
@@ -347,6 +344,7 @@ export class DashboardModel {
 
     // Now apply select/includes consistently
     this.quoteQuery = this.quoteQuery
+      .andWhereNot("quote_status", "isNull")
       .deSelectAll()
       .select([
         "Unique_ID",
@@ -497,6 +495,7 @@ export class DashboardModel {
     }
 
     this.jobQuery = this.jobQuery
+      .andWhereNot("job_status", "isNull")
       .deSelectAll()
       .select([
         "Unique_ID",
@@ -672,6 +671,7 @@ export class DashboardModel {
 
     this.paymentQuery = ptpmJobModel
       .query()
+      .andWhereNot("xero_invoice_status", "isNull")
       .deSelectAll()
       .select([
         "Unique_ID",
@@ -747,7 +747,6 @@ export class DashboardModel {
     const minPrice = f.minPrice;
     const maxPrice = f.maxPrice;
 
-    // Start with base query, append conditional filters first
     this.activeJobsQuery = ptpmJobModel.query();
 
     if (f.global && f.global.trim()) {
@@ -966,6 +965,43 @@ export class DashboardModel {
         .toPromise();
     } catch (e) {
       console.log("Fetch active jobs error", e);
+    }
+  }
+
+  async fetchAllScheduledJobs(input = {}) {
+    try {
+      let scheduleQuery = ptpmJobModel
+        .query()
+        .where("date_scheduled", input)
+        .count("unique_id", "total")
+        .noDestroy();
+
+      let result = await scheduleQuery.fetch().pipe().toPromise();
+      return result.resp[0].total;
+    } catch (e) {
+      console.log("Fetch scheduled jobs error", e);
+    }
+  }
+
+  async eachJobScheduledOnEachDate() {
+    let totalDate = this.calendarDays;
+    let weekTotalJobs = 0;
+    for (let i = 0; i < totalDate.length; i++) {
+      let date = totalDate[i].iso;
+      let dayjsDate = dayjsRef(date);
+      let unixDate = dayjsDate.startOf("day").unix();
+      let retunedData = await this.fetchAllScheduledJobs(unixDate);
+      this.calendarDays[i].total = retunedData;
+      if (i == 7) {
+        DASHBOARD_DEFAULTS.rowTotals[0] = weekTotalJobs;
+        weekTotalJobs = retunedData;
+      } else {
+        weekTotalJobs = weekTotalJobs + retunedData;
+      }
+
+      if (i == totalDate.length - 1) {
+        DASHBOARD_DEFAULTS.rowTotals[1] = weekTotalJobs;
+      }
     }
   }
 }

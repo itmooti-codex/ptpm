@@ -69,7 +69,7 @@ export class DashboardController {
     });
   }
 
-  init({
+  async init({
     calendarContainerId = "calendar-grid",
     tableContainerId = "inquiry-table-container",
     topTabs: {
@@ -91,7 +91,17 @@ export class DashboardController {
       });
       return;
     }
-    this.renderCalendar();
+
+    await this.model.eachJobScheduledOnEachDate();
+    // Initialize scheduled totals for the next 14 days, then render
+    if (typeof this.model.initScheduledTotals === "function") {
+      this.model
+        .initScheduledTotals()
+        .then(() => this.renderCalendar())
+        .catch(() => this.renderCalendar());
+    } else {
+      this.renderCalendar();
+    }
     this.calendarEl.addEventListener("click", this.onCalendarClick);
     this.onNotificationIconClick();
     this.initGlobalSearch();
