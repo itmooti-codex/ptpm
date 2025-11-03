@@ -3,13 +3,70 @@ export class DashboardController {
   constructor(model, view) {
     this.model = model;
     this.view = view;
-    this.initStatusDropdown();
     this.initAccountTypeDropdown();
     this.initServiceProviderDropdown();
+    this.initSourceDropdown();
     // DOM refs (assigned in init)
     this.calendarEl = null;
     this.tableContainerEl = null;
     this.tableElements = null;
+
+    this.inquiryStatues = [
+      "New Inquiry",
+      "Not Allocated",
+      "Contact Client",
+      "Contact For Site Visit",
+      "Site Visit Scheduled",
+      "Site Visit to be Re-Scheduled",
+      "Generate Quote",
+      "Quote Created",
+      "Completed",
+      "Cancelled",
+      "Expired",
+    ];
+    this.quoteStatuses = [
+      "New",
+      "Requested",
+      "Sent",
+      "Accepted",
+      "Declined",
+      "Expired",
+      "Cancelled",
+    ];
+    this.jobStatuses = [
+      "Quote",
+      "On Hold",
+      "Booked",
+      "Call Back",
+      "Scheduled",
+      "Reschedule",
+      "In Progress",
+      "Waiting For Payment",
+      "Completed",
+      "Cancelled",
+    ];
+    this.paymentStatuses = [
+      "Invoice Required",
+      "Invoice Sent",
+      "Paid",
+      "Overdue",
+      "Written Off",
+      "Cancelled",
+    ];
+
+    this.sources = [
+      "Select none",
+      "Google",
+      "Bing",
+      "Facebook",
+      "Yellow Pages",
+      "Referral",
+      "Car Signage",
+      "Returning Customers",
+      "Other",
+    ];
+
+    this.activeJobStatuses = [];
 
     // Bind once so we can add/remove listeners cleanly
     this.onCalendarClick = this.onCalendarClick.bind(this);
@@ -21,7 +78,7 @@ export class DashboardController {
       accountName: "",
       resident: "",
       address: "",
-      source: "",
+      source: [],
       serviceman: "",
       type: "",
       accountTypes: [],
@@ -35,6 +92,7 @@ export class DashboardController {
       dateFrom: null,
       dateTo: null,
     };
+    this.renderSourceOptionsForTab(this.sources || []);
   }
 
   initServiceProviderDropdown() {
@@ -67,6 +125,138 @@ export class DashboardController {
       if (card.contains(t) || btn.contains(t)) return;
       card.classList.add("hidden");
     });
+  }
+
+  initSourceDropdown() {
+    const btn = document.getElementById("source-filter-btn");
+    const card = document.getElementById("source-filter-card");
+    if (!btn || !card) return;
+
+    // idempotent rebind: remove old listeners if present
+    const list = document.getElementById("source-filter-list") || card;
+    const old = this._sourceHandlers;
+    if (old) {
+      btn.removeEventListener("click", old.onBtnClick);
+      document.removeEventListener("click", old.onDocClick);
+      if (old.onListChange)
+        list.removeEventListener("change", old.onListChange);
+      if (old.onAllChange && old.allToggle)
+        old.allToggle.removeEventListener("change", old.onAllChange);
+    }
+
+    const onBtnClick = (e) => {
+      e.stopPropagation();
+      card.classList.toggle("hidden");
+    };
+
+    const onDocClick = (e) => {
+      if (
+        !card.classList.contains("hidden") &&
+        !card.contains(e.target) &&
+        e.target !== btn
+      ) {
+        card.classList.add("hidden");
+      }
+    };
+
+    // "None" toggle
+    const allToggle = card.querySelector("#source-none");
+
+    // keep "None" in sync: checked iff every box is unchecked
+    const syncAllCheckbox = () => {
+      const boxes = card.querySelectorAll(
+        'input[type="checkbox"][data-source]'
+      );
+      const allUnchecked = Array.from(boxes).every((c) => !c.checked);
+      if (allToggle) allToggle.checked = allUnchecked;
+    };
+
+    const onListChange = (e) => {
+      const t = e.target;
+      if (!(t && t.matches('input[type="checkbox"][data-source]'))) return;
+
+      // if any box is checked manually, uncheck "None"
+      if (allToggle && t.checked) allToggle.checked = false;
+
+      // Mirror to filters (lowercase for consistency)
+      const checked = Array.from(
+        card.querySelectorAll('input[type="checkbox"][data-source]:checked')
+      ).map((c) => (c.value || "").toString().trim().toLowerCase());
+
+      this.filters.sources = checked; // array
+
+      syncAllCheckbox();
+    };
+
+    const onAllChange = () => {
+      // When "None" is toggled on, uncheck everything
+      const next = !!allToggle.checked; // true means "none selected"
+      const boxes = card.querySelectorAll(
+        'input[type="checkbox"][data-source]'
+      );
+      if (next) {
+        boxes.forEach((c) => (c.checked = false));
+        this.filters.sources = [];
+      } else {
+        // if user unticks "None" explicitly, don't auto-select anything;
+        // just keep current selections (likely none) and resync.
+        this.filters.sources = Array.from(
+          card.querySelectorAll('input[type="checkbox"][data-source]:checked')
+        ).map((c) => (c.value || "").toString().trim().toLowerCase());
+      }
+      syncAllCheckbox();
+    };
+
+    // Bind fresh
+    btn.addEventListener("click", onBtnClick);
+    document.addEventListener("click", onDocClick);
+    list.addEventListener("change", onListChange);
+    if (allToggle) allToggle.addEventListener("change", onAllChange);
+
+    // Initialize state: restore checked boxes from applied filters
+    const applied = Array.isArray(this.filters?.sources)
+      ? this.filters.sources
+      : [];
+    card
+      .querySelectorAll('input[type="checkbox"][data-source]')
+      .forEach((c) => {
+        const v = (c.value || "").toString().trim().toLowerCase();
+        c.checked = applied.includes(v);
+      });
+    syncAllCheckbox();
+
+    // store handlers for next re-init
+    this._sourceHandlers = {
+      onBtnClick,
+      onDocClick,
+      onListChange,
+      onAllChange,
+      allToggle,
+    };
+  }
+
+  renderSourceOptionsForTab(sources) {
+    const list = document.getElementById("source-filter-list");
+    if (!list) return;
+    Array.from(list.querySelectorAll('li[data-dynamic="true"]')).forEach((n) =>
+      n.remove()
+    );
+    const applied = Array.isArray(this.filters?.sources)
+      ? this.filters.sources.map((x) => String(x).toLowerCase())
+      : [];
+    const frag = document.createDocumentFragment();
+    Array.from(new Set(sources || []))
+      .sort((a, b) => a.localeCompare(b))
+      .forEach((s) => {
+        const id = `source-${s.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+        const li = document.createElement("li");
+        li.className = "px-2 py-1 flex items-center gap-2";
+        li.setAttribute("data-dynamic", "true");
+        const checked = applied.includes(s) ? "checked" : "";
+        li.innerHTML = `<input id="${id}" data-source value="${s}" ${checked} type="checkbox" class="h-4 w-4 accent-[#003882]"><label for="${id}">${s}</label>`;
+        frag.appendChild(li);
+      });
+    list.appendChild(frag);
   }
 
   async init({
@@ -293,33 +483,68 @@ export class DashboardController {
     );
   }
 
+  renderStatusOptionsForTab(statuses) {
+    const card = document.getElementById("status-filter-card");
+    const list = document.getElementById("status-filter-list");
+    if (!card || !list) return;
+    // Remove previous dynamic items (keep the first All item)
+    Array.from(list.querySelectorAll('li[data-dynamic="true"]')).forEach((n) =>
+      n.remove()
+    );
+    statuses.sort((a, b) => a.localeCompare(b));
+    const frag = document.createDocumentFragment();
+    const applied = Array.isArray(this.filters?.statuses)
+      ? this.filters.statuses.map((x) => String(x).toLowerCase())
+      : [];
+    statuses.forEach((s) => {
+      const id = `status-${s.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+      const li = document.createElement("li");
+      li.className = "px-2 py-1 flex items-center gap-2";
+      li.setAttribute("data-dynamic", "true");
+      const checkedAttr = applied.includes(s.toLowerCase()) ? "checked" : "";
+      li.innerHTML =
+        `<input id="${id}" data-status value="${s}" ${checkedAttr} type="checkbox" class="h-4 w-4 accent-[#003882]">` +
+        `<label for="${id}">${s}</label>`;
+      frag.appendChild(li);
+    });
+    list.appendChild(frag);
+    // Re-bind dropdown interactions since we replaced checkboxes
+    this.initStatusDropdown();
+  }
+
   reRenderActiveTab() {
     if (!this.tableContainerEl) return;
+
     if (this.currentTab === "inquiry") {
       const selected =
         this.model.getSelectedDate() ?? this.ensureSelectedDate();
       const baseRows = Array.isArray(this.deals) ? this.deals : [];
       this.renderTable(selected, baseRows);
+      this.renderStatusOptionsForTab(this.inquiryStatues);
       return;
     }
     if (this.currentTab === "quote") {
       const rows = Array.isArray(this.deals) ? this.deals : [];
       this.renderTable(null, rows);
+      this.renderStatusOptionsForTab(this.quoteStatuses);
       return;
     }
     if (this.currentTab === "jobs") {
       const rows = Array.isArray(this.deals) ? this.deals : [];
       this.renderTable(null, rows);
+      this.renderStatusOptionsForTab(this.jobStatuses);
       return;
     }
     if (this.currentTab === "active-jobs") {
       const rows = Array.isArray(this.deals) ? this.deals : [];
       this.renderTable(null, rows);
+      this.renderStatusOptionsForTab(this.activeJobStatuses);
       return;
     }
-    if (this.currentTab === "payments") {
+    if (this.currentTab === "payment") {
       const rows = Array.isArray(this.deals) ? this.deals : [];
       this.renderTable(null, rows);
+      this.renderStatusOptionsForTab(this.paymentStatuses);
       return;
     }
     this.clearTable(this.currentTab);
@@ -414,7 +639,7 @@ export class DashboardController {
           : [];
       const rows = this.dashboardHelper.mapPaymentRows(paymentData);
       this.deals = rows;
-      this.renderTable(null, rows);
+      this.reRenderActiveTab();
       return rows;
     } catch (e) {
       console.log("fetchPayments render error", e);
@@ -460,7 +685,6 @@ export class DashboardController {
     }
   }
 
-  // Server-side filtering: collect filters and persist across tabs
   bindApplyFilters() {
     const applyBtn = document.getElementById("apply-filters-btn");
     if (!applyBtn) return;
@@ -471,8 +695,6 @@ export class DashboardController {
     });
   }
 
-  // Collect all available filters from the sidebar.
-  // Hidden inputs will generally be empty; normalize empties to null.
   collectAllFiltersFromUI() {
     const byId = (id) => document.getElementById(id);
     const val = (id) => (byId(id)?.value || "").trim();
@@ -480,6 +702,17 @@ export class DashboardController {
       const n = Number(x);
       return Number.isFinite(n) ? n : null;
     };
+    // Read Source from new dropdown (checkboxes) if present
+    const sourceCard = document.getElementById("source-filter-card");
+    const sourcesFromDropdown = sourceCard
+      ? Array.from(
+          sourceCard.querySelectorAll(
+            'input[type="checkbox"][data-source]:checked'
+          )
+        )
+          .map((c) => (c.value || "").trim())
+          .filter(Boolean)
+      : [];
     const statusCard = document.getElementById("status-filter-card");
     const statuses = statusCard
       ? Array.from(
@@ -518,7 +751,8 @@ export class DashboardController {
       accountName: nz(val("filter-account-name")),
       resident: nz(val("filter-resident")),
       address: nz(val("filter-address")),
-      source: nz(val("filter-source")),
+      // Prefer dropdown values; fallback to any legacy text input if present
+      source: sourcesFromDropdown.length ? sourcesFromDropdown : [],
       serviceman: nz(val("filter-serviceman")),
       accountTypes: Array.isArray(accountTypes)
         ? accountTypes
@@ -556,7 +790,6 @@ export class DashboardController {
     };
   }
 
-  // --- Applied filters UI ---
   renderAppliedFilters(filters) {
     const root = document.getElementById("filter-applied");
     if (!root) return;
@@ -909,525 +1142,6 @@ export class DashboardController {
     this.handleTabChange(this.currentTab);
   }
 
-  /*
-  initFilters() {
-    const byId = (id) => document.getElementById(id);
-    const inputs = [
-      ["filter-account-name", (v) => (this.activeFilters.accountName = v)],
-      ["filter-resident", (v) => (this.activeFilters.resident = v)],
-      ["filter-address", (v) => (this.activeFilters.address = v)],
-      ["filter-source", (v) => (this.activeFilters.source = v)],
-      ["filter-serviceman", (v) => (this.activeFilters.serviceman = v)],
-      ["filter-type", (v) => (this.activeFilters.type = v)],
-      ["filter-quote-number", (v) => (this.activeFilters.quoteNumber = v)],
-      ["filter-invoice-number", (v) => (this.activeFilters.invoiceNumber = v)],
-      ["filter-recommendation", (v) => (this.activeFilters.recommendation = v)],
-    ];
-    const handler = () => {
-      this.reRenderActiveTab();
-    };
-    // Collect values only when Apply Filters is clicked
-    inputs.forEach(([id, setter]) => {
-      const el = byId(id);
-      if (!el) return;
-      // Remove live listeners; we'll read values on Apply click instead
-      el._filterSetter = setter;
-    });
-
-    const applyBtn = document.getElementById("apply-filters-btn");
-    const resetBtn = document.getElementById("reset-filters-btn");
-    if (applyBtn) {
-      applyBtn.addEventListener("click", () => {
-        // Read all input values at apply time
-        inputs.forEach(([id, setter]) => {
-          const el = byId(id);
-          if (!el) return;
-          setter((el.value || "").trim());
-        });
-        // Read price range from sliders if present
-        const minEl = document.getElementById("price-min");
-        const maxEl = document.getElementById("price-max");
-        if (minEl && maxEl) {
-          const minVal = parseFloat(minEl.value);
-          const maxVal = parseFloat(maxEl.value);
-          this.activeFilters.priceMin = isFinite(minVal) ? minVal : null;
-          this.activeFilters.priceMax = isFinite(maxVal) ? maxVal : null;
-        }
-        handler();
-      });
-    }
-
-    if (resetBtn) {
-      resetBtn.addEventListener("click", () => {
-        // Clear text inputs
-        inputs.forEach(([id, setter]) => {
-          const el = byId(id);
-          if (!el) return;
-          el.value = "";
-          setter("");
-        });
-
-        // Clear Status checkboxes
-        const statusCard = document.getElementById("status-filter-card");
-        if (statusCard) {
-          const statusBoxes = Array.from(
-            statusCard.querySelectorAll('input[type="checkbox"][data-status]')
-          );
-          statusBoxes.forEach((c) => (c.checked = false));
-          const allToggle = statusCard.querySelector("#status-all");
-          if (allToggle) allToggle.checked = false;
-          this.activeFilters.statuses.clear();
-        }
-
-        // Clear Account Type checkboxes and activeFilters.type
-        const typeCard = document.getElementById("account-type-filter-card");
-        if (typeCard) {
-          const typeBoxes = Array.from(
-            typeCard.querySelectorAll(
-              'input[type="checkbox"][data-account-type]'
-            )
-          );
-          typeBoxes.forEach((c) => (c.checked = false));
-          const allToggle = typeCard.querySelector("#account-type-all");
-          if (allToggle) allToggle.checked = false;
-          this.activeFilters.type = "";
-        }
-
-        // Reset price sliders if present
-        const minEl = document.getElementById("price-min");
-        const maxEl = document.getElementById("price-max");
-        const progress = document.getElementById("price-progress");
-        if (minEl && maxEl && progress) {
-          minEl.value = "0";
-          maxEl.value = maxEl.max || "10000";
-          progress.style.left = "0%";
-          progress.style.right = "0%";
-        }
-        this.activeFilters.priceMin = null;
-        this.activeFilters.priceMax = null;
-
-        // Re-render with no filters
-        this.reRenderActiveTab();
-      });
-    }
-  }
-
- 
-
-  applyActiveFilters(rows) {
-    if (!Array.isArray(rows)) return rows;
-    const f = this.activeFilters;
-    const toText = (value) => (value ?? "").toString().trim().toLowerCase();
-    const toList = (value) => {
-      if (!value) return [];
-      if (Array.isArray(value)) {
-        return value.map(toText).filter(Boolean);
-      }
-      if (value instanceof Set) {
-        return Array.from(value).map(toText).filter(Boolean);
-      }
-      const textValue = toText(value);
-      if (!textValue) return [];
-      return textValue
-        .split(",")
-        .map((part) => part.trim())
-        .filter(Boolean);
-    };
-    const need = {
-      global: toText(f.global),
-      accountName: toText(f.accountName),
-      resident: toText(f.resident),
-      address: toText(f.address),
-      source: toText(f.source),
-      serviceman: toText(f.serviceman),
-      quoteNumber: toText(f.quoteNumber),
-      invoiceNumber: toText(f.invoiceNumber),
-      recommendation: toText(f.recommendation),
-    };
-    const typeFilters = toList(f.type);
-    const statusFilters = toList(f.statuses);
-    const taskStatusFilters = toList(f.taskStatuses);
-    const dueTodayFilters = toList(f.dueToday);
-    const assignedToFilters = toList(f.assignedTo);
-    const propertySearch = toText(f.propertySearch);
-    const hasPriceMin =
-      typeof f.priceMin === "number" && !Number.isNaN(f.priceMin);
-    const hasPriceMax =
-      typeof f.priceMax === "number" && !Number.isNaN(f.priceMax);
-    const hasPrice = hasPriceMin || hasPriceMax;
-    const any =
-      Object.values(need).some(Boolean) ||
-      typeFilters.length > 0 ||
-      statusFilters.length > 0 ||
-      taskStatusFilters.length > 0 ||
-      dueTodayFilters.length > 0 ||
-      assignedToFilters.length > 0 ||
-      Boolean(propertySearch) ||
-      hasPrice;
-    if (!any) return rows;
-    return rows.filter((r) => {
-      const client = toText(r.client);
-      const resident = toText(r.resident ?? r.meta?.resident ?? r.client);
-      const address = toText(r.meta?.address);
-      const source = toText(r.source);
-      const serviceman = toText(r.serviceman);
-      const type = toText(r.type);
-      const quote = toText(r.quoteNumber ?? r.meta?.quoteNumber);
-      const invoice = toText(r.invoiceNumber ?? r.meta?.invoiceNumber);
-      const recommendation = toText(r.recommendation ?? r.meta?.recommendation);
-      const accountName = toText(r.meta?.accountName);
-      const idValue = toText(r.id);
-      const statusValue = toText(r.status);
-      const taskStatusValue = toText(r.taskStatus ?? r.status);
-      const dueTodayValue =
-        r.dueToday === true
-          ? "yes"
-          : r.dueToday === false
-          ? "no"
-          : toText(r.dueToday);
-      const assignedToValue = toText(r.assignedTo ?? r.meta?.assignedTo);
-
-      // Global search across key fields
-      if (need.global) {
-        const haystack = [
-          idValue,
-          client,
-          resident,
-          address,
-          source,
-          serviceman,
-          type,
-          quote,
-          invoice,
-          recommendation,
-          accountName,
-        ]
-          .filter(Boolean)
-          .join(" | ");
-        if (!haystack.includes(need.global)) return false;
-      }
-      if (need.accountName && !accountName.includes(need.accountName))
-        return false;
-      if (need.resident && !resident.includes(need.resident)) return false;
-      if (need.address && !address.includes(need.address)) return false;
-      if (need.source && !source.includes(need.source)) return false;
-      if (need.serviceman && !serviceman.includes(need.serviceman))
-        return false;
-      if (
-        typeFilters.length > 0 &&
-        !typeFilters.some((value) => type.includes(value))
-      )
-        return false;
-      if (need.quoteNumber && !quote.includes(need.quoteNumber)) return false;
-      if (need.invoiceNumber && !invoice.includes(need.invoiceNumber))
-        return false;
-      if (need.recommendation && !recommendation.includes(need.recommendation))
-        return false;
-      // Price filter
-      if (hasPrice) {
-        const price = parseFloat(r?.meta?.price ?? r?.price ?? NaN);
-        if (!Number.isFinite(price)) return false;
-        if (typeof f.priceMin === "number" && price < f.priceMin) return false;
-        if (typeof f.priceMax === "number" && price > f.priceMax) return false;
-      }
-      if (statusFilters.length > 0 && !statusFilters.includes(statusValue))
-        return false;
-
-      // Property Search (if present) checks id/address/client fields
-      if (propertySearch) {
-        const propHay = [idValue, address, client, resident]
-          .filter(Boolean)
-          .join(" | ");
-        if (!propHay.includes(propertySearch)) return false;
-      }
-
-      // Task Status filter (dummy hook: compare to r.taskStatus if exists)
-      if (
-        taskStatusFilters.length > 0 &&
-        !taskStatusFilters.includes(taskStatusValue)
-      ) {
-        return false;
-      }
-
-      // Due Today filter (dummy hook: compare to r.dueToday boolean if exists)
-      if (
-        dueTodayFilters.length > 0 &&
-        (dueTodayValue === "" || !dueTodayFilters.includes(dueTodayValue))
-      ) {
-        return false;
-      }
-
-      // Assigned To filter (dummy hook: compare to r.assignedTo if exists)
-      if (
-        assignedToFilters.length > 0 &&
-        !assignedToFilters.includes(assignedToValue)
-      ) {
-        return false;
-      }
-      return true;
-    });
-  }
-
-  initStatusDropdown() {
-    const btn = document.getElementById("status-filter-btn");
-    const card = document.getElementById("status-filter-card");
-    if (!btn || !card) return;
-
-    // Toggle card
-    btn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      card.classList.toggle("hidden");
-    });
-
-    // Close on outside click
-    document.addEventListener("click", (e) => {
-      if (
-        !card.classList.contains("hidden") &&
-        !card.contains(e.target) &&
-        e.target !== btn
-      ) {
-        card.classList.add("hidden");
-      }
-    });
-
-    const allToggle = card.querySelector("#status-all");
-    const statusBoxes = Array.from(
-      card.querySelectorAll('input[type="checkbox"][data-status]')
-    );
-
-    const syncAllCheckbox = () => {
-      const allChecked = statusBoxes.every((c) => c.checked);
-      if (allToggle) allToggle.checked = allChecked;
-    };
-
-    const apply = () => {
-      this.activeFilters.statuses.clear();
-      statusBoxes.forEach((c) => {
-        if (c.checked) this.activeFilters.statuses.add(c.value);
-      });
-      this.reRenderActiveTab();
-    };
-
-    statusBoxes.forEach((box) => {
-      box.addEventListener("change", () => {
-        syncAllCheckbox();
-        apply();
-      });
-    });
-
-    if (allToggle) {
-      allToggle.addEventListener("change", () => {
-        const next = !!allToggle.checked;
-        statusBoxes.forEach((c) => (c.checked = next));
-        apply();
-      });
-    }
-
-    // Initialize state
-    syncAllCheckbox();
-    apply();
-  }
-
-  initAccountTypeDropdown() {
-    const btn = document.getElementById("account-type-filter-btn");
-    const card = document.getElementById("account-type-filter-card");
-    if (!btn || !card) return;
-
-    // Toggle card visibility
-    btn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      card.classList.toggle("hidden");
-    });
-
-    // Close on outside click
-    document.addEventListener("click", (e) => {
-      if (
-        !card.classList.contains("hidden") &&
-        !card.contains(e.target) &&
-        e.target !== btn
-      ) {
-        card.classList.add("hidden");
-      }
-    });
-
-    const allToggle = card.querySelector("#account-type-all");
-    const typeBoxes = Array.from(
-      card.querySelectorAll('input[type="checkbox"][data-account-type]')
-    );
-
-    const apply = () => {
-      // Merge selected account types into the free-text `type` filter as a comma list
-      const selected = typeBoxes.filter((c) => c.checked).map((c) => c.value);
-      this.activeFilters.type = selected.join(", ");
-      this.reRenderActiveTab();
-    };
-
-    const syncAllCheckbox = () => {
-      const allChecked = typeBoxes.every((c) => c.checked);
-      if (allToggle) allToggle.checked = allChecked;
-    };
-
-    typeBoxes.forEach((box) => {
-      box.addEventListener("change", () => {
-        syncAllCheckbox();
-        apply();
-      });
-    });
-
-    if (allToggle) {
-      allToggle.addEventListener("change", () => {
-        const next = !!allToggle.checked;
-        typeBoxes.forEach((c) => (c.checked = next));
-        apply();
-      });
-    }
-
-    // Initialize state
-    syncAllCheckbox();
-    apply();
-  }
-
-  initTaskFilters() {
-    const initDropdown = (btnId, cardId, selector, applyFn) => {
-      const btn = document.getElementById(btnId);
-      const card = document.getElementById(cardId);
-      if (!btn || !card) return;
-      btn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        card.classList.toggle("hidden");
-      });
-      document.addEventListener("click", (e) => {
-        if (
-          !card.classList.contains("hidden") &&
-          !card.contains(e.target) &&
-          e.target !== btn
-        ) {
-          card.classList.add("hidden");
-        }
-      });
-      const boxes = Array.from(card.querySelectorAll(selector));
-      const apply = () => {
-        applyFn(boxes);
-        this.reRenderActiveTab();
-      };
-      boxes.forEach((b) => b.addEventListener("change", apply));
-      apply();
-    };
-
-    // Task Type -> reuse `type` free-text filter
-    initDropdown(
-      "task-type-filter-btn",
-      "task-type-filter-card",
-      'input[type="checkbox"][data-task-type]',
-      (boxes) => {
-        const vals = boxes.filter((c) => c.checked).map((c) => c.value);
-        this.activeFilters.type = vals.join(", ");
-      }
-    );
-
-    // Task Status -> store separately
-    this.activeFilters.taskStatuses =
-      this.activeFilters.taskStatuses || new Set();
-    initDropdown(
-      "task-status-filter-btn",
-      "task-status-filter-card",
-      'input[type="checkbox"][data-task-status]',
-      (boxes) => {
-        this.activeFilters.taskStatuses.clear();
-        boxes.forEach(
-          (c) => c.checked && this.activeFilters.taskStatuses.add(c.value)
-        );
-      }
-    );
-
-    // Due Today -> array of selections
-    initDropdown(
-      "due-today-filter-btn",
-      "due-today-filter-card",
-      'input[type="checkbox"][data-due-today]',
-      (boxes) => {
-        this.activeFilters.dueToday = boxes
-          .filter((c) => c.checked)
-          .map((c) => String(c.value).toLowerCase());
-      }
-    );
-
-    // Assigned To -> array
-    initDropdown(
-      "assigned-to-filter-btn",
-      "assigned-to-filter-card",
-      'input[type="checkbox"][data-assigned-to]',
-      (boxes) => {
-        this.activeFilters.assignedTo = boxes
-          .filter((c) => c.checked)
-          .map((c) => c.value);
-      }
-    );
-
-    // Property Search text input
-    const propInput = document.getElementById("filter-property-search");
-    if (propInput) {
-      propInput.addEventListener("input", () => {
-        this.activeFilters.propertySearch = propInput.value
-          .trim()
-          .toLowerCase();
-        this.reRenderActiveTab();
-      });
-    }
-  }
-
-  initPriceRange() {
-    const range = document.getElementById("price-range");
-    const progress = document.getElementById("price-progress");
-    const minSlider = document.getElementById("price-min");
-    const maxSlider = document.getElementById("price-max");
-    const minDisplay = document.getElementById("min-display");
-    const maxDisplay = document.getElementById("max-display");
-    const minLabel = document.getElementById("price-min-label");
-    const maxLabel = document.getElementById("price-max-label");
-    if (!range || !progress || !minSlider || !maxSlider) return;
-
-    const fmt = (n) => `$${Number(n).toLocaleString()}`;
-
-    const updateRange = (evt) => {
-      let minVal = parseInt(minSlider.value, 10);
-      let maxVal = parseInt(maxSlider.value, 10);
-
-      // Enforce minimum gap
-      const GAP = 500;
-      if (maxVal - minVal < GAP) {
-        if (evt && evt.target === minSlider) {
-          minVal = maxVal - GAP;
-          minSlider.value = String(minVal);
-        } else {
-          maxVal = minVal + GAP;
-          maxSlider.value = String(maxVal);
-        }
-      }
-
-      const minPercent = (minVal / parseInt(minSlider.max || 1, 10)) * 100;
-      const maxPercent =
-        100 - (maxVal / parseInt(maxSlider.max || 1, 10)) * 100;
-      progress.style.left = `${minPercent}%`;
-      progress.style.right = `${maxPercent}%`;
-
-      range.dataset.min = String(minVal);
-      range.dataset.max = String(maxVal);
-
-      if (minDisplay) minDisplay.textContent = fmt(minVal);
-      if (maxDisplay) maxDisplay.textContent = fmt(maxVal);
-      if (minLabel) minLabel.textContent = fmt(0);
-      if (maxLabel)
-        maxLabel.textContent = fmt(parseInt(maxSlider.max || 10000, 10));
-    };
-
-    minSlider.addEventListener("input", updateRange);
-    maxSlider.addEventListener("input", updateRange);
-    // initialize on load
-    updateRange();
-  }
-  */
-
   initGlobalSearch() {
     const input = document.querySelector(
       'input[placeholder*="Search all records"]'
@@ -1450,14 +1164,23 @@ export class DashboardController {
     const card = document.getElementById("status-filter-card");
     if (!btn || !card) return;
 
-    // Toggle card
-    btn.addEventListener("click", (e) => {
+    // idempotent rebind: remove old listeners if present
+    const list = document.getElementById("status-filter-list") || card;
+    const old = this._statusHandlers;
+    if (old) {
+      btn.removeEventListener("click", old.onBtnClick);
+      document.removeEventListener("click", old.onDocClick);
+      if (old.onListChange)
+        list.removeEventListener("change", old.onListChange);
+      if (old.onAllChange && old.allToggle)
+        old.allToggle.removeEventListener("change", old.onAllChange);
+    }
+
+    const onBtnClick = (e) => {
       e.stopPropagation();
       card.classList.toggle("hidden");
-    });
-
-    // Close on outside click
-    document.addEventListener("click", (e) => {
+    };
+    const onDocClick = (e) => {
       if (
         !card.classList.contains("hidden") &&
         !card.contains(e.target) &&
@@ -1465,33 +1188,60 @@ export class DashboardController {
       ) {
         card.classList.add("hidden");
       }
-    });
+    };
 
     const allToggle = card.querySelector("#status-all");
-    const statusBoxes = Array.from(
-      card.querySelectorAll('input[type="checkbox"][data-status]')
-    );
-
     const syncAllCheckbox = () => {
-      const allChecked = statusBoxes.every((c) => c.checked);
+      const boxes = card.querySelectorAll(
+        'input[type="checkbox"][data-status]'
+      );
+      const allChecked = Array.from(boxes).every((c) => c.checked);
       if (allToggle) allToggle.checked = allChecked;
     };
 
-    statusBoxes.forEach((box) => {
-      box.addEventListener("change", () => {
-        syncAllCheckbox();
-      });
-    });
+    const onListChange = (e) => {
+      const t = e.target;
+      if (!(t && t.matches('input[type="checkbox"][data-status]'))) return;
+      syncAllCheckbox();
+      // Mirror to filters (lowercase for consistency with collection)
+      const checked = Array.from(
+        card.querySelectorAll('input[type="checkbox"][data-status]:checked')
+      ).map((c) => (c.value || "").toString().trim().toLowerCase());
+      this.filters.statuses = checked;
+    };
 
-    if (allToggle) {
-      allToggle.addEventListener("change", () => {
-        const next = !!allToggle.checked;
-        statusBoxes.forEach((c) => (c.checked = next));
-      });
-    }
+    const onAllChange = () => {
+      const next = !!allToggle.checked;
+      card
+        .querySelectorAll('input[type="checkbox"][data-status]')
+        .forEach((c) => (c.checked = next));
+      onListChange({ target: { matches: () => true } });
+    };
 
-    // Initialize state
+    // Bind fresh
+    btn.addEventListener("click", onBtnClick);
+    document.addEventListener("click", onDocClick);
+    list.addEventListener("change", onListChange);
+    if (allToggle) allToggle.addEventListener("change", onAllChange);
+    // Initialize state: restore checked boxes from applied filters
+    const applied = Array.isArray(this.filters?.statuses)
+      ? this.filters.statuses
+      : [];
+    card
+      .querySelectorAll('input[type="checkbox"][data-status]')
+      .forEach((c) => {
+        const v = (c.value || "").toString().trim().toLowerCase();
+        c.checked = applied.includes(v);
+      });
     syncAllCheckbox();
+    // store handlers for next re-init
+    this._statusHandlers = {
+      onBtnClick,
+      onDocClick,
+      onListChange,
+      onAllChange,
+      allToggle,
+    };
   }
 
   initAccountTypeDropdown() {
@@ -1539,7 +1289,6 @@ export class DashboardController {
       });
     }
 
-    // Initialize state
     syncAllCheckbox();
   }
 }

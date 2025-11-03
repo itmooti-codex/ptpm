@@ -14,17 +14,7 @@ export class DashboardHelper {
   }
 
   mapDealToTableRow(records) {
-    const dayjsRef = (typeof window !== "undefined" && window.dayjs) || null;
-    const toNumber = (v) => {
-      if (v == null) return null;
-      if (typeof v === "number") return Number.isFinite(v) ? v : null;
-      const cleaned = String(v).replace(/[^0-9.-]/g, "");
-      const n = parseFloat(cleaned);
-      return Number.isFinite(n) ? n : null;
-    };
-
     return Object.values(records).map((data) => {
-      const firstJob = Object.values(data?.Jobs ?? {})[0] ?? null;
       return {
         uniqueId: data?.unique_id || null,
         "date-added": this.formatUnixDate(data?.created_at) || null,
@@ -43,51 +33,6 @@ export class DashboardHelper {
         "client-address": data?.Property?.address_1 || null,
         "account-name": data.Company?.name || null,
         recommendations: data.admin_notes || null,
-        "job-invoice-number": data.Jobs?.invoice_number || null,
-        price: toNumber(firstJob?.job_total ?? null),
-        "date-quoted-accepted": this.formatUnixDate(
-          firstJob?.date_quoted_accepted ??
-            firstJob?.date_quoted_accepted ??
-            null
-        ),
-        "quote-date": this.formatUnixDate(
-          firstJob?.quote_date ?? firstJob?.quote_date ?? null
-        ),
-        "quote-total": toNumber(
-          firstJob?.quote_total ?? firstJob?.quote_total ?? null
-        ),
-        "quote-status":
-          firstJob?.quote_status ?? firstJob?.quote_status ?? null,
-        "date-started": this.formatUnixDate(
-          firstJob?.date_started ?? firstJob?.date_started ?? null
-        ),
-        "payment-status":
-          firstJob?.payment_status ?? data?.payment_status ?? null,
-        "date-job-required-by": this.formatUnixDate(
-          firstJob?.date_job_required_by ??
-            firstJob?.date_job_required_by ??
-            null
-        ),
-        "date-booked": this.formatUnixDate(
-          firstJob?.date_booked ?? firstJob?.date_booked ?? null
-        ),
-        "job-status": firstJob?.job_status ?? data?.job_status ?? null,
-        "invoice-date": this.formatUnixDate(
-          firstJob?.invoice_date ?? firstJob?.invoice_date ?? null
-        ),
-        "invoice-total": toNumber(
-          firstJob?.invoice_total ?? firstJob?.invoice_total ?? null
-        ),
-        "bill-time-paid": this.formatUnixDate(
-          firstJob?.bill_time_paid ?? firstJob?.bill_time_paid ?? null
-        ),
-        "xero-invoice-status":
-          firstJob?.xero_invoice_status ??
-          firstJob?.xero_invoice_status ??
-          null,
-        "due-date": this.formatUnixDate(
-          firstJob?.due_date ?? firstJob?.due_date ?? null
-        ),
       };
     });
   }
@@ -120,9 +65,6 @@ export class DashboardHelper {
         email: r["client-email"] ?? null,
         sms: r["client-smsNumber"] ?? null,
         accountName: r["account-name"] ?? null,
-        recommendation: r["recommendations"] ?? null,
-        invoiceNumber: r["job-invoice-number"] ?? null,
-        price: r["price"] ?? null,
         createdIso: r["date-added"] ?? null,
       },
     }));

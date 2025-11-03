@@ -19,9 +19,15 @@ export const DASHBOARD_STATUS_CLASSES = {
   Closed: "bg-slate-100 text-slate-600",
 };
 
+// Ensure Day.js uses Australia/Brisbane timezone when computing start/end of day
+// Requires dayjs-timezone + utc plugins to be loaded on window.dayjs
+const TZ = "Australia/Brisbane";
+
 export const DASHBOARD_DEFAULTS = {
   dayCount: 14,
-  startDate: dayjsRef(dayjs().startOf("day")),
+  startDate: dayjsRef.tz
+    ? dayjsRef.tz(dayjsRef(), TZ).startOf("day")
+    : dayjsRef(dayjsRef().startOf("day")),
   totalsPattern: Array(14).fill(0),
   rowTotals: [0, 0],
 };
@@ -129,9 +135,11 @@ export class DashboardModel {
     const like = (s) => `%${s}%`;
     const toEpoch = (d, endOfDay = false) => {
       if (!d) return null;
-      const m = dayjsRef(d);
+      const m = dayjsRef.tz ? dayjsRef.tz(d, TZ) : dayjsRef(d);
       if (!m.isValid()) return null;
-      return endOfDay ? m.endOf("day").unix() : m.startOf("day").unix();
+      const z = endOfDay ? m.endOf("day") : m.startOf("day");
+      // Convert zoned moment to epoch seconds (unix is UTC-based)
+      return z.unix();
     };
     const startEpoch = toEpoch(f.dateFrom, false);
     const endEpoch = toEpoch(f.dateTo, true);
@@ -149,8 +157,8 @@ export class DashboardModel {
       });
     }
 
-    if (f.source) {
-      this.dealQuery = this.dealQuery.where("how_did_you_hear", f.source);
+    if (f.source && Array.isArray(f.source) && f.source.length) {
+      this.dealQuery = this.dealQuery.where("how_did_you_hear", "in", f.source);
     }
     if (Array.isArray(f.statuses) && f.statuses.length) {
       this.dealQuery = this.dealQuery.andWhere(
@@ -230,7 +238,7 @@ export class DashboardModel {
     const like = (s) => `%${s}%`;
     const toEpoch = (d, end = false) => {
       if (!d) return null;
-      const m = dayjsRef(d);
+      const m = dayjsRef.tz ? dayjsRef.tz(d, TZ) : dayjsRef(d);
       return m.isValid()
         ? end
           ? m.endOf("day").unix()
@@ -240,8 +248,12 @@ export class DashboardModel {
     const startEpoch = toEpoch(f.dateFrom, false);
     const endEpoch = toEpoch(f.dateTo, true);
 
-    const minPrice = f.priceMin ?? 0;
-    const maxPrice = f.priceMax ?? 20000;
+    let minPrice = null;
+    let maxPrice = null;
+    if (f.priceMin != 0 && f.priceMax != 10000) {
+      minPrice = f.priceMin;
+      maxPrice = f.priceMax;
+    }
 
     // Start with base query, append conditional filters first
     this.quoteQuery = ptpmJobModel.query();
@@ -294,10 +306,8 @@ export class DashboardModel {
     }
     if (startEpoch != null || endEpoch != null) {
       this.quoteQuery = this.quoteQuery.andWhere((q) => {
-        if (startEpoch != null)
-          q.andWhere("date_quoted_accepted", ">=", startEpoch);
-        if (endEpoch != null)
-          q.andWhere("date_quoted_accepted", "<=", endEpoch);
+        if (startEpoch != null) q.andWhere("quote_date", ">=", startEpoch);
+        if (endEpoch != null) q.andWhere("quote_date", "<=", endEpoch);
       });
     }
     if (f.resident) {
@@ -336,9 +346,9 @@ export class DashboardModel {
           q.andWhere("type", "in", f.accountTypes);
       });
     }
-    if (f.source) {
+    if (f.source && f.source.length != 0) {
       this.quoteQuery = this.quoteQuery.andWhere("Inquiry_Record", (q) => {
-        q.andWhere("how_did_you_hear", "like", like(f.source));
+        q.andWhere("how_did_you_hear", "in", f.source);
       });
     }
 
@@ -388,7 +398,7 @@ export class DashboardModel {
     const like = (s) => `%${s}%`;
     const toEpoch = (d, end = false) => {
       if (!d) return null;
-      const m = dayjsRef(d);
+      const m = dayjsRef.tz ? dayjsRef.tz(d, TZ) : dayjsRef(d);
       return m.isValid()
         ? end
           ? m.endOf("day").unix()
@@ -404,7 +414,7 @@ export class DashboardModel {
     // Start with base query, append conditional filters first
     this.jobQuery = ptpmJobModel.query();
     if (Array.isArray(f.statuses) && f.statuses.length) {
-      this.jobQuery = this.jobQuery.andWhere("quote_status", "in", f.statuses);
+      this.jobQuery = this.jobQuery.andWhere("job_status", "in", f.statuses);
     }
 
     if (Array.isArray(f.serviceProviders) && f.serviceProviders.length) {
@@ -448,8 +458,8 @@ export class DashboardModel {
     }
     if (startEpoch != null || endEpoch != null) {
       this.jobQuery = this.jobQuery.andWhere((q) => {
-        if (startEpoch != null) q.andWhere("Date_Booked", ">=", startEpoch);
-        if (endEpoch != null) q.andWhere("Date_Booked", "<=", endEpoch);
+        if (startEpoch != null) q.andWhere("date_scheduled", ">=", startEpoch);
+        if (endEpoch != null) q.andWhere("date_scheduled", "<=", endEpoch);
       });
     }
     if (f.resident) {
@@ -488,9 +498,9 @@ export class DashboardModel {
           q.andWhere("type", "in", f.accountTypes);
       });
     }
-    if (f.source) {
-      this.jobQuery = this.jobQuery.andWhere("Inquiry_Record", (q) => {
-        q.andWhere("how_did_you_hear", "like", like(f.source));
+    if (f.source && f.source.length != 0) {
+      this.quoteQuery = this.quoteQuery.andWhere("Inquiry_Record", (q) => {
+        q.andWhere("how_did_you_hear", "in", f.source);
       });
     }
 
@@ -543,7 +553,7 @@ export class DashboardModel {
     const like = (s) => `%${s}%`;
     const toEpoch = (d, end = false) => {
       if (!d) return null;
-      const m = dayjsRef(d);
+      const m = dayjsRef.tz ? dayjsRef.tz(d, TZ) : dayjsRef(d);
       return m.isValid()
         ? end
           ? m.endOf("day").unix()
@@ -576,7 +586,7 @@ export class DashboardModel {
 
     if (Array.isArray(f.statuses) && f.statuses.length) {
       this.paymentQuery = this.paymentQuery.andWhere(
-        "quote_status",
+        "payment_status",
         "in",
         f.statuses
       );
@@ -631,8 +641,8 @@ export class DashboardModel {
     }
     if (startEpoch != null || endEpoch != null) {
       this.paymentQuery = this.paymentQuery.andWhere((q) => {
-        if (startEpoch != null) q.andWhere("Date_Booked", ">=", startEpoch);
-        if (endEpoch != null) q.andWhere("Date_Booked", "<=", endEpoch);
+        if (startEpoch != null) q.andWhere("invoice_date", ">=", startEpoch);
+        if (endEpoch != null) q.andWhere("invoice_date", "<=", endEpoch);
       });
     }
     if (f.resident) {
@@ -663,14 +673,13 @@ export class DashboardModel {
           q.andWhere("type", "in", f.accountTypes);
       });
     }
-    if (f.source) {
-      this.paymentQuery = this.paymentQuery.andWhere("Inquiry_Record", (q) => {
-        q.andWhere("how_did_you_hear", "like", like(f.source));
+    if (f.source && f.source.length != 0) {
+      this.quoteQuery = this.quoteQuery.andWhere("Inquiry_Record", (q) => {
+        q.andWhere("how_did_you_hear", "in", f.source);
       });
     }
 
-    this.paymentQuery = ptpmJobModel
-      .query()
+    this.paymentQuery = this.paymentQuery
       .andWhereNot("xero_invoice_status", "isNull")
       .deSelectAll()
       .select([
@@ -744,8 +753,12 @@ export class DashboardModel {
     const startEpoch = toEpoch(f.dateFrom, false);
     const endEpoch = toEpoch(f.dateTo, true);
 
-    const minPrice = f.minPrice;
-    const maxPrice = f.maxPrice;
+    const minPrice = null;
+    const maxPrice = null;
+    if (f.minPrice != 0 && f.maxPrice != 10000) {
+      minPrice = f.minPrice;
+      maxPrice = f.maxPrice;
+    }
 
     this.activeJobsQuery = ptpmJobModel.query();
 
@@ -860,14 +873,15 @@ export class DashboardModel {
       this.activeJobsQuery = this.activeJobsQuery.andWhere(
         "Inquiry_Record",
         (q) => {
-          q.andWhere("how_did_you_hear", "like", like(f.source));
+          q.andWhere("how_did_you_hear", "in", f.source);
         }
       );
     }
 
-    this.paymentQuery = ptpmJobModel
-      .query()
+    this.paymentQuery = this.activeJobsQuery
       .deSelectAll()
+      .andWhereNot("job_status", "completed")
+      .andWhereNot("job_status", "cancelled")
       .select([
         "Unique_ID",
         "Invoice_Number",
