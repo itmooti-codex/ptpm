@@ -1,449 +1,355 @@
 export class NewEnquiryView {
-  constructor(model) {
-    this.model = model;
-    this.init();
-  }
-
-  init() {
-    this.createSwitchAccountModal();
-    this.createAddContactModal();
-    this.createCancelModal();
-    this.createResetModal();
-  }
-
-  createSwitchAccountModal() {
-    // Create wrapper
-    const modalWrapper = document.createElement("div");
-    modalWrapper.id = "switchAccountModalWrapper";
-    modalWrapper.className =
-      "flex flex-col item-center justify-center fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50";
-
-    modalWrapper.innerHTML = `
-      <div id="switchAccountBox" class="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
-        <!-- Header -->
-        <div class="flex justify-between items-center border-b pb-3">
-          <div class="text-neutral-700 text-lg font-semibold leading-tight">
-            Switch Account Type
-          </div>
-          <button id="closeSwitchAccountBtn" class="text-gray-600 hover:text-gray-800">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M18.75 6.81984L17.1802 5.25L12 10.4302L6.81984 5.25L5.25 6.81984L10.4302 12L5.25 17.1802L6.81984 18.75L12 13.5698L17.1802 18.75L18.75 17.1802L13.5698 12L18.75 6.81984Z" fill="#21272A"/>
-            </svg>
-          </button>
-        </div>
-  
-        <!-- Content -->
-        <div class="py-6 text-neutral-700 text-base font-normal leading-tight">
-          Switching to the Company will reset all filled data. Do you want to continue?
-        </div>
-  
-        <!-- Actions -->
-        <div class="pt-3 flex justify-end space-x-3 border-t">
-          <button id="cancelSwitchAccountBtn" class="text-slate-500 text-sm font-medium hover:text-gray-700">
-            Cancel
-          </button>
-          <button id="confirmSwitchAccountBtn" class="px-4 py-3 bg-sky-900 text-white text-sm font-medium rounded hover:bg-sky-800">
-            Continue
-          </button>
-        </div>
-      </div>
-    `;
-
-    document.body.appendChild(modalWrapper);
-
-    // References
-    const modal = document.getElementById("switchAccountModalWrapper");
-    const modalBox = document.getElementById("switchAccountBox");
-    const closeBtn = document.getElementById("closeSwitchAccountBtn");
-    const cancelBtn = document.getElementById("cancelSwitchAccountBtn");
-    const confirmBtn = document.getElementById("confirmSwitchAccountBtn");
-
-    this.toggleSwitchAccountModal = (show = true) => {
-      if (show) {
-        modal.classList.remove("hidden");
-        document.body.style.overflow = "hidden";
-      } else {
-        modal.classList.add("hidden");
-        document.body.style.overflow = "";
-      }
+  constructor() {
+    this.sections = {
+      individual: document.querySelector('[data-contact-section="individual"]'),
+      entity: document.querySelector('[data-contact-section="entity"]'),
+    };
+    this.section = this.sections.individual;
+    this.feedbackEl = document.querySelector('[data-contact-feedback]');
+    this.searchRoot = document.querySelector('[data-search-root="contact-individual"]');
+    this.searchInput = this.searchRoot?.querySelector('[data-search-input]');
+    this.resultsContainer = this.searchRoot?.querySelector('[data-search-results]');
+    this.emptyState = this.searchRoot?.querySelector('[data-search-empty]');
+    this.addButton = this.searchRoot?.querySelector('[data-search-add]');
+    this.panel = this.searchRoot?.querySelector('[data-search-panel]');
+    this.contactIdInput = this.section?.querySelector('[data-contact-field="contact_id"]');
+    this.manualInputs = Array.from(
+      this.section?.querySelectorAll('[data-contact-field]') || []
+    ).filter((input) => input.dataset.contactField && input.dataset.contactField !== 'contact_id');
+    this.saveFooter = document.getElementById('contact-add-new-footer');
+    this.saveButton = this.saveFooter?.querySelector('[data-contact-save]');
+    this.saveLabel = this.saveFooter?.querySelector('[data-contact-save-label]');
+    this.saveIcon = this.saveFooter?.querySelector('[data-contact-save-icon]');
+    this.baseSaveLabel = this.saveButton?.dataset.baseLabel || 'Add New Contact';
+    this.loadingSaveLabel = this.saveButton?.dataset.loadingLabel || 'Adding...';
+    this.sameAsCheckbox = this.section?.querySelector('[data-same-as-contact]');
+    this.firstNameInput = this.section?.querySelector('[data-contact-field="first_name"]');
+    this.lastNameInput = this.section?.querySelector('[data-contact-field="last_name"]');
+    this.workRequestedInput = this.section?.querySelector('[data-contact-field="work_requested_by"]');
+    this.tabs = {
+      individual: document.getElementById('individual'),
+      entity: document.getElementById('entity'),
     };
 
-    modal.addEventListener("click", (e) => {
-      if (!modalBox.contains(e.target)) this.toggleSwitchAccountModal(false);
+    this.contacts = [];
+    this.filteredContacts = [];
+    this.selectHandler = null;
+    this.manualHandler = null;
+
+    this.#bindDropdown();
+    this.#bindSameAsContact();
+    this.#bindTabs();
+  }
+
+  isActive() {
+    return document.body?.dataset?.page === 'new-enquiry';
+  }
+
+  setContacts(contacts = []) {
+    this.contacts = Array.isArray(contacts) ? [...contacts] : [];
+    this.#renderFiltered(this.searchInput?.value || '');
+  }
+
+  onContactSelected(handler) {
+    this.selectHandler = typeof handler === 'function' ? handler : null;
+  }
+
+  onManualAdd(handler) {
+    this.manualHandler = typeof handler === 'function' ? handler : null;
+  }
+
+  onSave(handler) {
+    if (!this.saveButton || this._saveListenerBound) return;
+    this.saveButton.addEventListener('click', (event) => {
+      event.preventDefault();
+      if (typeof handler === 'function') handler(this.getFormValues());
+    });
+    this._saveListenerBound = true;
+  }
+
+  populateContact(contact) {
+    if (!contact?.fields || !this.section) return;
+
+    Object.entries(contact.fields).forEach(([field, value]) => {
+      const input = this.section.querySelector(`[data-contact-field="${field}"]`);
+      if (!input) return;
+      input.value = value || '';
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      input.dispatchEvent(new Event('change', { bubbles: true }));
     });
 
-    closeBtn.onclick = () => this.toggleSwitchAccountModal(false);
-    cancelBtn.onclick = () => this.toggleSwitchAccountModal(false);
-
-    confirmBtn.onclick = () => {
-      console.log("Continue clicked");
-      this.toggleSwitchAccountModal(false);
-    };
-  }
-
-  createAddContactModal() {
-    const element = document.createElement("div");
-    element.id = "contactModalWrapper";
-    element.className =
-      "flex flex-col justify-center items-center fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50";
-
-    element.innerHTML = `
-      <div id="contactModalBox" class="bg-white w-full max-w-lg rounded-lg shadow-lg overflow-hidden">
-        <!-- Header -->
-        <div class="flex justify-between items-center px-6 py-4 border-b">
-          <h2 class="text-lg font-semibold text-neutral-700">Add Property Contact</h2>
-          <button id="closeModalBtn" class="text-gray-500 hover:text-gray-700">✕</button>
-        </div>
-  
-        <!-- Tabs -->
-        <div class="flex space-x-2 px-6 py-3 border-b">
-          <button id="tabIndividual"
-            class="px-4 py-1 border rounded-full text-sm font-medium text-blue-600 border-blue-600 bg-blue-50">
-            Individual
-          </button>
-          <button id="tabEntity"
-            class="px-4 py-1 border rounded-full text-sm font-medium text-gray-600 border-gray-300 hover:bg-gray-50">
-            Entity
-          </button>
-        </div>
-  
-        <!-- Body -->
-        <div class="px-6 py-4 overflow-y-auto max-h-[70vh]">
-          <!-- Individual Form -->
-          <div id="individualForm">
-            <div class="mb-4">
-              <label class="block text-sm text-gray-700 mb-1">Contact</label>
-              <div class="relative">
-                <input type="text" placeholder="Search by name, email, phone"
-                  class="w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                <span class="absolute right-3 top-2.5 text-gray-400">🔍</span>
-              </div>
-            </div>
-            <div class="mb-4">
-              <label class="block text-sm text-gray-700 mb-1">Role</label>
-              <select class="text-slate-500 w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500">
-                <option>Resident</option>
-                <option>Owner</option>
-                <option>Agent</option>
-              </select>
-            </div>
-            <div class="grid grid-cols-2 gap-4 mb-4">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">First Name<span class="text-red-500">*</span></label>
-                <input type="text" class="w-full border rounded-md px-3 py-2">
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
-                <input type="text" class="w-full border rounded-md px-3 py-2">
-              </div>
-            </div>
-            <div class="grid grid-cols-2 gap-4 mb-4">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Email<span class="text-red-500">*</span></label>
-                <input type="email" class="w-full border rounded-md px-3 py-2">
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">SMS Number</label>
-                <input type="text" class="w-full border rounded-md px-3 py-2">
-              </div>
-            </div>
-            <label class="inline-flex items-center space-x-2 mb-4">
-              <input type="checkbox" class="accent-blue-600">
-              <span class="text-sm text-gray-700">Is Primary Contact</span>
-            </label>
-
-            <div class="mb-4">
-              <label class="block text-sm text-gray-700 mb-1">Owner Type</label>
-              <select class="text-slate-500 w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500">
-                <option>Body Corp</option>
-                <option>Company</option>
-                <option>Trust</option>
-              </select>
-            </div>
-          </div>
-  
-          <!-- Entity Form -->
-          <div id="entityForm" class="hidden">
-            <div class="mb-4">
-              <label class="block text-sm text-gray-700 mb-1">Entity</label>
-              <div class="relative">
-                <input type="text" placeholder="Search entity"
-                  class="w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500">
-                <span class="absolute right-3 top-2.5 text-gray-400">🔍</span>
-              </div>
-            </div>
-            <div class="mb-4">
-              <label class="block text-sm text-gray-700 mb-1">Entity Type</label>
-              <select class="text-slate-500 w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500">
-                <option>Body Corp</option>
-                <option>Company</option>
-                <option>Trust</option>
-              </select>
-            </div>
-            <div class="mb-4">
-              <label class="block text-sm text-gray-700 mb-1">Role</label>
-              <select class="text-slate-500 w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500">
-                <option>Owner</option>
-                <option>Agent</option>
-                <option>Resident</option>
-              </select>
-            </div>
-            <h3 class="font-medium text-gray-800 mb-2">Primary Contact</h3>
-            <div class="grid grid-cols-2 gap-4 mb-4">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">First Name<span class="text-red-500">*</span></label>
-                <input type="text" class="w-full border rounded-md px-3 py-2">
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
-                <input type="text" class="w-full border rounded-md px-3 py-2">
-              </div>
-            </div>
-            <div class="grid grid-cols-2 gap-4 mb-4">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Email<span class="text-red-500">*</span></label>
-                <input type="email" class="w-full border rounded-md px-3 py-2">
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">SMS Number</label>
-                <input type="text" class="w-full border rounded-md px-3 py-2">
-              </div>
-            </div>
-            <label class="inline-flex items-center space-x-2 mb-4">
-              <input type="checkbox" class="accent-blue-600">
-              <span class="text-sm text-gray-700">Is Primary Contact</span>
-            </label>
-
-            <div class="mb-4">
-              <label class="block text-sm text-gray-700 mb-1">Owner Type</label>
-              <select class="text-slate-500 w-full border rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500">
-                <option>Body Corp</option>
-                <option>Company</option>
-                <option>Trust</option>
-              </select>
-            </div>
-          </div>
-        </div>
-  
-        <!-- Footer -->
-        <div class="flex justify-end space-x-3 px-6 py-4 border-t bg-gray-50">
-          <button id="cancelBtn" class="px-4 py-2 text-gray-600 hover:text-gray-800">Cancel</button>
-          <button class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Save Contact</button>
-        </div>
-      </div>
-    `;
-
-    document.body.appendChild(element);
-
-    const modal = document.getElementById("contactModalWrapper");
-    const modalBox = document.getElementById("contactModalBox");
-    const closeBtn = document.getElementById("closeModalBtn");
-    const cancelBtn = document.getElementById("cancelBtn");
-    const tabIndividual = document.getElementById("tabIndividual");
-    const tabEntity = document.getElementById("tabEntity");
-    const individualForm = document.getElementById("individualForm");
-    const entityForm = document.getElementById("entityForm");
-
-    this.toggleAddContactModal = function (show = true) {
-      if (show) {
-        modal.classList.remove("hidden");
-        document.body.style.overflow = "hidden";
-      } else {
-        modal.classList.add("hidden");
-        document.body.style.overflow = "";
-      }
-    };
-
-    modal.addEventListener("click", (e) => {
-      if (!modalBox.contains(e.target)) this.toggleAddContactModal(false);
-    });
-
-    closeBtn.onclick = () => this.toggleAddContactModal(false);
-    cancelBtn.onclick = () => this.toggleAddContactModal(false);
-
-    function showForm(type) {
-      if (type === "individual") {
-        individualForm.classList.remove("hidden");
-        entityForm.classList.add("hidden");
-        tabIndividual.classList.add(
-          "text-blue-600",
-          "border-blue-600",
-          "bg-blue-50"
-        );
-        tabEntity.classList.remove(
-          "text-blue-600",
-          "border-blue-600",
-          "bg-blue-50"
-        );
-        tabEntity.classList.add("text-gray-600", "border-gray-300");
-      } else {
-        individualForm.classList.add("hidden");
-        entityForm.classList.remove("hidden");
-        tabEntity.classList.add(
-          "text-blue-600",
-          "border-blue-600",
-          "bg-blue-50"
-        );
-        tabIndividual.classList.remove(
-          "text-blue-600",
-          "border-blue-600",
-          "bg-blue-50"
-        );
-        tabIndividual.classList.add("text-gray-600", "border-gray-300");
-      }
+    if (this.contactIdInput && contact.fields.contact_id) {
+      this.contactIdInput.value = contact.fields.contact_id;
     }
 
-    tabIndividual.addEventListener("click", () => showForm("individual"));
-    tabEntity.addEventListener("click", () => showForm("entity"));
+    if (this.searchInput && contact.label) {
+      this.searchInput.value = contact.label;
+      this.searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+      this.searchInput.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+
+    this.exitManualMode();
+    this.clearFeedback();
+    this.#syncWorkRequested();
   }
 
-  createCancelModal() {
-    // Create wrapper
-    const modalWrapper = document.createElement("div");
-    modalWrapper.id = "cancelModalWrapper";
-    modalWrapper.className =
-      "flex flex-col items-center justify-center fixed inset-0 bg-black bg-opacity-50 hidden z-50";
-
-    modalWrapper.innerHTML = `
-      <div id="cancelModalBox" class="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
-        <!-- Header -->
-        <div class="flex justify-between items-center border-b pb-3">
-          <div class="text-neutral-700 text-lg font-semibold leading-tight">
-           Unsaved Changes
-          </div>
-          <button id="closeCancelBtn" class="text-gray-600 hover:text-gray-800">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M18.75 6.81984L17.1802 5.25L12 10.4302L6.81984 5.25L5.25 6.81984L10.4302 12L5.25 17.1802L6.81984 18.75L12 13.5698L17.1802 18.75L18.75 17.1802L13.5698 12L18.75 6.81984Z" fill="#21272A"/>
-            </svg>
-          </button>
-        </div>
-  
-        <!-- Content -->
-        <div class="py-6 text-neutral-700 text-base font-normal leading-tight">
-         You have unsaved changes. Do you want to discard them or save and exit?
-        </div>
-  
-        <!-- Actions -->
-        <div class="pt-3 flex justify-end space-x-3 border-t">
-        <div id="cancelCancelBtn" data-lead-icon="false" data-size="medium" data-state="Default" data-text="true" data-trail-icon="false" data-type="outline" class="px-4 py-3 rounded outline outline-1 outline-offset-[-1px] outline-red-600 inline-flex justify-center items-center gap-2 overflow-hidden">
-             <div class="justify-start text-red-600 text-sm font-medium font-sans leading-none">Discard Changes</div>
-        </div>
-          
-        <div id="confirmCancelBtn" data-lead-icon="false" data-size="medium" data-state="Default" data-text="true" data-trail-icon="false" data-type="main" class="px-4 py-3 bg-sky-900 rounded outline outline-1 outline-offset-[-1px] outline-white inline-flex justify-center items-center gap-2 overflow-hidden">
-            <div class="justify-start text-white text-sm font-medium font-sans leading-none">Save & Exit</div>
-        </div>
-
-        </div>
-      </div>
-    `;
-
-    document.body.appendChild(modalWrapper);
-
-    // References
-    const modal = document.getElementById("cancelModalWrapper");
-    const modalBox = document.getElementById("cancelModalBox");
-    const closeBtn = document.getElementById("closeCancelBtn");
-    const cancelBtn = document.getElementById("cancelCancelBtn");
-    const confirmBtn = document.getElementById("confirmCancelBtn");
-
-    // Toggle visibility
-    this.toggleCancelModal = (show = true) => {
-      if (show) {
-        modal.classList.remove("hidden");
-        document.body.style.overflow = "hidden";
-      } else {
-        modal.classList.add("hidden");
-        document.body.style.overflow = "";
-      }
-    };
-
-    // Close when clicking outside
-    modal.addEventListener("click", (e) => {
-      if (!modalBox.contains(e.target)) this.toggleCancelModal(false);
-    });
-
-    // Close on buttons
-    closeBtn.onclick = () => this.toggleCancelModal(false);
-    cancelBtn.onclick = () => this.toggleCancelModal(false);
-
-    // Confirm cancel action
-    confirmBtn.onclick = () => {
-      console.log("Cancel confirmed");
-      this.toggleCancelModal(false);
-    };
+  showFeedback(message, tone = 'error') {
+    if (!this.feedbackEl) return;
+    this.feedbackEl.textContent = message;
+    this.feedbackEl.classList.remove('hidden', 'text-rose-600', 'text-emerald-600', 'text-slate-600');
+    const toneClass =
+      tone === 'success'
+        ? 'text-emerald-600'
+        : tone === 'info'
+        ? 'text-slate-600'
+        : 'text-rose-600';
+    this.feedbackEl.classList.add(toneClass);
   }
 
-  createResetModal() {
-    // Create wrapper
-    const modalWrapper = document.createElement("div");
-    modalWrapper.id = "resetModalWrapper";
-    modalWrapper.className =
-      "flex flex-col items-center justify-center fixed inset-0 bg-black bg-opacity-50 hidden z-50";
+  clearFeedback() {
+    if (!this.feedbackEl) return;
+    this.feedbackEl.textContent = '';
+    this.feedbackEl.classList.add('hidden');
+    this.feedbackEl.classList.remove('text-rose-600', 'text-emerald-600', 'text-slate-600');
+  }
 
-    modalWrapper.innerHTML = `
-      <div id="resetModalBox" class="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
-        <!-- Header -->
-        <div class="flex justify-between items-center border-b pb-3">
-          <div class="text-neutral-700 text-lg font-semibold leading-tight">
-            Reset Confirmation
-          </div>
-          <button id="closeResetBtn" class="text-gray-600 hover:text-gray-800">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M18.75 6.81984L17.1802 5.25L12 10.4302L6.81984 5.25L5.25 6.81984L10.4302 12L5.25 17.1802L6.81984 18.75L12 13.5698L17.1802 18.75L18.75 17.1802L13.5698 12L18.75 6.81984Z" fill="#21272A"/>
-            </svg>
-          </button>
-        </div>
-  
-        <!-- Content -->
-        <div class="py-6 text-neutral-700 text-base font-normal leading-tight">
-          Are you sure you want to reset? This action will clear all entered data and cannot be undone.
-        </div>
-  
-        <!-- Actions -->
-        <div class="pt-3 flex justify-end space-x-3 border-t">
-          <button id="cancelResetBtn" class="text-slate-500 text-sm font-medium hover:text-gray-700">
-            Cancel
-          </button>
-          <button id="confirmResetBtn" class="px-4 py-3 bg-orange-600 text-white text-sm font-medium rounded hover:bg-orange-700">
-            Reset
-          </button>
-        </div>
-      </div>
-    `;
+  enterManualMode() {
+    this.clearFeedback();
+    this.#closePanel();
+    this.showFooter();
+    if (this.contactIdInput) this.contactIdInput.value = '';
+    if (this.sameAsCheckbox) this.sameAsCheckbox.checked = false;
+    this.manualInputs.forEach((input) => {
+      input.value = '';
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+    if (this.searchInput) {
+      this.searchInput.value = '';
+      this.searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+      this.searchInput.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    this.showFeedback('Enter contact details and click Add New Contact.', 'info');
+    this.manualInputs?.[0]?.focus?.();
+    if (this.workRequestedInput) {
+      this.workRequestedInput.value = '';
+      this.workRequestedInput.dispatchEvent(new Event('input', { bubbles: true }));
+      this.workRequestedInput.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+  }
 
-    document.body.appendChild(modalWrapper);
+  exitManualMode() {
+    this.hideFooter();
+  }
 
-    // References
-    const modal = document.getElementById("resetModalWrapper");
-    const modalBox = document.getElementById("resetModalBox");
-    const closeBtn = document.getElementById("closeResetBtn");
-    const cancelBtn = document.getElementById("cancelResetBtn");
-    const confirmBtn = document.getElementById("confirmResetBtn");
+  showFooter() {
+    this.saveFooter?.classList.remove('hidden');
+  }
 
-    // Toggle visibility
-    this.toggleResetModal = (show = true) => {
-      if (show) {
-        modal.classList.remove("hidden");
-        document.body.style.overflow = "hidden";
-      } else {
-        modal.classList.add("hidden");
-        document.body.style.overflow = "";
-      }
-    };
+  hideFooter() {
+    this.saveFooter?.classList.add('hidden');
+  }
 
-    // Close when clicking outside
-    modal.addEventListener("click", (e) => {
-      if (!modalBox.contains(e.target)) this.toggleResetModal(false);
+  setSaving(isSaving) {
+    if (!this.saveButton) return;
+    const active = Boolean(isSaving);
+    this.saveButton.disabled = active;
+    this.saveButton.classList.toggle('opacity-70', active);
+    this.saveButton.classList.toggle('pointer-events-none', active);
+    if (this.saveLabel) {
+      this.saveLabel.textContent = active ? this.loadingSaveLabel : this.baseSaveLabel;
+    }
+    this.saveIcon?.classList.toggle('animate-pulse', active);
+  }
+
+  getFormValues() {
+    const payload = {};
+    const allow = new Set(['first_name', 'last_name', 'email', 'sms_number', 'office_phone']);
+    this.manualInputs.forEach((input) => {
+      const field = input.dataset.contactField;
+      if (!field || field === 'contact_id' || !allow.has(field)) return;
+      const value = input.value?.trim();
+      if (value) payload[field] = value;
+    });
+    return payload;
+  }
+
+  #bindDropdown() {
+    if (!this.searchInput) return;
+
+    this.searchInput.addEventListener('focus', () => {
+      this.#openPanel();
+      this.#renderFiltered(this.searchInput.value || '');
     });
 
-    // Close on buttons
-    closeBtn.onclick = () => this.toggleResetModal(false);
-    cancelBtn.onclick = () => this.toggleResetModal(false);
+    this.searchInput.addEventListener('input', (event) => {
+      this.#renderFiltered(event.target.value || '');
+      this.#openPanel();
+    });
 
-    // Confirm reset action
-    confirmBtn.onclick = () => {
-      console.log("Reset confirmed");
-      this.toggleResetModal(false);
-    };
+    const emailInput = this.manualInputs.find((input) => input.dataset.contactField === 'email');
+    if (emailInput) {
+      emailInput.addEventListener('blur', () => {
+        const value = emailInput.value?.trim();
+        if (!value) return;
+        const contact = this.contacts.find(
+          (entry) => (entry.fields.email || '').toLowerCase() === value.toLowerCase()
+        );
+        if (contact && this.selectHandler) {
+          this.#closePanel();
+          this.selectHandler(contact);
+        } else if (!contact) {
+          this.showFeedback('No matching contact found. Use Add New Contact to create one.', 'info');
+        }
+      });
+    }
+
+    this.resultsContainer?.addEventListener('mousedown', (event) => {
+      const button = event.target.closest('button[data-option-index]');
+      if (!button) return;
+      event.preventDefault();
+      const index = Number(button.dataset.optionIndex);
+      const contact = this.filteredContacts?.[index];
+      if (contact) {
+        this.#closePanel();
+        if (this.selectHandler) this.selectHandler(contact);
+      }
+    });
+
+    this.addButton?.addEventListener('click', (event) => {
+      event.preventDefault();
+      this.enterManualMode();
+      if (this.manualHandler) this.manualHandler();
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!this.searchRoot) return;
+      if (!this.searchRoot.contains(event.target)) {
+        this.#closePanel();
+      }
+    });
+  }
+
+  #bindSameAsContact() {
+    if (!this.sameAsCheckbox) return;
+
+    this.sameAsCheckbox.addEventListener('change', () => this.#syncWorkRequested());
+    [this.firstNameInput, this.lastNameInput]
+      .filter(Boolean)
+      .forEach((input) =>
+        input.addEventListener('input', () => this.#syncWorkRequested())
+      );
+  }
+
+  #bindTabs() {
+    const { individual, entity } = this.tabs;
+    if (!individual || !entity || !this.sections.individual || !this.sections.entity) return;
+
+    individual.addEventListener('click', (event) => {
+      event.preventDefault();
+      this.#switchSection('individual');
+    });
+
+    entity.addEventListener('click', (event) => {
+      event.preventDefault();
+      this.#switchSection('entity');
+    });
+
+    this.#switchSection('individual');
+  }
+
+  #renderFiltered(query = '') {
+    if (!this.resultsContainer) return;
+
+    const term = query.trim().toLowerCase();
+    const items = term
+      ? this.contacts.filter((item) =>
+          [item.label, item.meta]
+            .filter(Boolean)
+            .some((value) => value.toLowerCase().includes(term))
+        )
+      : [...this.contacts];
+
+    this.filteredContacts = items;
+    this.resultsContainer.innerHTML = '';
+
+    if (!items.length) {
+      this.resultsContainer.classList.add('hidden');
+      this.emptyState?.classList.remove('hidden');
+      return;
+    }
+
+    this.resultsContainer.classList.remove('hidden');
+    this.emptyState?.classList.add('hidden');
+
+    items.forEach((item, index) => {
+      const li = document.createElement('li');
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.dataset.optionIndex = String(index);
+      button.className =
+        'flex w-full flex-col gap-1 px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50';
+
+      const label = document.createElement('span');
+      label.className = 'font-medium text-slate-700';
+      label.textContent = item.label || 'Unnamed Contact';
+      button.appendChild(label);
+
+      if (item.meta) {
+        const meta = document.createElement('span');
+        meta.className = 'text-xs text-slate-500';
+        meta.textContent = item.meta;
+        button.appendChild(meta);
+      }
+
+      li.appendChild(button);
+      this.resultsContainer.appendChild(li);
+    });
+  }
+
+  #openPanel() {
+    this.panel?.classList.remove('hidden');
+  }
+
+  #closePanel() {
+    this.panel?.classList.add('hidden');
+  }
+
+  #syncWorkRequested() {
+    if (!this.workRequestedInput) return;
+    if (!this.sameAsCheckbox?.checked) return;
+
+    const first = this.firstNameInput?.value?.trim() || '';
+    const last = this.lastNameInput?.value?.trim() || '';
+    const full = [first, last].filter(Boolean).join(' ').trim();
+    this.workRequestedInput.value = full;
+    this.workRequestedInput.dispatchEvent(new Event('input', { bubbles: true }));
+    this.workRequestedInput.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+
+  #switchSection(type) {
+    const targetKey = type === 'entity' ? 'entity' : 'individual';
+    const isIndividual = targetKey === 'individual';
+
+    Object.entries(this.sections).forEach(([key, section]) => {
+      if (!section) return;
+      section.classList.toggle('hidden', key !== targetKey);
+    });
+
+    Object.entries(this.tabs).forEach(([key, button]) => {
+      if (!button) return;
+      const active = key === targetKey;
+      button.classList.toggle('bg-blue-700', active);
+      button.classList.toggle('text-white', active);
+      button.classList.toggle('shadow-sm', active);
+      button.classList.toggle('text-slate-500', !active);
+    });
+
+    if (isIndividual && this.sections.individual) {
+      this.section = this.sections.individual;
+    }
+    if (!isIndividual) {
+      this.#closePanel();
+    }
   }
 }

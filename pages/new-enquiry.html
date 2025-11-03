@@ -95,9 +95,7 @@
             class="grow-[1] space-y-2 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm"
           >
             <header class="flex flex-col">
-              <div
-                class="justify-end text-neutral-700 text-base font-bold font-sans leading-none"
-              >
+              <div class="text-neutral-700 text-base font-bold leading-none">
                 Contact Details
               </div>
               <div class="flex-inline gap-2 mt-3">
@@ -118,12 +116,21 @@
               </div>
             </header>
 
-            <div class="space-y-4">
+            <p
+              class="mt-2 hidden text-sm font-medium"
+              role="alert"
+              data-contact-feedback
+            ></p>
+
+            <div class="space-y-4" data-contact-section="individual">
               <div>
                 <label class="block text-sm font-medium text-slate-600"
                   >Contact</label
                 >
-                <div class="relative mt-1">
+                <div
+                  class="relative mt-1"
+                  data-search-root="contact-individual"
+                >
                   <span
                     class="pointer-events-none absolute inset-y-0 left-4 inline-flex items-center text-slate-400"
                   >
@@ -144,11 +151,14 @@
                     type="text"
                     placeholder="Search by name, email, phone"
                     class="w-full rounded-lg border border-slate-200 bg-white px-11 py-3 text-sm text-slate-700 placeholder:text-slate-400 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100"
+                    data-search-input
+                    autocomplete="off"
                   />
                   <button
                     type="button"
                     class="absolute inset-y-0 right-3 inline-flex items-center rounded-md px-2 text-slate-400 hover:text-sky-500"
                     aria-label="Search contact"
+                    data-search-trigger
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -163,6 +173,34 @@
                       />
                     </svg>
                   </button>
+
+                  <div
+                    class="absolute left-0 right-0 top-full z-20 mt-2 hidden overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg"
+                    data-search-panel
+                  >
+                    <ul
+                      class="max-h-48 overflow-y-auto py-2"
+                      data-search-results
+                    ></ul>
+                    <p
+                      class="px-4 py-3 text-sm text-slate-500 hidden"
+                      data-search-empty
+                    >
+                      No results found
+                    </p>
+                    <button
+                      type="button"
+                      class="flex w-full items-center gap-2 border-t border-slate-200 px-4 py-3 text-sm font-medium text-sky-900 hover:bg-slate-50"
+                      data-search-add
+                    >
+                      <span
+                        class="inline-flex h-5 w-5 items-center justify-center rounded-full border border-sky-900 text-sky-900"
+                      >
+                        +
+                      </span>
+                      <span>Add New Contact</span>
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -170,31 +208,14 @@
                 <label class="block text-sm font-medium text-slate-600"
                   >Role</label
                 >
-                <div class="relative mt-1">
-                  <select
-                    class="w-full appearance-none rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100"
-                  >
-                    <option>Resident</option>
-                    <option>Owner</option>
-                    <option>Property Manager</option>
-                  </select>
-                  <span
-                    class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400"
-                  >
-                    <svg
-                      class="h-4 w-4"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    >
-                      <path d="M6 9l6 6 6-6" />
-                    </svg>
-                  </span>
-                </div>
+                <input
+                  type="text"
+                  placeholder="Resident, Owner, Property Manager..."
+                  class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100"
+                />
               </div>
+
+              <input type="hidden" data-contact-field="contact_id" />
 
               <div class="flex gap-4">
                 <div class="flex-1 min-w-[150px]">
@@ -203,6 +224,7 @@
                   >
                   <input
                     type="text"
+                    data-contact-field="first_name"
                     class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100"
                   />
                 </div>
@@ -212,6 +234,7 @@
                   >
                   <input
                     type="text"
+                    data-contact-field="last_name"
                     class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100"
                   />
                 </div>
@@ -224,6 +247,7 @@
                   >
                   <input
                     type="email"
+                    data-contact-field="email"
                     class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100"
                   />
                 </div>
@@ -233,6 +257,7 @@
                   >
                   <input
                     type="tel"
+                    data-contact-field="sms_number"
                     class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100"
                   />
                 </div>
@@ -240,10 +265,11 @@
 
               <div>
                 <label class="text-sm font-medium text-slate-600"
-                  >Work Requested By</label
+                  >Office Number</label
                 >
                 <input
-                  type="text"
+                  type="tel"
+                  data-contact-field="office_phone"
                   class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100"
                 />
               </div>
@@ -254,9 +280,50 @@
                 <input
                   type="checkbox"
                   class="h-4 w-4 rounded border-slate-300 text-sky-600 focus:ring-sky-200"
+                  data-same-as-contact
                 />
                 Same as contact
               </label>
+
+              <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div>
+                  <label class="text-sm font-medium text-slate-600"
+                    >Work Requested By</label
+                  >
+                  <input
+                    type="text"
+                    data-contact-field="work_requested_by"
+                    class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100"
+                  />
+                </div>
+                <div>
+                  <label class="text-sm font-medium text-slate-600"
+                    >Work Order Number</label
+                  >
+                  <input
+                    type="text"
+                    class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100"
+                  />
+                </div>
+              </div>
+
+              <div class="mt-6 hidden" id="contact-add-new-footer">
+                <button
+                  type="button"
+                  class="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-3 text-sm font-semibold text-sky-900 hover:bg-slate-50"
+                  data-contact-save
+                  data-base-label="Add New Contact"
+                  data-loading-label="Adding..."
+                >
+                  <span
+                    class="inline-flex h-5 w-5 items-center justify-center rounded-full border border-sky-900 text-sky-900"
+                    data-contact-save-icon
+                  >
+                    +
+                  </span>
+                  <span data-contact-save-label>Add New Contact</span>
+                </button>
+              </div>
             </div>
 
             <div class="rounded-2xl border border-slate-200">
@@ -490,6 +557,12 @@
                   No Related Properties.
                 </p>
               </div>
+            </div>
+
+            <div class="space-y-4 hidden" data-contact-section="entity">
+              <p class="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-sm text-slate-500">
+                Entity contact support is coming soon. Please use the individual tab for now.
+              </p>
             </div>
           </div>
 
@@ -1545,5 +1618,6 @@
         </form>
       </section>
     </main>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
   </body>
 </html>

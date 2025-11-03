@@ -1,5 +1,5 @@
 import { NewEnquiryController } from "./controller/new-enquiry.js";
-import { NewEnquiryModal } from "./models/new-enquiry.js";
+import { NewEnquiryModel } from "./models/new-enquiry.js";
 import { NewEnquiryView } from "./views/new-enquiry.js";
 import { DashboardModel } from "./models/dashboard.js";
 import { DashboardView, renderDynamicTable } from "./views/dashboard.js";
@@ -44,6 +44,7 @@ import { VitalStatsSDK } from "../sdk/init.js";
       const hasCalendar = document.getElementById("calendar-grid");
       const hasTable = document.getElementById("inquiry-table-container");
       if (!hasCalendar || !hasTable) return;
+      if (typeof dayjs === "undefined") return;
       if (this.controllers.dashboard) return; // already initialized
       const model = new DashboardModel(tempPlugin);
       const view = new DashboardView();
@@ -54,7 +55,7 @@ import { VitalStatsSDK } from "../sdk/init.js";
 
     initNewEnquiry() {
       if (this.controllers.newEnquiry) return;
-      const model = new NewEnquiryModal();
+      const model = new NewEnquiryModel(this.services.plugin);
       const view = new NewEnquiryView();
       const ctrl = new NewEnquiryController(model, view);
       ctrl.init();
