@@ -180,7 +180,7 @@
 
           <div class="flex gap-3 mx-2">
             <!-- Filters -->
-            <aside class="w-90 flex-shrink-0">
+            <aside class="w-[360px] shrink-0 grow-0 basis-[360px]">
               <div class="flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
                 <div class="flex items-center justify-between border-b border-slate-200 px-3 py-3">
                   <div class="justify-center  text-base font-semibold font-['Inter'] leading-tight">All Filters</div>
@@ -219,6 +219,38 @@
                         <li class="px-2 py-1 flex items-center gap-2"><input id="status-quote-created" data-status value="Quote Created" type="checkbox" class="h-4 w-4 accent-[#003882]" ><label for="status-quote-created">Quote Created</label></li>
                         <li class="px-2 py-1 flex items-center gap-2"><input id="status-completed" data-status value="Completed" type="checkbox" class="h-4 w-4 accent-[#003882]" ><label for="status-completed">Completed</label></li>
                         <li class="px-2 py-1 flex items-center gap-2"><input id="status-cancelled-inquiry" data-status value="Cancelled Inquiry" type="checkbox" class="h-4 w-4 accent-[#003882]" ><label for="status-cancelled-inquiry">Cancelled Inquiry</label></li>
+                      </ul>
+                    </div>
+
+                    <button id="service-provider-filter-btn" type="button" class="hidden relative flex w-full items-center justify-between rounded border border-slate-200 px-4 py-3 text-left text-sm font-medium transition">
+                      <span class="text-slate-500">Service Provider</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.21l3.71-3.98a.75.75 0 111.08 1.04l-4.25 4.56a.75.75 0 01-1.1 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                      </svg>
+                    </button>
+                    <!-- Service Provider dropdown -->
+                    <div id="service-provider-filter-card" class="hidden mt-2 w-full rounded border border-slate-200 bg-white shadow-xl p-2">
+                      <ul class="max-h-64 overflow-auto text-sm text-slate-700 space-y-1">
+                        <li class="px-2 py-1 flex items-center gap-2">
+                          <input id="sp-all" type="checkbox" class="h-4 w-4 accent-[#003882]">
+                          <label for="sp-all">All</label>
+                        </li>
+                        <li class="px-2 py-1 flex items-center gap-2"><input data-service-provider value="Andrew Knights" id="sp-andrew-knights" type="checkbox" class="h-4 w-4 accent-[#003882]"><label for="sp-andrew-knights">Andrew Knights</label></li>
+                        <li class="px-2 py-1 flex items-center gap-2"><input data-service-provider value="Anthony Dempsey" id="sp-anthony-dempsey" type="checkbox" class="h-4 w-4 accent-[#003882]"><label for="sp-anthony-dempsey">Anthony Dempsey</label></li>
+                        <li class="px-2 py-1 flex items-center gap-2"><input data-service-provider value="Craig & Sabine" id="sp-craig-sabine" type="checkbox" class="h-4 w-4 accent-[#003882]"><label for="sp-craig-sabine">Craig & Sabine</label></li>
+                        <li class="px-2 py-1 flex items-center gap-2"><input data-service-provider value="David Williamson" id="sp-david-williamson" type="checkbox" class="h-4 w-4 accent-[#003882]"><label for="sp-david-williamson">David Williamson</label></li>
+                        <li class="px-2 py-1 flex items-center gap-2"><input data-service-provider value="Dpesh Adikari" id="sp-dpesh-adikari" type="checkbox" class="h-4 w-4 accent-[#003882]"><label for="sp-dpesh-adikari">Dpesh Adikari</label></li>
+                        <li class="px-2 py-1 flex items-center gap-2"><input data-service-provider value="Fraser Grant" id="sp-fraser-grant" type="checkbox" class="h-4 w-4 accent-[#003882]"><label for="sp-fraser-grant">Fraser Grant</label></li>
+                        <li class="px-2 py-1 flex items-center gap-2"><input data-service-provider value="Gemma & Poks" id="sp-gemma-poks" type="checkbox" class="h-4 w-4 accent-[#003882]"><label for="sp-gemma-poks">Gemma & Poks</label></li>
+                        <li class="px-2 py-1 flex items-center gap-2"><input data-service-provider value="Glen Collins" id="sp-glen-collins" type="checkbox" class="h-4 w-4 accent-[#003882]"><label for="sp-glen-collins">Glen Collins</label></li>
+                        <li class="px-2 py-1 flex items-center gap-2"><input data-service-provider value="John & Jenny M" id="sp-john-jenny" type="checkbox" class="h-4 w-4 accent-[#003882]"><label for="sp-john-jenny">John & Jenny M</label></li>
+                        <li class="px-2 py-1 flex items-center gap-2"><input data-service-provider value="Ken Geran" id="sp-ken-geran" type="checkbox" class="h-4 w-4 accent-[#003882]"><label for="sp-ken-geran">Ken Geran</label></li>
+                        <li class="px-2 py-1 flex items-center gap-2"><input data-service-provider value="Matt Gardner" id="sp-matt-gardner" type="checkbox" class="h-4 w-4 accent-[#003882]"><label for="sp-matt-gardner">Matt Gardner</label></li>
+                        <li class="px-2 py-1 flex items-center gap-2"><input data-service-provider value="Michael Cobb" id="sp-michael-cobb" type="checkbox" class="h-4 w-4 accent-[#003882]"><label for="sp-michael-cobb">Michael Cobb</label></li>
+                        <li class="px-2 py-1 flex items-center gap-2"><input data-service-provider value="Shane Meehan" id="sp-shane-meehan" type="checkbox" class="h-4 w-4 accent-[#003882]"><label for="sp-shane-meehan">Shane Meehan</label></li>
+                        <li class="px-2 py-1 flex items-center gap-2"><input data-service-provider value="Shane Latto" id="sp-shane-latto" type="checkbox" class="h-4 w-4 accent-[#003882]"><label for="sp-shane-latto">Shane Latto</label></li>
+                        <li class="px-2 py-1 flex items-center gap-2"><input data-service-provider value="Shaun Nevitt" id="sp-shaun-nevitt" type="checkbox" class="h-4 w-4 accent-[#003882]"><label for="sp-shaun-nevitt">Shaun Nevitt</label></li>
+                        <li class="px-2 py-1 flex items-center gap-2"><input data-service-provider value="Stephen Knights" id="sp-stephen-knights" type="checkbox" class="h-4 w-4 accent-[#003882]"><label for="sp-stephen-knights">Stephen Knights</label></li>
                       </ul>
                     </div>
 
@@ -320,22 +352,22 @@
                     </button>
                   </div>
 
-                  <div class="hidden space-y-3 border-b border-slate-200 px-3 py-4">
-                    <div id="quote-number-filter"  class="w-full rounded border border-slate-200 px-4  text-left text-sm text-slate-500 focus-within:ring-2 focus-within:ring-sky-100 flex items-center gap-2">
+                  <div id="payment-related-filter" class="hidden space-y-3 border-b border-slate-200 px-3 py-4">
+                    <div id="quote-number-filter"  class="hidden w-full rounded border border-slate-200 px-4  text-left text-sm text-slate-500 focus-within:ring-2 focus-within:ring-sky-100 flex items-center gap-2">
                       <input id="filter-quote-number" type="text" placeholder="Quote Number" class="flex-1 outline-none text-slate-500 placeholder:text-slate-500 text-sm font-sm mb-0  !mb-0" />
                       <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M10.8874 10.3438L8.4828 7.93964C9.17975 7.10291 9.52729 6.02969 9.45311 4.94324C9.37894 3.8568 8.88876 2.84077 8.08455 2.10653C7.28034 1.37228 6.22402 0.976351 5.13533 1.00109C4.04664 1.02584 3.00939 1.46935 2.23937 2.23937C1.46935 3.00939 1.02584 4.04664 1.00109 5.13533C0.976351 6.22402 1.37228 7.28034 2.10653 8.08455C2.84077 8.88876 3.8568 9.37894 4.94324 9.45311C6.02969 9.52729 7.10291 9.17975 7.93964 8.4828L10.3438 10.8874C10.3795 10.9231 10.4218 10.9514 10.4685 10.9707C10.5151 10.9901 10.5651 11 10.6156 11C10.6661 11 10.7161 10.9901 10.7627 10.9707C10.8093 10.9514 10.8517 10.9231 10.8874 10.8874C10.9231 10.8517 10.9514 10.8093 10.9707 10.7627C10.9901 10.7161 11 10.6661 11 10.6156C11 10.5651 10.9901 10.5151 10.9707 10.4685C10.9514 10.4218 10.9231 10.3795 10.8874 10.3438ZM1.77901 5.2368C1.77901 4.55292 1.98181 3.88439 2.36176 3.31576C2.7417 2.74713 3.28174 2.30393 3.91356 2.04222C4.54539 1.78051 5.24064 1.71203 5.91138 1.84545C6.58213 1.97887 7.19825 2.3082 7.68183 2.79178C8.16541 3.27536 8.49473 3.89148 8.62815 4.56222C8.76157 5.23297 8.6931 5.92821 8.43138 6.56004C8.16967 7.19187 7.72648 7.7319 7.15785 8.11185C6.58922 8.4918 5.92069 8.69459 5.2368 8.69459C4.32005 8.69358 3.44114 8.32895 2.7929 7.68071C2.14466 7.03247 1.78003 6.15355 1.77901 5.2368Z" fill="#78829D"/>
                       </svg>
 
                     </div>
-                    <div id="invoice-number-filter" class="w-full rounded border border-slate-200 px-4  text-left text-sm text-slate-500 focus-within:ring-2 focus-within:ring-sky-100 flex items-center gap-2">
+                    <div id="invoice-number-filter" class=" hidden w-full rounded border border-slate-200 px-4  text-left text-sm text-slate-500 focus-within:ring-2 focus-within:ring-sky-100 flex items-center gap-2">
                       <input id="filter-invoice-number" type="text" placeholder="Invoice Number" class="flex-1 outline-none text-slate-500 placeholder:text-slate-500 text-sm font-sm mb-0  !mb-0" />
                       <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M10.8874 10.3438L8.4828 7.93964C9.17975 7.10291 9.52729 6.02969 9.45311 4.94324C9.37894 3.8568 8.88876 2.84077 8.08455 2.10653C7.28034 1.37228 6.22402 0.976351 5.13533 1.00109C4.04664 1.02584 3.00939 1.46935 2.23937 2.23937C1.46935 3.00939 1.02584 4.04664 1.00109 5.13533C0.976351 6.22402 1.37228 7.28034 2.10653 8.08455C2.84077 8.88876 3.8568 9.37894 4.94324 9.45311C6.02969 9.52729 7.10291 9.17975 7.93964 8.4828L10.3438 10.8874C10.3795 10.9231 10.4218 10.9514 10.4685 10.9707C10.5151 10.9901 10.5651 11 10.6156 11C10.6661 11 10.7161 10.9901 10.7627 10.9707C10.8093 10.9514 10.8517 10.9231 10.8874 10.8874C10.9231 10.8517 10.9514 10.8093 10.9707 10.7627C10.9901 10.7161 11 10.6661 11 10.6156C11 10.5651 10.9901 10.5151 10.9707 10.4685C10.9514 10.4218 10.9231 10.3795 10.8874 10.3438ZM1.77901 5.2368C1.77901 4.55292 1.98181 3.88439 2.36176 3.31576C2.7417 2.74713 3.28174 2.30393 3.91356 2.04222C4.54539 1.78051 5.24064 1.71203 5.91138 1.84545C6.58213 1.97887 7.19825 2.3082 7.68183 2.79178C8.16541 3.27536 8.49473 3.89148 8.62815 4.56222C8.76157 5.23297 8.6931 5.92821 8.43138 6.56004C8.16967 7.19187 7.72648 7.7319 7.15785 8.11185C6.58922 8.4918 5.92069 8.69459 5.2368 8.69459C4.32005 8.69358 3.44114 8.32895 2.7929 7.68071C2.14466 7.03247 1.78003 6.15355 1.77901 5.2368Z" fill="#78829D"/>
                       </svg>
 
                     </div>
-                    <div id="recommendation-filter" class="w-full rounded border border-slate-200 px-4  text-left text-sm text-slate-500 focus-within:ring-2 focus-within:ring-sky-100 flex items-center gap-2">
+                    <div id="recommendation-filter" class="hidden w-full rounded border border-slate-200 px-4  text-left text-sm text-slate-500 focus-within:ring-2 focus-within:ring-sky-100 flex items-center gap-2">
                       <input id="filter-recommendation" type="text" placeholder="Recommendation" class="flex-1 outline-none text-slate-500 placeholder:text-slate-500 text-sm font-sm mb-0  !mb-0" />
                       <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M10.8874 10.3438L8.4828 7.93964C9.17975 7.10291 9.52729 6.02969 9.45311 4.94324C9.37894 3.8568 8.88876 2.84077 8.08455 2.10653C7.28034 1.37228 6.22402 0.976351 5.13533 1.00109C4.04664 1.02584 3.00939 1.46935 2.23937 2.23937C1.46935 3.00939 1.02584 4.04664 1.00109 5.13533C0.976351 6.22402 1.37228 7.28034 2.10653 8.08455C2.84077 8.88876 3.8568 9.37894 4.94324 9.45311C6.02969 9.52729 7.10291 9.17975 7.93964 8.4828L10.3438 10.8874C10.3795 10.9231 10.4218 10.9514 10.4685 10.9707C10.5151 10.9901 10.5651 11 10.6156 11C10.6661 11 10.7161 10.9901 10.7627 10.9707C10.8093 10.9514 10.8517 10.9231 10.8874 10.8874C10.9231 10.8517 10.9514 10.8093 10.9707 10.7627C10.9901 10.7161 11 10.6661 11 10.6156C11 10.5651 10.9901 10.5151 10.9707 10.4685C10.9514 10.4218 10.9231 10.3795 10.8874 10.3438ZM1.77901 5.2368C1.77901 4.55292 1.98181 3.88439 2.36176 3.31576C2.7417 2.74713 3.28174 2.30393 3.91356 2.04222C4.54539 1.78051 5.24064 1.71203 5.91138 1.84545C6.58213 1.97887 7.19825 2.3082 7.68183 2.79178C8.16541 3.27536 8.49473 3.89148 8.62815 4.56222C8.76157 5.23297 8.6931 5.92821 8.43138 6.56004C8.16967 7.19187 7.72648 7.7319 7.15785 8.11185C6.58922 8.4918 5.92069 8.69459 5.2368 8.69459C4.32005 8.69358 3.44114 8.32895 2.7929 7.68071C2.14466 7.03247 1.78003 6.15355 1.77901 5.2368Z" fill="#78829D"/>
@@ -611,7 +643,6 @@
   </div>
   <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
   <script type="module" src="./js/app.js"></script>
-  <!-- Price filtering logic moved to DashboardController.initPriceRange() -->
   
   
 </body>

@@ -195,6 +195,7 @@ export class DashboardView {
     this.filtersConfig = {
       quote: [
         "status-filter-btn",
+        "service-provider-filter-btn",
         "account-name-filter",
         "resident-search-filter",
         "address-filter",
@@ -217,6 +218,7 @@ export class DashboardView {
       ],
       jobs: [
         "status-filter-btn",
+        "service-provider-filter-btn",
         "account-name-filter",
         "resident-search-filter",
         "address-filter",
@@ -225,11 +227,13 @@ export class DashboardView {
         "Source-filter",
         "date-filters",
         "quote-number-filter",
+        "invoice-number-filter",
         "recommendation-filter",
         "price-range-filter",
       ],
       payment: [
         "status-filter-btn",
+        "service-provider-filter-btn",
         "account-name-filter",
         "resident-search-filter",
         "address-filter",
@@ -238,17 +242,24 @@ export class DashboardView {
         "Source-filter",
         "date-filters",
         "quote-number-filter",
+        "invoice-number-filter",
         "recommendation-filter",
         "price-range-filter",
       ],
       "active-jobs": [
         "status-filter-btn",
+        "service-provider-filter-btn",
         "account-name-filter",
         "resident-search-filter",
         "address-filter",
         "account-type-filter",
         "taken-by-filter",
         "Source-filter",
+        "date-filters",
+        "quote-number-filter",
+        "invoice-number-filter",
+        "recommendation-filter",
+        "price-range-filter",
       ],
       "urgent-calls": ["job-filters", "task-filters"],
     };
@@ -651,18 +662,46 @@ export class DashboardView {
           row.billPaidDate ? formatDisplayDate(row.billPaidDate) : "-",
       },
       {
-        key: "service",
-        label: "Service",
+        key: "serviceApproved",
+        label: "Serviceman Approved",
         headerClass: "px-6 py-4 text-left",
         cellClass: "px-6 py-4 text-slate-600",
-        render: (row) => row.service ?? "-",
+        render: (row) => `
+          ${
+            row.serviceApproved
+              ? `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="#2E7D32">
+                  <circle cx="12" cy="12" r="10" fill="#2E7D32"></circle>
+                  <path d="M9 12l2 2l4-4" fill="none" stroke="#fff" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>`
+              : `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                    stroke="#4b5563" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="M9 12l2 2l4-4"></path>
+                </svg>`
+          }
+        `,
       },
       {
-        key: "adminAmount",
-        label: "Admin Amount",
+        key: "adminApproved",
+        label: "Admin Approved",
         headerClass: "px-6 py-4 text-left",
         cellClass: "px-6 py-4 text-slate-600",
-        render: (row) => money(row.adminAmount ?? row?.meta?.adminAmount),
+        render: (row) => `
+        ${
+          row.adminApproved
+            ? `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="#2E7D32">
+                <circle cx="12" cy="12" r="10" fill="#2E7D32"></circle>
+                <path d="M9 12l2 2l4-4" fill="none" stroke="#fff" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>`
+            : `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                  stroke="#4b5563" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M9 12l2 2l4-4"></path>
+              </svg>`
+        }
+      `,
       },
       {
         key: "xeroInvoiceStatus",
@@ -687,6 +726,16 @@ export class DashboardView {
       emptyState: "No payments found.",
       getRowClass: () => "border-b last:border-0",
     });
+  }
+
+  renderActiveJobsTable(container, rows, statusClasses, formatDisplayDate) {
+    // Reuse the same columns and layout as the Payment table
+    return this.renderPaymentTable(
+      container,
+      rows,
+      statusClasses,
+      formatDisplayDate
+    );
   }
 
   renderJobsTable(container, rows, statusClasses, formatDisplayDate) {
@@ -1120,8 +1169,18 @@ export class DashboardView {
 
   setActive(tab, context, links, panels) {
     const relatedFilters = document.getElementById("related-filters");
+    const paymentRelated = document.getElementById("payment-related-filter");
     if (tab === "urgent-calls") relatedFilters?.classList.add("hidden");
     else relatedFilters?.classList.remove("hidden");
+    // Toggle payment related container similar to related-filters
+    if (paymentRelated) {
+      const showPaymentFilters =
+        tab === "payment" ||
+        tab === "quote" ||
+        tab === "jobs" ||
+        tab === "active-jobs";
+      paymentRelated.classList.toggle("hidden", !showPaymentFilters);
+    }
 
     const previousTab = context.previousTab;
     if (previousTab) {

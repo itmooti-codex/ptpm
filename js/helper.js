@@ -1,6 +1,18 @@
 export class DashboardHelper {
   constructor() {}
 
+  formatUnixDate(unixTimestamp) {
+    if (!unixTimestamp) return null;
+    const date = new Date(unixTimestamp * 1000);
+    const dd = String(date.getUTCDate()).padStart(2, "0");
+    const mm = String(date.getUTCMonth() + 1).padStart(2, "0");
+    const yyyy = date.getUTCFullYear();
+    const hh = String(date.getUTCHours()).padStart(2, "0");
+    const min = String(date.getUTCMinutes()).padStart(2, "0");
+    const ss = String(date.getUTCSeconds()).padStart(2, "0");
+    return `${dd}-${mm}-${yyyy} ${hh}:${min}:${ss}`;
+  }
+
   mapDealToTableRow(records) {
     const dayjsRef = (typeof window !== "undefined" && window.dayjs) || null;
     const toNumber = (v) => {
@@ -10,23 +22,12 @@ export class DashboardHelper {
       const n = parseFloat(cleaned);
       return Number.isFinite(n) ? n : null;
     };
-    function formatUnixDate(unixTimestamp) {
-      if (!unixTimestamp) return null;
-      const date = new Date(unixTimestamp * 1000);
-      const dd = String(date.getUTCDate()).padStart(2, "0");
-      const mm = String(date.getUTCMonth() + 1).padStart(2, "0");
-      const yyyy = date.getUTCFullYear();
-      const hh = String(date.getUTCHours()).padStart(2, "0");
-      const min = String(date.getUTCMinutes()).padStart(2, "0");
-      const ss = String(date.getUTCSeconds()).padStart(2, "0");
-      return `${dd}-${mm}-${yyyy} ${hh}:${min}:${ss}`;
-    }
 
     return Object.values(records).map((data) => {
       const firstJob = Object.values(data?.Jobs ?? {})[0] ?? null;
       return {
         uniqueId: data?.unique_id || null,
-        "date-added": formatUnixDate(data?.created_at) || null,
+        "date-added": this.formatUnixDate(data?.created_at) || null,
         "inquiry-source": data?.how_did_you_hear || null,
         type: data?.type || null,
         "inquiry-status": data?.inquiry_status || null,
@@ -44,12 +45,12 @@ export class DashboardHelper {
         recommendations: data.admin_notes || null,
         "job-invoice-number": data.Jobs?.invoice_number || null,
         price: toNumber(firstJob?.job_total ?? null),
-        "date-quoted-accepted": formatUnixDate(
+        "date-quoted-accepted": this.formatUnixDate(
           firstJob?.date_quoted_accepted ??
             firstJob?.date_quoted_accepted ??
             null
         ),
-        "quote-date": formatUnixDate(
+        "quote-date": this.formatUnixDate(
           firstJob?.quote_date ?? firstJob?.quote_date ?? null
         ),
         "quote-total": toNumber(
@@ -57,34 +58,34 @@ export class DashboardHelper {
         ),
         "quote-status":
           firstJob?.quote_status ?? firstJob?.quote_status ?? null,
-        "date-started": formatUnixDate(
+        "date-started": this.formatUnixDate(
           firstJob?.date_started ?? firstJob?.date_started ?? null
         ),
         "payment-status":
           firstJob?.payment_status ?? data?.payment_status ?? null,
-        "date-job-required-by": formatUnixDate(
+        "date-job-required-by": this.formatUnixDate(
           firstJob?.date_job_required_by ??
             firstJob?.date_job_required_by ??
             null
         ),
-        "date-booked": formatUnixDate(
+        "date-booked": this.formatUnixDate(
           firstJob?.date_booked ?? firstJob?.date_booked ?? null
         ),
         "job-status": firstJob?.job_status ?? data?.job_status ?? null,
-        "invoice-date": formatUnixDate(
+        "invoice-date": this.formatUnixDate(
           firstJob?.invoice_date ?? firstJob?.invoice_date ?? null
         ),
         "invoice-total": toNumber(
           firstJob?.invoice_total ?? firstJob?.invoice_total ?? null
         ),
-        "bill-time-paid": formatUnixDate(
+        "bill-time-paid": this.formatUnixDate(
           firstJob?.bill_time_paid ?? firstJob?.bill_time_paid ?? null
         ),
         "xero-invoice-status":
           firstJob?.xero_invoice_status ??
           firstJob?.xero_invoice_status ??
           null,
-        "due-date": formatUnixDate(
+        "due-date": this.formatUnixDate(
           firstJob?.due_date ?? firstJob?.due_date ?? null
         ),
       };
@@ -127,81 +128,84 @@ export class DashboardHelper {
     }));
   }
 
-  mapQuoteRows(mappedData) {
-    const list = Array.isArray(mappedData)
-      ? mappedData
-      : Array.from(Object.values(mappedData ?? {}));
-    return list.map((records) => ({
-      id: `#${records.uniqueId ?? ""}`,
-      client:
-        [records["client-firstName"], records["client-lastName"]]
-          .filter(Boolean)
-          .join(" ") || "-",
-      created: records["date-added"] ?? null,
-      quoteDate: records["quote-date"] ?? null,
-      service: records["service-name"] ?? "-",
-      type: records.type ?? "-",
-      quoteStatus: records["quote-status"] ?? "-",
-      quoteTotal: records["quote-total"] ?? null,
-      dateQuotedAccepted: records["date-quoted-accepted"] ?? null,
+  mapQuoteRows(quoteData) {
+    if (!quoteData || typeof quoteData !== "object") return [];
+
+    return Object.values(quoteData).map((item) => ({
+      id: item?.unique_id ? `#${item.unique_id}` : null,
+      client: `${item?.Client_Individual?.first_name ?? ""} ${
+        item?.Client_Individual?.last_name ?? ""
+      }`.trim(),
+      dateQuotedAccepted: this.formatUnixDate(
+        item?.date_quoted_accepted ?? null
+      ),
+      service: item?.Inquiry_Record?.Service_Inquiry?.service_name ?? null,
+      quoteDate: this.formatUnixDate(item?.quote_date ?? null),
+      quoteTotal: item?.quote_total ?? 0,
+      quoteStatus: item?.quote_status ?? "Unknown",
       meta: {
-        address: records["client-address"] ?? null,
-        email: records["client-email"] ?? null,
-        sms: records["client-smsNumber"] ?? null,
-        accountName: records["account-name"] ?? null,
-        recommendation: records["recommendations"] ?? null,
+        email: item?.Client_Individual?.email ?? null,
+        sms: item?.Client_Individual?.sms_number ?? null,
+        address: item?.Property?.address_1 ?? null,
       },
     }));
   }
 
-  mapJobRows(mappedData) {
-    const list = Array.isArray(mappedData)
-      ? mappedData
-      : Array.from(Object.values(mappedData ?? {}));
-    const toNumber = (value) =>
-      value != null && !Number.isNaN(Number(value)) ? Number(value) : null;
-    return list.map((records) => ({
-      id: `#${records.uniqueId ?? ""}`,
-      client:
-        [records["client-firstName"], records["client-lastName"]]
-          .filter(Boolean)
-          .join(" ") || "-",
-      startDate: records["date-started"] ?? null,
-      service: records["service-name"] ?? "-",
-      paymentStatus: records["payment-status"] ?? "-",
-      requiredBy: records["date-job-required-by"] ?? null,
-      bookedDate: records["date-booked"] ?? null,
-      price: toNumber(records.price ?? null),
-      jobStatus: records["job-status"] ?? "-",
+  mapJobRows(jobData) {
+    if (!jobData || typeof jobData !== "object") return [];
+
+    return Object.values(jobData).map((item) => ({
+      id: item?.unique_id ? `#${item.unique_id}` : null,
+      client: `${item?.Client_Individual?.first_name ?? ""} ${
+        item?.Client_Individual?.last_name ?? ""
+      }`.trim(),
+      startDate: item.date_started
+        ? this.formatUnixDate(item?.date_started)
+        : null,
+      service: item?.Inquiry_Record?.Service_Inquiry?.service_name ?? null,
+      paymentStatus: item?.payment_status ?? "null",
+      jobRequiredBy: item?.date_job_required_by
+        ? this.formatUnixDate(item?.date_job_required_by)
+        : null,
+      bookedDate: item?.date_booked
+        ? this.formatUnixDate(item?.date_booked)
+        : null,
+      jobTotal: item?.job_total ?? null,
+      jobStatus: item?.job_status ?? "Unknown",
       meta: {
-        address: records["client-address"] ?? null,
-        email: records["client-email"] ?? null,
-        sms: records["client-smsNumber"] ?? null,
-        price: toNumber(records.price ?? null),
+        email: item?.Client_Individual?.email ?? null,
+        sms: item?.Client_Individual?.sms_number ?? null,
+        address: item?.Property?.address_1 ?? null,
       },
     }));
   }
 
-  mapPaymentRows(mappedData) {
-    const list = Array.isArray(mappedData)
-      ? mappedData
-      : Array.from(Object.values(mappedData ?? {}));
-    const toNumber = (value) =>
-      value != null && !Number.isNaN(Number(value)) ? Number(value) : null;
-    return list.map((records) => ({
-      id: `#${records.uniqueId ?? ""}`,
-      client:
-        [records["client-firstName"], records["client-lastName"]]
-          .filter(Boolean)
-          .join(" ") || "-",
-      invoiceNumber: records["job-invoice-number"] ?? null,
-      invoiceDate: records["invoice-date"] ?? null,
-      dueDate: records["due-date"] ?? null,
-      invoiceTotal: toNumber(records["invoice-total"] ?? null),
-      billPaidDate: records["bill-time-paid"] ?? null,
-      service: records["service-name"] ?? "-",
-      adminAmount: toNumber(records["admin-amount"] ?? null),
-      xeroInvoiceStatus: records["xero-invoice-status"] ?? "-",
+  mapPaymentRows(paymentData) {
+    if (!paymentData || typeof paymentData !== "object") return [];
+
+    return Object.values(paymentData).map((item) => ({
+      id: item?.unique_id ? `#${item.unique_id}` : null,
+      client: `${item?.Client_Individual?.first_name ?? ""} ${
+        item?.Client_Individual?.last_name ?? ""
+      }`.trim(),
+      invoiceNumber: item.invoice_number ? item.invoice_number : null,
+      paymentStatus: item?.payment_status ?? "null",
+      invoiceDate: item?.invoice_date
+        ? this.formatUnixDate(item?.invoice_date)
+        : null,
+      dueDate: item?.due_date ? this.formatUnixDate(item?.due_date) : null,
+      invoiceTotal: item?.invoice_total ?? null,
+      billPaidDate: item?.bill_time_paid
+        ? this.formatUnixDate(item?.bill_time_paid)
+        : null,
+      xeroInvoiceStatus: item?.xero_invoice_status ?? null,
+      serviceApproved: item?.bill_approved_service_provider ?? null,
+      adminApproved: item?.bill_approved_admin ?? null,
+      meta: {
+        email: item?.Client_Individual?.email ?? null,
+        sms: item?.Client_Individual?.sms_number ?? null,
+        address: item?.Property?.address_1 ?? null,
+      },
     }));
   }
 
