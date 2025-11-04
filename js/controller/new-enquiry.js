@@ -2,6 +2,7 @@ export class NewEnquiryController {
   constructor(model, view) {
     this.model = model;
     this.view = view;
+    this.relatedRequestId = 0;
   }
 
   init() {
@@ -10,6 +11,7 @@ export class NewEnquiryController {
     this.view.onContactSelected((contact) => this.#handleSelection(contact));
     this.view.onManualAdd(() => {
       this.view.clearFeedback();
+      this.view.clearRelated();
     });
     this.view.onSave((payload) => this.#handleSave(payload));
 
@@ -40,6 +42,8 @@ export class NewEnquiryController {
     const existing = this.#findByEmail(normalized.email);
     if (existing) {
       this.view.populateContact(existing);
+      this.view.showRelatedLoading();
+      this.#loadRelated(existing.fields.email).catch(() => {});
       this.view.showFeedback("Contact already exists. Selected existing contact.", "info");
       return;
     }
@@ -54,6 +58,7 @@ export class NewEnquiryController {
 
       this.view.setContacts(this.model.getContacts());
       this.view.populateContact(contact);
+      await this.#loadRelated(contact.fields.email);
       this.view.showFeedback("Contact saved and selected.", "success");
     } catch (error) {
       console.error("[NewEnquiry] Failed to create contact", error);
@@ -66,6 +71,28 @@ export class NewEnquiryController {
   #handleSelection(contact) {
     if (!contact) return;
     this.view.populateContact(contact);
+    this.view.showRelatedLoading();
+    this.#loadRelated(contact.fields?.email).catch(() => {});
+  }
+
+  async #loadRelated(email) {
+    const normalized = email?.trim();
+    if (!normalized) {
+      this.view.clearRelated();
+      return;
+    }
+
+    const requestId = ++this.relatedRequestId;
+    this.view.showRelatedLoading();
+    try {
+      const related = await this.model.fetchRelated(normalized);
+      if (this.relatedRequestId !== requestId) return;
+      this.view.renderRelated(related);
+    } catch (error) {
+      console.error('[NewEnquiry] Failed to load related data', error);
+      if (this.relatedRequestId !== requestId) return;
+      this.view.renderRelated();
+    }
   }
 
   #findByEmail(email) {
