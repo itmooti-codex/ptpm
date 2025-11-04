@@ -753,8 +753,8 @@ export class DashboardModel {
     const startEpoch = toEpoch(f.dateFrom, false);
     const endEpoch = toEpoch(f.dateTo, true);
 
-    const minPrice = null;
-    const maxPrice = null;
+    let minPrice = null;
+    let maxPrice = null;
     if (f.minPrice != 0 && f.maxPrice != 10000) {
       minPrice = f.minPrice;
       maxPrice = f.maxPrice;
