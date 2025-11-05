@@ -1,42 +1,21 @@
-const DEFAULT_CONTACTS = [
-  {
-    first_name: "Alice",
-    last_name: "Johnson",
-    email: "alice.johnson@example.com",
-    sms_number: "+61 400 000 001",
-    office_phone: "+61 2 9000 0001",
-  },
-  {
-    first_name: "Brendan",
-    last_name: "Moore",
-    email: "brendan.moore@example.com",
-    sms_number: "+61 400 000 002",
-    office_phone: "+61 3 7000 0002",
-  },
-  {
-    first_name: "Chloe",
-    last_name: "Nguyen",
-    email: "chloe.nguyen@example.com",
-    sms_number: "+61 400 000 003",
-    office_phone: "+61 7 3000 0003",
-  },
-];
-
 export class NewEnquiryModel {
   constructor(plugin, { maxRecords = 200 } = {}) {
+    window.plugin = plugin;
+    this.affiliationModel = plugin.switchTo("PeterpmAffiliation");
     this.plugin = plugin;
     this.maxRecords = maxRecords;
     this.contactModel = null;
     this.contactModelName = null;
-    this.contacts = DEFAULT_CONTACTS.map((fields, index) =>
-      this.#formatContact(fields, index)
-    );
+    // Start with no default contacts; will be populated from SDK or user input
+    this.contacts = [];
     this.relatedCache = new Map();
     this.relatedModelNames = {
       properties: null,
       jobs: null,
       deals: null,
     };
+    this.relatedData = null;
+    this.affiliationQuery = null;
   }
 
   async loadContacts() {
@@ -69,7 +48,9 @@ export class NewEnquiryModel {
       if (!model) return this.#createLocalContact(payload);
 
       const mutation =
-        typeof this.plugin.mutation === "function" ? this.plugin.mutation() : null;
+        typeof this.plugin.mutation === "function"
+          ? this.plugin.mutation()
+          : null;
       if (!mutation || typeof mutation.switchTo !== "function") {
         return this.#createLocalContact(payload);
       }
@@ -90,14 +71,19 @@ export class NewEnquiryModel {
 
       await this.#awaitResult(execution);
 
-      const state = typeof record?.getState === "function" ? record.getState() : record;
-      const contact = this.#normaliseRecord(state, 0) || this.#createLocalContact(payload);
+      const state =
+        typeof record?.getState === "function" ? record.getState() : record;
+      const contact =
+        this.#normaliseRecord(state, 0) || this.#createLocalContact(payload);
       if (contact?.fields?.email) {
         this.relatedCache.delete(contact.fields.email.trim().toLowerCase());
       }
       return contact;
     } catch (error) {
-      console.warn("[NewEnquiry] Falling back to local contact creation", error);
+      console.warn(
+        "[NewEnquiry] Falling back to local contact creation",
+        error
+      );
       return this.#createLocalContact(payload);
     }
   }
@@ -111,7 +97,8 @@ export class NewEnquiryModel {
     }
     if (!this.plugin) return null;
 
-    const state = typeof this.plugin.getState === "function" ? this.plugin.getState() : {};
+    const state =
+      typeof this.plugin.getState === "function" ? this.plugin.getState() : {};
     for (const [key, model] of Object.entries(state || {})) {
       const schema = model?.schema || {};
       const names = [schema.displayLabel, schema.label, schema.name, key]
@@ -120,7 +107,9 @@ export class NewEnquiryModel {
         .toLowerCase();
       const fields = this.#collectFieldNames(schema);
       const looksLikeContact =
-        names.includes("contact") && fields.includes("email") && fields.includes("first_name");
+        names.includes("contact") &&
+        fields.includes("email") &&
+        fields.includes("first_name");
       if (looksLikeContact) {
         this.contactModelName = schema.name || key;
         this.contactModel = this.plugin.switchTo(this.contactModelName);
@@ -188,11 +177,21 @@ export class NewEnquiryModel {
   }
 
   #buildCreatePayload(fields = {}) {
-    const allowed = ["first_name", "last_name", "email", "sms_number", "office_phone"];
+    const allowed = [
+      "first_name",
+      "last_name",
+      "email",
+      "sms_number",
+      "office_phone",
+    ];
     const payload = {};
     allowed.forEach((key) => {
       const value = fields[key];
-      if (value !== undefined && value !== null && String(value).trim() !== "") {
+      if (
+        value !== undefined &&
+        value !== null &&
+        String(value).trim() !== ""
+      ) {
         payload[key] = String(value).trim();
       }
     });
@@ -376,7 +375,10 @@ export class NewEnquiryModel {
       try {
         related = await this.#fetchRelatedFromSdk(normalized);
       } catch (error) {
-        console.warn("[NewEnquiry] Related fetch failed, using mock data", error);
+        console.warn(
+          "[NewEnquiry] Related fetch failed, using mock data",
+          error
+        );
         related = this.#mockRelated(normalized);
       }
     }
@@ -391,6 +393,12 @@ export class NewEnquiryModel {
       this.#queryJobs(email),
       this.#queryDeals(email),
     ]);
+
+    this.relatedData = {
+      properties,
+      jobs,
+      inquiries,
+    };
 
     return {
       properties,
@@ -422,7 +430,10 @@ export class NewEnquiryModel {
         ["postcode", "postcode"],
         ["map_url", "map_url"],
         ["owner_name", "owner_name"],
-        ["primary_owner_contact_for_property", "primary_owner_contact_for_property"],
+        [
+          "primary_owner_contact_for_property",
+          "primary_owner_contact_for_property",
+        ],
         ["status", "status"],
         ["property_status", "property_status"],
       ];
@@ -449,6 +460,14 @@ export class NewEnquiryModel {
           "owner_name",
           "status",
           "property_status",
+          "lot_number",
+          "unit_number",
+          "property_type",
+          "building_type",
+          "foundation_type",
+          "stories",
+          "bedrooms",
+          "manhole",
         ]);
       } catch (_) {}
     }
@@ -687,7 +706,9 @@ export class NewEnquiryModel {
       const unique =
         this.#toString(
           this.#getFromLookup(lookup, "unique_id", "uniqueid", "uid")
-        ) || id || `prop-${index}`;
+        ) ||
+        id ||
+        `prop-${index}`;
       const propertyName =
         this.#toString(
           this.#getFromLookup(
@@ -749,6 +770,46 @@ export class NewEnquiryModel {
         )
       );
 
+      const property_statusValue = this.#toString(
+        this.#getFromLookup(lookup, "property_status")
+      );
+
+      const lot_numberValue = this.#toString(
+        this.#getFromLookup(lookup, "lot_number")
+      );
+
+      const unit_numberValue = this.#toString(
+        this.#getFromLookup(lookup, "unit_number")
+      );
+
+      const property_typeValue = this.#toString(
+        this.#getFromLookup(lookup, "property_type")
+      );
+
+      const building_typeValue = this.#toString(
+        this.#getFromLookup(lookup, "building_type")
+      );
+
+      const foundation_typeValue = this.#toString(
+        this.#getFromLookup(lookup, "foundation_type")
+      );
+
+      const storiesValue = this.#toString(
+        this.#getFromLookup(lookup, "stories")
+      );
+
+      const bedroomsValue = this.#toString(
+        this.#getFromLookup(lookup, "bedrooms")
+      );
+
+      const manholeValue = this.#toString(
+        this.#getFromLookup(lookup, "manhole")
+      );
+
+      const building_ageValue = this.#toString(
+        this.#getFromLookup(lookup, "building_age")
+      );
+
       return {
         id: id || unique,
         unique_id: unique,
@@ -763,6 +824,16 @@ export class NewEnquiryModel {
         owner_name: ownerName,
         status,
         map_url: mapUrl,
+        propertyStatus: property_statusValue,
+        lotNumber: lot_numberValue,
+        unitNumber: unit_numberValue,
+        propertyType: property_typeValue,
+        buildingType: building_typeValue,
+        foundationType: foundation_typeValue,
+        stories: storiesValue,
+        bedrooms: bedroomsValue,
+        manhole: manholeValue,
+        buildingAge: building_ageValue,
       };
     });
   }
@@ -782,7 +853,9 @@ export class NewEnquiryModel {
             "job_reference",
             "reference"
           )
-        ) || id || `job-${index}`;
+        ) ||
+        id ||
+        `job-${index}`;
       const status = this.#toString(
         this.#getFromLookup(lookup, "status", "job_status", "stage")
       );
@@ -849,7 +922,9 @@ export class NewEnquiryModel {
             "reference",
             "inquiry_number"
           )
-        ) || id || `inq-${index}`;
+        ) ||
+        id ||
+        `inq-${index}`;
       const service = this.#toString(
         this.#getFromLookup(
           lookup,
@@ -987,17 +1062,27 @@ export class NewEnquiryModel {
       .join("");
 
     if (properName) {
-      fallbackMap.properties.push(`${properName}Property`, `${properName}Properties`);
+      fallbackMap.properties.push(
+        `${properName}Property`,
+        `${properName}Properties`
+      );
       fallbackMap.jobs.push(`${properName}Job`, `${properName}Jobs`);
       fallbackMap.deals.push(`${properName}Deal`, `${properName}Deals`);
     }
 
     const hints = (hintsMap[type] || []).map((hint) => hint.toLowerCase());
-    const state = typeof this.plugin.getState === "function" ? this.plugin.getState() : {};
+    const state =
+      typeof this.plugin.getState === "function" ? this.plugin.getState() : {};
 
     for (const [key, model] of Object.entries(state || {})) {
       const schema = model?.schema || {};
-      const identifier = [schema.displayLabel, schema.label, schema.name, schema.apiName, key]
+      const identifier = [
+        schema.displayLabel,
+        schema.label,
+        schema.name,
+        schema.apiName,
+        key,
+      ]
         .filter(Boolean)
         .join(" ")
         .toLowerCase();
@@ -1053,7 +1138,9 @@ export class NewEnquiryModel {
           address_line: baseAddress,
           status: "Active",
           owner_name: `Owner ${seed}`,
-          map_url: `https://maps.google.com/?q=${encodeURIComponent(baseAddress)}`,
+          map_url: `https://maps.google.com/?q=${encodeURIComponent(
+            baseAddress
+          )}`,
         },
       ],
       jobs: [
@@ -1080,5 +1167,33 @@ export class NewEnquiryModel {
         },
       ],
     };
+  }
+
+  async fetchAffiliationByPropertyId(id) {
+    try {
+      this.affiliationQuery = this.affiliationModel.query();
+      if (id) {
+        this.affiliationQuery = this.affiliationQuery.where("property_id", id);
+      }
+
+      let query = await this.affiliationQuery
+        .deSelectAll()
+        .select(["role", "primary_owner_contact"])
+        .include("Contact", (q) =>
+          q
+            .deSelectAll()
+            .select(["first_name", "last_name", "sms_number", "email"])
+        )
+        .include("Company", (q) => q.deSelectAll().select(["name"]))
+        .noDestroy();
+
+      query.getOrInitQueryCalc?.();
+
+      const payload = await query.fetchDirect().toPromise();
+      return payload.resp;
+    } catch (error) {
+      console.warn("[NewEnquiry] fetchAffiliationByPropertyId failed", error);
+      return [];
+    }
   }
 }

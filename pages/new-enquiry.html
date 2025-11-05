@@ -152,6 +152,7 @@
                     placeholder="Search by name, email, phone"
                     class="w-full rounded-lg border border-slate-200 bg-white px-11 py-3 text-sm text-slate-700 placeholder:text-slate-400 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100"
                     data-search-input
+                    data-contact-id="search-input"
                     autocomplete="off"
                   />
                   <button
@@ -159,6 +160,7 @@
                     class="absolute inset-y-0 right-3 inline-flex items-center rounded-md px-2 text-slate-400 hover:text-sky-500"
                     aria-label="Search contact"
                     data-search-trigger
+                    data-contact-id="search-trigger"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -181,10 +183,12 @@
                     <ul
                       class="max-h-48 overflow-y-auto py-2"
                       data-search-results
+                      data-contact-id="search-results"
                     ></ul>
                     <p
                       class="px-4 py-3 text-sm text-slate-500 hidden"
                       data-search-empty
+                      data-contact-id="search-empty"
                     >
                       No results found
                     </p>
@@ -192,6 +196,7 @@
                       type="button"
                       class="flex w-full items-center gap-2 border-t border-slate-200 px-4 py-3 text-sm font-medium text-sky-900 hover:bg-slate-50"
                       data-search-add
+                      data-contact-id="add-new-contact"
                     >
                       <span
                         class="inline-flex h-5 w-5 items-center justify-center rounded-full border border-sky-900 text-sky-900"
@@ -215,7 +220,11 @@
                 />
               </div>
 
-              <input type="hidden" data-contact-field="contact_id" />
+              <input
+                type="hidden"
+                data-contact-field="contact_id"
+                data-contact-id="contact-id"
+              />
 
               <div class="flex gap-4">
                 <div class="flex-1 min-w-[150px]">
@@ -225,6 +234,7 @@
                   <input
                     type="text"
                     data-contact-field="first_name"
+                    data-contact-id="first-name"
                     class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100"
                   />
                 </div>
@@ -235,6 +245,7 @@
                   <input
                     type="text"
                     data-contact-field="last_name"
+                    data-contact-id="last-name"
                     class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100"
                   />
                 </div>
@@ -248,6 +259,7 @@
                   <input
                     type="email"
                     data-contact-field="email"
+                    data-contact-id="email"
                     class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100"
                   />
                 </div>
@@ -258,6 +270,7 @@
                   <input
                     type="tel"
                     data-contact-field="sms_number"
+                    data-contact-id="sms-number"
                     class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100"
                   />
                 </div>
@@ -270,6 +283,7 @@
                 <input
                   type="tel"
                   data-contact-field="office_phone"
+                  data-contact-id="office-phone"
                   class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100"
                 />
               </div>
@@ -281,6 +295,7 @@
                   type="checkbox"
                   class="h-4 w-4 rounded border-slate-300 text-sky-600 focus:ring-sky-200"
                   data-same-as-contact
+                  data-contact-id="same-as-contact"
                 />
                 Same as contact
               </label>
@@ -293,6 +308,7 @@
                   <input
                     type="text"
                     data-contact-field="work_requested_by"
+                    data-contact-id="work-requested-by"
                     class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100"
                   />
                 </div>
@@ -302,6 +318,7 @@
                   >
                   <input
                     type="text"
+                    data-contact-id="work-order-number"
                     class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100"
                   />
                 </div>
@@ -312,22 +329,34 @@
                   type="button"
                   class="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-3 text-sm font-semibold text-sky-900 hover:bg-slate-50"
                   data-contact-save
+                  data-contact-id="save-new-contact"
                   data-base-label="Add New Contact"
                   data-loading-label="Adding..."
                 >
                   <span
                     class="inline-flex h-5 w-5 items-center justify-center rounded-full border border-sky-900 text-sky-900"
                     data-contact-save-icon
+                    data-contact-id="save-new-contact-icon"
                   >
                     +
                   </span>
-                  <span data-contact-save-label>Add New Contact</span>
+                  <span
+                    data-contact-save-label
+                    data-contact-id="save-new-contact-label"
+                    >Add New Contact</span
+                  >
                 </button>
               </div>
             </div>
 
-            <div class="rounded-2xl border border-slate-200 bg-white" data-related>
-              <nav class="flex border-b border-slate-200 text-sm font-semibold px-3 pt-3" role="tablist">
+            <div
+              class="rounded-2xl border border-slate-200 bg-white"
+              data-related
+            >
+              <nav
+                class="flex border-b border-slate-200 text-sm font-semibold px-3 pt-3"
+                role="tablist"
+              >
                 <button
                   type="button"
                   data-related-tab="properties"
@@ -358,26 +387,36 @@
                   class="hidden items-start gap-2 rounded-lg border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-sky-900"
                   data-related-banner
                 >
-                  <span class="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-xs font-semibold text-white">i</span>
-                  <span data-related-banner-text>Select a contact to view related details.</span>
+                  <span
+                    class="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-xs font-semibold text-white"
+                    >i</span
+                  >
+                  <span data-related-banner-text
+                    >Select a contact to view related details.</span
+                  >
                 </div>
                 <div data-related-panel="properties" class="space-y-3"></div>
                 <div data-related-panel="jobs" class="space-y-3 hidden"></div>
-                <div data-related-panel="inquiries" class="space-y-3 hidden"></div>
+                <div
+                  data-related-panel="inquiries"
+                  class="space-y-3 hidden"
+                ></div>
               </div>
             </div>
 
-
             <div class="space-y-4 hidden" data-contact-section="entity">
-              <p class="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-sm text-slate-500">
-                Entity contact support is coming soon. Please use the individual tab for now.
+              <p
+                class="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-sm text-slate-500"
+              >
+                Entity contact support is coming soon. Please use the individual
+                tab for now.
               </p>
             </div>
           </div>
 
           <!-- Property Information -->
 
-          <div class="flex flex-col gap-6">
+          <div id="property-information" class="flex flex-col gap-6">
             <div
               class="grow-[1] space-y-2 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm xl:col-span-4"
             >
@@ -399,6 +438,7 @@
                     type="text"
                     placeholder="Search properties"
                     class="mt-2 w-full rounded-lg border border-slate-200 bg-white px-11 py-3 text-sm text-slate-700 placeholder:text-slate-400 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                    data-property-id="search-properties"
                   />
                 </div>
 
@@ -409,6 +449,7 @@
                     >
                     <input
                       type="text"
+                      data-property-id="lot-number"
                       class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
                     />
                   </div>
@@ -418,6 +459,7 @@
                     >
                     <input
                       type="text"
+                      data-property-id="unit-number"
                       class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
                     />
                   </div>
@@ -428,6 +470,7 @@
                     >
                     <input
                       type="text"
+                      data-property-id="address-1"
                       class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
                     />
                   </div>
@@ -437,6 +480,7 @@
                     >
                     <input
                       type="text"
+                      data-property-id="address-2"
                       class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
                     />
                   </div>
@@ -447,6 +491,7 @@
                     >
                     <input
                       type="text"
+                      data-property-id="suburb-town"
                       class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
                     />
                   </div>
@@ -457,6 +502,7 @@
                     >
                     <input
                       type="text"
+                      data-property-id="postal-code"
                       class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
                     />
                   </div>
@@ -470,9 +516,21 @@
                   <div class="relative mt-1">
                     <select
                       class="w-full appearance-none rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                      data-property-id="state"
                     >
-                      <option>Queensland</option>
+                      <option value="" disabled selected hidden>
+                        Select a state
+                      </option>
+                      <option value="NSW">New South Wales</option>
+                      <option value="QLD">Queensland</option>
+                      <option value="VIC">Victoria</option>
+                      <option value="TAS">Tasmania</option>
+                      <option value="SA">South Australia</option>
+                      <option value="ACT">Australian Capital Territory</option>
+                      <option value="NT">Northern Territory</option>
+                      <option value="WA">Western Australia</option>
                     </select>
+
                     <span
                       class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400"
                     >
@@ -504,8 +562,12 @@
                   <div class="relative mt-1">
                     <select
                       class="w-full appearance-none rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                      data-property-id="property-type"
                     >
-                      <option>Select</option>
+                      <option value="" disabled selected hidden>Select</option>
+                      <option value="Residential">Residential</option>
+                      <option value="Commercial">Commercial</option>
+                      <option value="Industrial">Industrial</option>
                     </select>
                     <span
                       class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400"
@@ -531,8 +593,15 @@
                   <div class="relative mt-1">
                     <select
                       class="w-full appearance-none rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                      data-property-id="building-type"
                     >
-                      <option>Select</option>
+                      <option value="">Select None</option>
+                      <option value="house">House</option>
+                      <option value="unit">Unit</option>
+                      <option value="unit_block">Unit Block</option>
+                      <option value="offices">Offices</option>
+                      <option value="warehouse">Warehouse</option>
+                      <option value="other">Other</option>
                     </select>
                     <span
                       class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400"
@@ -558,8 +627,12 @@
                   <div class="relative mt-1">
                     <select
                       class="w-full appearance-none rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                      data-property-id="foundation-type"
                     >
-                      <option>Select</option>
+                      <option value="">Select none</option>
+                      <option value="slab_on_ground">Slab on Ground</option>
+                      <option value="lowset">Lowset</option>
+                      <option value="highset">Highset</option>
                     </select>
                     <span
                       class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400"
@@ -585,6 +658,7 @@
                   <div class="relative mt-1">
                     <select
                       class="w-full appearance-none rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                      data-property-id="building-features"
                     >
                       <option>Select</option>
                     </select>
@@ -612,6 +686,7 @@
                   <input
                     type="number"
                     value="1"
+                    data-property-id="storeys"
                     class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
                   />
                 </div>
@@ -622,6 +697,7 @@
                   <input
                     type="number"
                     value="1"
+                    data-property-id="bedrooms"
                     class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
                   />
                 </div>
@@ -632,6 +708,7 @@
                   <input
                     type="number"
                     value="1"
+                    data-property-id="building-age"
                     class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
                   />
                 </div>
@@ -641,6 +718,7 @@
                   <input
                     type="checkbox"
                     checked
+                    data-property-id="has-manhole"
                     class="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-200"
                   />
                   Manhole
@@ -666,25 +744,30 @@
                   <div
                     id="add-contact-btn"
                     class="justify-start text-sky-900 text-sm font-medium font-sans leading-none"
+                    data-property-contact-id="add-contact"
                   >
                     Add Contact
                   </div>
                 </div>
               </header>
 
-              <div class="overflow-hidden rounded-xl border border-slate-200">
+              <div
+                class="overflow-hidden rounded-xl border border-slate-200"
+                data-property-contact-id="table"
+              >
                 <div
                   class="flex justify-around border-b border-slate-200 bg-slate-50 px-4 py-3 text-xs font-semibold text-slate-500"
                 >
-                  <span>Role</span>
-                  <span>Contact</span>
-                  <span>SMS Number</span>
-                  <span>Company</span>
-                  <span>Action</span>
+                  <span data-property-contact-id="col-role">Role</span>
+                  <span data-property-contact-id="col-contact">Contact</span>
+                  <span data-property-contact-id="col-sms">SMS Number</span>
+                  <span data-property-contact-id="col-company">Company</span>
+                  <span data-property-contact-id="col-action">Action</span>
                 </div>
 
                 <div
                   class="flex flex-col items-center gap-4 px-6 py-10 text-center text-slate-500"
+                  data-property-contact-id="empty-state"
                 >
                   <svg
                     width="111"
@@ -970,6 +1053,7 @@
                     <div class="relative mt-1">
                       <select
                         class="w-full appearance-none rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                        data-feedback-id="animal"
                       >
                         <option>Select</option>
                       </select>
@@ -997,6 +1081,7 @@
                     <div class="relative mt-1">
                       <select
                         class="w-full appearance-none rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                        data-feedback-id="noises"
                       >
                         <option>Select</option>
                       </select>
@@ -1024,6 +1109,7 @@
                     <div class="relative mt-1">
                       <select
                         class="w-full appearance-none rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                        data-feedback-id="times"
                       >
                         <option>Select</option>
                       </select>
@@ -1051,6 +1137,7 @@
                     <div class="relative mt-1">
                       <select
                         class="w-full appearance-none rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                        data-feedback-id="location"
                       >
                         <option>Select</option>
                       </select>
@@ -1078,6 +1165,7 @@
                     <input
                       type="number"
                       value="1"
+                      data-feedback-id="renovation"
                       class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
                     />
                   </div>
@@ -1088,6 +1176,7 @@
                     <input
                       type="number"
                       value="3"
+                      data-feedback-id="access"
                       class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
                     />
                   </div>
@@ -1101,6 +1190,7 @@
                     <input
                       type="text"
                       placeholder="dd/mm/yyyy"
+                      data-feedback-id="job-required-by"
                       class="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 pr-10 text-sm text-slate-700 placeholder:text-slate-400 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
                     />
                     <span
