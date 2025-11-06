@@ -862,7 +862,7 @@ export class NewEnquiryView {
               propertyData
             );
             let affiliationData = await this.model.fetchAffiliationByPropertyId(
-              propertyId
+              "167"
             );
             this.setPropertyInformationToFields(fieldIds, values);
             this.createPropertyContactTable(affiliationData);
@@ -963,43 +963,61 @@ export class NewEnquiryView {
     );
     if (!container) return;
 
-    // Clear previous content
+    // Clear previous table if exists
     container.innerHTML = "";
 
-    // Table shell
+    // SVG visibility
+    const svg = document.getElementById("property-contact-svg");
+    if (!rows || rows.length === 0) {
+      if (svg) svg.style.display = "block";
+      return;
+    } else if (svg) svg.style.display = "none";
+
+    // Create table
     const table = document.createElement("table");
-    table.className = "min-w-full table-fixed";
+    table.className =
+      "min-w-full table-auto border-collapse text-sm text-slate-700";
 
+    // Table header
     const thead = document.createElement("thead");
+    thead.className =
+      "bg-slate-50 text-xs font-semibold text-slate-500 border-b border-slate-200";
     thead.innerHTML = `
-      <tr class="text-xs font-semibold text-slate-500">
-        <th class="w-10 px-4 py-3 text-left"></th>
-        <th class="px-4 py-3 text-left">Role</th>
-        <th class="px-4 py-3 text-left">Contact</th>
-        <th class="px-4 py-3 text-left">SMS Number</th>
-        <th class="px-4 py-3 text-left">Company</th>
-        <th class="w-20 px-4 py-3 text-right">Action</th>
-      </tr>`;
+      <tr>
+        <th class="w-7 px-4 py-2">&nbsp;</th>
+        <th class="px-4 py-2 text-left">Role</th>
+        <th class="px-4 py-2 text-left">Contact</th>
+        <th class="px-4 py-2 text-left">SMS Number</th>
+        <th class="px-4 py-2 text-left">Company</th>
+        <th class="w-20 px-4 py-2 text-right">Action</th>
+      </tr>
+    `;
+    table.appendChild(thead);
 
+    // Table body
     const tbody = document.createElement("tbody");
     tbody.className = "divide-y divide-slate-200";
 
+    // Helper functions
     const starIcon = (filled) => `
-      <svg class="h-4 w-4 ${
-        filled ? "text-amber-500" : "text-slate-300"
-      }" viewBox="0 0 20 20" fill="currentColor">
-        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.035a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118L10.5 14.347a1 1 0 00-1.175 0L6.625 16.282c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.99 8.72c-.783-.57-.38-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.06-3.292z"/>
-      </svg>`;
+      <button type="button" class="star-btn" title="Set as Primary">
+        <svg class="h-4 w-4 ${
+          filled ? "text-amber-500" : "text-slate-300"
+        }" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.035a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118L10.5 14.347a1 1 0 00-1.175 0L6.625 16.282c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.99 8.72c-.783-.57-.38-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.06-3.292z"/>
+        </svg>
+      </button>
+    `;
 
     const actionCell = () => `
       <div class="flex items-center justify-end gap-3 text-slate-500">
-        <button type="button" class="hover:text-sky-700" title="Edit">
+        <button type="button" class="edit-btn hover:text-sky-700" title="Edit">
           <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 20h9"/>
             <path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/>
           </svg>
         </button>
-        <button type="button" class="text-rose-600 hover:text-rose-700" title="Delete">
+        <button type="button" class="delete-btn text-rose-600 hover:text-rose-700" title="Delete">
           <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="3 6 5 6 21 6"/>
             <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
@@ -1007,19 +1025,19 @@ export class NewEnquiryView {
             <path d="M9 6V4a2 2 0 012-2h2a2 2 0 012 2v2"/>
           </svg>
         </button>
-      </div>`;
+      </div>
+    `;
 
     const toName = (c) =>
-      [c?.first_name, c?.last_name].filter(Boolean).join(" ").trim();
+      [c?.first_name, c?.last_name].filter(Boolean).join(" ").trim() || "—";
     const toPhone = (c) => c?.sms_number || c?.sms || "";
     const toEmail = (c) => c?.email || "";
     const toCompany = (co) => co?.name || co?.company || "";
 
-    if (rows.length == 0) return;
+    // Render rows
     rows.forEach((row, idx) => {
-      const isAlt = idx % 2 === 1;
       const tr = document.createElement("tr");
-      if (isAlt) tr.classList.add("bg-slate-50/50");
+      tr.className = `${idx % 2 === 1 ? "bg-slate-50/50" : ""}`;
 
       const primary = Boolean(row?.Primary_Owner_Contact);
       const role = row?.Role || "";
@@ -1032,24 +1050,69 @@ export class NewEnquiryView {
       const company = row?.CompanyName;
 
       tr.innerHTML = `
-        <td class="px-4 py-3 align-top">${starIcon(primary)}</td>
-        <td class="px-4 py-3 align-top text-sm text-slate-700">${role}</td>
-        <td class="px-4 py-3 align-top text-sm text-slate-700">
-          <div class="font-medium">${toName(contact) || "—"}</div>
+        <td class="px-4 py-2">${
+          row.Role !== "Owner"
+            ? `<span class="invisible">${starIcon(primary)}</span>`
+            : starIcon(primary)
+        }</td>
+        <td class="px-4 py-2">${role}</td>
+        <td class="px-4 py-2">
+          <div class="font-medium">${toName(contact)}</div>
           <div class="text-xs text-slate-500">(${toEmail(contact)})</div>
         </td>
-        <td class="px-4 py-3 align-top text-sm text-slate-700">${toPhone(
-          contact
-        )}</td>
-        <td class="px-4 py-3 align-top text-sm text-slate-700">${company}</td>
-        <td class="px-4 py-3 align-top">${actionCell()}</td>
+        <td class="px-4 py-2">${toPhone(contact)}</td>
+        <td class="px-4 py-2">${toCompany(company)}</td>
+        <td class="px-4 py-2 text-right">${actionCell()}</td>
       `;
 
       tbody.appendChild(tr);
     });
 
-    table.appendChild(thead);
     table.appendChild(tbody);
     container.appendChild(table);
+
+    // Attach events
+    tbody
+      .querySelectorAll(".star-btn")
+      .forEach((btn, i) =>
+        btn.addEventListener("click", () => console.log("⭐ Star clicked:", i))
+      );
+    tbody
+      .querySelectorAll(".edit-btn")
+      .forEach((btn, i) =>
+        btn.addEventListener("click", () => console.log("✏️ Edit clicked:", i))
+      );
+    tbody
+      .querySelectorAll(".delete-btn")
+      .forEach((btn, i) =>
+        btn.addEventListener("click", () =>
+          console.log("🗑️ Delete clicked:", i)
+        )
+      );
+  }
+
+  createInquiryOptions(configs) {
+    configs.forEach(({ id, options, placeholder }) => {
+      const element = document.getElementById(id);
+      if (!element) return;
+
+      element.innerHTML = "";
+
+      if (placeholder) {
+        const placeholderOption = document.createElement("option");
+        placeholderOption.text = placeholder;
+        placeholderOption.value = ""; // empty value
+        placeholderOption.disabled = true; // prevent selection
+        placeholderOption.selected = true; // show initially
+        element.add(placeholderOption);
+      }
+
+      options.forEach((opt) => {
+        const option = document.createElement("option");
+        option.text = opt;
+        option.value = opt;
+        element.add(option);
+      });
+    });
   }
 }
