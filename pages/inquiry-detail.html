@@ -5,9 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script type="module" src="../js/app.js" defer></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
+    <script
+      async
+      src="https://static-au03.vitalstats.app/static/dynamic-list/v1/latest.js"
+      crossorigin="anonymous"
+    ></script>
+    <style>
+      [x-cloak] {
+        display: none !important;
+      }
+    </style>
   </head>
-  <body data-page="inquiry-detail">
+  <body data-page="inquiry-detail" data-inquiry-id="312">
     <header>
       <div class="flex bg-[#003882] p-4 justify-between">
         <div class="flex gap-28 justify-around items-center">
@@ -243,6 +256,7 @@
       </div>
       <div class="flex"></div>
     </header>
+
     <!-- MAIN -->
     <main class="bg-[#F5F5F5] flex px-4 py-6 gap-4">
       <div class="flex flex-col">
@@ -266,26 +280,246 @@
             <div class="text-neutral-700 text-lg font-semibold">Inquiry</div>
           </div>
 
-          <div class="w-full sm:w-72">
-            <button
-              class="w-full px-4 py-2 bg-white rounded border border-gray-300 inline-flex items-center justify-between"
+          <div
+            class="w-full sm:w-72 relative"
+            x-data="allocateProviderSearch()"
+            @keydown.escape.window="closeDropdown()"
+            @click.outside="closeDropdown()"
+          >
+            <div
+              class="pointer-events-none fixed inset-x-0 top-4 z-50 flex justify-center"
+              x-show="toastVisible"
+              x-transition.opacity.duration.200ms
+              x-cloak
             >
-              <span class="text-neutral-700 text-sm font-medium"
-                >Allocate To Service Provider</span
+              <div
+                class="pointer-events-auto flex items-center gap-3 rounded-lg border px-4 py-2 text-sm font-medium shadow-lg shadow-slate-900/10"
+                :class="toastVariant === 'success'
+                  ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
+                  : 'bg-rose-50 border-rose-200 text-rose-900'"
               >
+                <span
+                  class="flex h-6 w-6 items-center justify-center rounded-full text-base"
+                  :class="toastVariant === 'success'
+                    ? 'bg-emerald-100 text-emerald-600'
+                    : 'bg-rose-100 text-rose-600'"
+                >
+                  <template x-if="toastVariant === 'success'">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M6.00008 10.1147L3.20508 7.31966L2.26175 8.26299L6.00008 12.0013L14.0001 4.00133L13.0567 3.05799L6.00008 10.1147Z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                  </template>
+                  <template x-if="toastVariant !== 'success'">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M7.33333 9.33335H8.66667V10.6667H7.33333V9.33335ZM7.33333 4.66669H8.66667V8.00002H7.33333V4.66669ZM8 1.33335C4.32 1.33335 1.33333 4.32002 1.33333 8.00002C1.33333 11.68 4.32 14.6667 8 14.6667C11.68 14.6667 14.6667 11.68 14.6667 8.00002C14.6667 4.32002 11.68 1.33335 8 1.33335ZM8 13.3334C5.06 13.3334 2.66667 10.94 2.66667 8.00002C2.66667 5.06002 5.06 2.66669 8 2.66669C10.94 2.66669 13.3333 5.06002 13.3333 8.00002C13.3333 10.94 10.94 13.3334 8 13.3334Z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                  </template>
+                </span>
+                <span x-text="toastMessage"></span>
+              </div>
+            </div>
+            <label class="sr-only" for="allocate-provider-input"
+              >Search service providers</label
+            >
+            <div class="relative">
+              <input
+                id="allocate-provider-input"
+                type="text"
+                :placeholder="placeholderText"
+                class="w-full rounded-lg border border-slate-200 bg-white py-2 pl-9 pr-3 text-sm text-slate-800 placeholder:text-slate-400 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-200"
+                x-model="searchTerm"
+                @focus="handleFocus"
+                @click="handleFocus"
+                autocomplete="off"
+              />
               <svg
-                width="14"
-                height="14"
-                viewBox="0 0 14 14"
+                class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <path
-                  d="M12.7019 12.0677L9.89656 9.26287C10.7097 8.28668 11.1151 7.0346 11.0286 5.76708C10.9421 4.49956 10.3702 3.31419 9.43194 2.45758C8.49369 1.60096 7.26132 1.13904 5.99118 1.1679C4.72103 1.19677 3.51092 1.7142 2.61256 2.61256C1.7142 3.51092 1.19677 4.72103 1.1679 5.99118C1.13904 7.26132 1.60096 8.49369 2.45758 9.43194C3.31419 10.3702 4.49956 10.9421 5.76708 11.0286C7.0346 11.1151 8.28668 10.7097 9.26287 9.89656L12.0677 12.7019C12.1093 12.7436 12.1588 12.7766 12.2132 12.7992C12.2676 12.8217 12.3259 12.8333 12.3848 12.8333C12.4437 12.8333 12.502 12.8217 12.5564 12.7992C12.6108 12.7766 12.6603 12.7436 12.7019 12.7019C12.7436 12.6603 12.7766 12.6108 12.7992 12.5564C12.8217 12.502 12.8333 12.4437 12.8333 12.3848C12.8333 12.3259 12.8217 12.2676 12.7992 12.2132C12.7766 12.1588 12.7436 12.1093 12.7019 12.0677ZM2.07547 6.10956C2.07547 5.3117 2.31207 4.53174 2.75534 3.86834C3.19861 3.20494 3.82865 2.68788 4.56578 2.38255C5.30292 2.07722 6.11404 1.99733 6.89657 2.15299C7.67911 2.30864 8.39792 2.69285 8.96209 3.25703C9.52627 3.82121 9.91048 4.54001 10.0661 5.32255C10.2218 6.10509 10.1419 6.91621 9.83657 7.65334C9.53124 8.39047 9.01418 9.02051 8.35078 9.46378C7.68738 9.90706 6.90743 10.1437 6.10956 10.1437C5.04002 10.1425 4.01462 9.71706 3.25834 8.96078C2.50206 8.2045 2.07666 7.1791 2.07547 6.10956Z"
-                  fill="#636D88"
+                  d="M11.7267 10.7067L14.6667 13.6467L13.6467 14.6667L10.7067 11.7267C9.72632 12.5084 8.5135 12.934 7.26667 12.9333C4.10667 12.9333 1.53333 10.36 1.53333 7.19999C1.53333 4.03999 4.10667 1.46666 7.26667 1.46666C10.4267 1.46666 13 4.03999 13 7.19999C13.0007 8.44683 12.5751 9.65965 11.7933 10.64L11.7267 10.7067ZM3.2 7.19999C3.2 9.44 5.02667 11.2667 7.26667 11.2667C9.50667 11.2667 11.3333 9.44 11.3333 7.19999C11.3333 4.95999 9.50667 3.13332 7.26667 3.13332C5.02667 3.13332 3.2 4.95999 3.2 7.19999Z"
+                  fill="currentColor"
                 />
               </svg>
-            </button>
+            </div>
+
+            <div
+              class="absolute left-0 right-0 top-full z-20 mt-2"
+              x-show="open"
+              x-transition.opacity.duration.150ms
+              x-cloak
+            >
+              <div
+                class="rounded-2xl border border-slate-200 bg-white shadow-xl"
+              >
+                <div class="flex flex-col gap-1 border-b border-slate-100">
+                  <div class="px-4 pt-4">
+                    <p class="text-xs font-semibold uppercase text-slate-500">
+                      Allocate To Service Provider
+                    </p>
+                  </div>
+                  <div
+                    class="max-h-72 overflow-y-auto"
+                    x-ref="providerList"
+                    role="listbox"
+                    :aria-busy="!hasLoaded"
+                  >
+                    <div
+                      data-dynamic-list="UeyJol2V95xf0CETp-XlV"
+                      data-entity="peterpm"
+                      data-entity-key="1rBR-jpR3yE3HE1VhFD0j"
+                      class="flex flex-col divide-y divide-slate-100"
+                    >
+                      <button
+                        type="button"
+                        class="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-slate-50 focus:bg-slate-100 focus:outline-none transition"
+                        data-provider-row
+                        data-provider-id="[ID]"
+                        role="option"
+                        @click="handleRowSelect($event)"
+                        x-bind:aria-selected="selectedProviderId === $el.dataset.providerId"
+                        x-bind:class="selectedProviderId === $el.dataset.providerId ? 'bg-slate-100 ring-1 ring-sky-200 hover:bg-slate-100' : ''"
+                      >
+                        <div class="relative h-12 w-12 shrink-0">
+                          <img
+                            src="[Profile_Image]"
+                            alt="[Account_Name]"
+                            class="h-12 w-12 rounded-full object-cover"
+                          />
+                          <div
+                            class="absolute inset-0 rounded-full border border-white"
+                            aria-hidden="true"
+                          ></div>
+                        </div>
+                        <div class="flex-1">
+                          <div
+                            class="text-sm font-semibold text-slate-800"
+                            data-search-name
+                          >
+                            [Account_Name]
+                          </div>
+                          <div class="text-xs text-slate-500" data-search-phone>
+                            [Mobile_Number]
+                          </div>
+                          <span class="hidden" data-field="provider-email"
+                            >[Work_Email]</span
+                          >
+                          <span class="hidden" data-field="provider-id"
+                            >[ID]</span
+                          >
+                        </div>
+                        <div
+                          class="flex items-center gap-2 text-xs font-medium"
+                        >
+                          <span
+                            class="h-2.5 w-2.5 rounded-full bg-slate-300"
+                            data-status-dot
+                          ></span>
+                          <span class="text-slate-500" data-status-badge>
+                            [Status]
+                          </span>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+                  <div
+                    class="px-4 py-4 text-center text-sm text-slate-500"
+                    x-show="!hasLoaded"
+                  >
+                    Fetching service providers…
+                  </div>
+                  <div
+                    class="px-4 py-4 text-center text-sm text-slate-500"
+                    x-show="hasLoaded && filteredCount === 0"
+                  >
+                    No service providers match your search.
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  class="flex w-full items-center justify-center gap-2 rounded-b-2xl bg-sky-900 px-4 py-3 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-60"
+                  @click="confirmAllocation"
+                  :disabled="isSubmitting || !selectedProviderId"
+                  :class="{ 'opacity-60 cursor-not-allowed': isSubmitting || !selectedProviderId }"
+                >
+                  <span
+                    x-show="!isSubmitting"
+                    class="inline-flex items-center gap-2"
+                  >
+                    Confirm Allocation
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M6.66667 10.1146L12.7947 3.98633L13.7387 4.92999L6.66667 12.002L2.424 7.75933L3.36733 6.81566L6.66667 10.1146Z"
+                        fill="white"
+                      />
+                    </svg>
+                  </span>
+                  <span
+                    x-show="isSubmitting"
+                    class="inline-flex items-center gap-2 text-white"
+                  >
+                    Updating
+                    <svg
+                      class="h-4 w-4 animate-spin text-white"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <circle
+                        class="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        stroke-width="4"
+                      ></circle>
+                      <path
+                        class="opacity-75"
+                        d="M4 12a8 8 0 018-8"
+                        stroke="currentColor"
+                        stroke-width="4"
+                        stroke-linecap="round"
+                      ></path>
+                    </svg>
+                  </span>
+                </button>
+                <p
+                  class="px-4 pb-4 text-center text-sm"
+                  x-show="feedbackMessage"
+                  x-text="feedbackMessage"
+                  :class="feedbackVariant === 'error' ? 'text-rose-600' : 'text-emerald-600'"
+                  role="status"
+                ></p>
+              </div>
+            </div>
           </div>
 
           <div class="flex items-center gap-2">
@@ -302,17 +536,22 @@
             </button>
           </div>
         </div>
+
         <div>
           <div
             class="flex flex-col lg:flex-row gap-6 p-4 bg-white rounded-b-xl"
           >
             <!-- LEFT COLUMN -->
-            <section class="flex-1 flex flex-col gap-4">
+            <section class="flex-1 flex flex-col gap-4 min-w-[550px]">
               <!-- toolbar -->
 
               <!-- Inquiry Details -->
               <div
-                class="p-4 bg-white rounded-lg border border-gray-300 flex flex-col gap-4 flex-1"
+                class="p-4 bg-white rounded-lg border border-gray-300 !flex flex-col gap-4"
+                data-dynamic-list="HdrrHrQPUKTcjcfRVv8q6"
+                data-entity="peterpm"
+                data-entity-key="1rBR-jpR3yE3HE1VhFD0j"
+                data-var-inquiryid="312"
               >
                 <div class="flex items-start justify-between">
                   <div class="flex items-center gap-2">
@@ -334,8 +573,8 @@
                     </div>
                   </div>
                   <div class="px-2.5 py-0.5 bg-violet-100 rounded-full">
-                    <span class="text-violet-800 text-xs font-medium" data-inquiry-status
-                      ></span
+                    <span class="text-violet-800 text-xs font-medium"
+                      >[Inquiry_Status]</span
                     >
                   </div>
                 </div>
@@ -343,39 +582,70 @@
                 <div class="flex flex-col md:flex-row gap-10">
                   <div class="flex flex-col gap-3">
                     <div class="flex items-center gap-2 text-sm">
-                      <span class="text-neutral-600 text-nowrap">Work Order No:</span>
-                      <span class="text-blue-700 text-base text-nowrap" data-inquiry-unique>—</span>
+                      <span class="text-neutral-600 text-nowrap"
+                        >Work Order No:</span
+                      >
+                      <span class="text-blue-700 text-sm text-nowrap"
+                        >#[Unique_ID]</span
+                      >
                     </div>
                     <div class="flex items-center gap-2 text-sm">
-                      <span class="text-neutral-600 text-nowrap">Job Date:</span>
-                      <span class="text-zinc-800 font-medium text-nowrap" data-inquiry-created>—</span>
+                      <span class="text-neutral-600 text-nowrap"
+                        >Job Date:</span
+                      >
+                      <span
+                        class="text-zinc-800 font-medium text-nowrap"
+                        data-inquiry-created
+                        >[Date_Job_Required_By]</span
+                      >
                     </div>
                     <div class="flex items-center gap-2 text-sm">
-                      <span class="text-neutral-600 text-nowrap">Job Taken By:</span>
-                      <span class="text-zinc-800 font-medium text-nowrap" data-inquiry-owner>—</span>
+                      <span class="text-neutral-600 text-nowrap"
+                        >Job Taken By:</span
+                      >
+                      <span
+                        class="text-zinc-800 font-medium text-nowrap"
+                        data-inquiry-owner
+                      ></span>
                     </div>
                     <div class="flex items-center gap-2 text-sm">
-                      <span class="text-neutral-600 text-nowrap">Entered By:</span>
-                      <span class="text-zinc-800 font-medium text-nowrap" data-inquiry-entered>—</span>
+                      <span class="text-neutral-600 text-nowrap"
+                        >Entered By:</span
+                      >
+                      <span
+                        class="text-zinc-800 font-medium text-nowrap"
+                      ></span>
                     </div>
                   </div>
 
                   <div class="flex flex-col gap-3">
                     <div class="flex items-center gap-2 text-sm">
                       <span class="text-neutral-600 text-nowrap">Source:</span>
-                      <span class="text-zinc-800 font-medium text-nowrap" data-inquiry-source>—</span>
+                      <span class="text-zinc-800 font-medium text-nowrap"
+                        >[Inquiry_Source]</span
+                      >
                     </div>
                     <div class="flex items-center gap-2 text-sm">
                       <span class="text-neutral-600 text-nowrap">Type:</span>
-                      <span class="text-zinc-800 font-medium text-nowrap" data-inquiry-type>—</span>
+                      <span class="text-zinc-800 font-medium text-nowrap"
+                        >[Type]</span
+                      >
                     </div>
                     <div class="flex items-center gap-2 text-sm">
                       <span class="text-neutral-600 text-nowrap">Service:</span>
-                      <span class="text-zinc-800 font-medium text-nowrap" data-inquiry-service>—</span>
+                      <span
+                        class="text-zinc-800 font-medium text-nowrap"
+                        data-inquiry-service
+                        >[Service_Inquiry_Service_Name]</span
+                      >
                     </div>
                     <div class="flex items-center gap-2 text-sm">
-                      <span class="text-neutral-600 text-nowrap">Work Requested By:</span>
-                      <span class="text-zinc-800 font-medium text-nowrap" data-inquiry-requested>—</span>
+                      <span class="text-neutral-600 text-nowrap"
+                        >Work Requested By:</span
+                      >
+                      <span
+                        class="text-zinc-800 font-medium text-nowrap"
+                      ></span>
                     </div>
                   </div>
                 </div>
@@ -383,7 +653,11 @@
 
               <!-- Resident’s Feedback -->
               <div
-                class="p-4 bg-white rounded-lg border border-gray-300 flex flex-col gap-4 flex-1"
+                class="p-4 bg-white rounded-lg border border-gray-300 !flex flex-col gap-4"
+                data-dynamic-list="HdrrHrQPUKTcjcfRVv8q6"
+                data-entity="peterpm"
+                data-entity-key="1rBR-jpR3yE3HE1VhFD0j"
+                data-var-inquiryid="312"
               >
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-2">
@@ -426,59 +700,54 @@
                 </div>
 
                 <div class="flex flex-col gap-4">
-                  <div class="flex flex-wrap gap-x-16 gap-y-3">
-                    <div class="flex flex-col gap-1">
-                      <div class="text-neutral-600 text-sm">Animal</div>
-                      <div class="text-zinc-800 text-sm font-medium">
-                        Possum
-                      </div>
-                    </div>
+                  <div
+                    x-data="residentFeedback({
+                      rawLocations: '[Pest_Location_Options_As_Text]',
+                      rawNoises: '[Noise_Signs_Options_As_Text]',
+                      rawTimes: '[Pest_Active_Times_Options_As_Text]'
+                    })"
+                    class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+                  >
                     <div class="flex flex-col gap-1">
                       <div class="text-neutral-600 text-sm">Location</div>
-                      <div class="text-zinc-800 text-sm font-medium">
-                        Upper Ceiling
-                      </div>
+                      <div
+                        class="text-zinc-800 text-sm font-medium"
+                        x-text="displayLocations"
+                      ></div>
                     </div>
                     <div class="flex flex-col gap-1">
                       <div class="text-neutral-600 text-sm">Noises</div>
-                      <div class="text-zinc-800 text-sm font-medium">
-                        Hissing
-                      </div>
+                      <div
+                        class="text-zinc-800 text-sm font-medium"
+                        x-text="displayNoises"
+                      ></div>
                     </div>
-                  </div>
-
-                  <div class="flex flex-wrap gap-6">
+                    <div class="flex flex-col gap-1">
+                      <div class="text-neutral-600 text-sm">Times</div>
+                      <div
+                        class="text-zinc-800 text-sm font-medium"
+                        x-text="displayTimes"
+                      ></div>
+                    </div>
                     <div class="flex flex-col gap-1">
                       <div class="text-neutral-600 text-sm">
                         Job Required By
                       </div>
                       <div class="text-zinc-800 text-sm font-medium">
-                        15 May, 2020
-                      </div>
-                    </div>
-                    <div class="flex flex-col gap-1">
-                      <div class="text-neutral-600 text-sm">Times</div>
-                      <div class="text-zinc-800 text-sm font-medium">
-                        Early Morning
+                        [Date_Job_Required_By]
                       </div>
                     </div>
                   </div>
-
                   <div class="flex flex-col gap-1">
                     <div class="text-sky-900 text-sm">Client Notes</div>
-                    <p class="text-zinc-800 text-sm">
-                      Client prefers communication via email rather than phone
-                      calls. Confirm before scheduling a visit. Previous service
-                      completed 3 months ago. Confirm before scheduling a visit.
-                      Previous service completed 3 months ago.
-                    </p>
+                    <p class="text-zinc-800 text-sm">[Client_Notes]</p>
                   </div>
                 </div>
               </div>
 
               <!-- Property Contacts (cards in flex-wrap; no absolute/relative) -->
               <div
-                class="p-4 bg-white rounded-lg border border-gray-300 flex flex-col gap-4 flex-1"
+                class="p-4 bg-white rounded-lg border border-gray-300 !flex flex-col gap-4"
               >
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-2">
@@ -519,7 +788,13 @@
                   </button>
                 </div>
 
-                <div class="flex flex-wrap gap-4">
+                <div
+                  data-dynamic-list="fVMO6Q_mHpunK_535VPVl"
+                  data-entity="peterpm"
+                  data-entity-key="1rBR-jpR3yE3HE1VhFD0j"
+                  data-var-propertyid="174"
+                  class="!flex gap-4"
+                >
                   <!-- card -->
                   <div
                     class="w-full sm:w-60 bg-white rounded border border-gray-300 flex flex-col"
@@ -540,7 +815,7 @@
                         </svg>
 
                         <div class="text-neutral-700 text-sm font-medium">
-                          Owner
+                          [Role]
                         </div>
                       </div>
 
@@ -559,7 +834,9 @@
                             />
                           </svg>
 
-                          <div class="text-neutral-700 text-xs">Ron Potter</div>
+                          <div class="text-neutral-700 text-xs">
+                            [Contact_First_Name] [Contact_Last_Name]
+                          </div>
                         </div>
                         <div class="flex items-center gap-1">
                           <svg
@@ -576,7 +853,7 @@
                           </svg>
 
                           <div class="text-neutral-700 text-xs">
-                            +61 400123123
+                            [Contact_SMS_Number]
                           </div>
                         </div>
                         <div class="flex items-center gap-1">
@@ -594,283 +871,43 @@
                           </svg>
 
                           <div class="text-neutral-700 text-xs">
-                            ron@example.com
+                            [ContactEmail]
                           </div>
                         </div>
                       </div>
                     </div>
                     <div class="grid grid-cols-2 border-t border-gray-300">
-                      <button class="px-4 py-2">✎</button>
                       <button
-                        class="px-4 py-2 border-l border-gray-300 text-red-600"
+                        class="px-4 py-2 w-full !flex items-center justify-center"
                       >
-                        🗑
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 16 16"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M14.3535 4.62503L11.375 1.64581C11.2759 1.54674 11.1584 1.46815 11.0289 1.41453C10.8995 1.36091 10.7608 1.33331 10.6207 1.33331C10.4806 1.33331 10.3419 1.36091 10.2125 1.41453C10.083 1.46815 9.96543 1.54674 9.86638 1.64581L1.64603 9.86683C1.54656 9.96551 1.46769 10.083 1.41402 10.2124C1.36034 10.3419 1.33293 10.4807 1.33338 10.6208V13.6C1.33338 13.8829 1.44576 14.1542 1.64579 14.3542C1.84582 14.5543 2.11712 14.6666 2.40001 14.6666H5.37922C5.51935 14.6671 5.65816 14.6397 5.7876 14.586C5.91703 14.5323 6.03451 14.4535 6.1332 14.354L14.3535 6.13363C14.4526 6.03459 14.5312 5.91699 14.5848 5.78757C14.6384 5.65814 14.666 5.51942 14.666 5.37933C14.666 5.23924 14.6384 5.10052 14.5848 4.97109C14.5312 4.84167 14.4526 4.72407 14.3535 4.62503ZM5.37922 13.6H2.40001V10.6208L8.26645 4.75435L11.2457 7.73357L5.37922 13.6ZM11.9996 6.97894L9.02042 4.00038L10.6204 2.40044L13.5996 5.379L11.9996 6.97894Z"
+                            fill="#003882"
+                          />
+                        </svg>
                       </button>
-                    </div>
-                  </div>
-
-                  <!-- card -->
-                  <div
-                    class="w-full sm:w-60 bg-white rounded border border-gray-300 flex flex-col"
-                  >
-                    <div class="px-3 pt-3 pb-2 flex flex-col gap-2">
-                      <div class="flex items-center gap-1.5">
+                      <button
+                        class="px-4 py-2 w-full !flex items-center justify-center"
+                      >
                         <svg
-                          width="20"
-                          height="19"
-                          viewBox="0 0 20 19"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 16 16"
                           fill="none"
                           xmlns="http://www.w3.org/2000/svg"
                         >
                           <path
-                            d="M6.86909 6.11666L1.55243 6.8875L1.45826 6.90666C1.31571 6.94451 1.18576 7.0195 1.08167 7.124C0.977585 7.22849 0.903097 7.35874 0.865812 7.50143C0.828528 7.64413 0.829783 7.79417 0.86945 7.93622C0.909117 8.07828 0.985774 8.20726 1.09159 8.31L4.94326 12.0592L4.03493 17.355L4.02409 17.4467C4.01537 17.5941 4.04598 17.7412 4.1128 17.8729C4.17962 18.0046 4.28025 18.1162 4.40437 18.1963C4.5285 18.2763 4.67167 18.3219 4.81922 18.3284C4.96677 18.3349 5.1134 18.3021 5.24409 18.2333L9.99909 15.7333L14.7433 18.2333L14.8266 18.2717C14.9641 18.3258 15.1136 18.3425 15.2597 18.3198C15.4058 18.2971 15.5432 18.236 15.6579 18.1427C15.7726 18.0494 15.8604 17.9273 15.9123 17.7889C15.9642 17.6504 15.9783 17.5007 15.9533 17.355L15.0441 12.0592L18.8974 8.30916L18.9624 8.23833C19.0553 8.12397 19.1162 7.98704 19.1389 7.84149C19.1616 7.69594 19.1453 7.54698 19.0917 7.40977C19.0381 7.27257 18.949 7.15202 18.8337 7.06042C18.7183 6.96883 18.5807 6.90944 18.4349 6.88833L13.1183 6.11666L10.7416 1.3C10.6728 1.16044 10.5664 1.04293 10.4343 0.96075C10.3021 0.878575 10.1497 0.835022 9.99409 0.835022C9.83852 0.835022 9.68604 0.878575 9.55394 0.96075C9.42183 1.04293 9.31536 1.16044 9.24659 1.3L6.86909 6.11666Z"
-                            fill="#FFD700"
+                            d="M13.7949 3.3846H11.2308V2.87177C11.2308 2.46375 11.0687 2.07244 10.7802 1.78392C10.4916 1.4954 10.1003 1.33331 9.69231 1.33331H6.61539C6.20736 1.33331 5.81605 1.4954 5.52753 1.78392C5.23901 2.07244 5.07692 2.46375 5.07692 2.87177V3.3846H2.51282C2.37681 3.3846 2.24637 3.43862 2.1502 3.5348C2.05403 3.63097 2 3.76141 2 3.89742C2 4.03342 2.05403 4.16386 2.1502 4.26003C2.24637 4.35621 2.37681 4.41024 2.51282 4.41024H3.02564V13.641C3.02564 13.913 3.1337 14.1739 3.32604 14.3662C3.51839 14.5586 3.77927 14.6666 4.05128 14.6666H12.2564C12.5284 14.6666 12.7893 14.5586 12.9816 14.3662C13.174 14.1739 13.2821 13.913 13.2821 13.641V4.41024H13.7949C13.9309 4.41024 14.0613 4.35621 14.1575 4.26003C14.2537 4.16386 14.3077 4.03342 14.3077 3.89742C14.3077 3.76141 14.2537 3.63097 14.1575 3.5348C14.0613 3.43862 13.9309 3.3846 13.7949 3.3846ZM6.10256 2.87177C6.10256 2.73577 6.15659 2.60533 6.25277 2.50916C6.34894 2.41298 6.47938 2.35895 6.61539 2.35895H9.69231C9.82832 2.35895 9.95876 2.41298 10.0549 2.50916C10.1511 2.60533 10.2051 2.73577 10.2051 2.87177V3.3846H6.10256V2.87177ZM12.2564 13.641H4.05128V4.41024H12.2564V13.641ZM7.12821 6.97434V11.0769C7.12821 11.2129 7.07418 11.3434 6.978 11.4395C6.88183 11.5357 6.75139 11.5897 6.61539 11.5897C6.47938 11.5897 6.34894 11.5357 6.25277 11.4395C6.15659 11.3434 6.10256 11.2129 6.10256 11.0769V6.97434C6.10256 6.83833 6.15659 6.70789 6.25277 6.61172C6.34894 6.51555 6.47938 6.46152 6.61539 6.46152C6.75139 6.46152 6.88183 6.51555 6.978 6.61172C7.07418 6.70789 7.12821 6.83833 7.12821 6.97434ZM10.2051 6.97434V11.0769C10.2051 11.2129 10.1511 11.3434 10.0549 11.4395C9.95876 11.5357 9.82832 11.5897 9.69231 11.5897C9.5563 11.5897 9.42586 11.5357 9.32969 11.4395C9.23352 11.3434 9.17949 11.2129 9.17949 11.0769V6.97434C9.17949 6.83833 9.23352 6.70789 9.32969 6.61172C9.42586 6.51555 9.5563 6.46152 9.69231 6.46152C9.82832 6.46152 9.95876 6.51555 10.0549 6.61172C10.1511 6.70789 10.2051 6.83833 10.2051 6.97434Z"
+                            fill="#D80F0F"
                           />
                         </svg>
-
-                        <div class="text-neutral-700 text-sm font-medium">
-                          Property Manager
-                        </div>
-                      </div>
-
-                      <div class="flex flex-col gap-2">
-                        <div class="flex items-center gap-1">
-                          <svg
-                            width="14"
-                            height="14"
-                            viewBox="0 0 14 14"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M12.7672 11.7029C11.9138 10.2274 10.5986 9.16948 9.06381 8.66796C9.823 8.21601 10.4128 7.52735 10.7428 6.70772C11.0727 5.8881 11.1244 4.98284 10.89 4.13096C10.6557 3.27908 10.1481 2.52768 9.4454 1.99217C8.74266 1.45665 7.88355 1.16663 7.00002 1.16663C6.11649 1.16663 5.25738 1.45665 4.55464 1.99217C3.85189 2.52768 3.34436 3.27908 3.10999 4.13096C2.87562 4.98284 2.92736 5.8881 3.25728 6.70772C3.58719 7.52735 4.17704 8.21601 4.93623 8.66796C3.40141 9.16892 2.08625 10.2269 1.23283 11.7029C1.20153 11.7539 1.18077 11.8107 1.17178 11.8699C1.16278 11.929 1.16573 11.9894 1.18045 12.0474C1.19517 12.1055 1.22136 12.16 1.25748 12.2077C1.2936 12.2554 1.33891 12.2955 1.39075 12.3254C1.44259 12.3553 1.4999 12.3746 1.5593 12.382C1.6187 12.3895 1.67898 12.3849 1.7366 12.3687C1.79422 12.3524 1.848 12.3248 1.89477 12.2875C1.94154 12.2501 1.98036 12.2037 2.00892 12.1511C3.06464 10.3266 4.93062 9.23729 7.00002 9.23729C9.06942 9.23729 10.9354 10.3266 11.9911 12.1511C12.0197 12.2037 12.0585 12.2501 12.1053 12.2875C12.152 12.3248 12.2058 12.3524 12.2634 12.3687C12.3211 12.3849 12.3813 12.3895 12.4407 12.382C12.5001 12.3746 12.5575 12.3553 12.6093 12.3254C12.6611 12.2955 12.7064 12.2554 12.7426 12.2077C12.7787 12.16 12.8049 12.1055 12.8196 12.0474C12.8343 11.9894 12.8373 11.929 12.8283 11.8699C12.8193 11.8107 12.7985 11.7539 12.7672 11.7029ZM3.86202 5.20272C3.86202 4.58208 4.04606 3.97538 4.39087 3.45934C4.73568 2.9433 5.22577 2.54109 5.79916 2.30359C6.37255 2.06608 7.0035 2.00394 7.61221 2.12502C8.22093 2.2461 8.78006 2.54496 9.21892 2.98382C9.65777 3.42268 9.95664 3.98181 10.0777 4.59053C10.1988 5.19924 10.1367 5.83018 9.89915 6.40358C9.66164 6.97697 9.25944 7.46706 8.7434 7.81187C8.22736 8.15668 7.62066 8.34072 7.00002 8.34072C6.16804 8.33983 5.3704 8.00893 4.7821 7.42064C4.19381 6.83234 3.86291 6.03469 3.86202 5.20272Z"
-                              fill="#003882"
-                            />
-                          </svg>
-
-                          <div class="text-neutral-700 text-xs">Devon Lane</div>
-                        </div>
-                        <div class="flex items-center gap-1">
-                          <svg
-                            width="14"
-                            height="14"
-                            viewBox="0 0 14 14"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M12.1528 12.8334C10.8025 12.8334 9.46838 12.5391 8.15048 11.9506C6.83258 11.3621 5.63351 10.5275 4.55326 9.44678C3.47301 8.3661 2.63863 7.16703 2.05011 5.84956C1.46159 4.53209 1.16712 3.19798 1.16669 1.84724C1.16669 1.6528 1.2315 1.49076 1.36113 1.36113C1.49076 1.2315 1.6528 1.16669 1.84724 1.16669H4.47224C4.62348 1.16669 4.75851 1.21811 4.87734 1.32095C4.99616 1.42379 5.06638 1.54521 5.08798 1.68521L5.50928 3.95372C5.53088 4.12656 5.52548 4.2724 5.49308 4.39122C5.46067 4.51005 5.40125 4.61267 5.31483 4.69909L3.74308 6.28706C3.95913 6.68675 4.21558 7.07283 4.51243 7.4453C4.80928 7.81777 5.13616 8.17706 5.49308 8.52317C5.82795 8.85805 6.17903 9.16872 6.54632 9.4552C6.9136 9.74169 7.30249 10.0035 7.71298 10.2408L9.23613 8.71761C9.33335 8.62039 9.46039 8.54758 9.61724 8.49919C9.77409 8.45079 9.92792 8.43718 10.0787 8.45835L12.3148 8.91206C12.4661 8.95527 12.5903 9.03369 12.6875 9.14733C12.7847 9.26098 12.8334 9.3878 12.8334 9.5278V12.1528C12.8334 12.3472 12.7685 12.5093 12.6389 12.6389C12.5093 12.7685 12.3472 12.8334 12.1528 12.8334ZM9.85187 5.05558H10.8889C11.0726 5.05558 11.2266 5.1178 11.351 5.24224C11.4755 5.36669 11.5375 5.52051 11.5371 5.70372C11.5366 5.88693 11.4744 6.04098 11.3504 6.16585C11.2264 6.29073 11.0726 6.35274 10.8889 6.35187H8.29632C8.11267 6.35187 7.95885 6.28965 7.83484 6.16521C7.71082 6.04076 7.6486 5.88693 7.64817 5.70372V3.11113C7.64817 2.92749 7.71039 2.77366 7.83484 2.64965C7.95928 2.52564 8.11311 2.46342 8.29632 2.46298C8.47953 2.46255 8.63357 2.52477 8.75845 2.64965C8.88332 2.77453 8.94533 2.92835 8.94446 3.11113V4.14817L11.7315 1.36113C11.8503 1.2423 12.0016 1.18289 12.1852 1.18289C12.3688 1.18289 12.5201 1.2423 12.6389 1.36113C12.7577 1.47996 12.8172 1.63119 12.8172 1.81484C12.8172 1.99848 12.7577 2.14971 12.6389 2.26854L9.85187 5.05558Z"
-                              fill="#003882"
-                            />
-                          </svg>
-
-                          <div class="text-neutral-700 text-xs">
-                            +61 400123123
-                          </div>
-                        </div>
-                        <div class="flex items-center gap-1">
-                          <svg
-                            width="14"
-                            height="14"
-                            viewBox="0 0 14 14"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M12.3846 2.33331H1.6154C1.4964 2.33331 1.38226 2.38059 1.29811 2.46474C1.21396 2.54889 1.16669 2.66302 1.16669 2.78203V10.4102C1.16669 10.6483 1.26124 10.8765 1.42954 11.0448C1.59784 11.2131 1.82611 11.3077 2.06412 11.3077H11.9359C12.1739 11.3077 12.4022 11.2131 12.5705 11.0448C12.7388 10.8765 12.8334 10.6483 12.8334 10.4102V2.78203C12.8334 2.66302 12.7861 2.54889 12.7019 2.46474C12.6178 2.38059 12.5036 2.33331 12.3846 2.33331ZM11.2309 3.23075L7.00002 7.10935L2.76917 3.23075H11.2309ZM11.9359 10.4102H2.06412V3.8023L6.69657 8.04886C6.77936 8.12485 6.88764 8.16702 7.00002 8.16702C7.1124 8.16702 7.22068 8.12485 7.30347 8.04886L11.9359 3.8023V10.4102Z"
-                              fill="#003882"
-                            />
-                          </svg>
-
-                          <div class="text-neutral-700 text-xs">
-                            devon@example.com
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="grid grid-cols-2 border-t border-gray-300">
-                      <button class="px-4 py-2">✎</button>
-                      <button
-                        class="px-4 py-2 border-l border-gray-300 text-red-600"
-                      >
-                        🗑
-                      </button>
-                    </div>
-                  </div>
-
-                  <!-- card -->
-                  <div
-                    class="w-full sm:w-60 bg-white rounded border border-gray-300 flex flex-col"
-                  >
-                    <div class="px-3 pt-3 pb-2 flex flex-col gap-2">
-                      <div class="flex items-center gap-1.5">
-                        <svg
-                          width="20"
-                          height="19"
-                          viewBox="0 0 20 19"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M6.86909 6.11666L1.55243 6.8875L1.45826 6.90666C1.31571 6.94451 1.18576 7.0195 1.08167 7.124C0.977585 7.22849 0.903097 7.35874 0.865812 7.50143C0.828528 7.64413 0.829783 7.79417 0.86945 7.93622C0.909117 8.07828 0.985774 8.20726 1.09159 8.31L4.94326 12.0592L4.03493 17.355L4.02409 17.4467C4.01537 17.5941 4.04598 17.7412 4.1128 17.8729C4.17962 18.0046 4.28025 18.1162 4.40437 18.1963C4.5285 18.2763 4.67167 18.3219 4.81922 18.3284C4.96677 18.3349 5.1134 18.3021 5.24409 18.2333L9.99909 15.7333L14.7433 18.2333L14.8266 18.2717C14.9641 18.3258 15.1136 18.3425 15.2597 18.3198C15.4058 18.2971 15.5432 18.236 15.6579 18.1427C15.7726 18.0494 15.8604 17.9273 15.9123 17.7889C15.9642 17.6504 15.9783 17.5007 15.9533 17.355L15.0441 12.0592L18.8974 8.30916L18.9624 8.23833C19.0553 8.12397 19.1162 7.98704 19.1389 7.84149C19.1616 7.69594 19.1453 7.54698 19.0917 7.40977C19.0381 7.27257 18.949 7.15202 18.8337 7.06042C18.7183 6.96883 18.5807 6.90944 18.4349 6.88833L13.1183 6.11666L10.7416 1.3C10.6728 1.16044 10.5664 1.04293 10.4343 0.96075C10.3021 0.878575 10.1497 0.835022 9.99409 0.835022C9.83852 0.835022 9.68604 0.878575 9.55394 0.96075C9.42183 1.04293 9.31536 1.16044 9.24659 1.3L6.86909 6.11666Z"
-                            fill="#FFD700"
-                          />
-                        </svg>
-
-                        <div class="text-neutral-700 text-sm font-medium">
-                          Property Manager
-                        </div>
-                      </div>
-
-                      <div class="flex flex-col gap-2">
-                        <div class="flex items-center gap-1">
-                          <svg
-                            width="14"
-                            height="14"
-                            viewBox="0 0 14 14"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M12.7672 11.7029C11.9138 10.2274 10.5986 9.16948 9.06381 8.66796C9.823 8.21601 10.4128 7.52735 10.7428 6.70772C11.0727 5.8881 11.1244 4.98284 10.89 4.13096C10.6557 3.27908 10.1481 2.52768 9.4454 1.99217C8.74266 1.45665 7.88355 1.16663 7.00002 1.16663C6.11649 1.16663 5.25738 1.45665 4.55464 1.99217C3.85189 2.52768 3.34436 3.27908 3.10999 4.13096C2.87562 4.98284 2.92736 5.8881 3.25728 6.70772C3.58719 7.52735 4.17704 8.21601 4.93623 8.66796C3.40141 9.16892 2.08625 10.2269 1.23283 11.7029C1.20153 11.7539 1.18077 11.8107 1.17178 11.8699C1.16278 11.929 1.16573 11.9894 1.18045 12.0474C1.19517 12.1055 1.22136 12.16 1.25748 12.2077C1.2936 12.2554 1.33891 12.2955 1.39075 12.3254C1.44259 12.3553 1.4999 12.3746 1.5593 12.382C1.6187 12.3895 1.67898 12.3849 1.7366 12.3687C1.79422 12.3524 1.848 12.3248 1.89477 12.2875C1.94154 12.2501 1.98036 12.2037 2.00892 12.1511C3.06464 10.3266 4.93062 9.23729 7.00002 9.23729C9.06942 9.23729 10.9354 10.3266 11.9911 12.1511C12.0197 12.2037 12.0585 12.2501 12.1053 12.2875C12.152 12.3248 12.2058 12.3524 12.2634 12.3687C12.3211 12.3849 12.3813 12.3895 12.4407 12.382C12.5001 12.3746 12.5575 12.3553 12.6093 12.3254C12.6611 12.2955 12.7064 12.2554 12.7426 12.2077C12.7787 12.16 12.8049 12.1055 12.8196 12.0474C12.8343 11.9894 12.8373 11.929 12.8283 11.8699C12.8193 11.8107 12.7985 11.7539 12.7672 11.7029ZM3.86202 5.20272C3.86202 4.58208 4.04606 3.97538 4.39087 3.45934C4.73568 2.9433 5.22577 2.54109 5.79916 2.30359C6.37255 2.06608 7.0035 2.00394 7.61221 2.12502C8.22093 2.2461 8.78006 2.54496 9.21892 2.98382C9.65777 3.42268 9.95664 3.98181 10.0777 4.59053C10.1988 5.19924 10.1367 5.83018 9.89915 6.40358C9.66164 6.97697 9.25944 7.46706 8.7434 7.81187C8.22736 8.15668 7.62066 8.34072 7.00002 8.34072C6.16804 8.33983 5.3704 8.00893 4.7821 7.42064C4.19381 6.83234 3.86291 6.03469 3.86202 5.20272Z"
-                              fill="#003882"
-                            />
-                          </svg>
-
-                          <div class="text-neutral-700 text-xs">Ron Potter</div>
-                        </div>
-                        <div class="flex items-center gap-1">
-                          <svg
-                            width="14"
-                            height="14"
-                            viewBox="0 0 14 14"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M12.1528 12.8334C10.8025 12.8334 9.46838 12.5391 8.15048 11.9506C6.83258 11.3621 5.63351 10.5275 4.55326 9.44678C3.47301 8.3661 2.63863 7.16703 2.05011 5.84956C1.46159 4.53209 1.16712 3.19798 1.16669 1.84724C1.16669 1.6528 1.2315 1.49076 1.36113 1.36113C1.49076 1.2315 1.6528 1.16669 1.84724 1.16669H4.47224C4.62348 1.16669 4.75851 1.21811 4.87734 1.32095C4.99616 1.42379 5.06638 1.54521 5.08798 1.68521L5.50928 3.95372C5.53088 4.12656 5.52548 4.2724 5.49308 4.39122C5.46067 4.51005 5.40125 4.61267 5.31483 4.69909L3.74308 6.28706C3.95913 6.68675 4.21558 7.07283 4.51243 7.4453C4.80928 7.81777 5.13616 8.17706 5.49308 8.52317C5.82795 8.85805 6.17903 9.16872 6.54632 9.4552C6.9136 9.74169 7.30249 10.0035 7.71298 10.2408L9.23613 8.71761C9.33335 8.62039 9.46039 8.54758 9.61724 8.49919C9.77409 8.45079 9.92792 8.43718 10.0787 8.45835L12.3148 8.91206C12.4661 8.95527 12.5903 9.03369 12.6875 9.14733C12.7847 9.26098 12.8334 9.3878 12.8334 9.5278V12.1528C12.8334 12.3472 12.7685 12.5093 12.6389 12.6389C12.5093 12.7685 12.3472 12.8334 12.1528 12.8334ZM9.85187 5.05558H10.8889C11.0726 5.05558 11.2266 5.1178 11.351 5.24224C11.4755 5.36669 11.5375 5.52051 11.5371 5.70372C11.5366 5.88693 11.4744 6.04098 11.3504 6.16585C11.2264 6.29073 11.0726 6.35274 10.8889 6.35187H8.29632C8.11267 6.35187 7.95885 6.28965 7.83484 6.16521C7.71082 6.04076 7.6486 5.88693 7.64817 5.70372V3.11113C7.64817 2.92749 7.71039 2.77366 7.83484 2.64965C7.95928 2.52564 8.11311 2.46342 8.29632 2.46298C8.47953 2.46255 8.63357 2.52477 8.75845 2.64965C8.88332 2.77453 8.94533 2.92835 8.94446 3.11113V4.14817L11.7315 1.36113C11.8503 1.2423 12.0016 1.18289 12.1852 1.18289C12.3688 1.18289 12.5201 1.2423 12.6389 1.36113C12.7577 1.47996 12.8172 1.63119 12.8172 1.81484C12.8172 1.99848 12.7577 2.14971 12.6389 2.26854L9.85187 5.05558Z"
-                              fill="#003882"
-                            />
-                          </svg>
-
-                          <div class="text-neutral-700 text-xs">
-                            +61 400123123
-                          </div>
-                        </div>
-                        <div class="flex items-center gap-1">
-                          <svg
-                            width="14"
-                            height="14"
-                            viewBox="0 0 14 14"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M12.3846 2.33331H1.6154C1.4964 2.33331 1.38226 2.38059 1.29811 2.46474C1.21396 2.54889 1.16669 2.66302 1.16669 2.78203V10.4102C1.16669 10.6483 1.26124 10.8765 1.42954 11.0448C1.59784 11.2131 1.82611 11.3077 2.06412 11.3077H11.9359C12.1739 11.3077 12.4022 11.2131 12.5705 11.0448C12.7388 10.8765 12.8334 10.6483 12.8334 10.4102V2.78203C12.8334 2.66302 12.7861 2.54889 12.7019 2.46474C12.6178 2.38059 12.5036 2.33331 12.3846 2.33331ZM11.2309 3.23075L7.00002 7.10935L2.76917 3.23075H11.2309ZM11.9359 10.4102H2.06412V3.8023L6.69657 8.04886C6.77936 8.12485 6.88764 8.16702 7.00002 8.16702C7.1124 8.16702 7.22068 8.12485 7.30347 8.04886L11.9359 3.8023V10.4102Z"
-                              fill="#003882"
-                            />
-                          </svg>
-
-                          <div class="text-neutral-700 text-xs">
-                            ron@example.com
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="grid grid-cols-2 border-t border-gray-300">
-                      <button class="px-4 py-2">✎</button>
-                      <button
-                        class="px-4 py-2 border-l border-gray-300 text-red-600"
-                      >
-                        🗑
-                      </button>
-                    </div>
-                  </div>
-
-                  <!-- card -->
-                  <div
-                    class="w-full sm:w-60 bg-white rounded border border-gray-300 flex flex-col"
-                  >
-                    <div class="px-3 pt-3 pb-2 flex flex-col gap-2">
-                      <div class="flex items-center gap-1.5">
-                        <svg
-                          width="20"
-                          height="19"
-                          viewBox="0 0 20 19"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M6.86909 6.11666L1.55243 6.8875L1.45826 6.90666C1.31571 6.94451 1.18576 7.0195 1.08167 7.124C0.977585 7.22849 0.903097 7.35874 0.865812 7.50143C0.828528 7.64413 0.829783 7.79417 0.86945 7.93622C0.909117 8.07828 0.985774 8.20726 1.09159 8.31L4.94326 12.0592L4.03493 17.355L4.02409 17.4467C4.01537 17.5941 4.04598 17.7412 4.1128 17.8729C4.17962 18.0046 4.28025 18.1162 4.40437 18.1963C4.5285 18.2763 4.67167 18.3219 4.81922 18.3284C4.96677 18.3349 5.1134 18.3021 5.24409 18.2333L9.99909 15.7333L14.7433 18.2333L14.8266 18.2717C14.9641 18.3258 15.1136 18.3425 15.2597 18.3198C15.4058 18.2971 15.5432 18.236 15.6579 18.1427C15.7726 18.0494 15.8604 17.9273 15.9123 17.7889C15.9642 17.6504 15.9783 17.5007 15.9533 17.355L15.0441 12.0592L18.8974 8.30916L18.9624 8.23833C19.0553 8.12397 19.1162 7.98704 19.1389 7.84149C19.1616 7.69594 19.1453 7.54698 19.0917 7.40977C19.0381 7.27257 18.949 7.15202 18.8337 7.06042C18.7183 6.96883 18.5807 6.90944 18.4349 6.88833L13.1183 6.11666L10.7416 1.3C10.6728 1.16044 10.5664 1.04293 10.4343 0.96075C10.3021 0.878575 10.1497 0.835022 9.99409 0.835022C9.83852 0.835022 9.68604 0.878575 9.55394 0.96075C9.42183 1.04293 9.31536 1.16044 9.24659 1.3L6.86909 6.11666Z"
-                            fill="#FFD700"
-                          />
-                        </svg>
-
-                        <div class="text-neutral-700 text-sm font-medium">
-                          Resident
-                        </div>
-                      </div>
-
-                      <div class="flex flex-col gap-2">
-                        <div class="flex items-center gap-1">
-                          <svg
-                            width="14"
-                            height="14"
-                            viewBox="0 0 14 14"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M12.7672 11.7029C11.9138 10.2274 10.5986 9.16948 9.06381 8.66796C9.823 8.21601 10.4128 7.52735 10.7428 6.70772C11.0727 5.8881 11.1244 4.98284 10.89 4.13096C10.6557 3.27908 10.1481 2.52768 9.4454 1.99217C8.74266 1.45665 7.88355 1.16663 7.00002 1.16663C6.11649 1.16663 5.25738 1.45665 4.55464 1.99217C3.85189 2.52768 3.34436 3.27908 3.10999 4.13096C2.87562 4.98284 2.92736 5.8881 3.25728 6.70772C3.58719 7.52735 4.17704 8.21601 4.93623 8.66796C3.40141 9.16892 2.08625 10.2269 1.23283 11.7029C1.20153 11.7539 1.18077 11.8107 1.17178 11.8699C1.16278 11.929 1.16573 11.9894 1.18045 12.0474C1.19517 12.1055 1.22136 12.16 1.25748 12.2077C1.2936 12.2554 1.33891 12.2955 1.39075 12.3254C1.44259 12.3553 1.4999 12.3746 1.5593 12.382C1.6187 12.3895 1.67898 12.3849 1.7366 12.3687C1.79422 12.3524 1.848 12.3248 1.89477 12.2875C1.94154 12.2501 1.98036 12.2037 2.00892 12.1511C3.06464 10.3266 4.93062 9.23729 7.00002 9.23729C9.06942 9.23729 10.9354 10.3266 11.9911 12.1511C12.0197 12.2037 12.0585 12.2501 12.1053 12.2875C12.152 12.3248 12.2058 12.3524 12.2634 12.3687C12.3211 12.3849 12.3813 12.3895 12.4407 12.382C12.5001 12.3746 12.5575 12.3553 12.6093 12.3254C12.6611 12.2955 12.7064 12.2554 12.7426 12.2077C12.7787 12.16 12.8049 12.1055 12.8196 12.0474C12.8343 11.9894 12.8373 11.929 12.8283 11.8699C12.8193 11.8107 12.7985 11.7539 12.7672 11.7029ZM3.86202 5.20272C3.86202 4.58208 4.04606 3.97538 4.39087 3.45934C4.73568 2.9433 5.22577 2.54109 5.79916 2.30359C6.37255 2.06608 7.0035 2.00394 7.61221 2.12502C8.22093 2.2461 8.78006 2.54496 9.21892 2.98382C9.65777 3.42268 9.95664 3.98181 10.0777 4.59053C10.1988 5.19924 10.1367 5.83018 9.89915 6.40358C9.66164 6.97697 9.25944 7.46706 8.7434 7.81187C8.22736 8.15668 7.62066 8.34072 7.00002 8.34072C6.16804 8.33983 5.3704 8.00893 4.7821 7.42064C4.19381 6.83234 3.86291 6.03469 3.86202 5.20272Z"
-                              fill="#003882"
-                            />
-                          </svg>
-
-                          <div class="text-neutral-700 text-xs">Devon Lane</div>
-                        </div>
-                        <div class="flex items-center gap-1">
-                          <svg
-                            width="14"
-                            height="14"
-                            viewBox="0 0 14 14"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M12.1528 12.8334C10.8025 12.8334 9.46838 12.5391 8.15048 11.9506C6.83258 11.3621 5.63351 10.5275 4.55326 9.44678C3.47301 8.3661 2.63863 7.16703 2.05011 5.84956C1.46159 4.53209 1.16712 3.19798 1.16669 1.84724C1.16669 1.6528 1.2315 1.49076 1.36113 1.36113C1.49076 1.2315 1.6528 1.16669 1.84724 1.16669H4.47224C4.62348 1.16669 4.75851 1.21811 4.87734 1.32095C4.99616 1.42379 5.06638 1.54521 5.08798 1.68521L5.50928 3.95372C5.53088 4.12656 5.52548 4.2724 5.49308 4.39122C5.46067 4.51005 5.40125 4.61267 5.31483 4.69909L3.74308 6.28706C3.95913 6.68675 4.21558 7.07283 4.51243 7.4453C4.80928 7.81777 5.13616 8.17706 5.49308 8.52317C5.82795 8.85805 6.17903 9.16872 6.54632 9.4552C6.9136 9.74169 7.30249 10.0035 7.71298 10.2408L9.23613 8.71761C9.33335 8.62039 9.46039 8.54758 9.61724 8.49919C9.77409 8.45079 9.92792 8.43718 10.0787 8.45835L12.3148 8.91206C12.4661 8.95527 12.5903 9.03369 12.6875 9.14733C12.7847 9.26098 12.8334 9.3878 12.8334 9.5278V12.1528C12.8334 12.3472 12.7685 12.5093 12.6389 12.6389C12.5093 12.7685 12.3472 12.8334 12.1528 12.8334ZM9.85187 5.05558H10.8889C11.0726 5.05558 11.2266 5.1178 11.351 5.24224C11.4755 5.36669 11.5375 5.52051 11.5371 5.70372C11.5366 5.88693 11.4744 6.04098 11.3504 6.16585C11.2264 6.29073 11.0726 6.35274 10.8889 6.35187H8.29632C8.11267 6.35187 7.95885 6.28965 7.83484 6.16521C7.71082 6.04076 7.6486 5.88693 7.64817 5.70372V3.11113C7.64817 2.92749 7.71039 2.77366 7.83484 2.64965C7.95928 2.52564 8.11311 2.46342 8.29632 2.46298C8.47953 2.46255 8.63357 2.52477 8.75845 2.64965C8.88332 2.77453 8.94533 2.92835 8.94446 3.11113V4.14817L11.7315 1.36113C11.8503 1.2423 12.0016 1.18289 12.1852 1.18289C12.3688 1.18289 12.5201 1.2423 12.6389 1.36113C12.7577 1.47996 12.8172 1.63119 12.8172 1.81484C12.8172 1.99848 12.7577 2.14971 12.6389 2.26854L9.85187 5.05558Z"
-                              fill="#003882"
-                            />
-                          </svg>
-                          <div class="text-neutral-700 text-xs">
-                            +61 400123123
-                          </div>
-                        </div>
-                        <div class="flex items-center gap-1">
-                          <svg
-                            width="14"
-                            height="14"
-                            viewBox="0 0 14 14"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M12.3846 2.33331H1.6154C1.4964 2.33331 1.38226 2.38059 1.29811 2.46474C1.21396 2.54889 1.16669 2.66302 1.16669 2.78203V10.4102C1.16669 10.6483 1.26124 10.8765 1.42954 11.0448C1.59784 11.2131 1.82611 11.3077 2.06412 11.3077H11.9359C12.1739 11.3077 12.4022 11.2131 12.5705 11.0448C12.7388 10.8765 12.8334 10.6483 12.8334 10.4102V2.78203C12.8334 2.66302 12.7861 2.54889 12.7019 2.46474C12.6178 2.38059 12.5036 2.33331 12.3846 2.33331ZM11.2309 3.23075L7.00002 7.10935L2.76917 3.23075H11.2309ZM11.9359 10.4102H2.06412V3.8023L6.69657 8.04886C6.77936 8.12485 6.88764 8.16702 7.00002 8.16702C7.1124 8.16702 7.22068 8.12485 7.30347 8.04886L11.9359 3.8023V10.4102Z"
-                              fill="#003882"
-                            />
-                          </svg>
-
-                          <div class="text-neutral-700 text-xs">
-                            devon@example.com
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="grid grid-cols-2 border-t border-gray-300">
-                      <button class="px-4 py-2">✎</button>
-                      <button
-                        class="px-4 py-2 border-l border-gray-300 text-red-600"
-                      >
-                        🗑
                       </button>
                     </div>
                   </div>
@@ -903,7 +940,39 @@
                   </div>
                 </div>
 
-                <div class="flex flex-col gap-4">
+                <div
+                  class="!flex flex-col gap-4"
+                  data-dynamic-list="HdrrHrQPUKTcjcfRVv8q6"
+                  data-entity="peterpm"
+                  data-entity-key="1rBR-jpR3yE3HE1VhFD0j"
+                  data-var-inquiryid="312"
+                >
+                  <div class="flex flex-col gap-2">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-2 text-sm">
+                        <span class="text-neutral-600 text-nowrap"
+                          >Account Name:</span
+                        >
+                        <span class="text-zinc-800 font-medium text-nowrap"
+                          >[Primary_Contact_First_Name]
+                          [Primary_Contact_Last_Name]</span
+                        >
+                      </div>
+                      <div class="px-2.5 py-0.5 bg-violet-100 rounded-full">
+                        <span class="text-violet-800 text-xs font-medium"
+                          >[Inquiry_Status]</span
+                        >
+                      </div>
+                    </div>
+                    <div class="flex items-center gap-2 text-sm">
+                      <span class="text-neutral-600 text-nowrap"
+                        >SMS Number:</span
+                      >
+                      <span class="text-zinc-800 font-medium text-nowrap"
+                        >[Primary_Contact_SMS_Number]</span
+                      >
+                    </div>
+                  </div>
                   <!-- Job Email -->
                   <div class="flex flex-col gap-1">
                     <div class="text-neutral-700 text-sm">Job Email</div>
@@ -956,7 +1025,7 @@
                   <div class="flex items-center justify-between">
                     <div class="text-neutral-600 text-sm">Property Name:</div>
                     <div class="text-blue-700 text-sm font-medium text-right">
-                      NSW 2482 Mullumbimby, 13 Parakeet Place
+                      [Property_Property_Name]
                     </div>
                   </div>
                 </div>
@@ -1010,7 +1079,11 @@
 
               <!-- Property Address -->
               <div
-                class="p-4 bg-white rounded-lg border border-gray-300 flex flex-col gap-4"
+                data-dynamic-list="HdrrHrQPUKTcjcfRVv8q6"
+                data-entity="peterpm"
+                data-entity-key="1rBR-jpR3yE3HE1VhFD0j"
+                data-var-inquiryid="312"
+                class="p-4 bg-white rounded-lg border border-gray-300 !flex flex-col gap-4"
               >
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-2">
@@ -1054,20 +1127,24 @@
                   </button>
                 </div>
 
-                <div class="flex flex-col gap-6">
+                <div class="!flex flex-col gap-4">
                   <div class="flex flex-wrap gap-8">
                     <div class="flex flex-col gap-1">
                       <div class="text-neutral-600 text-sm">Lot Number</div>
-                      <div class="text-zinc-800 text-sm font-medium">50</div>
+                      <div class="text-zinc-800 text-sm font-medium">
+                        [Property_Lot_Number]
+                      </div>
                     </div>
                     <div class="flex flex-col gap-1">
                       <div class="text-neutral-600 text-sm">Unit Number</div>
-                      <div class="text-zinc-800 text-sm font-medium">24</div>
+                      <div class="text-zinc-800 text-sm font-medium">
+                        [Property_Unit_Number]
+                      </div>
                     </div>
                     <div class="flex flex-col gap-1">
                       <div class="text-neutral-600 text-sm">Address</div>
                       <div class="text-zinc-800 text-sm font-medium">
-                        31 Blvd
+                        [Property_Address_1]
                       </div>
                     </div>
                   </div>
@@ -1076,16 +1153,20 @@
                     <div class="flex flex-col gap-1">
                       <div class="text-neutral-600 text-sm">Suburb/ Town</div>
                       <div class="text-zinc-800 text-sm font-medium">
-                        Griffin
+                        [Property_Suburb_Town]
                       </div>
                     </div>
                     <div class="flex flex-col gap-1">
                       <div class="text-neutral-600 text-sm">Postal Code</div>
-                      <div class="text-zinc-800 text-sm font-medium">4503</div>
+                      <div class="text-zinc-800 text-sm font-medium">
+                        [Property_Postal_Code]
+                      </div>
                     </div>
                     <div class="flex flex-col gap-1">
                       <div class="text-neutral-600 text-sm">State</div>
-                      <div class="text-zinc-800 text-sm font-medium">NSW</div>
+                      <div class="text-zinc-800 text-sm font-medium">
+                        [PropertyState]
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1093,7 +1174,11 @@
 
               <!-- Property Description -->
               <div
-                class="p-4 bg-white rounded-lg border border-gray-300 flex flex-col gap-4"
+                data-dynamic-list="HdrrHrQPUKTcjcfRVv8q6"
+                data-entity="peterpm"
+                data-entity-key="1rBR-jpR3yE3HE1VhFD0j"
+                data-var-inquiryid="312"
+                class="p-4 bg-white rounded-lg border border-gray-300 !flex flex-col gap-4"
               >
                 <div class="flex items-center gap-2">
                   <svg
@@ -1118,17 +1203,23 @@
                 <div class="flex flex-col gap-3">
                   <div class="flex items-center gap-2 text-sm">
                     <span class="text-neutral-600">Property type:</span>
-                    <span class="text-zinc-800 font-medium">Commercial</span>
+                    <span class="text-zinc-800 font-medium"
+                      >[Property_Property_Type]</span
+                    >
                   </div>
                   <div class="flex items-center gap-2 text-sm">
                     <span class="text-neutral-600">Building type:</span>
-                    <span class="text-zinc-800 font-medium">Warehouse</span>
+                    <span class="text-zinc-800 font-medium"
+                      >[Property_Building_Type]</span
+                    >
                   </div>
 
                   <div class="flex flex-wrap gap-8">
                     <div class="flex flex-col gap-1">
                       <div class="text-neutral-600 text-sm">Storeys</div>
-                      <div class="text-zinc-800 text-sm font-medium">3</div>
+                      <div class="text-zinc-800 text-sm font-medium">
+                        [PropertyStories]
+                      </div>
                     </div>
                     <div class="flex flex-col gap-1">
                       <div class="text-neutral-600 text-sm">Building Age</div>
@@ -1138,7 +1229,9 @@
                     </div>
                     <div class="flex flex-col gap-1">
                       <div class="text-neutral-600 text-sm">Manhole</div>
-                      <div class="text-zinc-800 text-sm font-medium">Yes</div>
+                      <div class="text-zinc-800 text-sm font-medium">
+                        [PropertyManhole]
+                      </div>
                     </div>
                   </div>
 
@@ -1165,6 +1258,7 @@
         <!-- Quote Details Card -->
         <div
           class="rounded-xl border border-slate-200 bg-white shadow-sm flex-1"
+          x-data="quotePanel()"
         >
           <!-- Header -->
           <div
@@ -1398,6 +1492,8 @@
 
               <button
                 class="mt-4 inline-flex items-center gap-2 rounded-md border border-slate-300 px-4 py-2 text-slate-700 hover:bg-slate-50"
+                x-data
+                @click.prevent="window.dispatchEvent(new CustomEvent('quote:create-click'))"
               >
                 <svg
                   width="14"
@@ -1417,6 +1513,175 @@
             </div>
           </div>
         </div>
+        <div
+          class="rounded-xl border border-slate-200 bg-white shadow-sm flex-1"
+          x-show="hasQuote"
+          x-cloak
+        >
+          <div class="space-y-6">
+            <div class="rounded-xl border border-slate-200">
+              <div
+                class="flex flex-wrap items-center justify-between gap-3 bg-[#f3edff] px-4 py-3"
+              >
+                <div class="flex items-center gap-2">
+                  <span class="rounded-full bg-[#d8c8ff] p-2 text-[#5b21b6]">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <path
+                        d="M8 1.33325L2 4.66659L8 7.99992L14 4.66659L8 1.33325ZM2 8.66659L8 11.9999L14 8.66659L8 5.33325L2 8.66659ZM2 10.6666V12.6666L8 15.9999L14 12.6666V10.6666L8 13.9999L2 10.6666Z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                  </span>
+                  <span class="text-sm font-semibold text-slate-900"
+                    >Quote Details</span
+                  >
+                </div>
+                <div class="flex flex-wrap gap-2">
+                  <button
+                    class="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                  >
+                    Send Quote
+                  </button>
+                  <button
+                    class="rounded-md bg-sky-800 px-3 py-2 text-sm font-semibold text-white hover:bg-sky-900"
+                  >
+                    Edit Quote
+                  </button>
+                </div>
+              </div>
+              <div class="space-y-4 px-5 py-5">
+                <div class="space-y-1">
+                  <label class="text-xs font-semibold uppercase text-slate-500"
+                    >Send Quote To:</label
+                  >
+                  <div class="relative">
+                    <div
+                      class="flex items-center justify-between rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800"
+                    >
+                      <span x-text="quoteRecipients"></span>
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 14 14"
+                        fill="none"
+                        class="text-slate-400"
+                      >
+                        <path
+                          d="M3.5 5.25L7 8.75L10.5 5.25"
+                          stroke="currentColor"
+                          stroke-width="1.2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                      </svg>
+                    </div>
+                    <span class="mt-1 block text-xs text-rose-600"
+                      >Required</span
+                    >
+                  </div>
+                </div>
+                <div class="grid gap-3 text-sm text-slate-700">
+                  <div class="flex items-center gap-2">
+                    <span class="text-slate-500">Quote No.:</span>
+                    <a
+                      href="#"
+                      class="font-semibold text-sky-700"
+                      x-text="quoteNumber"
+                    ></a>
+                    <span
+                      class="rounded-full bg-violet-100 px-2 py-0.5 text-xs font-semibold text-violet-700"
+                      >New Quote</span
+                    >
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-slate-500">Quote Date:</span>
+                    <span class="font-semibold" x-text="quoteDate"></span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-slate-500">Quote Price:</span>
+                    <span class="font-semibold" x-text="quotePrice"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="rounded-xl border border-slate-200">
+              <div
+                class="flex items-center justify-between rounded-t-xl bg-blue-50 px-4 py-3"
+              >
+                <div class="flex items-center gap-2">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    class="text-sky-700"
+                  >
+                    <path
+                      d="M2.66666 2.66663H13.3333V3.99996H2.66666V2.66663ZM2.66666 5.33329H9.33332V6.66663H2.66666V5.33329ZM2.66666 7.99996H9.33332V9.33329H2.66666V7.99996ZM2.66666 10.6666H9.33332V12H2.66666V10.6666ZM10.6667 5.33329H13.3333V12H10.6667V5.33329Z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                  <span class="text-sm font-semibold text-slate-900"
+                    >Activities</span
+                  >
+                </div>
+                <button
+                  class="rounded-md bg-sky-800 px-3 py-1.5 text-xs font-semibold text-white hover:bg-sky-900"
+                >
+                  Add Activity
+                </button>
+              </div>
+              <div
+                class="rounded-b-xl border-t border-slate-200 bg-white px-6 py-8 text-center text-slate-500"
+              >
+                <svg
+                  class="mx-auto mb-4 h-24 w-24 text-slate-300"
+                  viewBox="0 0 80 80"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <rect
+                    width="80"
+                    height="80"
+                    rx="12"
+                    fill="currentColor"
+                    opacity="0.15"
+                  />
+                  <path
+                    d="M28 22H52C53.657 22 55 23.343 55 25V55C55 56.657 53.657 58 52 58H28C26.343 58 25 56.657 25 55V25C25 23.343 26.343 22 28 22Z"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M33 27H47"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  />
+                  <path
+                    d="M33 33H47"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  />
+                  <path
+                    d="M33 39H43"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  />
+                </svg>
+                <p class="text-sm font-medium text-slate-600">
+                  No activities yet.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Quote Details Card -->
 
         <!-- Recommendations Card -->
         <div
@@ -2189,6 +2454,699 @@
         </button>
       </div>
     </main>
-    <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
+
+    <script>
+      const DEFAULT_PROVIDER_PLACEHOLDER = "Search by name, email, phone";
+      const GRAPHQL_ENDPOINT = "https://peterpm.vitalstats.app/api/v1/graphql";
+      const GRAPHQL_API_KEY = "1rBR-jpR3yE3HE1VhFD0j";
+      const INQUIRY_RECORD_ID = "312"; // update with the current inquiry record id
+
+      const CALC_DEALS_QUERY = `
+        query calcDeals($id: PeterpmDealID!) {
+          calcDeals(query: [{ where: { id: $id } }]) {
+            Service_Provider_ID: field(arg: ["service_provider_id"])
+          }
+        }
+      `;
+
+      const UPDATE_DEAL_MUTATION = `
+        mutation updateDeal($id: PeterpmDealID!, $payload: DealUpdateInput = null) {
+          updateDeal(query: [{ where: { id: $id } }], payload: $payload) {
+            service_provider_id
+          }
+        }
+      `;
+
+      const CREATE_JOB_MUTATION = `
+        mutation createJob($payload: JobCreateInput = null) {
+          createJob(payload: $payload) {
+            Inquiry_Record {
+              id
+            }
+          }
+        }
+      `;
+
+      const CALC_JOBS_QUERY = `
+        query calcJobs($inquiry_record_id: PeterpmDealID!) {
+          calcJobs(query: [{ where: { inquiry_record_id: $inquiry_record_id } }]) {
+            Inquiry_Record_ID: field(arg: ["Inquiry_Record", "id"])
+          }
+        }
+      `;
+
+      async function graphqlRequest(query, variables = {}) {
+        const response = await fetch(GRAPHQL_ENDPOINT, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Api-Key": GRAPHQL_API_KEY,
+          },
+          body: JSON.stringify({ query, variables }),
+        });
+        const payload = await response.json().catch(() => null);
+        if (!response.ok) {
+          const message =
+            payload?.errors?.[0]?.message ||
+            payload?.message ||
+            `Request failed (${response.status})`;
+          throw new Error(message);
+        }
+        if (Array.isArray(payload?.errors) && payload.errors.length) {
+          throw new Error(payload.errors[0]?.message || "GraphQL error");
+        }
+        return payload?.data ?? null;
+      }
+
+      document.addEventListener("alpine:init", () => {
+        const createOptionMap = (options = []) => {
+          const map = new Map();
+          options
+            .filter((entry) => entry && entry.value != null && entry.text)
+            .forEach((entry) => {
+              map.set(String(entry.value), entry.text);
+            });
+          return map;
+        };
+
+        const locationOptions = createOptionMap([
+          { value: 735, text: "Upper Ceiling" },
+          { value: 734, text: "Between floors" },
+          { value: 733, text: "In Walls" },
+          { value: 732, text: "In House" },
+          { value: 731, text: "Chimney" },
+          { value: 730, text: "Garage" },
+          { value: 729, text: "Kitchen" },
+          { value: 728, text: "Hand Catch" },
+          { value: 727, text: "On roof" },
+          { value: 726, text: "Underneath House" },
+          { value: 725, text: "Under Solar Panels" },
+        ]);
+
+        const noiseOptions = createOptionMap([
+          { value: 768, text: "Fighting" },
+          { value: 767, text: "Walking" },
+          { value: 766, text: "Heavy" },
+          { value: 765, text: "Footsteps" },
+          { value: 764, text: "Running" },
+          { value: 763, text: "Scurrying" },
+          { value: 762, text: "Thumping" },
+          { value: 761, text: "Hissing" },
+          { value: 760, text: "Shuffle" },
+          { value: 759, text: "Scratching" },
+          { value: 758, text: "Can hear coming & going" },
+          { value: 757, text: "Movement" },
+          { value: 756, text: "Gnawing" },
+          { value: 755, text: "Rolling" },
+          { value: 754, text: "Dragging" },
+          { value: 753, text: "Squeaking" },
+          { value: 752, text: "Galloping" },
+          { value: 751, text: "Poss Pee" },
+          { value: 750, text: "Fast" },
+          { value: 749, text: "Slow" },
+          { value: 748, text: "Bad Smell" },
+        ]);
+
+        const timeOptions = createOptionMap([
+          { value: "747", text: "Dawn" },
+          { value: "746", text: "Dusk" },
+          { value: "745", text: "Dusk & Dawn" },
+          { value: "744", text: "During Day" },
+          { value: "743", text: "Middle of night" },
+          { value: "742", text: "Night" },
+          { value: "741", text: "Early morning" },
+          { value: "740", text: "Evening" },
+          { value: "739", text: "1-2 am" },
+          { value: "738", text: "3-4 am" },
+          { value: "737", text: "7 - 8 pm" },
+          { value: "736", text: "7.30-10 pm" },
+        ]);
+
+        Alpine.data("allocateProviderSearch", () => ({
+          open: false,
+          searchTerm: "",
+          filteredCount: 0,
+          hasLoaded: false,
+          observer: null,
+          selectedProviderId: null,
+          selectedProvider: null,
+          isSubmitting: false,
+          feedbackMessage: "",
+          feedbackVariant: "success",
+          placeholderText: DEFAULT_PROVIDER_PLACEHOLDER,
+          pendingPrefillId: null,
+          inquiryId: document.body?.dataset?.inquiryId || "",
+          toastVisible: false,
+          toastMessage: "",
+          toastVariant: "success",
+          toastTimeout: null,
+          filterScheduled: false,
+          toastEventHandler: null,
+          init() {
+            this.$watch("searchTerm", () => this.scheduleFilter());
+            this.$nextTick(() => {
+              this.observeProviders();
+              this.filterProviders();
+              this.prefillFromServer();
+            });
+            this.toastEventHandler = (event) => {
+              const detail = event?.detail || {};
+              if (!detail.message) return;
+              this.showToast(detail.message, detail.variant || "success");
+            };
+            window.addEventListener("toast:show", this.toastEventHandler);
+          },
+          destroy() {
+            if (this.observer) {
+              this.observer.disconnect();
+              this.observer = null;
+            }
+            if (this.toastTimeout) {
+              clearTimeout(this.toastTimeout);
+              this.toastTimeout = null;
+            }
+            if (this.toastEventHandler) {
+              window.removeEventListener("toast:show", this.toastEventHandler);
+              this.toastEventHandler = null;
+            }
+          },
+          handleFocus() {
+            this.open = true;
+            this.scheduleFilter();
+          },
+          closeDropdown() {
+            this.open = false;
+          },
+          async prefillFromServer() {
+            if (!this.inquiryId) return;
+            try {
+              const data = await graphqlRequest(CALC_DEALS_QUERY, {
+                id: this.inquiryId,
+              });
+              const record = Array.isArray(data?.calcDeals)
+                ? data.calcDeals[0]
+                : data?.calcDeals;
+              const providerId = record?.Service_Provider_ID ?? null;
+              if (providerId) {
+                this.pendingPrefillId = providerId;
+                this.selectProviderById(providerId, { preserveMessage: true });
+              }
+            } catch (error) {
+              console.error("Failed to fetch allocation", error);
+              this.feedbackVariant = "error";
+              this.feedbackMessage = "Unable to load current allocation.";
+            }
+          },
+          handleRowSelect(event) {
+            event?.preventDefault?.();
+            const row = event?.currentTarget;
+            if (!row) return;
+            const provider = this.extractProviderFromRow(row);
+            if (provider?.id) {
+              this.setSelectedProvider(provider);
+            }
+          },
+          setSelectedProvider(provider, { preserveMessage = false } = {}) {
+            if (!provider?.id) return;
+            this.selectedProviderId = provider.id;
+            this.selectedProvider = provider;
+            this.updatePlaceholder(provider);
+            this.searchTerm = "";
+            this.scheduleFilter();
+            this.pendingPrefillId = null;
+            if (!preserveMessage) this.feedbackMessage = "";
+            this.broadcastSelection(provider);
+          },
+          selectProviderById(providerId, { preserveMessage = true } = {}) {
+            if (!providerId) return;
+            const row = this.findRowById(providerId);
+            if (row) {
+              const provider = this.extractProviderFromRow(row);
+              this.setSelectedProvider(provider, { preserveMessage });
+            }
+          },
+          findRowById(providerId) {
+            if (!this.$refs.providerList || !providerId) return null;
+            const selectorValue = this.escapeForSelector(String(providerId));
+            return this.$refs.providerList.querySelector(
+              `[data-provider-row][data-provider-id="${selectorValue}"]`
+            );
+          },
+          escapeForSelector(value) {
+            if (window.CSS && typeof window.CSS.escape === "function") {
+              return window.CSS.escape(value);
+            }
+            return value.replace(
+              /([\s!"#$%&'()*+,./:;<=>?@[\\\]^`{|}~])/g,
+              "\\$1"
+            );
+          },
+          observeProviders() {
+            if (!this.$refs.providerList || this.observer) return;
+            this.observer = new MutationObserver(() => {
+              this.scheduleFilter();
+            });
+            this.observer.observe(this.$refs.providerList, {
+              childList: true,
+              subtree: true,
+            });
+          },
+          scheduleFilter() {
+            if (this.filterScheduled) return;
+            this.filterScheduled = true;
+            requestAnimationFrame(() => {
+              this.filterScheduled = false;
+              this.filterProviders();
+            });
+          },
+          filterProviders() {
+            const list = this.$refs.providerList;
+            if (!list) return;
+            const rows = Array.from(
+              list.querySelectorAll("[data-provider-row]")
+            );
+            const query = this.searchTerm.trim().toLowerCase();
+            let visible = 0;
+            let resolvedData = false;
+            rows.forEach((row) => {
+              const text = (row.textContent || "").trim();
+              const hasPlaceholders = /\[[^\]]+\]/.test(text);
+              if (text && !hasPlaceholders) {
+                resolvedData = true;
+              }
+              const values = [
+                row.dataset.providerId?.toLowerCase(),
+                row
+                  .querySelector("[data-search-name]")
+                  ?.textContent?.trim()
+                  ?.toLowerCase(),
+                row
+                  .querySelector("[data-search-phone]")
+                  ?.textContent?.trim()
+                  ?.toLowerCase(),
+                row
+                  .querySelector("[data-field='provider-email']")
+                  ?.textContent?.trim()
+                  ?.toLowerCase(),
+              ].filter(Boolean);
+              const haystack = `${values.join(
+                " "
+              )} ${text.toLowerCase()}`.trim();
+              const matches = !query || haystack.includes(query);
+              row.classList.toggle("hidden", !matches);
+              if (matches) visible += 1;
+            });
+            this.filteredCount = visible;
+            this.hasLoaded = resolvedData;
+            this.applyStatusBadges();
+            if (this.pendingPrefillId) {
+              this.selectProviderById(this.pendingPrefillId, {
+                preserveMessage: true,
+              });
+            }
+          },
+          applyStatusBadges() {
+            const list = this.$refs.providerList;
+            if (!list) return;
+            const palette = {
+              active: { dot: "bg-emerald-500", text: "text-emerald-600" },
+              "on-site": { dot: "bg-sky-500", text: "text-sky-600" },
+              offline: { dot: "bg-slate-400", text: "text-slate-600" },
+              archived: { dot: "bg-rose-500", text: "text-rose-600" },
+            };
+            const dotClasses = [
+              "bg-emerald-500",
+              "bg-rose-500",
+              "bg-sky-500",
+              "bg-slate-400",
+              "bg-slate-300",
+            ];
+            const textClasses = [
+              "text-emerald-600",
+              "text-rose-600",
+              "text-sky-600",
+              "text-slate-600",
+              "text-slate-500",
+            ];
+            list.querySelectorAll("[data-status-badge]").forEach((badge) => {
+              const rawValue = badge.textContent?.trim() || "";
+              const normalized = rawValue.toLowerCase().replace(/\s+/g, "-");
+              const colors = palette[normalized] || {
+                dot: "bg-slate-300",
+                text: "text-slate-500",
+              };
+              const dot = badge
+                .closest("[data-provider-row]")
+                ?.querySelector("[data-status-dot]");
+              if (dot) {
+                dotClasses.forEach((cls) => dot.classList.remove(cls));
+                dot.classList.add(colors.dot);
+              }
+              textClasses.forEach((cls) => badge.classList.remove(cls));
+              badge.classList.add(colors.text);
+            });
+          },
+          extractProviderFromRow(row) {
+            if (!row) return null;
+            const grab = (selector) =>
+              row.querySelector(selector)?.textContent?.trim() || "";
+            const name = grab("[data-search-name]");
+            const [firstName = "", ...rest] = name.split(" ");
+            const lastName = rest.join(" ").trim();
+            return {
+              id: row.dataset?.providerId || grab("[data-field='provider-id']"),
+              name,
+              firstName,
+              lastName,
+              phone: grab("[data-search-phone]"),
+              email: grab("[data-field='provider-email']"),
+              status: grab("[data-status-badge]"),
+            };
+          },
+          broadcastSelection(provider) {
+            if (!provider) return;
+            window.dispatchEvent(
+              new CustomEvent("provider-selected", { detail: { provider } })
+            );
+          },
+          updatePlaceholder(provider) {
+            const label = this.getProviderLabel(provider);
+            this.placeholderText = label
+              ? `Allocated to ${label}`
+              : DEFAULT_PROVIDER_PLACEHOLDER;
+          },
+          getProviderLabel(provider) {
+            const raw = provider?.name?.trim();
+            if (!raw) return "";
+            return raw
+              .split(/\s+/)
+              .map(
+                (part) =>
+                  part.charAt(0).toUpperCase() + part.slice(1).toLowerCase()
+              )
+              .join(" ");
+          },
+          buildAllocationMessage(provider) {
+            const label = this.getProviderLabel(provider);
+            if (!label) return "Inquiry allocation updated.";
+            return `Inquiry Allocated To ${label}.`;
+          },
+          async confirmAllocation() {
+            if (!this.selectedProviderId || this.isSubmitting) {
+              if (!this.selectedProviderId) {
+                this.feedbackVariant = "error";
+                this.feedbackMessage = "Select a service provider first.";
+              }
+              return;
+            }
+            if (!this.inquiryId) {
+              this.feedbackVariant = "error";
+              this.feedbackMessage = "Missing inquiry id.";
+              return;
+            }
+            this.isSubmitting = true;
+            this.feedbackMessage = "";
+            try {
+              const payload = { service_provider_id: this.selectedProviderId };
+              const data = await graphqlRequest(UPDATE_DEAL_MUTATION, {
+                id: this.inquiryId,
+                payload,
+              });
+              const updatedId =
+                data?.updateDeal?.service_provider_id ||
+                this.selectedProviderId;
+              this.feedbackVariant = "success";
+              const successMessage = this.buildAllocationMessage(
+                this.selectedProvider
+              );
+              this.feedbackMessage = successMessage;
+              this.pendingPrefillId = updatedId;
+              this.selectProviderById(updatedId, { preserveMessage: true });
+              this.showToast(successMessage);
+            } catch (error) {
+              console.error("Failed to update allocation", error);
+              this.feedbackVariant = "error";
+              this.feedbackMessage =
+                error?.message || "Unable to update allocation right now.";
+              this.showToast(
+                error?.message || "Unable to update allocation right now.",
+                "error"
+              );
+            } finally {
+              this.isSubmitting = false;
+            }
+          },
+          showToast(message, variant = "success") {
+            if (!message) return;
+            this.toastMessage = message;
+            this.toastVariant = variant;
+            this.toastVisible = true;
+            if (this.toastTimeout) {
+              clearTimeout(this.toastTimeout);
+            }
+            this.toastTimeout = setTimeout(() => {
+              this.toastVisible = false;
+              this.toastTimeout = null;
+            }, 4000);
+          },
+        }));
+
+        Alpine.data("residentFeedback", (props = {}) => ({
+          rawLocations: props.rawLocations ?? "",
+          rawNoises: props.rawNoises ?? "",
+          rawTimes: props.rawTimes ?? "",
+          get displayLocations() {
+            return this.formatValue(this.rawLocations, locationOptions);
+          },
+          get displayNoises() {
+            return this.formatValue(this.rawNoises, noiseOptions);
+          },
+          get displayTimes() {
+            return this.formatValue(this.rawTimes, timeOptions);
+          },
+          formatValue(raw, map) {
+            const normalized = this.normalizeRaw(raw);
+            if (!normalized) return "—";
+            const codes = this.parseCodes(normalized);
+            if (!codes.length) return normalized;
+            const labels = codes
+              .map((code) => {
+                const key = String(code);
+                return map.get(key) || null;
+              })
+              .filter(Boolean);
+            if (labels.length) return labels.join(", ");
+            return codes.join(", ");
+          },
+          normalizeRaw(raw) {
+            if (raw == null) return "";
+            const value = String(raw).trim();
+            if (!value || value === "-" || value === "—") return "";
+            if (/^\[[^\]]*\]$/.test(value)) return "";
+            return value;
+          },
+          parseCodes(value) {
+            if (!value.includes("*/*")) return [];
+            return value
+              .split("*/*")
+              .map((part) => part.trim())
+              .filter(Boolean);
+          },
+        }));
+
+        Alpine.data("quotePanel", () => ({
+          hasQuote: false,
+          quoteRecipients: "Devon Lane (Manager), Ron Potter (Owner)",
+          quoteNumber: "#Q6669",
+          quoteDate: "15 May, 2020",
+          quotePrice: "$0.00",
+          boundQuoteListener: null,
+          initCheckRan: false,
+          init() {
+            this.boundQuoteListener = (event) =>
+              this.handleQuoteCreated(event?.detail || {});
+            window.addEventListener("quote:created", this.boundQuoteListener);
+            this.checkExistingQuote();
+          },
+
+          destroy() {
+            if (this.boundQuoteListener) {
+              window.removeEventListener(
+                "quote:created",
+                this.boundQuoteListener
+              );
+              this.boundQuoteListener = null;
+            }
+          },
+          handleQuoteCreated(detail = {}) {
+            this.hasQuote = true;
+            if (detail.quoteNumber) this.quoteNumber = detail.quoteNumber;
+            if (detail.quoteDate) this.quoteDate = detail.quoteDate;
+            if (detail.quotePrice) this.quotePrice = detail.quotePrice;
+            if (detail.recipients) this.quoteRecipients = detail.recipients;
+          },
+
+          async checkExistingQuote() {
+            if (this.initCheckRan) return;
+            this.initCheckRan = true;
+            try {
+              const data = await graphqlRequest(CALC_JOBS_QUERY, {
+                inquiry_record_id: INQUIRY_RECORD_ID,
+              });
+              const recordId = this.extractJobId(data);
+              if (recordId) {
+                this.handleQuoteCreated({
+                  quoteNumber: this.formatQuoteNumber(recordId),
+                  quoteDate: this.formatQuoteDate(),
+                });
+              }
+            } catch (error) {
+              console.error("Failed to check existing quote", error);
+            }
+          },
+          extractJobId(payload) {
+            if (!payload) return null;
+            const calcJobs = this.normalizeCalcJobs(payload.calcJobs);
+            const candidate =
+              calcJobs?.[0] ?? payload.calcJobs ?? payload?.createJob;
+            if (!candidate) return null;
+            return (
+              candidate.Inquiry_Record_ID ??
+              candidate.inquiry_record_id ??
+              candidate?.Inquiry_Record?.id ??
+              candidate.id ??
+              null
+            );
+          },
+          normalizeCalcJobs(value) {
+            if (Array.isArray(value)) return value;
+            if (Array.isArray(value?.data)) return value.data;
+            if (Array.isArray(value?.nodes)) return value.nodes;
+            return null;
+          },
+          formatQuoteNumber(id) {
+            if (!id) return this.quoteNumber;
+            const numeric = String(id).replace(/\D/g, "") || String(id);
+            return `#Q${numeric.padStart(4, "0")}`;
+          },
+          formatQuoteDate(date = new Date()) {
+            return date.toLocaleDateString("en-US", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+            });
+          },
+        }));
+
+        Alpine.data("quoteModal", () => ({
+          open: false,
+          provider: null,
+          isSubmitting: false,
+          boundOpenListener: null,
+          boundProviderListener: null,
+          init() {
+            this.boundOpenListener = () => this.handleOpen();
+            this.boundProviderListener = (event) =>
+              this.updateProvider(event?.detail?.provider);
+            window.addEventListener(
+              "quote:create-click",
+              this.boundOpenListener
+            );
+            window.addEventListener(
+              "provider-selected",
+              this.boundProviderListener
+            );
+          },
+          destroy() {
+            if (this.boundOpenListener) {
+              window.removeEventListener(
+                "quote:create-click",
+                this.boundOpenListener
+              );
+              this.boundOpenListener = null;
+            }
+            if (this.boundProviderListener) {
+              window.removeEventListener(
+                "provider-selected",
+                this.boundProviderListener
+              );
+              this.boundProviderListener = null;
+            }
+          },
+          handleOpen() {
+            this.open = true;
+          },
+          handleClose() {
+            this.open = false;
+          },
+          updateProvider(provider) {
+            if (provider) this.provider = provider;
+          },
+          async confirmAction() {
+            if (!this.hasProvider || this.isSubmitting) return;
+            if (!INQUIRY_RECORD_ID) {
+              this.dispatchToast("Missing inquiry record id.", "error");
+              return;
+            }
+            this.isSubmitting = true;
+            try {
+              const data = await graphqlRequest(CREATE_JOB_MUTATION, {
+                payload: { inquiry_record_id: INQUIRY_RECORD_ID },
+              });
+              this.dispatchToast(
+                `Quote created & notified for ${this.providerName}.`,
+                "success"
+              );
+              const createdId =
+                data?.createJob?.Inquiry_Record?.id ?? INQUIRY_RECORD_ID;
+              const quoteNumber = createdId
+                ? `#Q${String(createdId).padStart(4, "0")}`
+                : "#Q0000";
+              const quoteDate = new Date().toLocaleDateString("en-US", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+              });
+              window.dispatchEvent(
+                new CustomEvent("quote:created", {
+                  detail: {
+                    quoteNumber,
+                    quoteDate,
+                    quotePrice: "$0.00",
+                    recipients: this.providerName,
+                  },
+                })
+              );
+              this.open = false;
+            } catch (error) {
+              console.error("Failed to create job", error);
+              this.dispatchToast(
+                error?.message || "Unable to create quote right now.",
+                "error"
+              );
+            } finally {
+              this.isSubmitting = false;
+            }
+          },
+          get providerName() {
+            return this.provider?.name || "No service provider allocated";
+          },
+          get providerIdDisplay() {
+            if (!this.provider?.id) return "N/A";
+            return `#${this.provider.id}`;
+          },
+          get hasProvider() {
+            return Boolean(this.provider?.id);
+          },
+          dispatchToast(message, variant = "success") {
+            window.dispatchEvent(
+              new CustomEvent("toast:show", {
+                detail: { message, variant },
+              })
+            );
+          },
+        }));
+      });
+    </script>
   </body>
 </html>

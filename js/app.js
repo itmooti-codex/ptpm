@@ -4,9 +4,6 @@ import { NewEnquiryView } from "./views/new-enquiry.js";
 import { DashboardModel } from "./models/dashboard.js";
 import { DashboardView, renderDynamicTable } from "./views/dashboard.js";
 import { DashboardController } from "./controller/dashboard.js";
-import { InquiryDetailModel } from "./models/inquiry-details.js";
-import { InquiryDetailView } from "./views/inquiry-detail.js";
-import { InquiryDetailController } from "./controller/inquiry-detail.js";
 
 import { config } from "../sdk/config.js";
 import { VitalStatsSDK } from "../sdk/init.js";
@@ -39,7 +36,6 @@ import { VitalStatsSDK } from "../sdk/init.js";
       // Page-specific
       if (page === "new-enquiry") this.initNewEnquiry();
       if (page === "dashboard") this.maybeInitDashboard();
-      if (page === "inquiry-detail") this.initInquiryDetail();
     },
 
     maybeInitDashboard() {
@@ -64,29 +60,6 @@ import { VitalStatsSDK } from "../sdk/init.js";
       this.controllers.newEnquiry = ctrl;
     },
 
-    initInquiryDetail() {
-      if (this.controllers.inquiryDetail) return;
-      if (!this.services.plugin) {
-        console.warn("[App] VitalStats plugin unavailable; inquiry detail skipped.");
-        return;
-      }
-
-      const inquiryModel = new InquiryDetailModel(this.services.plugin, {
-        inquiryId: config.inquiryId,
-      });
-      const inquiryView = new InquiryDetailView();
-      const inquiryCtrl = new InquiryDetailController(inquiryModel, inquiryView);
-
-      if (typeof inquiryCtrl.init === "function") {
-        inquiryCtrl
-          .init()
-          .catch((error) =>
-            console.error("[App] Inquiry detail init failed", error)
-          );
-      }
-
-      this.controllers.inquiryDetail = inquiryCtrl;
-    },
   };
 
   document.addEventListener("DOMContentLoaded", () => App.start());
