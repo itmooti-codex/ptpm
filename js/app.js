@@ -53,8 +53,8 @@ import { VitalStatsSDK } from "../sdk/init.js";
 
     initNewEnquiry() {
       if (this.controllers.newEnquiry) return;
-      const model = new NewEnquiryModel(this.services.plugin);
-      const view = new NewEnquiryView();
+      const model = new NewEnquiryModel(tempPlugin);
+      const view = new NewEnquiryView(model);
       const ctrl = new NewEnquiryController(model, view);
       ctrl.init();
       this.controllers.newEnquiry = ctrl;

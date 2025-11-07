@@ -1,5 +1,6 @@
 export class NewEnquiryView {
-  constructor() {
+  constructor(model) {
+    this.model = model;
     this.sections = {
       individual: document.querySelector('[data-contact-section="individual"]'),
       entity: document.querySelector('[data-contact-section="entity"]'),
@@ -82,6 +83,7 @@ export class NewEnquiryView {
     this.#bindTabs();
     this.#bindRelatedTabs();
     this.#updateRelatedUI();
+    this.#handleRelatedPropertiesClick();
   }
 
   isActive() {
@@ -603,7 +605,11 @@ export class NewEnquiryView {
 
   #renderPropertyCard(item = {}) {
     const title = this.#escapeHtml(
-      item.property_name || item.label || item.unique_id || item.id || "Property"
+      item.property_name ||
+        item.label ||
+        item.unique_id ||
+        item.id ||
+        "Property"
     );
     const address = this.#escapeHtml(
       item.address ||
@@ -623,7 +629,9 @@ export class NewEnquiryView {
     const hasStatus = Boolean(status);
 
     return `
-      <article class="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+      <article id=${
+        item.id
+      } class="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
         <div class="flex items-center gap-3">
           <span class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-blue-600">
             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
@@ -667,9 +675,15 @@ export class NewEnquiryView {
 
   #renderJobCard(item = {}) {
     const unique = this.#escapeHtml(item.unique_id || item.id || "—");
-    const status = this.#escapeHtml(item.status || item.job_status || "Status Unknown");
-    const created = this.#formatDate(item.created_at || item.createdAt || item.date_added);
-    const completed = this.#formatDate(item.completed_at || item.date_completed);
+    const status = this.#escapeHtml(
+      item.status || item.job_status || "Status Unknown"
+    );
+    const created = this.#formatDate(
+      item.created_at || item.createdAt || item.date_added
+    );
+    const completed = this.#formatDate(
+      item.completed_at || item.date_completed
+    );
     const assignee = this.#escapeHtml(
       item.provider_name || item.assigned_to || item.assignee || "—"
     );
@@ -823,5 +837,282 @@ export class NewEnquiryView {
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#39;");
+  }
+
+  #handleRelatedPropertiesClick() {
+    const element = document.querySelector('[data-related-panel="properties"]');
+    if (element) {
+      element.addEventListener("click", async (e) => {
+        let article = e.target.closest("article");
+        if (article) {
+          let propertyId = article.id;
+          let propertyData = this.relatedData.properties.filter(
+            (item) => item.id == propertyId
+          )[0];
+          const fields = document.querySelectorAll(
+            "#property-information input, #property-information select"
+          );
+
+          const fieldIds = Array.from(fields).map((field) =>
+            field.getAttribute("data-property-id")
+          );
+          if (propertyData && propertyData.length != 0) {
+            let values = this.generatePropertyInformationKeys(
+              fieldIds,
+              propertyData
+            );
+            let affiliationData = await this.model.fetchAffiliationByPropertyId(
+              "167"
+            );
+            this.setPropertyInformationToFields(fieldIds, values);
+            this.createPropertyContactTable(affiliationData);
+          }
+        }
+      });
+    }
+  }
+
+  generatePropertyInformationKeys(fieldIds, data) {
+    const mappedValues = {};
+
+    fieldIds.forEach((key) => {
+      switch (key) {
+        case "lot-number":
+          mappedValues[key] = data.lotNumber || "";
+          break;
+        case "unit-number":
+          mappedValues[key] = data.unitNumber || "";
+          break;
+        case "address-1":
+          mappedValues[key] = data.address_1 || "";
+          break;
+        case "address-2":
+          mappedValues[key] = data.address_2 || "";
+          break;
+        case "suburb-town":
+          mappedValues[key] = data.suburb_town || "";
+          break;
+        case "postal-code":
+          mappedValues[key] = data.postal_code || "";
+          break;
+        case "state":
+          mappedValues[key] = data.state || "";
+          break;
+        case "property-type":
+          mappedValues[key] = data.propertyType || "";
+          break;
+        case "building-type":
+          mappedValues[key] = data.buildingType || "";
+          break;
+        case "foundation-type":
+          mappedValues[key] = data.foundationType || "";
+          break;
+        case "storeys":
+          mappedValues[key] = data.stories || "";
+          break;
+        case "bedrooms":
+          mappedValues[key] = data.bedrooms || "";
+          break;
+        case "building-age":
+          mappedValues[key] = data.buildingAge || "";
+          break;
+        case "has-manhole":
+          mappedValues[key] = data.manhole || "";
+          break;
+        case "building-features":
+          mappedValues[key] = ""; // If you don't have data, leave empty or map accordingly
+          break;
+        case "search-properties":
+          mappedValues[key] = data.property_name || "";
+          break;
+        default:
+          mappedValues[key] = "";
+      }
+    });
+
+    return mappedValues;
+  }
+
+  setPropertyInformationToFields(keys, values) {
+    if (!keys || !keys.length || !values) return;
+
+    keys.forEach((key) => {
+      if (!key) return;
+
+      // Find the element by data-property-id
+      const el = document.querySelector(
+        `#property-information [data-property-id="${key}"]`
+      );
+      if (!el) return;
+
+      const v = values[key] ?? "";
+
+      if (el.tagName === "SELECT") {
+        el.value = v;
+      } else if (el.type === "checkbox") {
+        el.checked = v === true || v === "true";
+      } else {
+        el.value = v;
+      }
+    });
+  }
+
+  createPropertyContactTable(rows = []) {
+    const container = document.querySelector(
+      '[data-property-contact-id="table"]'
+    );
+    if (!container) return;
+
+    // Clear previous table if exists
+    container.innerHTML = "";
+
+    // SVG visibility
+    const svg = document.getElementById("property-contact-svg");
+    if (!rows || rows.length === 0) {
+      if (svg) svg.style.display = "block";
+      return;
+    } else if (svg) svg.style.display = "none";
+
+    // Create table
+    const table = document.createElement("table");
+    table.className =
+      "min-w-full table-auto border-collapse text-sm text-slate-700";
+
+    // Table header
+    const thead = document.createElement("thead");
+    thead.className =
+      "bg-slate-50 text-xs font-semibold text-slate-500 border-b border-slate-200";
+    thead.innerHTML = `
+      <tr>
+        <th class="w-7 px-4 py-2">&nbsp;</th>
+        <th class="px-4 py-2 text-left">Role</th>
+        <th class="px-4 py-2 text-left">Contact</th>
+        <th class="px-4 py-2 text-left">SMS Number</th>
+        <th class="px-4 py-2 text-left">Company</th>
+        <th class="w-20 px-4 py-2 text-right">Action</th>
+      </tr>
+    `;
+    table.appendChild(thead);
+
+    // Table body
+    const tbody = document.createElement("tbody");
+    tbody.className = "divide-y divide-slate-200";
+
+    // Helper functions
+    const starIcon = (filled) => `
+      <button type="button" class="star-btn" title="Set as Primary">
+        <svg class="h-4 w-4 ${
+          filled ? "text-amber-500" : "text-slate-300"
+        }" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.035a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118L10.5 14.347a1 1 0 00-1.175 0L6.625 16.282c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.99 8.72c-.783-.57-.38-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.06-3.292z"/>
+        </svg>
+      </button>
+    `;
+
+    const actionCell = () => `
+      <div class="flex items-center justify-end gap-3 text-slate-500">
+        <button type="button" class="edit-btn hover:text-sky-700" title="Edit">
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 20h9"/>
+            <path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/>
+          </svg>
+        </button>
+        <button type="button" class="delete-btn text-rose-600 hover:text-rose-700" title="Delete">
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
+            <path d="M10 11v6M14 11v6"/>
+            <path d="M9 6V4a2 2 0 012-2h2a2 2 0 012 2v2"/>
+          </svg>
+        </button>
+      </div>
+    `;
+
+    const toName = (c) =>
+      [c?.first_name, c?.last_name].filter(Boolean).join(" ").trim() || "—";
+    const toPhone = (c) => c?.sms_number || c?.sms || "";
+    const toEmail = (c) => c?.email || "";
+    const toCompany = (co) => co?.name || co?.company || "";
+
+    // Render rows
+    rows.forEach((row, idx) => {
+      const tr = document.createElement("tr");
+      tr.className = `${idx % 2 === 1 ? "bg-slate-50/50" : ""}`;
+
+      const primary = Boolean(row?.Primary_Owner_Contact);
+      const role = row?.Role || "";
+      const contact = {
+        first_name: row.Contact_First_Name,
+        last_name: row.Contact_Last_Name,
+        email: row.ContactEmail,
+        sms_number: row.Contact_SMS_Number,
+      };
+      const company = row?.CompanyName;
+
+      tr.innerHTML = `
+        <td class="px-4 py-2">${
+          row.Role !== "Owner"
+            ? `<span class="invisible">${starIcon(primary)}</span>`
+            : starIcon(primary)
+        }</td>
+        <td class="px-4 py-2">${role}</td>
+        <td class="px-4 py-2">
+          <div class="font-medium">${toName(contact)}</div>
+          <div class="text-xs text-slate-500">(${toEmail(contact)})</div>
+        </td>
+        <td class="px-4 py-2">${toPhone(contact)}</td>
+        <td class="px-4 py-2">${toCompany(company)}</td>
+        <td class="px-4 py-2 text-right">${actionCell()}</td>
+      `;
+
+      tbody.appendChild(tr);
+    });
+
+    table.appendChild(tbody);
+    container.appendChild(table);
+
+    // Attach events
+    tbody
+      .querySelectorAll(".star-btn")
+      .forEach((btn, i) =>
+        btn.addEventListener("click", () => console.log("⭐ Star clicked:", i))
+      );
+    tbody
+      .querySelectorAll(".edit-btn")
+      .forEach((btn, i) =>
+        btn.addEventListener("click", () => console.log("✏️ Edit clicked:", i))
+      );
+    tbody
+      .querySelectorAll(".delete-btn")
+      .forEach((btn, i) =>
+        btn.addEventListener("click", () =>
+          console.log("🗑️ Delete clicked:", i)
+        )
+      );
+  }
+
+  createInquiryOptions(configs) {
+    configs.forEach(({ id, options, placeholder }) => {
+      const element = document.getElementById(id);
+      if (!element) return;
+
+      element.innerHTML = "";
+
+      if (placeholder) {
+        const placeholderOption = document.createElement("option");
+        placeholderOption.text = placeholder;
+        placeholderOption.value = ""; // empty value
+        placeholderOption.disabled = true; // prevent selection
+        placeholderOption.selected = true; // show initially
+        element.add(placeholderOption);
+      }
+
+      options.forEach((opt) => {
+        const option = document.createElement("option");
+        option.text = opt;
+        option.value = opt;
+        element.add(option);
+      });
+    });
   }
 }

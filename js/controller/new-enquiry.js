@@ -3,6 +3,101 @@ export class NewEnquiryController {
     this.model = model;
     this.view = view;
     this.relatedRequestId = 0;
+    this.noises = [
+      { value: 768, text: "Fighting" },
+      { value: 767, text: "Walking" },
+      { value: 766, text: "Heavy" },
+      { value: 765, text: "Footsteps" },
+      { value: 764, text: "Running" },
+      { value: 763, text: "Scurrying" },
+      { value: 762, text: "Thumping" },
+      { value: 761, text: "Hissing" },
+      { value: 760, text: "Shuffle" },
+      { value: 759, text: "Scratching" },
+      { value: 758, text: "Can hear coming & going" },
+      { value: 757, text: "Movement" },
+      { value: 756, text: "Gnawing" },
+      { value: 755, text: "Rolling" },
+      { value: 754, text: "Dragging" },
+      { value: 753, text: "Squeaking" },
+      { value: 752, text: "Galloping" },
+      { value: 751, text: "Poss Pee" },
+      { value: 750, text: "Fast" },
+      { value: 749, text: "Slow" },
+      { value: 748, text: "Bad Smell" },
+    ];
+    this.pestLocations = [
+      { value: 735, text: "Upper Ceiling" },
+      { value: 734, text: "Between floors" },
+      { value: 733, text: "In Walls" },
+      { value: 732, text: "In House" },
+      { value: 731, text: "Chimney" },
+      { value: 730, text: "Garage" },
+      { value: 729, text: "Kitchen" },
+      { value: 728, text: "Hand Catch" },
+      { value: 727, text: "On roof" },
+      { value: 726, text: "Underneath House" },
+      { value: 725, text: "Under Solar Panels" },
+    ];
+
+    this.inquiryConfigs = [
+      {
+        id: "service-inquiry",
+        placeholder: "Select Service",
+        options: [
+          "Insulation Installation",
+          "Lawn Maintenance",
+          "Materials",
+          "Pigeon Removal",
+          "Pigeon Removal - Option 1",
+          "Pigeon Removal - Option 2",
+          "Pool Cleaning",
+          "Possum Roof",
+          "R3.5 POLYESTER to ceiling cavity",
+          "R4.1 ECOWOOL to ceiling cavity",
+          "Rat Roof",
+          "Vacuum, remove and dispose all dust and debris",
+          "Wasp Removal",
+          "Window Cleaning",
+        ],
+      },
+      {
+        id: "inquiry-source",
+        placeholder: "Select Source",
+        options: ["Web Form", "Phone Call", "Email", "SMS"],
+      },
+      {
+        id: "inquiry-type",
+        placeholder: "Select Type",
+        options: [
+          "General Inquiry",
+          "Service Request or Quote",
+          "Product or Service Information",
+          "Customer Support or Technical Assistance",
+          "Billing and Payment",
+          "Appointment Scheduling or Rescheduling",
+          "Feedback or Suggestions",
+          "Complaint or Issue Reporting",
+          "Partnership or Collaboration Inquiry",
+          "Job Application or Career Opportunities",
+          "Media or Press Inquiry",
+        ],
+      },
+      {
+        id: "referral-source",
+        placeholder: "Select Referral Source",
+        options: [
+          "Google",
+          "Bing",
+          "Facebook",
+          "Yellow Pages",
+          "Referral",
+          "Car Signage",
+          "Returning Customers",
+          "Other",
+        ],
+      },
+    ];
   }
 
   init() {
@@ -16,13 +111,33 @@ export class NewEnquiryController {
     this.view.onSave((payload) => this.#handleSave(payload));
 
     this.#loadContacts();
+    this.#renderDropdownOptionsForTab(
+      this.noises,
+      "noises-list",
+      "noises-card"
+    );
+    this.#renderDropdownOptionsForTab(
+      this.pestLocations,
+      "location-list",
+      "location-card"
+    );
+
+    flatpickr(".date-picker", {
+      dateFormat: "d/m/Y",
+      allowInput: true,
+    });
+
+    this.createInquiryDetailOption();
   }
 
   async #loadContacts() {
     try {
       const contacts = await this.model.loadContacts();
       if (!contacts.length) {
-        this.view.showFeedback("No contacts found. Try adding a new one.", "info");
+        this.view.showFeedback(
+          "No contacts found. Try adding a new one.",
+          "info"
+        );
       }
       this.view.setContacts(contacts);
     } catch (error) {
@@ -44,7 +159,10 @@ export class NewEnquiryController {
       this.view.populateContact(existing);
       this.view.showRelatedLoading();
       this.#loadRelated(existing.fields.email).catch(() => {});
-      this.view.showFeedback("Contact already exists. Selected existing contact.", "info");
+      this.view.showFeedback(
+        "Contact already exists. Selected existing contact.",
+        "info"
+      );
       return;
     }
 
@@ -52,7 +170,9 @@ export class NewEnquiryController {
       this.view.setSaving(true);
       const contact = await this.model.createContact(normalized);
       if (!contact) {
-        this.view.showFeedback("Unable to save contact right now. Please try again.");
+        this.view.showFeedback(
+          "Unable to save contact right now. Please try again."
+        );
         return;
       }
 
@@ -62,7 +182,9 @@ export class NewEnquiryController {
       this.view.showFeedback("Contact saved and selected.", "success");
     } catch (error) {
       console.error("[NewEnquiry] Failed to create contact", error);
-      this.view.showFeedback("Unable to save contact right now. Please try again.");
+      this.view.showFeedback(
+        "Unable to save contact right now. Please try again."
+      );
     } finally {
       this.view.setSaving(false);
     }
@@ -89,7 +211,7 @@ export class NewEnquiryController {
       if (this.relatedRequestId !== requestId) return;
       this.view.renderRelated(related);
     } catch (error) {
-      console.error('[NewEnquiry] Failed to load related data', error);
+      console.error("[NewEnquiry] Failed to load related data", error);
       if (this.relatedRequestId !== requestId) return;
       this.view.renderRelated();
     }
@@ -106,9 +228,11 @@ export class NewEnquiryController {
   #normalisePayload(payload) {
     if (!payload) return {};
     const result = { ...payload };
-    ["first_name", "last_name", "email", "sms_number", "office_phone"].forEach((key) => {
-      if (result[key]) result[key] = result[key].trim();
-    });
+    ["first_name", "last_name", "email", "sms_number", "office_phone"].forEach(
+      (key) => {
+        if (result[key]) result[key] = result[key].trim();
+      }
+    );
     return result;
   }
 
@@ -116,5 +240,126 @@ export class NewEnquiryController {
     if (!payload.first_name) return "First name is required.";
     if (!payload.email) return "Email is required.";
     return null;
+  }
+
+  #renderDropdownOptionsForTab(statuses, listId, cardId) {
+    const list = document.getElementById(listId);
+    const card = document.getElementById(cardId);
+    if (!card || !list) return;
+
+    // Remove previous dynamic items (keep static ones like 'All')
+    Array.from(list.querySelectorAll('li[data-dynamic="true"]')).forEach((n) =>
+      n.remove()
+    );
+
+    // Sort alphabetically by text
+    statuses.sort((a, b) => a.text.localeCompare(b.text));
+
+    const frag = document.createDocumentFragment();
+
+    // Get applied filters (lowercased)
+    const applied = Array.isArray(this.filters?.statuses)
+      ? this.filters.statuses.map((x) => String(x.text).toLowerCase())
+      : [];
+
+    statuses.forEach((s) => {
+      const text = s.text || "";
+      const value = s.value || "";
+      const textLower = text.toLowerCase();
+
+      const id = `status-${textLower.replace(/[^a-z0-9]+/g, "-")}`;
+
+      const li = document.createElement("li");
+      li.className = "px-2 py-1 flex items-center gap-2";
+      li.setAttribute("data-dynamic", "true");
+
+      const checkedAttr = applied.includes(textLower) ? "checked" : "";
+
+      li.innerHTML = `
+        <input 
+          id="${id}" 
+          data-status 
+          value="${value}" 
+          ${checkedAttr} 
+          type="checkbox" 
+          class="h-4 w-4 accent-[#003882]"
+        >
+        <label for="${id}">${text}</label>
+      `;
+
+      frag.appendChild(li);
+    });
+
+    list.appendChild(frag);
+
+    // Re-bind dropdown interactions depending on which list is rendered
+    if (listId === "noises-list") {
+      this.#initDropdown(
+        "noises-btn",
+        "noises-card",
+        "noise-all",
+        'input[type="checkbox"]:not(#noise-all)'
+      );
+    } else {
+      this.#initDropdown(
+        "location-btn",
+        "location-card",
+        "location-all",
+        'input[type="checkbox"]:not(#location-all)'
+      );
+    }
+  }
+
+  #initDropdown(dropdownId, cardId, allCheckboxId, itemSelector) {
+    const btn = document.getElementById(dropdownId);
+    const card = document.getElementById(cardId);
+    if (!btn || !card) return;
+
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      card.classList.toggle("hidden");
+
+      const icon = btn.querySelector("svg");
+      if (icon) icon.classList.toggle("rotate-180");
+    });
+
+    document.addEventListener("click", (e) => {
+      if (
+        !card.classList.contains("hidden") &&
+        !card.contains(e.target) &&
+        e.target !== btn
+      ) {
+        card.classList.add("hidden");
+        const icon = btn.querySelector("svg");
+        if (icon) icon.classList.remove("rotate-180");
+      }
+    });
+
+    const allToggle = card.querySelector(`#${allCheckboxId}`);
+    const itemBoxes = Array.from(card.querySelectorAll(itemSelector));
+
+    const syncAllCheckbox = () => {
+      const allChecked = itemBoxes.every((c) => c.checked);
+      if (allToggle) allToggle.checked = allChecked;
+    };
+
+    itemBoxes.forEach((box) => {
+      box.addEventListener("change", () => {
+        syncAllCheckbox();
+      });
+    });
+
+    if (allToggle) {
+      allToggle.addEventListener("change", () => {
+        const next = !!allToggle.checked;
+        itemBoxes.forEach((c) => (c.checked = next));
+      });
+    }
+
+    syncAllCheckbox();
+  }
+
+  createInquiryDetailOption() {
+    this.view.createInquiryOptions(this.inquiryConfigs);
   }
 }
