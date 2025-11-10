@@ -34,6 +34,7 @@
     <header>
       <div class="flex bg-[#003882] p-4 justify-between">
         <div class="flex gap-28 justify-around items-center">
+          <!-- Page Title -->
           <div class="flex gap-2 justify-start items-center">
             <div class="flex flex-inline gap-3 justify-around items-center">
               <svg
@@ -55,66 +56,328 @@
               </div>
             </div>
           </div>
+          <!-- Page Title -->
+
+          <!-- Email Options -->
           <div class="flex gap-2 justify-start items-center">
-            <div class="flex flex-inline gap-1 justify-around items-center">
+            <!-- Generate Emails -->
+            <div
+              x-data="{ open: false }"
+              class="flex flex-inline gap-1 justify-around items-center relative"
+            >
+              <!-- Trigger: clicking this toggles the email options -->
+              <button
+                type="button"
+                @click="open = !open"
+                class="flex items-center gap-1 justify-end"
+              >
+                <div class="text-white text-[14px] font-medium f-inter">
+                  General Emails
+                </div>
+                <svg
+                  :class="open ? 'rotate-180 transition-transform' : 'transition-transform'"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 14 14"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12.678 4.98899L7.37519 10.2918C7.32594 10.3411 7.26746 10.3802 7.20308 10.4069C7.13871 10.4335 7.06971 10.4473 7.00002 10.4473C6.93033 10.4473 6.86133 10.4335 6.79696 10.4069C6.73258 10.3802 6.6741 10.3411 6.62485 10.2918L1.32209 4.98899C1.22259 4.88949 1.16669 4.75454 1.16669 4.61382C1.16669 4.47311 1.22259 4.33815 1.32209 4.23865C1.42159 4.13915 1.55654 4.08325 1.69726 4.08325C1.83797 4.08325 1.97293 4.13915 2.07243 4.23865L7.00002 9.16691L11.9276 4.23865C11.9769 4.18938 12.0354 4.1503 12.0997 4.12364C12.1641 4.09698 12.2331 4.08325 12.3028 4.08325C12.3725 4.08325 12.4415 4.09698 12.5058 4.12364C12.5702 4.1503 12.6287 4.18938 12.678 4.23865C12.7272 4.28792 12.7663 4.34641 12.793 4.41078C12.8196 4.47515 12.8334 4.54415 12.8334 4.61382C12.8334 4.6835 12.8196 4.75249 12.793 4.81686C12.7663 4.88124 12.7272 4.93973 12.678 4.98899Z"
+                    fill="white"
+                  />
+                </svg>
+              </button>
+
+              <!-- Dropdown -->
               <div
-                class="justify-end text-white text-[14px] font-medium f-inter"
+                x-cloak
+                x-show="open"
+                x-transition
+                @click.outside="open = false"
+                class="w-max shadow-[0px_4px_6px_-4px_rgba(0,0,0,0.10)] shadow-lg inline-flex flex-col justify-start items-start absolute top-8 left-0 z-10"
               >
-                General Emails
+                <div
+                  class="self-stretch bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 flex flex-col justify-start items-start overflow-hidden"
+                >
+                  <div
+                    data-state="Default"
+                    class="self-stretch px-6 py-4 bg-white inline-flex justify-start items-start gap-2 cursor-pointer hover:bg-[#E3EFFF]"
+                  >
+                    <div class="justify-start">
+                      <span
+                        class="text-slate-500 text-sm font-medium font-['Inter'] leading-4"
+                      >
+                        Email Customer
+                      </span>
+                      <span
+                        class="text-blue-700 text-sm font-medium font-['Inter'] leading-4"
+                      >
+                        (Job Email)
+                      </span>
+                    </div>
+                  </div>
+
+                  <div
+                    data-state="Default"
+                    class="self-stretch px-6 py-4 bg-white inline-flex justify-start items-start gap-2 cursor-pointer hover:bg-[#E3EFFF]"
+                  >
+                    <div class="justify-start">
+                      <span
+                        class="text-slate-500 text-sm font-medium font-['Inter'] leading-4"
+                      >
+                        Email Tenant
+                      </span>
+                      <span
+                        class="text-blue-700 text-sm font-medium font-['Inter'] leading-4"
+                      >
+                        (Job Email)
+                      </span>
+                    </div>
+                  </div>
+
+                  <div
+                    data-state="Default"
+                    class="self-stretch px-6 py-4 bg-white inline-flex justify-start items-start gap-2 cursor-pointer hover:bg-[#E3EFFF]"
+                  >
+                    <div class="justify-start">
+                      <span
+                        class="text-slate-500 text-sm font-medium font-['Inter'] leading-4"
+                      >
+                        Request Review
+                      </span>
+                      <span
+                        class="text-blue-700 text-sm font-medium font-['Inter'] leading-4"
+                      >
+                        (Job Email)
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 14 14"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M12.678 4.98899L7.37519 10.2918C7.32594 10.3411 7.26746 10.3802 7.20308 10.4069C7.13871 10.4335 7.06971 10.4473 7.00002 10.4473C6.93033 10.4473 6.86133 10.4335 6.79696 10.4069C6.73258 10.3802 6.6741 10.3411 6.62485 10.2918L1.32209 4.98899C1.22259 4.88949 1.16669 4.75454 1.16669 4.61382C1.16669 4.47311 1.22259 4.33815 1.32209 4.23865C1.42159 4.13915 1.55654 4.08325 1.69726 4.08325C1.83797 4.08325 1.97293 4.13915 2.07243 4.23865L7.00002 9.16691L11.9276 4.23865C11.9769 4.18938 12.0354 4.1503 12.0997 4.12364C12.1641 4.09698 12.2331 4.08325 12.3028 4.08325C12.3725 4.08325 12.4415 4.09698 12.5058 4.12364C12.5702 4.1503 12.6287 4.18938 12.678 4.23865C12.7272 4.28792 12.7663 4.34641 12.793 4.41078C12.8196 4.47515 12.8334 4.54415 12.8334 4.61382C12.8334 4.6835 12.8196 4.75249 12.793 4.81686C12.7663 4.88124 12.7272 4.93973 12.678 4.98899Z"
-                  fill="white"
-                />
-              </svg>
             </div>
-            <div class="flex flex-inline gap-1 justify-around items-center">
+            <!-- Generate Emails -->
+
+            <!-- Quote Emails -->
+            <div
+              x-data="{ openQuote: false }"
+              class="flex flex-inline gap-1 justify-around items-center relative"
+            >
+              <!-- Trigger -->
+              <button
+                type="button"
+                @click="openQuote = !openQuote"
+                class="flex items-center gap-1 justify-end"
+              >
+                <div
+                  class="justify-end text-white text-[14px] font-medium f-inter"
+                >
+                  Quote Emails
+                </div>
+                <svg
+                  :class="openQuote ? 'rotate-180 transition-transform' : 'transition-transform'"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 14 14"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12.678 4.98899L7.37519 10.2918C7.32594 10.3411 7.26746 10.3802 7.20308 10.4069C7.13871 10.4335 7.06971 10.4473 7.00002 10.4473C6.93033 10.4473 6.86133 10.4335 6.79696 10.4069C6.73258 10.3802 6.6741 10.3411 6.62485 10.2918L1.32209 4.98899C1.22259 4.88949 1.16669 4.75454 1.16669 4.61382C1.16669 4.47311 1.22259 4.33815 1.32209 4.23865C1.42159 4.13915 1.55654 4.08325 1.69726 4.08325C1.83797 4.08325 1.97293 4.13915 2.07243 4.23865L7.00002 9.16691L11.9276 4.23865C11.9769 4.18938 12.0354 4.1503 12.0997 4.12364C12.1641 4.09698 12.2331 4.08325 12.3028 4.08325C12.3725 4.08325 12.4415 4.09698 12.5058 4.12364C12.5702 4.1503 12.6287 4.18938 12.678 4.23865C12.7272 4.28792 12.7663 4.34641 12.793 4.41078C12.8196 4.47515 12.8334 4.54415 12.8334 4.61382C12.8334 4.6835 12.8196 4.75249 12.793 4.81686C12.7663 4.88124 12.7272 4.93973 12.678 4.98899Z"
+                    fill="white"
+                  />
+                </svg>
+              </button>
+
+              <!-- Dropdown -->
               <div
-                class="justify-end text-white text-[14px] font-medium f-inter"
+                x-cloak
+                x-show="openQuote"
+                x-transition
+                @click.outside="openQuote = false"
+                class="w-max shadow-[0px_4px_6px_-4px_rgba(0,0,0,0.10)] shadow-lg inline-flex flex-col justify-start items-start absolute top-8 left-0 z-10"
               >
-                Quote Emails
+                <div
+                  data-state="Default"
+                  class="self-stretch px-6 py-4 bg-white inline-flex justify-start items-start gap-2 cursor-pointer hover:bg-[#E3EFFF]"
+                >
+                  <div class="justify-start">
+                    <span
+                      class="text-slate-500 text-sm font-medium font-['Inter'] leading-4"
+                      >Email Manual Quote </span
+                    ><span
+                      class="text-blue-700 text-sm font-medium font-['Inter'] leading-4"
+                      >(Job Email)</span
+                    >
+                  </div>
+                </div>
+                <div
+                  data-state="Default"
+                  class="self-stretch px-6 py-4 bg-white inline-flex justify-start items-start gap-2 cursor-pointer hover:bg-[#E3EFFF]"
+                >
+                  <div class="justify-start">
+                    <span
+                      class="text-slate-500 text-sm font-medium font-['Inter'] leading-4"
+                      >Email Electronic Quote </span
+                    ><span
+                      class="text-blue-700 text-sm font-medium font-['Inter'] leading-4"
+                      >(Job Email)</span
+                    >
+                  </div>
+                </div>
+                <div
+                  data-state="Default"
+                  class="self-stretch px-6 py-4 bg-white inline-flex justify-start items-start gap-2 cursor-pointer hover:bg-[#E3EFFF]"
+                >
+                  <div class="justify-start">
+                    <span
+                      class="text-slate-500 text-sm font-medium font-['Inter'] leading-4"
+                      >Email RE Quote FU </span
+                    ><span
+                      class="text-blue-700 text-sm font-medium font-['Inter'] leading-4"
+                      >(Job Email)</span
+                    >
+                  </div>
+                </div>
+                <div
+                  data-state="Default"
+                  class="self-stretch px-6 py-4 bg-white inline-flex justify-start items-start gap-2 cursor-pointer hover:bg-[#E3EFFF]"
+                >
+                  <div class="justify-start">
+                    <span
+                      class="text-slate-500 text-sm font-medium font-['Inter'] leading-4"
+                      >Email BC Quote FU </span
+                    ><span
+                      class="text-blue-700 text-sm font-medium font-['Inter'] leading-4"
+                      >(Job Email)</span
+                    >
+                  </div>
+                </div>
+                <div
+                  data-state="Default"
+                  class="self-stretch px-6 py-4 bg-white inline-flex justify-start items-start gap-2 cursor-pointer hover:bg-[#E3EFFF]"
+                >
+                  <div class="justify-start">
+                    <span
+                      class="text-slate-500 text-sm font-medium font-['Inter'] leading-4"
+                      >Email O Quote FU </span
+                    ><span
+                      class="text-blue-700 text-sm font-medium font-['Inter'] leading-4"
+                      >(Job Email)</span
+                    >
+                  </div>
+                </div>
+                <div
+                  data-state="Default"
+                  class="self-stretch px-6 py-4 bg-white inline-flex justify-start items-start gap-2 cursor-pointer hover:bg-[#E3EFFF]"
+                >
+                  <div class="justify-start">
+                    <span
+                      class="text-slate-500 text-sm font-medium font-['Inter'] leading-4"
+                      >Email 2nd Quote FU </span
+                    ><span
+                      class="text-blue-700 text-sm font-medium font-['Inter'] leading-4"
+                      >(Job Email)</span
+                    >
+                  </div>
+                </div>
               </div>
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 14 14"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M12.678 4.98899L7.37519 10.2918C7.32594 10.3411 7.26746 10.3802 7.20308 10.4069C7.13871 10.4335 7.06971 10.4473 7.00002 10.4473C6.93033 10.4473 6.86133 10.4335 6.79696 10.4069C6.73258 10.3802 6.6741 10.3411 6.62485 10.2918L1.32209 4.98899C1.22259 4.88949 1.16669 4.75454 1.16669 4.61382C1.16669 4.47311 1.22259 4.33815 1.32209 4.23865C1.42159 4.13915 1.55654 4.08325 1.69726 4.08325C1.83797 4.08325 1.97293 4.13915 2.07243 4.23865L7.00002 9.16691L11.9276 4.23865C11.9769 4.18938 12.0354 4.1503 12.0997 4.12364C12.1641 4.09698 12.2331 4.08325 12.3028 4.08325C12.3725 4.08325 12.4415 4.09698 12.5058 4.12364C12.5702 4.1503 12.6287 4.18938 12.678 4.23865C12.7272 4.28792 12.7663 4.34641 12.793 4.41078C12.8196 4.47515 12.8334 4.54415 12.8334 4.61382C12.8334 4.6835 12.8196 4.75249 12.793 4.81686C12.7663 4.88124 12.7272 4.93973 12.678 4.98899Z"
-                  fill="white"
-                />
-              </svg>
             </div>
-            <div class="flex flex-inline gap-1 justify-around items-center">
+            <!-- Quote Emails -->
+
+            <!-- Invoice Emails -->
+            <div
+              x-data="{ openInvoice: false }"
+              class="flex flex-inline gap-1 justify-around items-center relative"
+            >
+              <!-- Trigger -->
+              <button
+                type="button"
+                @click="openInvoice = !openInvoice"
+                class="flex items-center gap-1 justify-end"
+              >
+                <div
+                  class="justify-end text-white text-[14px] font-medium f-inter"
+                >
+                  Invoice Emails
+                </div>
+
+                <svg
+                  :class="openInvoice ? 'rotate-180 transition-transform' : 'transition-transform'"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 14 14"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12.678 4.98899L7.37519 10.2918C7.32594 10.3411 7.26746 10.3802 7.20308 10.4069C7.13871 10.4335 7.06971 10.4473 7.00002 10.4473C6.93033 10.4473 6.86133 10.4335 6.79696 10.4069C6.73258 10.3802 6.6741 10.3411 6.62485 10.2918L1.32209 4.98899C1.22259 4.88949 1.16669 4.75454 1.16669 4.61382C1.16669 4.47311 1.22259 4.33815 1.32209 4.23865C1.42159 4.13915 1.55654 4.08325 1.69726 4.08325C1.83797 4.08325 1.97293 4.13915 2.07243 4.23865L7.00002 9.16691L11.9276 4.23865C11.9769 4.18938 12.0354 4.1503 12.0997 4.12364C12.1641 4.09698 12.2331 4.08325 12.3028 4.08325C12.3725 4.08325 12.4415 4.09698 12.5058 4.12364C12.5702 4.1503 12.6287 4.18938 12.678 4.23865C12.7272 4.28792 12.7663 4.34641 12.793 4.41078C12.8196 4.47515 12.8334 4.54415 12.8334 4.61382C12.8334 4.6835 12.8196 4.75249 12.793 4.81686C12.7663 4.88124 12.7272 4.93973 12.678 4.98899Z"
+                    fill="white"
+                  />
+                </svg>
+              </button>
+
+              <!-- Dropdown -->
               <div
-                class="justify-end text-white text-[14px] font-medium f-inter"
+                x-cloak
+                x-show="openInvoice"
+                x-transition
+                @click.outside="openInvoice = false"
+                class="w-max shadow-[0px_4px_6px_-4px_rgba(0,0,0,0.10)] shadow-lg inline-flex flex-col justify-start items-start absolute top-8 left-0 z-10"
               >
-                Invoice Emails
+                <div
+                  class="self-stretch bg-white rounded border-l border-r border-t border-gray-300 flex flex-col justify-start items-start overflow-hidden"
+                >
+                  <div
+                    data-state="Default"
+                    class="self-stretch px-6 py-4 bg-white inline-flex justify-start items-start gap-2 cursor-pointer hover:bg-[#E3EFFF]"
+                  >
+                    <div class="justify-start">
+                      <span
+                        class="text-slate-500 text-sm font-medium font-['Inter'] leading-4"
+                        >Email Invoice </span
+                      ><span
+                        class="text-blue-700 text-sm font-medium font-['Inter'] leading-4"
+                        >(Account Email)</span
+                      >
+                    </div>
+                  </div>
+                  <div
+                    data-state="Default"
+                    class="px-6 py-4 bg-white inline-flex justify-start items-start gap-2 cursor-pointer hover:bg-[#E3EFFF]"
+                  >
+                    <div class="justify-start">
+                      <span
+                        class="text-slate-500 text-sm font-medium font-['Inter'] leading-4"
+                        >Email Invoice FU </span
+                      ><span
+                        class="text-blue-700 text-sm font-medium font-['Inter'] leading-4"
+                        >(Account Email)</span
+                      >
+                    </div>
+                  </div>
+                  <div
+                    data-state="Default"
+                    class="px-6 py-4 bg-white inline-flex justify-start items-start gap-2 cursor-pointer hover:bg-[#E3EFFF]"
+                  >
+                    <div class="justify-start">
+                      <span
+                        class="text-slate-500 text-sm font-medium font-['Inter'] leading-4"
+                        >Email RE INV FU </span
+                      ><span
+                        class="text-blue-700 text-sm font-medium font-['Inter'] leading-4"
+                        >(Account Email)</span
+                      >
+                    </div>
+                  </div>
+                </div>
               </div>
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 14 14"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M12.678 4.98899L7.37519 10.2918C7.32594 10.3411 7.26746 10.3802 7.20308 10.4069C7.13871 10.4335 7.06971 10.4473 7.00002 10.4473C6.93033 10.4473 6.86133 10.4335 6.79696 10.4069C6.73258 10.3802 6.6741 10.3411 6.62485 10.2918L1.32209 4.98899C1.22259 4.88949 1.16669 4.75454 1.16669 4.61382C1.16669 4.47311 1.22259 4.33815 1.32209 4.23865C1.42159 4.13915 1.55654 4.08325 1.69726 4.08325C1.83797 4.08325 1.97293 4.13915 2.07243 4.23865L7.00002 9.16691L11.9276 4.23865C11.9769 4.18938 12.0354 4.1503 12.0997 4.12364C12.1641 4.09698 12.2331 4.08325 12.3028 4.08325C12.3725 4.08325 12.4415 4.09698 12.5058 4.12364C12.5702 4.1503 12.6287 4.18938 12.678 4.23865C12.7272 4.28792 12.7663 4.34641 12.793 4.41078C12.8196 4.47515 12.8334 4.54415 12.8334 4.61382C12.8334 4.6835 12.8196 4.75249 12.793 4.81686C12.7663 4.88124 12.7272 4.93973 12.678 4.98899Z"
-                  fill="white"
-                />
-              </svg>
             </div>
+            <!-- Invoice Emails -->
           </div>
+          <!-- Email Options -->
         </div>
+
         <div class="flex gap-3 justify-around items-center">
           <div class="flex flex-inline gap-1">
             <div class="justify-end text-white text-[14px] font-medium f-inter">
@@ -137,7 +400,7 @@
             data-lead-icon="false"
             data-size="medium"
             data-state="Default"
-            data-text="true"
+            data-text="true cursor-pointer"
             data-trail-icon="true"
             data-type="outline"
             class="px-4 py-3 rounded outline outline-1 outline-offset-[-1px] outline-white inline-flex justify-center items-center gap-2 overflow-hidden"
@@ -4348,6 +4611,66 @@
         },
       ];
 
+      const EMAIL_OPTIONS_DATA = {
+        "Invoice Email": {
+          buttons: [
+            {
+              button_name: "Invoice Template",
+              message_id: "123",
+              field_id: "f1234",
+            },
+            {
+              button_name: "Invoice Reminder",
+              message_id: "124",
+              field_id: "f1235",
+            },
+            {
+              button_name: "Invoice Follow-Up",
+              message_id: "125",
+              field_id: "f1236",
+            },
+          ],
+        },
+        "Quote Emails": {
+          buttons: [
+            {
+              button_name: "Quote Template",
+              message_id: "223",
+              field_id: "f2234",
+            },
+            {
+              button_name: "Quote Reminder",
+              message_id: "224",
+              field_id: "f2235",
+            },
+            {
+              button_name: "Quote Follow-Up",
+              message_id: "225",
+              field_id: "f2236",
+            },
+          ],
+        },
+        "General Emails": {
+          buttons: [
+            {
+              button_name: "Welcome Email",
+              message_id: "323",
+              field_id: "f3234",
+            },
+            {
+              button_name: "Feedback Request",
+              message_id: "324",
+              field_id: "f3235",
+            },
+            {
+              button_name: "Thank You Email",
+              message_id: "325",
+              field_id: "f3236",
+            },
+          ],
+        },
+      };
+      
       function fetchServicesCatalog() {
         return Promise.resolve(SERVICES_DATA);
       }
