@@ -14,9 +14,19 @@
       src="https://static-au03.vitalstats.app/static/dynamic-list/v1/latest.js"
       crossorigin="anonymous"
     ></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+      rel="stylesheet"
+    />
     <style>
       [x-cloak] {
         display: none !important;
+      }
+
+      .f-inter {
+        font-family: "Inter", sans-serif;
       }
     </style>
   </head>
@@ -39,7 +49,7 @@
                 />
               </svg>
               <div
-                class="justify-end text-white text-lg font-small font-sans leading-normal"
+                class="justify-end text-white f-inter font-small text-[20px]"
               >
                 Job Details
               </div>
@@ -48,7 +58,7 @@
           <div class="flex gap-2 justify-start items-center">
             <div class="flex flex-inline gap-1 justify-around items-center">
               <div
-                class="justify-end text-white text-sm font-small font-sans leading-normal"
+                class="justify-end text-white text-[14px] font-medium f-inter"
               >
                 General Emails
               </div>
@@ -67,7 +77,7 @@
             </div>
             <div class="flex flex-inline gap-1 justify-around items-center">
               <div
-                class="justify-end text-white text-sm font-small font-sans leading-normal"
+                class="justify-end text-white text-[14px] font-medium f-inter"
               >
                 Quote Emails
               </div>
@@ -86,7 +96,7 @@
             </div>
             <div class="flex flex-inline gap-1 justify-around items-center">
               <div
-                class="justify-end text-white text-sm font-small font-sans leading-normal"
+                class="justify-end text-white text-[14px] font-medium f-inter"
               >
                 Invoice Emails
               </div>
@@ -107,9 +117,7 @@
         </div>
         <div class="flex gap-3 justify-around items-center">
           <div class="flex flex-inline gap-1">
-            <div
-              class="justify-start text-white text-sm font-medium font-sans leading-none"
-            >
+            <div class="justify-end text-white text-[14px] font-medium f-inter">
               Copy Link
             </div>
             <svg
@@ -134,9 +142,7 @@
             data-type="outline"
             class="px-4 py-3 rounded outline outline-1 outline-offset-[-1px] outline-white inline-flex justify-center items-center gap-2 overflow-hidden"
           >
-            <div
-              class="justify-start text-white text-sm font-medium font-sans leading-none"
-            >
+            <div class="justify-end text-white text-[14px] font-medium f-inter">
               Job Actions
             </div>
             <svg
@@ -161,9 +167,7 @@
             data-type="outline"
             class="px-4 py-3 rounded outline outline-1 outline-offset-[-1px] outline-white inline-flex justify-center items-center gap-2 overflow-hidden"
           >
-            <div
-              class="justify-start text-white text-sm font-medium font-sans leading-none"
-            >
+            <div class="justify-end text-white text-[14px] font-medium f-inter">
               Review
             </div>
             <svg
@@ -203,7 +207,7 @@
             </svg>
 
             <div
-              class="justify-start text-sky-900 text-sm font-medium font-sans leading-none"
+              class="justify-start text-sky-900 text-[14px] font-medium f-inter"
             >
               Tasks(4)
             </div>
@@ -231,7 +235,7 @@
             class="px-4 py-3 bg-gray-300 rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-center items-center gap-2 overflow-hidden"
           >
             <div
-              class="justify-start text-slate-500 text-sm font-medium font-sans leading-none"
+              class="justify-start text-slate-500 text-[14px] font-medium f-inter"
             >
               Email Job
             </div>
@@ -247,19 +251,19 @@
             class="px-4 py-3 bg-white rounded outline outline-1 outline-offset-[-1px] outline-white inline-flex justify-center items-center gap-2 overflow-hidden"
           >
             <div
-              class="justify-start text-sky-900 text-sm font-medium font-sans leading-none"
+              class="justify-start text-sky-900 text-[14px] font-medium f-inter"
             >
               Print Job Sheet
             </div>
           </div>
         </div>
       </div>
-      <div class="flex"></div>
     </header>
 
     <!-- MAIN -->
     <main class="bg-[#F5F5F5] flex px-4 py-6 gap-4">
-      <div class="flex flex-col">
+      <!-- Inquiry Section -->
+      <div class="flex flex-col inquiry-section">
         <div
           class="p-4 bg-violet-100 rounded flex flex-wrap items-center justify-between gap-3"
         >
@@ -276,8 +280,9 @@
                 fill="#5B21B6"
               />
             </svg>
-
-            <div class="text-neutral-700 text-lg font-semibold">Inquiry</div>
+            <div class="text-neutral-700 text-[18px] font-semibold">
+              Inquiry
+            </div>
           </div>
 
           <div
@@ -336,22 +341,19 @@
                 <span x-text="toastMessage"></span>
               </div>
             </div>
-            <label class="sr-only" for="allocate-provider-input"
-              >Search service providers</label
-            >
             <div class="relative">
               <input
                 id="allocate-provider-input"
                 type="text"
                 :placeholder="placeholderText"
-                class="w-full rounded-lg border border-slate-200 bg-white py-2 pl-9 pr-3 text-sm text-slate-800 placeholder:text-slate-400 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-200"
+                class="w-full rounded-sm border border-slate-200 bg-white py-2 pl-[18px] font-medium text-[14px] text-[#414042] placeholder:text-[#414042] focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-200"
                 x-model="searchTerm"
                 @focus="handleFocus"
                 @click="handleFocus"
                 autocomplete="off"
               />
               <svg
-                class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+                class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
                 width="16"
                 height="16"
                 viewBox="0 0 16 16"
@@ -372,14 +374,9 @@
               x-cloak
             >
               <div
-                class="rounded-2xl border border-slate-200 bg-white shadow-xl"
+                class="rounded-sm border border-slate-200 bg-white shadow-xl"
               >
                 <div class="flex flex-col gap-1 border-b border-slate-100">
-                  <div class="px-4 pt-4">
-                    <p class="text-xs font-semibold uppercase text-slate-500">
-                      Allocate To Service Provider
-                    </p>
-                  </div>
                   <div
                     class="max-h-72 overflow-y-auto"
                     x-ref="providerList"
@@ -402,7 +399,7 @@
                         x-bind:aria-selected="selectedProviderId === $el.dataset.providerId"
                         x-bind:class="selectedProviderId === $el.dataset.providerId ? 'bg-slate-100 ring-1 ring-sky-200 hover:bg-slate-100' : ''"
                       >
-                        <div class="relative h-12 w-12 shrink-0">
+                        <div class="relative h-10 w-10 shrink-0">
                           <img
                             src="[Profile_Image]"
                             alt="[Account_Name]"
@@ -415,12 +412,15 @@
                         </div>
                         <div class="flex-1">
                           <div
-                            class="text-sm font-semibold text-slate-800"
+                            class="text-[14px] font-medium text-[#414042] f-inter"
                             data-search-name
                           >
                             [Account_Name]
                           </div>
-                          <div class="text-xs text-slate-500" data-search-phone>
+                          <div
+                            class="text-[12px] font-normal text-[#636D88] f-inter"
+                            data-search-phone
+                          >
                             [Mobile_Number]
                           </div>
                           <span class="hidden" data-field="provider-email"
@@ -430,14 +430,15 @@
                             >[ID]</span
                           >
                         </div>
-                        <div
-                          class="flex items-center gap-2 text-xs font-medium"
-                        >
+                        <div class="flex items-center gap-2">
                           <span
                             class="h-2.5 w-2.5 rounded-full bg-slate-300"
                             data-status-dot
                           ></span>
-                          <span class="text-slate-500" data-status-badge>
+                          <span
+                            class="f-inter text-[12px] font-medium"
+                            data-status-badge
+                          >
                             [Status]
                           </span>
                         </div>
@@ -459,14 +460,14 @@
                 </div>
                 <button
                   type="button"
-                  class="flex w-full items-center justify-center gap-2 rounded-b-2xl bg-sky-900 px-4 py-3 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-60"
+                  class="flex w-full items-center justify-center gap-2 rounded-b-sm bg-[#003882] px-4 py-3 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-60"
                   @click="confirmAllocation"
                   :disabled="isSubmitting || !selectedProviderId"
                   :class="{ 'opacity-60 cursor-not-allowed': isSubmitting || !selectedProviderId }"
                 >
                   <span
                     x-show="!isSubmitting"
-                    class="inline-flex items-center gap-2"
+                    class="inline-flex items-center gap-2 f-inter font-medium text-[14px]"
                   >
                     Confirm Allocation
                     <svg
@@ -525,12 +526,12 @@
           <div class="flex items-center gap-2">
             <button
               id="deal-info-btn"
-              class="px-4 py-1 bg-white text-sky-900 rounded border border-sky-900"
+              class="px-4 py-[12px] bg-white text-[#003882] f-inter font-medium text-[14px] rounded border border-sky-900"
             >
               Deal Info
             </button>
             <button
-              class="px-4 py-1 bg-sky-900 text-white rounded border border-sky-900"
+              class="px-4 py-[12px] bg-sky-900 text-white f-inter font-medium text-[14px] rounded border border-sky-900"
             >
               Edit Inquiry
             </button>
@@ -542,7 +543,7 @@
             class="flex flex-col lg:flex-row gap-6 p-4 bg-white rounded-b-xl"
           >
             <!-- LEFT COLUMN -->
-            <section class="flex-1 flex flex-col gap-4 w-[400px]">
+            <section class="flex-1 flex flex-col gap-4">
               <!-- toolbar -->
 
               <!-- Inquiry Details -->
@@ -568,12 +569,13 @@
                       />
                     </svg>
 
-                    <div class="text-zinc-800 text-base font-medium">
+                    <div class="text-[#2A2A2A] text-[16px] font-medium f-inter">
                       Inquiry Details
                     </div>
                   </div>
                   <div class="px-2.5 py-0.5 bg-violet-100 rounded-full">
-                    <span class="text-violet-800 text-xs font-medium"
+                    <span
+                      class="text-violet-800 f-inter text-[12px] font-medium"
                       >[Inquiry_Status]</span
                     >
                   </div>
@@ -581,70 +583,84 @@
 
                 <div class="flex flex-col md:flex-row gap-10">
                   <div class="flex flex-col gap-3">
-                    <div class="flex items-center gap-2 text-sm">
-                      <span class="text-neutral-600 text-nowrap"
+                    <div class="flex items-center gap-2">
+                      <span
+                        class="text-[#4A4A4A] text-nowrap text-[12px] font-normal f-inter"
                         >Work Order No:</span
                       >
-                      <span class="text-blue-700 text-sm text-nowrap"
+                      <span
+                        class="text-[#0052CC] text-[16px]f-inter font-normal text-nowrap"
                         >#[Unique_ID]</span
                       >
                     </div>
-                    <div class="flex items-center gap-2 text-sm">
-                      <span class="text-neutral-600 text-nowrap"
+                    <div class="flex items-center gap-2">
+                      <span
+                        class="text-[#4A4A4A] text-nowrap text-[12px] font-normal f-inter"
                         >Job Date:</span
                       >
                       <span
-                        class="text-zinc-800 font-medium text-nowrap"
+                        class="text-[#2A2A2A] text-nowrap text-[14px] font-medium f-inter"
                         data-inquiry-created
                         >[Date_Job_Required_By]</span
                       >
                     </div>
-                    <div class="flex items-center gap-2 text-sm">
-                      <span class="text-neutral-600 text-nowrap"
+                    <div class="flex items-center gap-2">
+                      <span
+                        class="text-[#4A4A4A] text-nowrap text-[12px] font-normal f-inter"
                         >Job Taken By:</span
                       >
                       <span
-                        class="text-zinc-800 font-medium text-nowrap"
+                        class="text-[#2A2A2A] text-nowrap text-[14px] font-medium f-inter"
                         data-inquiry-owner
                       ></span>
                     </div>
-                    <div class="flex items-center gap-2 text-sm">
-                      <span class="text-neutral-600 text-nowrap"
+                    <div class="flex items-center gap-2">
+                      <span
+                        class="text-[#4A4A4A] text-nowrap text-[12px] font-normal f-inter"
                         >Entered By:</span
                       >
                       <span
-                        class="text-zinc-800 font-medium text-nowrap"
+                        class="text-[#2A2A2A] text-nowrap text-[14px] font-medium f-inter"
                       ></span>
                     </div>
                   </div>
 
                   <div class="flex flex-col gap-3">
                     <div class="flex items-center gap-2 text-sm">
-                      <span class="text-neutral-600 text-nowrap">Source:</span>
-                      <span class="text-zinc-800 font-medium text-nowrap"
+                      <span
+                        class="text-[#4A4A4A] text-nowrap text-[12px] font-normal f-inter"
+                        >Source:</span
+                      >
+                      <span
+                        class="text-[#2A2A2A] text-nowrap text-[14px] font-medium f-inter"
                         >[Inquiry_Source]</span
                       >
                     </div>
                     <div class="flex items-center gap-2 text-sm">
                       <span class="text-neutral-600 text-nowrap">Type:</span>
-                      <span class="text-zinc-800 font-medium text-nowrap"
+                      <span
+                        class="text-[#2A2A2A] text-nowrap text-[14px] font-medium f-inter"
                         >[Type]</span
                       >
                     </div>
                     <div class="flex items-center gap-2 text-sm">
-                      <span class="text-neutral-600 text-nowrap">Service:</span>
                       <span
-                        class="text-zinc-800 font-medium text-nowrap"
+                        class="text-[#4A4A4A] text-nowrap text-[12px] font-normal f-inter"
+                        >Service:</span
+                      >
+                      <span
+                        class="text-[#2A2A2A] text-nowrap text-[14px] font-medium f-inter"
                         data-inquiry-service
                         >[Service_Inquiry_Service_Name]</span
                       >
                     </div>
                     <div class="flex items-center gap-2 text-sm">
-                      <span class="text-neutral-600 text-nowrap"
+                      <span
+                        class="text-[#4A4A4A] text-nowrap text-[12px] font-normal f-inter"
                         >Work Requested By:</span
                       >
                       <span
-                        class="text-zinc-800 font-medium text-nowrap"
+                        class="text-[#2A2A2A] text-nowrap text-[14px] font-medium f-inter"
                       ></span>
                     </div>
                   </div>
@@ -674,7 +690,7 @@
                       />
                     </svg>
 
-                    <div class="text-zinc-800 text-base font-medium">
+                    <div class="text-[#2A2A2A] text-[16px] font-medium f-inter">
                       Resident’s Feedback
                     </div>
                   </div>
@@ -683,7 +699,10 @@
                     class="inline-flex items-center gap-1 text-blue-700 text-xs"
                     @click="$dispatch('uploads:show', { target: 'resident-feedback' })"
                   >
-                    <span>View Photos</span>
+                    <span
+                      class="text-blue-700 text-xs font-normal font-['Inter']"
+                      >View Photos</span
+                    >
                     <svg
                       width="14"
                       height="14"
@@ -711,28 +730,42 @@
                     class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
                   >
                     <div class="flex flex-col gap-1">
-                      <div class="text-neutral-600 text-sm">Location</div>
+                      <div
+                        class="text-neutral-600 text-sm font-normal font-['Inter']"
+                      >
+                        Location
+                      </div>
                       <div
                         class="text-zinc-800 text-sm font-medium"
                         x-text="displayLocations"
                       ></div>
                     </div>
                     <div class="flex flex-col gap-1">
-                      <div class="text-neutral-600 text-sm">Noises</div>
+                      <div
+                        class="text-neutral-600 text-sm font-normal font-['Inter']"
+                      >
+                        Noises
+                      </div>
                       <div
                         class="text-zinc-800 text-sm font-medium"
                         x-text="displayNoises"
                       ></div>
                     </div>
                     <div class="flex flex-col gap-1">
-                      <div class="text-neutral-600 text-sm">Times</div>
+                      <div
+                        class="text-neutral-600 text-sm font-normal font-['Inter']"
+                      >
+                        Times
+                      </div>
                       <div
                         class="text-zinc-800 text-sm font-medium"
                         x-text="displayTimes"
                       ></div>
                     </div>
                     <div class="flex flex-col gap-1">
-                      <div class="text-neutral-600 text-sm">
+                      <div
+                        class="text-neutral-600 text-sm font-normal font-['Inter']"
+                      >
                         Job Required By
                       </div>
                       <div class="text-zinc-800 text-sm font-medium">
@@ -741,7 +774,11 @@
                     </div>
                   </div>
                   <div class="flex flex-col gap-1">
-                    <div class="text-sky-900 text-sm">Client Notes</div>
+                    <div
+                      class="text-sky-900 text-sm font-normal font-['Inter']"
+                    >
+                      Client Notes
+                    </div>
                     <p class="text-zinc-800 text-sm">[Client_Notes]</p>
                   </div>
                 </div>
@@ -786,7 +823,10 @@
                       />
                     </svg>
 
-                    <span>Add New Contact</span>
+                    <span
+                      class="text-blue-700 text-xs font-normal font-['Inter']"
+                      >Add New Contact</span
+                    >
                   </button>
                 </div>
 
@@ -1268,6 +1308,7 @@
         </div>
       </div>
 
+      <!-- Quotes Section -->
       <div
         class="flex flex-col space-y-4 text-slate-700 p-4 bg-white rounded-xl"
         x-data="quotePanel()"
@@ -1537,9 +1578,10 @@
           x-cloak
         >
           <div class="space-y-6">
-            <div class="rounded-xl ">
+            <div class="rounded-xl">
               <div
-                class="flex flex-wrap items-center justify-between gap-3 bg-[#f3edff] px-4 py-3"
+                class="flex flex-wrap items-center justify-between gap-3 px-4 py-3"
+                :class="isQuoteAccepted ? 'bg-[#dff5e1]' : 'bg-[#f3edff]'"
               >
                 <div class="flex items-center gap-2">
                   <span class="rounded-full bg-[#d8c8ff] p-2 text-[#5b21b6]">
@@ -1553,26 +1595,59 @@
                   <span class="text-sm font-semibold text-slate-900"
                     >Quote Details</span
                   >
+                  <span
+                    x-cloak
+                    class="rounded-full px-2 py-0.5 text-xs font-semibold"
+                    :class="isQuoteAccepted ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'"
+                    x-text="quoteStatus || 'New Quote'"
+                  ></span>
                 </div>
                 <div class="flex flex-wrap gap-2">
-                  <button
-                    class="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-                  >
-                    Send Quote
-                  </button>
+                  <template x-if="!isQuoteSent && !isQuoteAccepted">
+                    <button
+                      class="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                      @click.prevent="handleSendQuoteClick"
+                    >
+                      Send Quote
+                    </button>
+                  </template>
+                  <template x-if="isQuoteSent && !isQuoteAccepted">
+                    <button
+                      class="rounded-md border border-sky-200 bg-sky-50 px-3 py-2 text-sm font-semibold text-sky-800 hover:bg-sky-100"
+                      @click.prevent="handleAcceptQuote"
+                    >
+                      Accept Quote
+                    </button>
+                  </template>
+                  <template x-if="isQuoteAccepted">
+                    <span
+                      class="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-semibold text-emerald-800"
+                      >Quote Accepted</span
+                    >
+                  </template>
                   <button
                     class="rounded-md bg-sky-800 px-3 py-2 text-sm font-semibold text-white hover:bg-sky-900"
+                    @click.prevent="$dispatch('quote:edit', { quoteDate, followUpDate, allowDateEditing: true })"
+                    x-show="!isQuoteAccepted"
+                    x-cloak
                   >
                     Edit Quote
                   </button>
                 </div>
               </div>
               <div class="space-y-4 px-5 py-5">
-                <div class="space-y-1">
+                <div
+                  class="space-y-1"
+                  x-show="shouldShowRecipientSelector"
+                  x-cloak
+                >
                   <label class="text-xs font-semibold uppercase text-slate-500"
                     >Send Quote To:<span class="text-rose-600">*</span></label
                   >
-                  <div class="relative" @keydown.escape.window="closeRecipientDropdown">
+                  <div
+                    class="relative"
+                    @keydown.escape.window="closeRecipientDropdown"
+                  >
                     <button
                       type="button"
                       class="flex w-full items-center justify-between rounded-lg border border-slate-300 bg-white px-3 py-2 text-left text-sm text-slate-800 transition focus:outline-none focus:ring-2 focus:ring-sky-500"
@@ -1624,7 +1699,9 @@
                           @keydown.stop
                         />
                       </div>
-                      <div class="max-h-72 divide-y divide-slate-100 overflow-y-auto">
+                      <div
+                        class="max-h-72 divide-y divide-slate-100 overflow-y-auto"
+                      >
                         <template x-if="filteredRecipients.length">
                           <div>
                             <template
@@ -1662,7 +1739,7 @@
                                     ></span>
                                     <span
                                       class="text-xs font-medium text-slate-500"
-                                      x-text="recipient.role"
+                                      x-text="recipient.roleLabel || recipient.role || ''"
                                     ></span>
                                   </div>
                                   <div
@@ -1707,9 +1784,9 @@
                     </div>
                     <span
                       class="mt-1 block text-xs text-rose-600"
-                      x-show="!selectedRecipientIds.length"
-                      >Required</span
-                    >
+                      x-show="sendQuoteError"
+                      x-text="sendQuoteError"
+                    ></span>
                   </div>
                 </div>
                 <div class="hidden" x-ref="recipientSource" aria-hidden="true">
@@ -1736,20 +1813,70 @@
                     <a
                       href="#"
                       class="font-semibold text-sky-700"
-                      x-text="formatQuoteNumberDisplay(quoteNumber)"
+                      x-text="quoteNumber ? ('#' + quoteNumber) : '#'"
                     ></a>
-                    <span
-                      class="rounded-full bg-violet-100 px-2 py-0.5 text-xs font-semibold text-violet-700"
-                      x-text="quoteStatus"
-                    ></span>
                   </div>
+                  <template x-if="isQuoteAccepted && dateQuoteAccepted">
+                    <div class="flex items-center gap-2">
+                      <span class="text-slate-500">Date Accepted:</span>
+                      <span
+                        class="font-semibold"
+                        x-text="acceptedDateDisplay"
+                      ></span>
+                    </div>
+                  </template>
                   <div class="flex items-center gap-2">
                     <span class="text-slate-500">Quote Date:</span>
-                    <span class="font-semibold" x-text="quoteDate"></span>
+                    <span
+                      class="font-semibold"
+                      x-text="quoteDate || '—'"
+                    ></span>
                   </div>
-                  <div class="flex items-center gap-2">
-                    <span class="text-slate-500">Quote Price:</span>
-                    <span class="font-semibold" x-text="quotePrice"></span>
+                  <div
+                    class="flex flex-wrap items-center justify-between gap-3"
+                  >
+                    <div class="flex items-center gap-2">
+                      <span class="text-slate-500">Quote Price:</span>
+                      <span class="font-semibold" x-text="quotePrice"></span>
+                    </div>
+                    <template x-if="isQuoteSent || isQuoteAccepted">
+                      <div class="flex items-center gap-2">
+                        <span class="text-slate-500">Sent To:</span>
+                        <span
+                          class="font-semibold text-slate-900"
+                          x-text="recipientSummaryText"
+                        ></span>
+                      </div>
+                    </template>
+                  </div>
+                  <template x-if="isQuoteSent || isQuoteAccepted">
+                    <div class="flex items-center gap-2">
+                      <span class="text-slate-500">Follow Up Date:</span>
+                      <span
+                        class="font-semibold"
+                        x-text="followUpDate || '—'"
+                      ></span>
+                    </div>
+                  </template>
+                  <div
+                    class="flex flex-wrap items-center justify-between gap-3"
+                    x-show="dateQuoteSent"
+                    x-cloak
+                  >
+                    <div class="flex items-center gap-2">
+                      <span class="text-slate-500">Quote Sent Date:</span>
+                      <span
+                        class="font-semibold"
+                        x-text="sentDateDisplay"
+                      ></span>
+                    </div>
+                    <a
+                      href="javascript:void(0)"
+                      class="text-xs font-semibold text-sky-700 hover:underline"
+                      @click.prevent="$dispatch('quote:edit', { quoteDate, followUpDate, allowDateEditing: !isQuoteAccepted })"
+                    >
+                      Quote Documents
+                    </a>
                   </div>
                 </div>
               </div>
@@ -1777,12 +1904,24 @@
                       >Activities</span
                     >
                   </div>
-                  <button
-                    class="rounded-md bg-sky-800 px-3 py-1.5 text-xs font-semibold text-white hover:bg-sky-900"
-                    @click.prevent="$dispatch('activity:add')"
-                  >
-                    Add Activity
-                  </button>
+                  <div class="flex items-center gap-2">
+                    <template x-if="!isQuoteAccepted">
+                      <button
+                        class="rounded-md bg-sky-800 px-3 py-1.5 text-xs font-semibold text-white hover:bg-sky-900"
+                        @click.prevent="$dispatch('activity:add')"
+                      >
+                        Add Activity
+                      </button>
+                    </template>
+                    <template x-if="isQuoteAccepted">
+                      <button
+                        class="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                        @click.prevent="window.dispatchEvent(new CustomEvent('activities:view-all'))"
+                      >
+                        View All Activities
+                      </button>
+                    </template>
+                  </div>
                 </div>
 
                 <div
@@ -1792,6 +1931,8 @@
                   data-var-jobid="375"
                   data-op="subscribe"
                   data-entity-key="1rBR-jpR3yE3HE1VhFD0j"
+                  x-show="!isQuoteAccepted"
+                  x-cloak
                 >
                   <div class="divide-y divide-slate-100">
                     <div
@@ -1823,10 +1964,15 @@
                           <span class="text-base font-semibold text-slate-900"
                             >[Activity_Price]</span
                           >
-                          <button
-                            class="text-slate-400 hover:text-slate-600"
-                            title="Edit Activity"
-                          @click.prevent="
+                          <div
+                            class="flex items-center gap-3"
+                            x-show="!isQuoteAccepted"
+                            x-cloak
+                          >
+                            <button
+                              class="text-slate-400 hover:text-slate-600"
+                              title="Edit Activity"
+                              @click.prevent="
                       (() => {
                         const row = $el.closest('[data-activity-row]');
                         if (!row) return;
@@ -1859,26 +2005,26 @@
                         });
                       })()
                     "
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              class="h-4 w-4"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
                             >
-                              <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="1.5"
-                                d="M16.862 5.487l1.651 1.651M4.5 19.5h3.375L18.127 9.247a1.75 1.75 0 000-2.475L16.228 4.873a1.75 1.75 0 00-2.475 0L4.5 14.125V17.5a2 2 0 002 2z"
-                              />
-                            </svg>
-                          </button>
-                          <button
-                            class="text-rose-500 hover:text-rose-600"
-                            title="Delete Activity"
-                  @click.prevent="
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-4 w-4"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  stroke-width="1.5"
+                                  d="M16.862 5.487l1.651 1.651M4.5 19.5h3.375L18.127 9.247a1.75 1.75 0 000-2.475L16.228 4.873a1.75 1.75 0 00-2.475 0L4.5 14.125V17.5a2 2 0 002 2z"
+                                />
+                              </svg>
+                            </button>
+                            <button
+                              class="text-rose-500 hover:text-rose-600"
+                              title="Delete Activity"
+                              @click.prevent="
                       (() => {
                         const row = $el.closest('[data-activity-row]');
                         if (!row) return;
@@ -1887,23 +2033,32 @@
                         });
                       })()
                     "
-                  >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              class="h-4 w-4"
-                              viewBox="0 0 24 24"
-                              fill="currentColor"
                             >
-                              <path
-                                d="M9 3a1 1 0 00-1 1v1H4a1 1 0 100 2h.082l.74 11.108A3 3 0 007.814 21h8.372a3 3 0 002.993-2.892L19.918 7H20a1 1 0 100-2h-4V4a1 1 0 00-1-1H9zm2 5a1 1 0 012 0v8a1 1 0 11-2 0V8zm4 0a1 1 0 10-2 0v8a1 1 0 102 0V8zM9 8a1 1 0 10-2 0v8a1 1 0 102 0V8z"
-                              />
-                            </svg>
-                          </button>
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-4 w-4"
+                                viewBox="0 0 24 24"
+                                fill="currentColor"
+                              >
+                                <path
+                                  d="M9 3a1 1 0 00-1 1v1H4a1 1 0 100 2h.082l.74 11.108A3 3 0 007.814 21h8.372a3 3 0 002.993-2.892L19.918 7H20a1 1 0 100-2h-4V4a1 1 0 00-1-1H9zm2 5a1 1 0 012 0v8a1 1 0 11-2 0V8zm4 0a1 1 0 10-2 0v8a1 1 0 102 0V8zM9 8a1 1 0 10-2 0v8a1 1 0 102 0V8z"
+                                />
+                              </svg>
+                            </button>
+                          </div>
                         </div>
                       </div>
                       <p class="text-sm text-slate-600">[Activity_Text]</p>
                     </div>
                   </div>
+                </div>
+                <div
+                  class="border-t border-slate-200 bg-white px-5 py-4 text-sm text-slate-600"
+                  x-show="isQuoteAccepted"
+                  x-cloak
+                >
+                  Activities are locked for accepted quotes. Use the "View All
+                  Activities" button above to review the final list.
                 </div>
               </div>
             </div>
@@ -1951,6 +2106,7 @@
         </div>
       </div>
 
+      <!-- Client and payment section -->
       <div
         class="space-y-5 relative text-slate-700 flex flex-col p-4 bg-white rounded-xl"
       >
@@ -2645,6 +2801,645 @@
       </div>
     </div>
 
+    <div x-data="sendQuoteModal()" x-cloak>
+      <div
+        class="fixed inset-0 z-40 flex min-h-screen items-center justify-center bg-slate-900/60 px-4 py-10 text-slate-800"
+        x-show="open"
+        x-transition.opacity
+        @keydown.escape.window="close"
+      >
+        <div class="w-full max-w-2xl rounded-2xl bg-white shadow-2xl">
+          <div
+            class="flex items-center justify-between border-b border-slate-200 px-6 py-4"
+          >
+            <h3 class="text-lg font-semibold text-slate-900">Send Quote To:</h3>
+            <button
+              class="text-slate-400 transition hover:text-slate-600"
+              @click="close"
+            >
+              <span class="sr-only">Close</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+          <div class="space-y-5 px-6 py-6 text-sm text-slate-700">
+            <div>
+              <p class="text-xs font-semibold uppercase text-slate-500">
+                Quote will be sent to:
+              </p>
+              <div class="mt-3 space-y-3">
+                <template x-if="recipients.length">
+                  <div class="space-y-3">
+                    <template
+                      x-for="recipient in recipients"
+                      :key="recipient.id"
+                    >
+                      <div
+                        class="flex items-center justify-between rounded-xl border border-slate-200 px-4 py-3 text-sm"
+                      >
+                        <div class="flex items-center gap-3">
+                          <svg
+                            x-show="recipient.isImportant"
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-4 w-4 text-amber-400"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                          >
+                            <path
+                              d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                            />
+                          </svg>
+                          <div>
+                            <div class="font-semibold text-slate-900">
+                              <span x-text="recipient.displayName"></span>
+                              <span
+                                class="text-slate-500"
+                                x-text="recipient.roleLabel"
+                              ></span>
+                            </div>
+                            <div
+                              class="flex flex-wrap gap-4 text-xs text-slate-500"
+                            >
+                              <span x-text="recipient.email || '—'"></span>
+                              <span x-text="recipient.phone || '—'"></span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </template>
+                  </div>
+                </template>
+                <p
+                  class="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-4 text-center text-sm text-slate-500"
+                  x-show="!recipients.length"
+                >
+                  No recipients selected.
+                </p>
+              </div>
+            </div>
+            <div
+              class="rounded-xl border border-slate-100 bg-slate-50 px-4 py-3 text-xs text-slate-500"
+            >
+              <div class="flex items-start gap-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="mt-0.5 h-4 w-4 text-sky-600"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.993.883L9 8v4a1 1 0 00.883.993L10 13h.01a1 1 0 00.99-.857L11 12V8a1 1 0 00-1-1zm.001 6a1 1 0 100 2 1 1 0 000-2z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                <p>
+                  Once this quote is sent, it requires approval from the client
+                  before it can proceed to the job section.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div
+            class="flex items-center justify-between border-t border-slate-200 px-6 py-4 text-sm"
+          >
+            <button
+              class="font-medium text-slate-500 hover:text-slate-700"
+              @click="close"
+            >
+              Cancel
+            </button>
+            <button
+              class="inline-flex items-center rounded-lg bg-sky-700 px-4 py-2 font-semibold text-white shadow-sm transition hover:bg-sky-800 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500"
+              @click="handleSend"
+              :disabled="!recipients.length || isSending"
+            >
+              <svg
+                x-show="isSending"
+                class="-ml-1 mr-2 h-4 w-4 animate-spin"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                ></path>
+              </svg>
+              <span x-text="isSending ? 'Sending…' : 'Send Quote'"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div x-data="acceptQuoteModal()" x-cloak>
+      <div
+        class="fixed inset-0 z-40 flex min-h-screen items-center justify-center bg-slate-900/60 px-4 py-10 text-slate-800"
+        x-show="open"
+        x-transition.opacity
+        @keydown.escape.window="close"
+      >
+        <div class="w-full max-w-xl rounded-2xl bg-white shadow-2xl">
+          <div
+            class="flex items-center justify-between border-b border-slate-200 px-6 py-4"
+          >
+            <h3 class="text-lg font-semibold text-slate-900">Accept Quote</h3>
+            <button
+              class="text-slate-400 transition hover:text-slate-600"
+              @click="close"
+            >
+              <span class="sr-only">Close</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+          <div class="space-y-4 px-6 py-6 text-sm text-slate-700">
+            <p>
+              By accepting this quote, you are also agreeing to accept it on
+              behalf of the
+              <span class="font-semibold"
+                >client (<span x-text="clientName"></span>)</span
+              >
+              and the
+              <span class="font-semibold"
+                >allocated serviceman (<span x-text="providerName"></span
+                >)</span
+              >.
+            </p>
+            <p>Are you sure you wish to proceed?</p>
+          </div>
+          <div
+            class="flex items-center justify-between border-t border-slate-200 px-6 py-4 text-sm"
+          >
+            <button
+              class="font-medium text-slate-500 hover:text-slate-700"
+              @click="close"
+            >
+              Cancel
+            </button>
+            <button
+              class="inline-flex items-center rounded-lg bg-sky-700 px-4 py-2 font-semibold text-white shadow-sm transition hover:bg-sky-800 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500"
+              @click="handleAccept"
+              :disabled="isSubmitting"
+            >
+              <svg
+                x-show="isSubmitting"
+                class="-ml-1 mr-2 h-4 w-4 animate-spin"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                ></path>
+              </svg>
+              <span
+                x-text="isSubmitting ? 'Accepting…' : 'Accept Quote'"
+              ></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div x-data="viewActivitiesModal()" x-cloak>
+      <div
+        class="fixed inset-0 z-40 flex min-h-screen items-center justify-center bg-slate-900/60 px-4 py-10 text-slate-800"
+        x-show="open"
+        x-transition.opacity
+        @keydown.escape.window="close"
+      >
+        <div class="w-full max-w-3xl rounded-2xl bg-white shadow-2xl">
+          <div
+            class="flex items-center justify-between border-b border-slate-200 px-6 py-4"
+          >
+            <h3 class="text-lg font-semibold text-slate-900">All Activities</h3>
+            <button
+              class="text-slate-400 transition hover:text-slate-600"
+              @click="close"
+            >
+              <span class="sr-only">Close</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+          <div class="max-h-[70vh] divide-y divide-slate-100 overflow-y-auto">
+            <template x-for="activity in activities" :key="activity.id">
+              <div class="px-6 py-4">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <p
+                      class="text-sm font-semibold text-slate-900"
+                      x-text="activity.task"
+                    ></p>
+                    <p
+                      class="text-xs uppercase tracking-wide text-slate-500"
+                      x-text="activity.service"
+                    ></p>
+                  </div>
+                  <div class="text-right">
+                    <p
+                      class="text-base font-semibold text-slate-900"
+                      x-text="activity.price"
+                    ></p>
+                    <span
+                      class="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-semibold"
+                      :class="activity.status === 'Scheduled' ? 'border-amber-200 bg-amber-50 text-amber-800' : 'border-emerald-200 bg-emerald-50 text-emerald-700'"
+                      x-text="activity.status"
+                    ></span>
+                  </div>
+                </div>
+                <p
+                  class="mt-3 text-sm text-slate-600"
+                  x-text="activity.note"
+                ></p>
+                <div class="mt-2 flex flex-wrap gap-4 text-xs text-slate-500">
+                  <span>
+                    <span class="font-semibold text-slate-700"
+                      >Technician:</span
+                    >
+                    <span x-text="activity.technician"></span>
+                  </span>
+                  <span>
+                    <span class="font-semibold text-slate-700"
+                      >Last Updated:</span
+                    >
+                    <span x-text="activity.updated"></span>
+                  </span>
+                </div>
+              </div>
+            </template>
+          </div>
+          <div class="flex justify-end border-t border-slate-200 px-6 py-4">
+            <button
+              class="rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+              @click="close"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div x-data="editQuoteModal()" x-cloak>
+      <div
+        class="fixed inset-0 z-40 flex min-h-screen items-center justify-center bg-slate-900/50 px-4 py-10 text-slate-800"
+        x-show="open"
+        x-transition.opacity
+        @keydown.escape.window="closeModal"
+      >
+        <div class="w-full max-w-2xl rounded-2xl bg-white shadow-2xl">
+          <div
+            class="flex items-center justify-between border-b border-slate-200 px-6 py-4"
+          >
+            <h3 class="text-lg font-semibold text-slate-900">Edit Quote</h3>
+            <button
+              class="text-slate-400 transition hover:text-slate-600"
+              @click="closeModal"
+            >
+              <span class="sr-only">Close modal</span>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path
+                  d="M5 5L15 15M15 5L5 15"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </button>
+          </div>
+
+          <div class="space-y-5 px-6 py-6 text-sm text-slate-700">
+            <div
+              class="grid gap-4 sm:grid-cols-2"
+              x-show="allowDateEditing"
+              x-cloak
+            >
+              <label class="space-y-1">
+                <span class="text-xs font-semibold uppercase text-slate-500"
+                  >Quote Date</span
+                >
+                <div class="relative">
+                  <input
+                    type="date"
+                    class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 pr-10 text-sm text-slate-800 shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                    x-model="form.quoteDate"
+                  />
+                  <svg
+                    class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 18 18"
+                    fill="none"
+                  >
+                    <path
+                      d="M13.5 3.83331H4.5C4.10218 3.83331 3.72064 3.99135 3.43934 4.27265C3.15804 4.55395 3 4.93549 3 5.33331V13.5C3 13.8978 3.15804 14.2793 3.43934 14.5606C3.72064 14.8419 4.10218 15 4.5 15H13.5C13.8978 15 14.2794 14.8419 14.5607 14.5606C14.842 14.2793 15 13.8978 15 13.5V5.33331C15 4.93549 14.842 4.55395 14.5607 4.27265C14.2794 3.99135 13.8978 3.83331 13.5 3.83331Z"
+                      stroke="currentColor"
+                      stroke-width="1.2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                    <path
+                      d="M11.25 2.16669V5.33335"
+                      stroke="currentColor"
+                      stroke-width="1.2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                    <path
+                      d="M6.75 2.16669V5.33335"
+                      stroke="currentColor"
+                      stroke-width="1.2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                    <path
+                      d="M3 8.5H15"
+                      stroke="currentColor"
+                      stroke-width="1.2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </div>
+              </label>
+              <label class="space-y-1">
+                <span class="text-xs font-semibold uppercase text-slate-500"
+                  >Follow Up Date</span
+                >
+                <div class="relative">
+                  <input
+                    type="date"
+                    class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 pr-10 text-sm text-slate-800 shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                    x-model="form.followUpDate"
+                  />
+                  <svg
+                    class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 18 18"
+                    fill="none"
+                  >
+                    <path
+                      d="M13.5 3.83331H4.5C4.10218 3.83331 3.72064 3.99135 3.43934 4.27265C3.15804 4.55395 3 4.93549 3 5.33331V13.5C3 13.8978 3.15804 14.2793 3.43934 14.5606C3.72064 14.8419 4.10218 15 4.5 15H13.5C13.8978 15 14.2794 14.8419 14.5607 14.5606C14.842 14.2793 15 13.8978 15 13.5V5.33331C15 4.93549 14.842 4.55395 14.5607 4.27265C14.2794 3.99135 13.8978 3.83331 13.5 3.83331Z"
+                      stroke="currentColor"
+                      stroke-width="1.2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                    <path
+                      d="M11.25 2.16669V5.33335"
+                      stroke="currentColor"
+                      stroke-width="1.2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                    <path
+                      d="M6.75 2.16669V5.33335"
+                      stroke="currentColor"
+                      stroke-width="1.2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                    <path
+                      d="M3 8.5H15"
+                      stroke="currentColor"
+                      stroke-width="1.2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </div>
+              </label>
+            </div>
+
+            <div class="space-y-3">
+              <div
+                class="rounded-lg border-2 border-dashed border-slate-200 bg-slate-50 px-6 py-10 text-center text-slate-600"
+                @click="triggerFileInput"
+              >
+                <input
+                  type="file"
+                  multiple
+                  class="sr-only"
+                  x-ref="fileInput"
+                  @change="handleFiles"
+                />
+                <svg
+                  width="40"
+                  height="40"
+                  viewBox="0 0 40 40"
+                  class="mx-auto mb-4 text-slate-400"
+                  fill="none"
+                >
+                  <path
+                    d="M20 10V30M10 20H30"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                <p class="text-sm font-semibold text-sky-700">
+                  Click to upload
+                  <span class="font-normal text-slate-600"
+                    >or drag and drop</span
+                  >
+                </p>
+                <p class="text-xs text-slate-500">
+                  SVG, PNG, JPG or GIF (max 800×400px)
+                </p>
+              </div>
+
+              <div class="space-y-2" x-show="attachments.length">
+                <template x-for="file in attachments" :key="file.id">
+                  <div
+                    class="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm"
+                  >
+                    <div class="flex items-center gap-3">
+                      <template x-if="file.url">
+                        <a
+                          :href="file.url"
+                          target="_blank"
+                          rel="noopener"
+                          class="inline-flex items-center gap-2 text-sky-700 hover:text-sky-900"
+                        >
+                          <svg
+                            width="18"
+                            height="18"
+                            viewBox="0 0 18 18"
+                            fill="none"
+                          >
+                            <path
+                              d="M12.75 9C12.75 10.5188 11.5188 11.75 10 11.75C8.48122 11.75 7.25 10.5188 7.25 9C7.25 7.48122 8.48122 6.25 10 6.25C11.5188 6.25 12.75 7.48122 12.75 9Z"
+                              stroke="currentColor"
+                              stroke-width="1.2"
+                            />
+                            <path
+                              d="M15.1667 9C15.1667 12.1816 12.515 14.8333 9.33331 14.8333C6.15165 14.8333 3.49998 12.1816 3.49998 9C3.49998 5.81834 6.15165 3.16667 9.33331 3.16667C12.515 3.16667 15.1667 5.81834 15.1667 9Z"
+                              stroke="currentColor"
+                              stroke-width="1.2"
+                            />
+                          </svg>
+                          <span class="font-medium" x-text="file.name"></span>
+                        </a>
+                      </template>
+                      <template x-if="!file.url">
+                        <div class="flex items-center gap-2 text-slate-500">
+                          <svg
+                            width="18"
+                            height="18"
+                            viewBox="0 0 18 18"
+                            fill="none"
+                          >
+                            <path
+                              d="M12.75 9C12.75 10.5188 11.5188 11.75 10 11.75C8.48122 11.75 7.25 10.5188 7.25 9C7.25 7.48122 8.48122 6.25 10 6.25C11.5188 6.25 12.75 7.48122 12.75 9Z"
+                              stroke="currentColor"
+                              stroke-width="1.2"
+                            />
+                            <path
+                              d="M15.1667 9C15.1667 12.1816 12.515 14.8333 9.33331 14.8333C6.15165 14.8333 3.49998 12.1816 3.49998 9C3.49998 5.81834 6.15165 3.16667 9.33331 3.16667C12.515 3.16667 15.1667 5.81834 15.1667 9Z"
+                              stroke="currentColor"
+                              stroke-width="1.2"
+                            />
+                          </svg>
+                          <span
+                            class="font-medium text-slate-800"
+                            x-text="file.name"
+                          ></span>
+                        </div>
+                      </template>
+                      <span
+                        class="text-xs text-slate-500"
+                        x-text="file.kind || 'Attachment'"
+                      ></span>
+                    </div>
+                    <button
+                      class="text-slate-400 transition hover:text-rose-600"
+                      @click.prevent="removeAttachment(file.id)"
+                      x-show="!file.existing"
+                    >
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 16 16"
+                        fill="none"
+                      >
+                        <path
+                          d="M3.5 4.5H12.5M6 4.5V3.5C6 3.10218 6.15804 2.72064 6.43934 2.43934C6.72064 2.15804 7.10218 2 7.5 2H9.5C9.89782 2 10.2794 2.15804 10.5607 2.43934C10.842 2.72064 11 3.10218 11 3.5V4.5M12 4.5V12.5C12 12.8978 11.842 13.2794 11.5607 13.5607C11.2794 13.842 10.8978 14 10.5 14H6.5C6.10218 14 5.72064 13.842 5.43934 13.5607C5.15804 13.2794 5 12.8978 5 12.5V4.5H12Z"
+                          stroke="currentColor"
+                          stroke-width="1.2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="flex items-center justify-between border-t border-slate-200 px-6 py-4 text-sm"
+          >
+            <button
+              class="font-medium text-slate-500 hover:text-slate-700"
+              @click="closeModal"
+            >
+              Cancel
+            </button>
+            <button
+              class="inline-flex items-center gap-2 rounded-lg bg-sky-700 px-4 py-2 font-semibold text-white shadow-sm transition hover:bg-sky-800 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500"
+              @click="handleSave"
+              :disabled="isSubmitting"
+            >
+              <svg
+                x-show="isSubmitting"
+                class="-ml-1 h-4 w-4 animate-spin text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                ></path>
+              </svg>
+              <span x-text="isSubmitting ? 'Saving…' : 'Save'"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Popup Comment Modal -->
     <div x-data="popupCommentModal()" x-cloak>
       <div
@@ -2905,12 +3700,29 @@
       </div>
     </div>
 
+    <!-- Inquiry Uploads Dynamic List -->
     <div
       data-dynamic-list="bdDNg3pCpjPMq5xV-blpe"
       data-entity="peterpm"
       data-entity-key="1rBR-jpR3yE3HE1VhFD0j"
       data-var-inquiryid="312"
       data-upload-source="resident-feedback"
+    >
+      <div data-upload-sources class="hidden" aria-hidden="true">
+        <div data-photo-uploads-slot data-type="[Type]">[Photo_Upload]</div>
+        <div data-file-uploads-slot data-type="[Type]">[File_Upload]</div>
+      </div>
+    </div>
+
+    <!-- Job Uploads Dynamic List -->
+    <div
+      data-dynamic-list="l0slrYt3DxbQQcUDXr6LV"
+      data-entity="peterpm"
+      data-entity-key="1rBR-jpR3yE3HE1VhFD0j"
+      data-var-jobid="375"
+      data-upload-source="edit-quote"
+      data-op="subscribe"
+      class="hidden"
     >
       <div data-upload-sources class="hidden" aria-hidden="true">
         <div data-photo-uploads-slot data-type="[Type]">[Photo_Upload]</div>
@@ -3438,19 +4250,48 @@
     </div>
 
     <script>
-      const DEFAULT_PROVIDER_PLACEHOLDER = "Search by name, email, phone";
+      const DEFAULT_PROVIDER_PLACEHOLDER = "Allocate To Service Provider";
+      const DEFAULT_RECIPIENT_PLACEHOLDER =
+        "Select recipients or type to search...";
       const GRAPHQL_ENDPOINT = "https://peterpm.vitalstats.app/api/v1/graphql";
       const GRAPHQL_API_KEY = "1rBR-jpR3yE3HE1VhFD0j";
       const INQUIRY_RECORD_ID = "312"; // update with the current inquiry record id
       const CONTACT_ID = "168";
       const JOB_ID = "375";
+      const UPLOAD_ENDPOINT =
+        "https://peterpm.vitalstats.app/api/v1/rest/upload";
 
       const SERVICES_DATA = [
-        { serviceid: 5, service_name: "Rat Roof", service_type: "Primary", primary_service_id: null },
-        { serviceid: 6, service_name: "Possum Roof", service_type: "Primary", primary_service_id: null },
-        { serviceid: 8, service_name: "Materials", service_type: "Add On", primary_service_id: null },
-        { serviceid: 9, service_name: "Window Cleaning", service_type: "Primary", primary_service_id: null },
-        { serviceid: 10, service_name: "Wasp Removal", service_type: "Primary", primary_service_id: null },
+        {
+          serviceid: 5,
+          service_name: "Rat Roof",
+          service_type: "Primary",
+          primary_service_id: null,
+        },
+        {
+          serviceid: 6,
+          service_name: "Possum Roof",
+          service_type: "Primary",
+          primary_service_id: null,
+        },
+        {
+          serviceid: 8,
+          service_name: "Materials",
+          service_type: "Add On",
+          primary_service_id: null,
+        },
+        {
+          serviceid: 9,
+          service_name: "Window Cleaning",
+          service_type: "Primary",
+          primary_service_id: null,
+        },
+        {
+          serviceid: 10,
+          service_name: "Wasp Removal",
+          service_type: "Primary",
+          primary_service_id: null,
+        },
         {
           serviceid: 13,
           service_name: "Vacuum, remove and dispose all dust and debris",
@@ -3475,7 +4316,12 @@
           service_type: "Option",
           primary_service_id: 14,
         },
-        { serviceid: 18, service_name: "Lawn Maintenance", service_type: "Primary", primary_service_id: null },
+        {
+          serviceid: 18,
+          service_name: "Lawn Maintenance",
+          service_type: "Primary",
+          primary_service_id: null,
+        },
         {
           serviceid: 22,
           service_name: "Pigeon Removal - Option 1",
@@ -3488,8 +4334,18 @@
           service_type: "Option",
           primary_service_id: 26,
         },
-        { serviceid: 26, service_name: "Pigeon Removal", service_type: "Primary", primary_service_id: null },
-        { serviceid: 27, service_name: "Pool Cleaning", service_type: "Primary", primary_service_id: null },
+        {
+          serviceid: 26,
+          service_name: "Pigeon Removal",
+          service_type: "Primary",
+          primary_service_id: null,
+        },
+        {
+          serviceid: 27,
+          service_name: "Pool Cleaning",
+          service_type: "Primary",
+          primary_service_id: null,
+        },
       ];
 
       function fetchServicesCatalog() {
@@ -3522,9 +4378,24 @@
       `;
 
       const UPDATE_JOB_MUTATION = `
-        mutation updateJob($jobid: PeterpmJobID!, $payload: JobUpdateInput = null) {
-          updateJob(query: [{ where: { id: $jobid } }], payload: $payload) {
+        mutation updateJob($id: PeterpmJobID!, $payload: JobUpdateInput = null) {
+          updateJob(query: [{ where: { id: $id } }], payload: $payload) {
             admin_recommendation
+            quote_date
+            follow_up_date
+            quote_status
+            date_quote_sent
+            date_quoted_accepted
+          }
+        }
+      `;
+
+      const CREATE_UPLOAD_MUTATION = `
+        mutation createUpload($payload: UploadCreateInput = null) {
+          createUpload(payload: $payload) {
+            photo_upload
+            file_upload
+            job_id
           }
         }
       `;
@@ -3546,9 +4417,15 @@
             ID: field(arg: ["id"])
             Unique_ID: field(arg: ["unique_id"])
             Quote_Date: field(arg: ["quote_date"])
-              @dateFormat(value: "DD-MM-YYYY")
+              @dateFormat(value: "DD/MM/YYYY")
             Quote_Total: field(arg: ["quote_total"])
             Quote_Status: field(arg: ["quote_status"]) 
+            Follow_Up_Date: field(arg: ["follow_up_date"])
+              @dateFormat(value: "DD/MM/YYYY")
+            Date_Quote_Sent: field(arg: ["date_quote_sent"])
+              @dateFormat(value: "DD/MM/YYYY")
+            Date_Quoted_Accepted: field(arg: ["date_quoted_accepted"])
+              @dateFormat(value: "DD/MM/YYYY")
           }
         }
       `;
@@ -3611,6 +4488,11 @@
       }
 
       document.addEventListener("alpine:init", () => {
+        Alpine.store("quoteState", {
+          status: "",
+          accepted: false,
+        });
+
         const createOptionMap = (options = []) => {
           const map = new Map();
           options
@@ -3774,6 +4656,8 @@
             if (!provider?.id) return;
             this.selectedProviderId = provider.id;
             this.selectedProvider = provider;
+            this.providerDisplayName =
+              provider?.name || this.providerDisplayName || "";
             this.updatePlaceholder(provider);
             this.searchTerm = "";
             this.scheduleFilter();
@@ -4060,23 +4944,44 @@
 
         Alpine.data("quotePanel", () => ({
           hasQuote: false,
-          quoteRecipients: "Select recipients or type to search...",
+          quoteRecipients: DEFAULT_RECIPIENT_PLACEHOLDER,
           quoteNumber: "",
           quoteDate: "",
           quotePrice: "",
           quoteStatus: "",
+          followUpDate: "",
+          dateQuoteSent: "",
+          dateQuoteAccepted: "",
           availableRecipients: [],
           selectedRecipientIds: [],
           recipientDropdownOpen: false,
           recipientSearchTerm: "",
           recipientsLoaded: false,
           recipientLoadPromise: null,
+          sendQuoteError: "",
           boundQuoteListener: null,
+          boundStatusListener: null,
+          boundProviderListener: null,
+          providerDisplayName: "",
           initCheckRan: false,
           init() {
             this.boundQuoteListener = (event) =>
               this.handleQuoteCreated(event?.detail || {});
             window.addEventListener("quote:created", this.boundQuoteListener);
+            this.boundStatusListener = (event) =>
+              this.handleStatusChange(event?.detail || {});
+            window.addEventListener(
+              "quote:status-change",
+              this.boundStatusListener
+            );
+            this.boundProviderListener = (event) => {
+              const providerName = event?.detail?.provider?.name?.trim();
+              if (providerName) this.providerDisplayName = providerName;
+            };
+            window.addEventListener(
+              "provider-selected",
+              this.boundProviderListener
+            );
             this.checkExistingQuote();
             this.$nextTick(() => this.ensureRecipientsLoaded());
           },
@@ -4088,6 +4993,20 @@
                 this.boundQuoteListener
               );
               this.boundQuoteListener = null;
+            }
+            if (this.boundStatusListener) {
+              window.removeEventListener(
+                "quote:status-change",
+                this.boundStatusListener
+              );
+              this.boundStatusListener = null;
+            }
+            if (this.boundProviderListener) {
+              window.removeEventListener(
+                "provider-selected",
+                this.boundProviderListener
+              );
+              this.boundProviderListener = null;
             }
           },
           handleQuoteCreated(detail = {}) {
@@ -4110,19 +5029,42 @@
               detail.quote_total !== undefined
             ) {
               const raw =
-                detail.quotePrice ??
-                detail.quoteTotal ??
-                detail.quote_total ??
-                "";
-              this.quotePrice = this.formatQuoteTotal(raw);
+                detail.quotePrice ?? detail.quoteTotal ?? detail.quote_total;
+              this.quotePrice =
+                raw === undefined || raw === null ? "" : String(raw);
             }
             if (detail.quoteStatus || detail.quote_status) {
-              this.quoteStatus = this.formatQuoteStatus(
-                detail.quoteStatus || detail.quote_status
-              );
+              this.quoteStatus =
+                detail.quoteStatus || detail.quote_status || "";
+            }
+            if (detail.dateQuoteSent || detail.date_quote_sent) {
+              this.dateQuoteSent =
+                detail.dateQuoteSent || detail.date_quote_sent || "";
+            }
+            if (detail.dateQuoteAccepted || detail.date_quoted_accepted) {
+              this.dateQuoteAccepted =
+                detail.dateQuoteAccepted || detail.date_quoted_accepted || "";
+            }
+            if (detail.followUpDate || detail.follow_up_date) {
+              this.followUpDate =
+                detail.followUpDate || detail.follow_up_date || "";
             }
             if (detail.recipients) this.quoteRecipients = detail.recipients;
             this.$nextTick(() => this.ensureRecipientsLoaded());
+            this.syncQuoteState();
+          },
+          handleStatusChange(detail = {}) {
+            if (detail.quoteStatus) {
+              this.quoteStatus = detail.quoteStatus || this.quoteStatus;
+            }
+            if (detail.dateQuoteSent) {
+              this.dateQuoteSent = detail.dateQuoteSent;
+            }
+            if (detail.dateQuoteAccepted) {
+              this.dateQuoteAccepted = detail.dateQuoteAccepted;
+            }
+            this.hasQuote = true;
+            this.syncQuoteState();
           },
           get filteredRecipients() {
             const term = this.recipientSearchTerm.trim().toLowerCase();
@@ -4161,6 +5103,9 @@
               this.selectedRecipientIds = [...this.selectedRecipientIds, key];
             }
             this.refreshRecipientSummary();
+            if (this.selectedRecipientIds.length) {
+              this.sendQuoteError = "";
+            }
           },
           isRecipientSelected(id) {
             const key = this.sanitizeRecipientId(id);
@@ -4176,7 +5121,83 @@
               .filter(Boolean);
             this.quoteRecipients = names.length
               ? names.join(", ")
-              : "Select recipients or type to search...";
+              : DEFAULT_RECIPIENT_PLACEHOLDER;
+          },
+          get recipientSummaryText() {
+            const selected = this.getSelectedRecipients();
+            if (selected.length === 0) {
+              if (
+                this.quoteRecipients &&
+                this.quoteRecipients !== DEFAULT_RECIPIENT_PLACEHOLDER
+              ) {
+                return this.quoteRecipients;
+              }
+              return "Not specified";
+            }
+            if (selected.length === 1) return selected[0].displayName;
+            return `${selected[0].displayName} +${selected.length - 1} others`;
+          },
+          get shouldShowRecipientSelector() {
+            return !this.isQuoteSent && !this.isQuoteAccepted;
+          },
+          get sentDateDisplay() {
+            return this.dateQuoteSent || "—";
+          },
+          get isQuoteSent() {
+            return (this.quoteStatus || "").toLowerCase() === "sent";
+          },
+          get isQuoteAccepted() {
+            return (this.quoteStatus || "").toLowerCase() === "accepted";
+          },
+          get acceptedDateDisplay() {
+            return this.dateQuoteAccepted || "—";
+          },
+          getSelectedRecipients() {
+            return this.availableRecipients.filter((recipient) =>
+              this.selectedRecipientIds.includes(recipient.id)
+            );
+          },
+          syncQuoteState() {
+            const store = Alpine.store("quoteState");
+            store.status = this.quoteStatus || "";
+            store.accepted = this.isQuoteAccepted;
+          },
+          handleSendQuoteClick() {
+            if (!this.selectedRecipientIds.length) {
+              this.sendQuoteError = "Please select at least one contact.";
+              return;
+            }
+            this.sendQuoteError = "";
+            window.dispatchEvent(
+              new CustomEvent("quote:send-preview", {
+                detail: { recipients: this.getSelectedRecipients() },
+              })
+            );
+          },
+          handleAcceptQuote() {
+            window.dispatchEvent(
+              new CustomEvent("quote:accept-preview", {
+                detail: {
+                  recipients: this.getSelectedRecipients(),
+                  clientName: this.getClientName(),
+                  providerName: this.getProviderDisplayName(),
+                },
+              })
+            );
+          },
+          getClientName() {
+            const selected = this.getSelectedRecipients();
+            return selected[0]?.displayName || "Client";
+          },
+          getProviderDisplayName() {
+            if (this.providerDisplayName) return this.providerDisplayName;
+            return "Service Provider";
+          },
+          emitToast(message, variant = "success") {
+            if (!message) return;
+            window.dispatchEvent(
+              new CustomEvent("toast:show", { detail: { message, variant } })
+            );
           },
           handleAddContact() {
             window.dispatchEvent(
@@ -4214,9 +5235,10 @@
               const important = this.availableRecipients.filter(
                 (recipient) => recipient.isImportant
               );
-              const defaults = (important.length
-                ? important
-                : this.availableRecipients.slice(0, 1)
+              const defaults = (
+                important.length
+                  ? important
+                  : this.availableRecipients.slice(0, 1)
               ).map((recipient) => recipient.id);
               this.selectedRecipientIds = defaults;
               this.refreshRecipientSummary();
@@ -4255,6 +5277,7 @@
               id,
               displayName,
               role: role || "",
+              roleLabel: role ? ` (${role})` : "",
               phone,
               email,
               isImportant,
@@ -4327,12 +5350,19 @@
               uniqueId,
               quoteNumber: uniqueId || "",
               quoteDate: record.Quote_Date || record.quote_date || "",
-              quotePrice: this.formatQuoteTotal(
-                record.Quote_Total ?? record.quote_total
-              ),
-              quoteStatus: this.formatQuoteStatus(
-                record.Quote_Status || record.quote_status
-              ),
+              quotePrice: record.Quote_Total ?? record.quote_total ?? "",
+              quoteStatus: record.Quote_Status || record.quote_status || "",
+              followUpDate:
+                record.Follow_Up_Date || record.follow_up_date || "",
+              dateQuoteSent:
+                record.Date_Quote_Sent ||
+                record.date_quote_sent ||
+                record.Quote_Sent_Date ||
+                "",
+              dateQuoteAccepted:
+                record.Date_Quoted_Accepted ||
+                record.date_quoted_accepted ||
+                "",
             };
           },
           normalizeCalcJobs(value) {
@@ -4340,37 +5370,6 @@
             if (Array.isArray(value?.data)) return value.data;
             if (Array.isArray(value?.nodes)) return value.nodes;
             return null;
-          },
-          formatQuoteNumberDisplay(value) {
-            if (!value) return "#";
-            return String(value).startsWith("#") ? value : `#${value}`;
-          },
-          formatQuoteTotal(value) {
-            if (value == null || value === "") return this.quotePrice;
-            const numeric =
-              typeof value === "number"
-                ? value
-                : parseFloat(String(value).replace(/[^0-9.-]/g, ""));
-            if (Number.isFinite(numeric)) {
-              return numeric.toLocaleString("en-US", {
-                style: "currency",
-                currency: "USD",
-                minimumFractionDigits: 2,
-              });
-            }
-            return String(value);
-          },
-          formatQuoteStatus(status) {
-            if (!status) return this.quoteStatus || "New Quote";
-            const words = String(status)
-              .trim()
-              .split(/[\s_]+/)
-              .filter(Boolean)
-              .map(
-                (word) =>
-                  word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-              );
-            return words.length ? words.join(" ") : this.quoteStatus;
           },
         }));
 
@@ -4481,6 +5480,735 @@
                 detail: { message, variant },
               })
             );
+          },
+        }));
+
+        Alpine.data("editQuoteModal", () => ({
+          open: false,
+          form: {
+            quoteDate: "",
+            followUpDate: "",
+          },
+          allowDateEditing: true,
+          attachments: [],
+          nextAttachmentId: 1,
+          boundListener: null,
+          isSubmitting: false,
+          init() {
+            this.boundListener = (event) => this.openModal(event?.detail || {});
+            window.addEventListener("quote:edit", this.boundListener);
+          },
+          destroy() {
+            if (this.boundListener) {
+              window.removeEventListener("quote:edit", this.boundListener);
+              this.boundListener = null;
+            }
+          },
+          openModal(detail = {}) {
+            this.allowDateEditing = detail.allowDateEditing !== false;
+            this.prefillForm(detail);
+            this.nextAttachmentId = 1;
+            this.attachments = this.collectExistingAttachments();
+            if (!this.attachments.length) {
+              this.$nextTick(() => {
+                this.nextAttachmentId = 1;
+                const refreshed = this.collectExistingAttachments();
+                if (refreshed.length) {
+                  this.attachments = refreshed;
+                }
+              });
+            }
+            this.open = true;
+          },
+          prefillForm(detail = {}) {
+            if (detail.quoteDate) {
+              this.form.quoteDate = this.normalizeDateInput(detail.quoteDate);
+            }
+            if (detail.followUpDate) {
+              this.form.followUpDate = this.normalizeDateInput(
+                detail.followUpDate
+              );
+            }
+          },
+          closeModal() {
+            this.open = false;
+          },
+          triggerFileInput() {
+            this.$refs.fileInput?.click();
+          },
+          handleFiles(event) {
+            const files = Array.from(event?.target?.files || []);
+            if (!files.length) return;
+            files.forEach((file) => {
+              const isPhoto = file.type?.startsWith("image/");
+              this.attachments.push(
+                this.createAttachment({
+                  name: file.name,
+                  url: "",
+                  kind: isPhoto ? "Photo" : "File",
+                  existing: false,
+                  fileObject: file,
+                })
+              );
+            });
+            if (event?.target) {
+              event.target.value = "";
+            }
+          },
+          removeAttachment(id) {
+            const target = this.attachments.find((file) => file.id === id);
+            if (target?.existing) return;
+            this.attachments = this.attachments.filter(
+              (file) => file.id !== id
+            );
+          },
+          async handleSave() {
+            if (this.isSubmitting) return;
+            this.isSubmitting = true;
+            try {
+              await this.ensureUploadsProcessed();
+              const uploadPayloads = this.collectUploadPayloads();
+              for (const payload of uploadPayloads) {
+                await graphqlRequest(CREATE_UPLOAD_MUTATION, { payload });
+              }
+              if (uploadPayloads.length) {
+                this.markAttachmentsUploaded(uploadPayloads);
+              }
+              const payload = this.buildPayload();
+              await graphqlRequest(UPDATE_JOB_MUTATION, {
+                id: JOB_ID,
+                payload,
+              });
+              this.emitToast("Quote updated.");
+              this.closeModal();
+            } catch (error) {
+              console.error("Failed to update quote", error);
+              this.emitToast(
+                error?.message || "Unable to update quote right now.",
+                "error"
+              );
+            } finally {
+              this.isSubmitting = false;
+            }
+          },
+          collectExistingAttachments() {
+            const host = document.querySelector(
+              '[data-upload-source="edit-quote"]'
+            );
+            if (!host) return [];
+            const attachments = [];
+            const sources = host.querySelectorAll("[data-upload-sources]");
+            const roots = sources.length ? sources : [host];
+            roots.forEach((root) => {
+              root
+                .querySelectorAll("[data-photo-uploads-slot]")
+                .forEach((slot) => {
+                  const url = slot.textContent?.trim();
+                  if (!url) return;
+                  attachments.push(
+                    this.createAttachment({
+                      name: this.extractName(url),
+                      url,
+                      kind: this.normalizeKind(slot.dataset.type) || "Photo",
+                      existing: true,
+                    })
+                  );
+                });
+              root
+                .querySelectorAll("[data-file-uploads-slot]")
+                .forEach((slot) => {
+                  const raw = slot.textContent?.trim() || "";
+                  const entries = this.parseFileSlot(
+                    raw,
+                    this.normalizeKind(slot.dataset.type) || "File"
+                  );
+                  entries.forEach((entry) =>
+                    attachments.push(
+                      this.createAttachment({
+                        ...entry,
+                        existing: true,
+                        fileMeta: entry.fileMeta || null,
+                      })
+                    )
+                  );
+                });
+            });
+            return attachments;
+          },
+          parseFileSlot(raw, kind = "File") {
+            if (!raw) return [];
+            const parsed = this.tryParseJson(raw);
+            if (parsed !== null) {
+              if (Array.isArray(parsed)) {
+                return parsed
+                  .map((item) => this.normalizeFileObject(item, kind))
+                  .filter(Boolean);
+              }
+              const normalized = this.normalizeFileObject(parsed, kind);
+              return normalized ? [normalized] : [];
+            }
+            const lines = raw
+              .split(/\n+/)
+              .map((line) => line.trim().replace(/,$/, ""))
+              .filter(Boolean);
+            const entries = [];
+            if (!lines.length && this.looksLikeUrl(raw)) {
+              lines.push(raw.trim());
+            }
+            lines.forEach((line) => {
+              const lineJson = this.tryParseJson(line);
+              if (lineJson) {
+                const normalized = this.normalizeFileObject(lineJson, kind);
+                if (normalized) entries.push(normalized);
+              } else if (this.looksLikeUrl(line)) {
+                entries.push({
+                  name: this.extractName(line),
+                  url: line,
+                  kind,
+                });
+              }
+            });
+            return entries;
+          },
+          normalizeFileObject(entry, kind = "File") {
+            if (!entry) return null;
+            if (typeof entry === "string") {
+              const parsed = this.tryParseJson(entry);
+              if (parsed) return this.normalizeFileObject(parsed, kind);
+              if (this.looksLikeUrl(entry)) {
+                return {
+                  name: this.extractName(entry),
+                  url: entry,
+                  kind,
+                  fileMeta: { link: entry, name: this.extractName(entry) },
+                };
+              }
+              return null;
+            }
+            if (entry.File) {
+              const nested = this.tryParseJson(entry.File);
+              if (nested) return this.normalizeFileObject(nested, kind);
+            }
+            const url =
+              entry.link || entry.url || entry.path || entry.src || "";
+            if (!url) return null;
+            return {
+              name: entry.name || this.extractName(url),
+              url,
+              kind: entry.kind || kind,
+              fileMeta: {
+                link: url,
+                name: entry.name || this.extractName(url),
+                size: entry.size || entry.filesize || entry.length || null,
+                type: entry.mime || entry.type || "",
+              },
+            };
+          },
+          createAttachment({
+            name = "Attachment",
+            url = "",
+            kind = "File",
+            existing = false,
+            fileObject = null,
+            fileMeta = null,
+          } = {}) {
+            return {
+              id: this.nextAttachmentId++,
+              name,
+              url,
+              kind: kind || "File",
+              existing,
+              fileObject,
+              fileMeta,
+            };
+          },
+          async ensureUploadsProcessed() {
+            const pending = this.attachments.filter(
+              (attachment) =>
+                !attachment.existing && attachment.fileObject && !attachment.url
+            );
+            for (const attachment of pending) {
+              await this.uploadAttachment(attachment);
+            }
+          },
+          async uploadAttachment(attachment) {
+            if (!attachment?.fileObject) return;
+            const file = attachment.fileObject;
+            const signed = await this.requestSignedUpload(file);
+            const uploadResp = await fetch(signed.uploadUrl, {
+              method: "PUT",
+              body: file,
+              headers: {
+                "Content-Type": file.type || "application/octet-stream",
+              },
+            });
+            if (!uploadResp.ok) {
+              throw new Error("Failed to upload file.");
+            }
+            attachment.url = signed.url;
+            if (this.isPhotoAttachment({ ...attachment, fileObject: file })) {
+              attachment.fileMeta = null;
+            } else {
+              attachment.fileMeta = {
+                link: signed.url,
+                name: attachment.name || file.name,
+                size: file.size,
+                type: file.type,
+              };
+            }
+            attachment.fileObject = null;
+          },
+          async requestSignedUpload(file) {
+            const response = await fetch(UPLOAD_ENDPOINT, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "Api-Key": GRAPHQL_API_KEY,
+              },
+              body: JSON.stringify([
+                {
+                  type: file.type || "application/octet-stream",
+                  name: file.name || "upload",
+                  generateName: true,
+                },
+              ]),
+            });
+            if (!response.ok) {
+              throw new Error("Unable to request upload URL.");
+            }
+            const payload = await response.json();
+            const result = Array.isArray(payload) ? payload[0] : payload;
+            if (result?.statusCode && result.statusCode !== 200) {
+              throw new Error("Upload endpoint rejected the request.");
+            }
+            const data = result?.data || result || {};
+            if (!data?.uploadUrl || !data?.url) {
+              throw new Error("Invalid upload response.");
+            }
+            return data;
+          },
+          collectUploadPayloads() {
+            const jobId = this.getJobId();
+            if (!jobId) {
+              this.emitToast("Missing job id for uploads.", "error");
+              return [];
+            }
+            return this.attachments
+              .filter((attachment) => !attachment.existing && attachment.url)
+              .map((attachment) => {
+                const payload = { job_id: jobId };
+                if (this.isPhotoAttachment(attachment)) {
+                  payload.photo_upload = attachment.url;
+                } else {
+                  payload.file_upload = attachment.fileMeta || {
+                    link: attachment.url,
+                    name: attachment.name,
+                  };
+                }
+                return payload.photo_upload || payload.file_upload
+                  ? payload
+                  : null;
+              })
+              .filter(Boolean);
+          },
+          markAttachmentsUploaded(payloads = []) {
+            if (!payloads.length) return;
+            const urls = payloads.flatMap((payload) => {
+              const list = [];
+              if (payload.photo_upload) list.push(payload.photo_upload);
+              const fileLink =
+                payload.file_upload?.link || payload.file_upload?.url;
+              if (fileLink) list.push(fileLink);
+              return list;
+            });
+            if (!urls.length) return;
+            this.attachments = this.attachments.map((attachment) => {
+              if (urls.includes(attachment.url)) {
+                return { ...attachment, existing: true };
+              }
+              return attachment;
+            });
+          },
+          normalizeDateInput(value) {
+            if (!value) return "";
+            if (
+              typeof value === "string" &&
+              /^\d{4}-\d{2}-\d{2}$/.test(value)
+            ) {
+              return value;
+            }
+            const timestamp = this.convertDateToUnix(value);
+            if (timestamp === null) return "";
+            const date = new Date(timestamp * 1000);
+            const yyyy = date.getUTCFullYear();
+            const mm = String(date.getUTCMonth() + 1).padStart(2, "0");
+            const dd = String(date.getUTCDate()).padStart(2, "0");
+            return `${yyyy}-${mm}-${dd}`;
+          },
+          getJobId() {
+            return (
+              JOB_ID ||
+              document.body?.dataset?.jobId ||
+              this.attachments.find((att) => att.jobId)?.jobId ||
+              ""
+            );
+          },
+          buildPayload() {
+            const payload = {};
+            if (this.allowDateEditing) {
+              const quoteTs = this.convertDateToUnix(this.form.quoteDate);
+              if (quoteTs !== null) payload.quote_date = String(quoteTs);
+              const followTs = this.convertDateToUnix(this.form.followUpDate);
+              if (followTs !== null) payload.follow_up_date = String(followTs);
+            }
+            return payload;
+          },
+          convertDateToUnix(value) {
+            if (value === null || value === undefined) return null;
+            if (typeof value === "number" && Number.isFinite(value)) {
+              return Math.floor(value);
+            }
+            const str = String(value).trim();
+            if (!str) return null;
+            if (/^\d+$/.test(str)) {
+              const num = Number(str);
+              if (Number.isFinite(num)) {
+                return num > 4102444800 ? Math.floor(num / 1000) : num;
+              }
+            }
+            let parsed = null;
+            const slashMatch = str.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+            const dashMatch = str.match(/^(\d{2})-(\d{2})-(\d{4})$/);
+            if (slashMatch) {
+              const [, day, month, year] = slashMatch.map(Number);
+              parsed = new Date(year, month - 1, day);
+            } else if (dashMatch) {
+              const [, day, month, year] = dashMatch.map(Number);
+              parsed = new Date(year, month - 1, day);
+            } else if (/^\d{4}-\d{2}-\d{2}/.test(str)) {
+              parsed = new Date(str);
+            } else {
+              parsed = new Date(str);
+            }
+            if (!parsed || isNaN(parsed)) return null;
+            return Math.floor(parsed.getTime() / 1000);
+          },
+          isPhotoAttachment(attachment = {}) {
+            const label = (attachment.kind || "").toLowerCase();
+            if (label.includes("photo") || label.includes("image")) return true;
+            if (attachment.url) {
+              const ext = attachment.url.split(".").pop()?.toLowerCase();
+              if (
+                ["jpg", "jpeg", "png", "gif", "webp", "bmp", "svg"].includes(
+                  ext
+                )
+              ) {
+                return true;
+              }
+            }
+            return attachment.fileObject?.type?.startsWith("image/") || false;
+          },
+          emitToast(message, variant = "success") {
+            if (!message) return;
+            window.dispatchEvent(
+              new CustomEvent("toast:show", { detail: { message, variant } })
+            );
+          },
+          extractName(url = "") {
+            if (!url) return "Attachment";
+            try {
+              return decodeURIComponent(
+                url.split("/").filter(Boolean).pop() || "Attachment"
+              );
+            } catch {
+              return "Attachment";
+            }
+          },
+          tryParseJson(raw = "") {
+            if (raw && typeof raw === "object") return raw;
+            const trimmed = raw.trim();
+            if (!trimmed || trimmed === "{}") return null;
+            try {
+              return JSON.parse(trimmed);
+            } catch {
+              return null;
+            }
+          },
+          looksLikeUrl(value = "") {
+            return /^https?:\/\//i.test(value.trim());
+          },
+          normalizeKind(raw = "") {
+            if (!raw) return "";
+            if (raw.includes("[") && raw.includes("]")) return "";
+            return raw;
+          },
+        }));
+
+        Alpine.data("sendQuoteModal", () => ({
+          open: false,
+          recipients: [],
+          isSending: false,
+          boundListener: null,
+          init() {
+            this.boundListener = (event) => {
+              const list = this.normalizeRecipients(
+                event?.detail?.recipients || []
+              );
+              if (!list.length) {
+                this.emitToast("Select at least one contact.", "error");
+                return;
+              }
+              this.recipients = list;
+              this.open = true;
+            };
+            window.addEventListener("quote:send-preview", this.boundListener);
+          },
+          destroy() {
+            if (this.boundListener) {
+              window.removeEventListener(
+                "quote:send-preview",
+                this.boundListener
+              );
+              this.boundListener = null;
+            }
+          },
+          close() {
+            if (this.isSending) return;
+            this.open = false;
+            this.recipients = [];
+          },
+          normalizeRecipients(list = []) {
+            if (!Array.isArray(list)) return [];
+            return list
+              .map((item) => {
+                const id =
+                  item.id ||
+                  item.email ||
+                  item.phone ||
+                  Math.random().toString(36).slice(2);
+                return {
+                  id,
+                  displayName:
+                    item.displayName || item.name || item.email || "Recipient",
+                  roleLabel: item.role ? ` (${item.role})` : "",
+                  email: item.email || "",
+                  phone: item.phone || "",
+                  isImportant: Boolean(item.isImportant),
+                };
+              })
+              .filter(Boolean);
+          },
+          async handleSend() {
+            if (!this.recipients.length) {
+              this.emitToast("No recipients selected.", "error");
+              return;
+            }
+            if (!JOB_ID) {
+              this.emitToast("Missing job id.", "error");
+              return;
+            }
+            if (this.isSending) return;
+            this.isSending = true;
+            try {
+              const nowTs = Math.floor(Date.now() / 1000);
+              const formatted = this.formatDateDDMMYYYY(new Date());
+              await graphqlRequest(UPDATE_JOB_MUTATION, {
+                id: JOB_ID,
+                payload: {
+                  quote_status: "Sent",
+                  date_quote_sent: String(nowTs),
+                },
+              });
+              window.dispatchEvent(
+                new CustomEvent("quote:status-change", {
+                  detail: {
+                    quoteStatus: "Sent",
+                    dateQuoteSent: formatted,
+                  },
+                })
+              );
+              this.emitToast("Quote marked as sent.");
+              this.close();
+            } catch (error) {
+              console.error("Failed to send quote", error);
+              this.emitToast(
+                error?.message || "Unable to send quote right now.",
+                "error"
+              );
+            } finally {
+              this.isSending = false;
+            }
+          },
+          formatDateDDMMYYYY(date) {
+            const d = date instanceof Date ? date : new Date(date);
+            if (Number.isNaN(d)) return "";
+            const dd = String(d.getDate()).padStart(2, "0");
+            const mm = String(d.getMonth() + 1).padStart(2, "0");
+            const yy = d.getFullYear();
+            return `${dd}/${mm}/${yy}`;
+          },
+          emitToast(message, variant = "success") {
+            if (!message) return;
+            window.dispatchEvent(
+              new CustomEvent("toast:show", { detail: { message, variant } })
+            );
+          },
+        }));
+
+        Alpine.data("acceptQuoteModal", () => ({
+          open: false,
+          clientName: "",
+          providerName: "",
+          isSubmitting: false,
+          boundListener: null,
+          init() {
+            this.boundListener = (event) => {
+              const detail = event?.detail || {};
+              this.clientName =
+                detail.clientName ||
+                this.extractClientName(detail.recipients) ||
+                "Client";
+              this.providerName =
+                detail.providerName ||
+                this.extractProviderName() ||
+                "Service Provider";
+              this.open = true;
+            };
+            window.addEventListener("quote:accept-preview", this.boundListener);
+          },
+          destroy() {
+            if (this.boundListener) {
+              window.removeEventListener(
+                "quote:accept-preview",
+                this.boundListener
+              );
+              this.boundListener = null;
+            }
+          },
+          close() {
+            if (this.isSubmitting) return;
+            this.open = false;
+          },
+          extractClientName(recipients = []) {
+            if (!Array.isArray(recipients) || !recipients.length) return "";
+            return recipients[0]?.displayName || "";
+          },
+          extractProviderName() {
+            const field = document.getElementById("allocate-provider-input");
+            const placeholder = field?.getAttribute("placeholder") || "";
+            if (placeholder.toLowerCase().startsWith("allocated to ")) {
+              return (
+                placeholder.replace(/^Allocated to\s*/i, "").trim() ||
+                "Service Provider"
+              );
+            }
+            return "Service Provider";
+          },
+          async handleAccept() {
+            if (this.isSubmitting) return;
+            if (!JOB_ID) {
+              this.emitToast("Missing job id.", "error");
+              return;
+            }
+            this.isSubmitting = true;
+            try {
+              const nowTs = Math.floor(Date.now() / 1000);
+              const formatted = this.formatDateDDMMYYYY(new Date());
+              await graphqlRequest(UPDATE_JOB_MUTATION, {
+                id: JOB_ID,
+                payload: {
+                  quote_status: "Accepted",
+                  date_quoted_accepted: String(nowTs),
+                },
+              });
+              window.dispatchEvent(
+                new CustomEvent("quote:status-change", {
+                  detail: {
+                    quoteStatus: "Accepted",
+                    dateQuoteAccepted: formatted,
+                  },
+                })
+              );
+              this.emitToast("Quote marked as accepted.");
+              this.close();
+            } catch (error) {
+              console.error("Failed to accept quote", error);
+              this.emitToast(
+                error?.message || "Unable to accept quote right now.",
+                "error"
+              );
+            } finally {
+              this.isSubmitting = false;
+            }
+          },
+          formatDateDDMMYYYY(date) {
+            const d = date instanceof Date ? date : new Date(date);
+            if (Number.isNaN(d)) return "";
+            const dd = String(d.getDate()).padStart(2, "0");
+            const mm = String(d.getMonth() + 1).padStart(2, "0");
+            const yy = d.getFullYear();
+            return `${dd}/${mm}/${yy}`;
+          },
+          emitToast(message, variant = "success") {
+            if (!message) return;
+            window.dispatchEvent(
+              new CustomEvent("toast:show", { detail: { message, variant } })
+            );
+          },
+        }));
+
+        Alpine.data("viewActivitiesModal", () => ({
+          open: false,
+          activities: [
+            {
+              id: "a-1",
+              task: "Possum Proofing",
+              service: "Pigeon Removal",
+              price: "$1,250.00",
+              note: "Inspect roofline, seal active entry points, and install mesh guards across the eaves.",
+              technician: "Alan Smith",
+              updated: "10/11/2025",
+              status: "Scheduled",
+            },
+            {
+              id: "a-2",
+              task: "Roof Clean & Sanitize",
+              service: "Roof Restoration",
+              price: "$860.00",
+              note: "High-pressure clean and apply sanitation treatment to remove nesting debris.",
+              technician: "Mikaela Jones",
+              updated: "08/11/2025",
+              status: "Completed",
+            },
+            {
+              id: "a-3",
+              task: "Gutter Guard Install",
+              service: "Add-On Service",
+              price: "$420.00",
+              note: "Fit aluminium gutter guards to western elevation to prevent re-entry.",
+              technician: "Team Bravo",
+              updated: "05/11/2025",
+              status: "Scheduled",
+            },
+          ],
+          boundListener: null,
+          init() {
+            this.boundListener = () => {
+              this.open = true;
+            };
+            window.addEventListener("activities:view-all", this.boundListener);
+          },
+          destroy() {
+            if (this.boundListener) {
+              window.removeEventListener(
+                "activities:view-all",
+                this.boundListener
+              );
+              this.boundListener = null;
+            }
+          },
+          close() {
+            this.open = false;
           },
         }));
 
@@ -4908,7 +6636,7 @@
             this.isSubmitting = true;
             try {
               await graphqlRequest(UPDATE_JOB_MUTATION, {
-                jobid: targetJobId,
+                id: targetJobId,
                 payload: { admin_recommendation: this.value },
               });
               this.emitToast("Recommendation updated.");
@@ -5042,15 +6770,17 @@
             if (!detail) return;
             this.form.job = detail.task || "";
             this.form.option = detail.option || "";
-            this.ensureTempSelectOption("job", this.$refs.jobSelect, this.form.job);
+            this.ensureTempSelectOption(
+              "job",
+              this.$refs.jobSelect,
+              this.form.job
+            );
             this.ensureTempSelectOption(
               "option",
               this.$refs.optionSelect,
               this.form.option
             );
-            this.form.activityPrice = this.normalizePrice(
-              detail.activityPrice
-            );
+            this.form.activityPrice = this.normalizePrice(detail.activityPrice);
             this.form.activityText = detail.activityText || "";
             this.form.warranty = detail.warranty || "";
             this.form.note = detail.note || "";
