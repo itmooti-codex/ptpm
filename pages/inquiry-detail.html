@@ -1647,55 +1647,131 @@
                   </div>
                   <button
                     class="rounded-md bg-sky-800 px-3 py-1.5 text-xs font-semibold text-white hover:bg-sky-900"
+                    @click.prevent="$dispatch('activity:add')"
                   >
                     Add Activity
                   </button>
                 </div>
+
                 <div
-                  class="rounded-b-xl border-t border-slate-200 bg-white px-6 py-8 text-center text-slate-500"
+                  class="border-t border-slate-200 bg-white"
+                  data-dynamic-list="xBjZgVda1hJ3xKEiHFWwb"
+                  data-entity="peterpm"
+                  data-var-jobid="375"
+                  data-op="subscribe"
+                  data-entity-key="1rBR-jpR3yE3HE1VhFD0j"
                 >
-                  <svg
-                    class="mx-auto mb-4 h-24 w-24 text-slate-300"
-                    viewBox="0 0 80 80"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
+                  <div class="divide-y divide-slate-100">
+                    <div
+                      class="flex flex-col gap-1 px-5 py-4"
+                      data-activity-row
+                      data-activity-id="[activityid]"
+                      data-task="[Task]"
+                      data-option="[Option]"
+                      data-service-record-id="[Service_ID]"
+                      data-service-parent-id="[Service_ID]"
+                      data-activity-price="[Activity_Price]"
+                      data-activity-text="[Activity_Text]"
+                      data-warranty="[Warranty]"
+                      data-note="[Note]"
+                      data-invoice-client="[Invoice_To_Client]"
+                      data-job-id="[Job_ID]"
+                    >
+                      <div
+                        class="flex items-center justify-between text-sm font-medium text-slate-900"
+                      >
+                        <div class="flex items-center gap-2">
+                          <span class="text-sky-700">[Task]</span>
+                          <span
+                            class="text-xs uppercase tracking-wide text-slate-500"
+                            >[Service_Service_Name]</span
+                          >
+                        </div>
+                        <div class="flex items-center gap-3">
+                          <span class="text-base font-semibold text-slate-900"
+                            >[Activity_Price]</span
+                          >
+                          <button
+                            class="text-slate-400 hover:text-slate-600"
+                            title="Edit Activity"
+                          @click.prevent="
+                      (() => {
+                        const row = $el.closest('[data-activity-row]');
+                        if (!row) return;
+                        const normalizeId = (value) => {
+                          if (value === undefined || value === null) return '';
+                          const trimmed = String(value).trim();
+                          if (!trimmed) return '';
+                          if (trimmed.includes('[') || trimmed.includes(']')) return '';
+                          const lower = trimmed.toLowerCase();
+                          return lower === 'null' || lower === 'undefined' ? '' : trimmed;
+                        };
+                        const serviceParentId = normalizeId(row.dataset.serviceParentId);
+                        const serviceRecordId = normalizeId(row.dataset.serviceRecordId);
+                        const resolvedServiceId = serviceParentId || serviceRecordId;
+                        const serviceOptionId = serviceParentId ? serviceRecordId : '';
+                        $dispatch('activity:edit', {
+                          activityId: normalizeId(row.dataset.activityId) || '',
+                          jobId: normalizeId(row.dataset.jobId) || JOB_ID,
+                          task: row.dataset.task || '',
+                          option: row.dataset.option || '',
+                          serviceId: resolvedServiceId,
+                          serviceRecordId,
+                          serviceParentId,
+                          serviceOptionId,
+                          activityPrice: row.dataset.activityPrice || '',
+                          activityText: row.dataset.activityText || '',
+                          warranty: row.dataset.warranty || '',
+                          note: row.dataset.note || '',
+                          invoiceToClient: row.dataset.invoiceClient ?? ''
+                        });
+                      })()
+                    "
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              class="h-4 w-4"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="1.5"
+                                d="M16.862 5.487l1.651 1.651M4.5 19.5h3.375L18.127 9.247a1.75 1.75 0 000-2.475L16.228 4.873a1.75 1.75 0 00-2.475 0L4.5 14.125V17.5a2 2 0 002 2z"
+                              />
+                            </svg>
+                          </button>
+                          <button
+                            class="text-rose-500 hover:text-rose-600"
+                            title="Delete Activity"
+                  @click.prevent="
+                      (() => {
+                        const row = $el.closest('[data-activity-row]');
+                        if (!row) return;
+                        $dispatch('activity:confirm-delete', {
+                          activityId: row.dataset.activityId || '',
+                        });
+                      })()
+                    "
                   >
-                    <rect
-                      width="80"
-                      height="80"
-                      rx="12"
-                      fill="currentColor"
-                      opacity="0.15"
-                    />
-                    <path
-                      d="M28 22H52C53.657 22 55 23.343 55 25V55C55 56.657 53.657 58 52 58H28C26.343 58 25 56.657 25 55V25C25 23.343 26.343 22 28 22Z"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                    <path
-                      d="M33 27H47"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                    />
-                    <path
-                      d="M33 33H47"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                    />
-                    <path
-                      d="M33 39H43"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                    />
-                  </svg>
-                  <p class="text-sm font-medium text-slate-600">
-                    No activities yet.
-                  </p>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              class="h-4 w-4"
+                              viewBox="0 0 24 24"
+                              fill="currentColor"
+                            >
+                              <path
+                                d="M9 3a1 1 0 00-1 1v1H4a1 1 0 100 2h.082l.74 11.108A3 3 0 007.814 21h8.372a3 3 0 002.993-2.892L19.918 7H20a1 1 0 100-2h-4V4a1 1 0 00-1-1H9zm2 5a1 1 0 012 0v8a1 1 0 11-2 0V8zm4 0a1 1 0 10-2 0v8a1 1 0 102 0V8zM9 8a1 1 0 10-2 0v8a1 1 0 102 0V8z"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                      <p class="text-sm text-slate-600">[Activity_Text]</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1708,8 +1784,8 @@
           class="rounded-xl border border-slate-200 bg-white shadow-sm"
           data-dynamic-list="qrEmkE9GiwIaK6N0KLXCN"
           data-entity="peterpm"
-          data-var-jobid = "375"
-          data-op = "subscribe"
+          data-var-jobid="375"
+          data-op="subscribe"
           data-entity-key="1rBR-jpR3yE3HE1VhFD0j"
         >
           <div class="flex items-center justify-between px-4 pt-4">
@@ -1734,7 +1810,10 @@
               Edit Notes
             </button>
           </div>
-          <div class="px-4 pb-4 pt-2 text-sm leading-relaxed text-slate-700" data-admin-recommendation>
+          <div
+            class="px-4 pb-4 pt-2 text-sm leading-relaxed text-slate-700"
+            data-admin-recommendation
+          >
             [Admin_Recommendation]
           </div>
         </div>
@@ -2716,7 +2795,9 @@
         @keydown.escape.window="close"
       >
         <div class="w-full max-w-lg rounded-2xl bg-white shadow-2xl">
-          <div class="flex items-start justify-between border-b border-slate-200 px-6 py-4">
+          <div
+            class="flex items-start justify-between border-b border-slate-200 px-6 py-4"
+          >
             <div>
               <h3 class="text-lg font-semibold">Recommendation</h3>
               <p class="mt-1 text-sm text-slate-500">
@@ -2728,13 +2809,27 @@
               @click="close"
             >
               <span class="sr-only">Close modal</span>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
           <div class="px-6 py-5">
-            <label class="mb-2 block text-sm font-medium text-slate-600" for="recommendation-textarea">
+            <label
+              class="mb-2 block text-sm font-medium text-slate-600"
+              for="recommendation-textarea"
+            >
               Admin Recommendation
             </label>
             <textarea
@@ -2745,8 +2840,13 @@
               x-model="value"
             ></textarea>
           </div>
-          <div class="flex items-center justify-between border-t border-slate-200 px-6 py-4 text-sm">
-            <button class="font-medium text-slate-500 transition hover:text-slate-700" @click="close">
+          <div
+            class="flex items-center justify-between border-t border-slate-200 px-6 py-4 text-sm"
+          >
+            <button
+              class="font-medium text-slate-500 transition hover:text-slate-700"
+              @click="close"
+            >
               Cancel
             </button>
             <button
@@ -2761,10 +2861,444 @@
                 fill="none"
                 viewBox="0 0 24 24"
               >
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                ></path>
               </svg>
               <span>Update</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Activity Modal -->
+    <div x-data="activityModal()" x-cloak>
+      <div
+        class="fixed inset-0 z-40 flex min-h-screen items-center justify-center bg-slate-900/50 px-4 py-10 text-slate-800"
+        x-show="open"
+        x-transition.opacity
+        @keydown.escape.window="handleClose"
+      >
+        <div class="w-full max-w-3xl rounded-2xl bg-white shadow-2xl">
+          <div
+            class="flex items-center justify-between border-b border-slate-200 px-6 py-4"
+          >
+            <h3 class="text-lg font-semibold text-slate-900">Add Activity</h3>
+            <button
+              class="text-slate-400 transition hover:text-slate-600"
+              @click="handleClose"
+            >
+              <span class="sr-only">Close modal</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+          <div class="space-y-5 px-6 py-6 text-sm text-slate-700">
+            <div class="grid gap-4 sm:grid-cols-2">
+              <label class="space-y-1">
+                <span class="text-xs font-semibold uppercase text-slate-500"
+                  >Job</span
+                >
+                <div class="relative">
+                  <select
+                    class="w-full appearance-none rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                    x-model="form.job"
+                    x-ref="jobSelect"
+                  >
+                    <option value="Job 1">Job 1</option>
+                    <option value="Job 2">Job 2</option>
+                    <option value="Job 3">Job 3</option>
+                    <option value="Job 4">Job 4</option>
+                  </select>
+                  <span
+                    class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-slate-400"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M5.23 7.21a.75.75 0 011.06.02L10 11.175l3.71-3.944a.75.75 0 011.08 1.04l-4.25 4.518a.75.75 0 01-1.08 0L5.25 8.27a.75.75 0 01-.02-1.06z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                </div>
+              </label>
+              <label class="space-y-1">
+                <span class="text-xs font-semibold uppercase text-slate-500"
+                  >Options</span
+                >
+                <div class="relative">
+                  <select
+                    class="w-full appearance-none rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                    x-model="form.option"
+                    x-ref="optionSelect"
+                  >
+                    <option value="Option 1">Option 1</option>
+                    <option value="Option 2">Option 2</option>
+                    <option value="Option 3">Option 3</option>
+                    <option value="Option 4">Option 4</option>
+                    <option value="Option 5">Option 5</option>
+                  </select>
+                  <span
+                    class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-slate-400"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M5.23 7.21a.75.75 0 011.06.02L10 11.175l3.71-3.944a.75.75 0 011.08 1.04l-4.25 4.518a.75.75 0 01-1.08 0L5.25 8.27a.75.75 0 01-.02-1.06z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                </div>
+              </label>
+            </div>
+            <div class="grid gap-4 sm:grid-cols-2">
+              <label class="space-y-1">
+                <span class="text-xs font-semibold uppercase text-slate-500"
+                  >Service</span
+                >
+                <div class="relative">
+                  <select
+                    class="w-full appearance-none rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                    x-model="form.service"
+                    @change="handleServiceChange"
+                  >
+                    <template x-if="!services.length">
+                      <option value="">Select a service</option>
+                    </template>
+                    <template x-for="service in services" :key="service.id">
+                      <option
+                        :value="service.id"
+                        x-text="service.name"
+                      ></option>
+                    </template>
+                  </select>
+                  <span
+                    class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-slate-400"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M5.23 7.21a.75.75 0 011.06.02L10 11.175l3.71-3.944a.75.75 0 011.08 1.04l-4.25 4.518a.75.75 0 01-1.08 0L5.25 8.27a.75.75 0 01-.02-1.06z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                  <div class="hidden" x-ref="serviceSource" aria-hidden="true">
+                    <div
+                      data-dynamic-list="kA10GF11bcrHMQd3omol7"
+                      data-entity="peterpm"
+                      data-var-jobid="375"
+                      data-op="subscribe"
+                      data-entity-key="1rBR-jpR3yE3HE1VhFD0j"
+                    >
+                      <option
+                        value="[serviceid]"
+                        data-service-name="[Service_Name]"
+                        data-service-type="[Service_Type]"
+                        data-parent-service="[Primary_Service_ID]"
+                      >
+                        [Service_Name]
+                      </option>
+                    </div>
+                  </div>
+                </div>
+              </label>
+              <label class="space-y-1">
+                <span class="text-xs font-semibold uppercase text-slate-500"
+                  >Activity Price</span
+                >
+                <div class="relative">
+                  <span
+                    class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-slate-500"
+                    >$</span
+                  >
+                  <input
+                    type="number"
+                    class="w-full rounded-lg border border-slate-300 bg-white pl-7 pr-3 py-2 text-sm text-slate-800 shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                    placeholder="0.00"
+                    x-model="form.activityPrice"
+                    min="0"
+                    step="0.01"
+                  />
+                </div>
+              </label>
+            </div>
+            <label class="space-y-1 block">
+              <span class="text-xs font-semibold uppercase text-slate-500"
+                >Service Options</span
+              >
+              <div class="relative">
+                <select
+                  class="w-full appearance-none rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                  x-model="form.serviceOption"
+                  x-show="filteredServiceOptions.length"
+                  x-cloak
+                >
+                  <template
+                    x-for="option in filteredServiceOptions"
+                    :key="option.id"
+                  >
+                    <option :value="option.id" x-text="option.name"></option>
+                  </template>
+                </select>
+                <span
+                  class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-slate-400"
+                  x-show="filteredServiceOptions.length"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M5.23 7.21a.75.75 0 011.06.02L10 11.175l3.71-3.944a.75.75 0 011.08 1.04l-4.25 4.518a.75.75 0 01-1.08 0L5.25 8.27a.75.75 0 01-.02-1.06z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                </span>
+                <p
+                  class="text-sm text-slate-500"
+                  x-show="!filteredServiceOptions.length"
+                >
+                  Select a service to view available options.
+                </p>
+                <div
+                  class="hidden"
+                  x-ref="serviceOptionSource"
+                  aria-hidden="true"
+                >
+                  <div
+                    data-dynamic-list="vjs6nalZ9ILutT1ab23L2"
+                    data-entity="peterpm"
+                    data-var-jobid="375"
+                    data-op="subscribe"
+                    data-entity-key="1rBR-jpR3yE3HE1VhFD0j"
+                  >
+                    <option
+                      value="[serviceid]"
+                      data-parent-service="[Primary_Service_ID]"
+                      data-service-name="[Service_Name]"
+                    >
+                      [Service_Name]
+                    </option>
+                  </div>
+                </div>
+              </div>
+            </label>
+            <label class="space-y-1 block">
+              <span class="text-xs font-semibold uppercase text-slate-500"
+                >Activity Text</span
+              >
+              <textarea
+                class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-800 shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                rows="3"
+                x-model="form.activityText"
+              ></textarea>
+            </label>
+            <label class="space-y-1 block">
+              <span class="text-xs font-semibold uppercase text-slate-500"
+                >Warranty</span
+              >
+              <textarea
+                class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-800 shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                rows="2"
+                x-model="form.warranty"
+              ></textarea>
+            </label>
+            <label class="space-y-1 block">
+              <span class="text-xs font-semibold uppercase text-slate-500"
+                >Note</span
+              >
+              <textarea
+                class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-800 shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                rows="2"
+                x-model="form.note"
+              ></textarea>
+            </label>
+            <div class="space-y-2 text-sm text-slate-600">
+              <label class="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  class="h-4 w-4 rounded border-slate-300 text-sky-600 focus:ring-sky-500"
+                  x-model="form.invoiceClient"
+                />
+                <span>Invoice to client</span>
+              </label>
+              <label class="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  class="h-4 w-4 rounded border-slate-300 text-sky-600 focus:ring-sky-500"
+                  x-model="form.includeDocuments"
+                />
+                <span>Include related service documents</span>
+              </label>
+            </div>
+          </div>
+          <div
+            class="flex items-center justify-between border-t border-slate-200 px-6 py-4 text-sm"
+          >
+            <button
+              class="font-medium text-slate-500 transition hover:text-slate-700"
+              @click="handleClose"
+            >
+              Cancel
+            </button>
+            <button
+              class="inline-flex items-center rounded-lg bg-sky-700 px-4 py-2 font-semibold text-white shadow-sm transition hover:bg-sky-800 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500"
+              @click="handleSubmit"
+              :disabled="isSubmitting || !form.service || (filteredServiceOptions.length && !form.serviceOption)"
+            >
+              <svg
+                x-show="isSubmitting"
+                class="-ml-1 mr-2 h-4 w-4 animate-spin"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                ></path>
+              </svg>
+              <span>Add</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Activity Modal -->
+    <div x-data="deleteActivityModal()" x-cloak>
+      <div
+        class="fixed inset-0 z-40 flex min-h-screen items-center justify-center bg-slate-900/50 px-4 py-10"
+        x-show="open"
+        x-transition.opacity
+        @keydown.escape.window="close"
+      >
+        <div class="w-full max-w-md rounded-2xl bg-white shadow-2xl">
+          <div
+            class="flex items-start justify-between border-b border-slate-200 px-6 py-4"
+          >
+            <h3 class="text-lg font-semibold text-slate-900">
+              Delete Activity
+            </h3>
+            <button
+              class="text-slate-400 transition hover:text-slate-600"
+              @click="close"
+            >
+              <span class="sr-only">Close modal</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+          <div class="px-6 py-5 text-sm text-slate-600">
+            <p class="font-medium text-slate-800">
+              You are about to delete this activity.
+            </p>
+            <p class="mt-2">
+              This action cannot be undone. Do you want to proceed?
+            </p>
+          </div>
+          <div
+            class="flex items-center justify-between border-t border-slate-200 px-6 py-4 text-sm"
+          >
+            <button
+              class="font-medium text-slate-500 transition hover:text-slate-700"
+              @click="close"
+              :disabled="isSubmitting"
+            >
+              Cancel
+            </button>
+            <button
+              class="inline-flex items-center rounded-lg bg-rose-600 px-4 py-2 font-semibold text-white shadow-sm transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:bg-rose-300"
+              @click="confirm"
+              :disabled="isSubmitting"
+            >
+              <svg
+                x-show="isSubmitting"
+                class="-ml-1 mr-2 h-4 w-4 animate-spin"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                ></path>
+              </svg>
+              <span>Delete</span>
             </button>
           </div>
         </div>
@@ -2776,8 +3310,59 @@
       const GRAPHQL_ENDPOINT = "https://peterpm.vitalstats.app/api/v1/graphql";
       const GRAPHQL_API_KEY = "1rBR-jpR3yE3HE1VhFD0j";
       const INQUIRY_RECORD_ID = "312"; // update with the current inquiry record id
-     const CONTACT_ID = "168";
+      const CONTACT_ID = "168";
       const JOB_ID = "375";
+
+      const SERVICES_DATA = [
+        { serviceid: 5, service_name: "Rat Roof", service_type: "Primary", primary_service_id: null },
+        { serviceid: 6, service_name: "Possum Roof", service_type: "Primary", primary_service_id: null },
+        { serviceid: 8, service_name: "Materials", service_type: "Add On", primary_service_id: null },
+        { serviceid: 9, service_name: "Window Cleaning", service_type: "Primary", primary_service_id: null },
+        { serviceid: 10, service_name: "Wasp Removal", service_type: "Primary", primary_service_id: null },
+        {
+          serviceid: 13,
+          service_name: "Vacuum, remove and dispose all dust and debris",
+          service_type: "Primary",
+          primary_service_id: null,
+        },
+        {
+          serviceid: 14,
+          service_name: "Insulation Installation",
+          service_type: "Primary",
+          primary_service_id: null,
+        },
+        {
+          serviceid: 15,
+          service_name: "R4.1 ECOWOOL to ceiling cavity.",
+          service_type: "Option",
+          primary_service_id: 14,
+        },
+        {
+          serviceid: 16,
+          service_name: "R3.5 POLYESTER to ceiling cavity",
+          service_type: "Option",
+          primary_service_id: 14,
+        },
+        { serviceid: 18, service_name: "Lawn Maintenance", service_type: "Primary", primary_service_id: null },
+        {
+          serviceid: 22,
+          service_name: "Pigeon Removal - Option 1",
+          service_type: "Option",
+          primary_service_id: 26,
+        },
+        {
+          serviceid: 23,
+          service_name: "Pigeon Removal - Option 2",
+          service_type: "Option",
+          primary_service_id: 26,
+        },
+        { serviceid: 26, service_name: "Pigeon Removal", service_type: "Primary", primary_service_id: null },
+        { serviceid: 27, service_name: "Pool Cleaning", service_type: "Primary", primary_service_id: null },
+      ];
+
+      function fetchServicesCatalog() {
+        return Promise.resolve(SERVICES_DATA);
+      }
 
       const CALC_DEALS_QUERY = `
         query calcDeals($id: PeterpmDealID!) {
@@ -2827,6 +3412,40 @@
           calcJobs(query: [{ where: { inquiry_record_id: $inquiry_record_id } }]) {
             Inquiry_Record_ID: field(arg: ["Inquiry_Record", "id"])
              ID: field(arg: ["id"])
+          }
+        }
+      `;
+
+      const CREATE_ACTIVITY_MUTATION = `
+        mutation createActivity($payload: ActivityCreateInput = null) {
+          createActivity(payload: $payload) {
+            task
+            option
+            activity_price
+            activity_text
+            warranty
+            note
+            invoice_to_client
+            job_id
+            Service {
+              id
+            }
+          }
+        }
+      `;
+
+      const UPDATE_ACTIVITY_MUTATION = `
+        mutation updateActivity($id: PeterpmActivityID!, $payload: ActivityUpdateInput = null) {
+          updateActivity(query: [{ where: { id: $id } }], payload: $payload) {
+            id
+          }
+        }
+      `;
+
+      const DELETE_ACTIVITY_MUTATION = `
+        mutation deleteActivity($id: PeterpmActivityID!) {
+          deleteActivity(query: [{ where: { id: $id } }]) {
+            id
           }
         }
       `;
@@ -3430,6 +4049,7 @@
           },
           handleClose() {
             this.open = false;
+            this.cleanupTempOptions();
           },
           updateProvider(provider) {
             if (provider) this.provider = provider;
@@ -3898,10 +4518,7 @@
               this.jobId = detail.jobId || JOB_ID;
               this.open = true;
             };
-            window.addEventListener(
-              "recommendation:edit",
-              this.boundListener
-            );
+            window.addEventListener("recommendation:edit", this.boundListener);
           },
           destroy() {
             if (this.boundListener) {
@@ -3934,8 +4551,534 @@
             } catch (error) {
               console.error("Failed to update recommendation", error);
               this.emitToast(
-                error?.message ||
-                  "Unable to update recommendation right now.",
+                error?.message || "Unable to update recommendation right now.",
+                "error"
+              );
+            } finally {
+              this.isSubmitting = false;
+            }
+          },
+          emitToast(message, variant = "success") {
+            if (!message) return;
+            window.dispatchEvent(
+              new CustomEvent("toast:show", { detail: { message, variant } })
+            );
+          },
+        }));
+
+        Alpine.data("activityModal", () => ({
+          open: false,
+          form: {
+            job: "Job 1",
+            option: "Option 1",
+            service: "Possum",
+            activityPrice: "0.00",
+            serviceOption: "R4.1 ECOWOOL to ceiling cavity.",
+            activityText: "",
+            warranty: "",
+            note: "",
+            invoiceClient: true,
+            includeDocuments: true,
+          },
+          mode: "create",
+          activityId: null,
+          boundAddListener: null,
+          boundEditListener: null,
+          isSubmitting: false,
+          notify(message, variant = "success") {
+            window.dispatchEvent(
+              new CustomEvent("toast:show", { detail: { message, variant } })
+            );
+          },
+          normalizePrice(value) {
+            if (typeof value === "number") return value.toFixed(2);
+            const numeric = parseFloat(
+              String(value || "").replace(/[^0-9.-]/g, "")
+            );
+            if (Number.isFinite(numeric)) {
+              return numeric.toFixed(2);
+            }
+            return "0.00";
+          },
+          normalizeBoolean(value) {
+            if (typeof value === "boolean") return value;
+            const str = String(value ?? "")
+              .trim()
+              .toLowerCase();
+            return ["1", "true", "yes", "y"].includes(str);
+          },
+          services: [],
+          serviceOptions: [],
+          filteredServiceOptions: [],
+          tempSelectOptions: {},
+          serviceCatalog: [],
+          servicesById: new Map(),
+          servicesCatalogLoaded: false,
+          init() {
+            this.boundAddListener = () => {
+              this.openModal("create", {});
+            };
+            this.boundEditListener = (event) => {
+              const detail = event?.detail || {};
+              this.openModal("edit", detail);
+            };
+            window.addEventListener("activity:add", this.boundAddListener);
+            window.addEventListener("activity:edit", this.boundEditListener);
+          },
+          destroy() {
+            if (this.boundAddListener) {
+              window.removeEventListener("activity:add", this.boundAddListener);
+              this.boundAddListener = null;
+            }
+            if (this.boundEditListener) {
+              window.removeEventListener(
+                "activity:edit",
+                this.boundEditListener
+              );
+              this.boundEditListener = null;
+            }
+            this.cleanupTempOptions();
+          },
+          handleClose() {
+            this.open = false;
+            this.cleanupTempOptions();
+          },
+          openModal(mode, detail = {}) {
+            this.mode = mode;
+            this.activityId = detail.activityId || null;
+            this.resetForm();
+            this.open = true;
+            this.$nextTick(async () => {
+              await Promise.all([
+                this.ensureServiceData(),
+                this.ensureServicesCatalog(),
+              ]);
+              this.prefillFromDetail(detail);
+            });
+          },
+          resetForm() {
+            this.cleanupTempOptions();
+            this.form = {
+              job: "",
+              option: "",
+              service: "",
+              activityPrice: "0.00",
+              serviceOption: "",
+              activityText: "",
+              warranty: "",
+              note: "",
+              invoiceClient: true,
+              includeDocuments: true,
+            };
+            this.pendingServiceId = "";
+            this.pendingServiceOptionId = "";
+          },
+          prefillFromDetail(detail = {}) {
+            if (!detail) return;
+            this.form.job = detail.task || "";
+            this.form.option = detail.option || "";
+            this.ensureTempSelectOption("job", this.$refs.jobSelect, this.form.job);
+            this.ensureTempSelectOption(
+              "option",
+              this.$refs.optionSelect,
+              this.form.option
+            );
+            this.form.activityPrice = this.normalizePrice(
+              detail.activityPrice
+            );
+            this.form.activityText = detail.activityText || "";
+            this.form.warranty = detail.warranty || "";
+            this.form.note = detail.note || "";
+            this.form.invoiceClient =
+              detail.invoiceToClient !== undefined
+                ? this.normalizeBoolean(detail.invoiceToClient)
+                : true;
+            const fallbackParentId = this.sanitizeId(detail.serviceParentId);
+            const fallbackOptionId = this.sanitizeId(detail.serviceOptionId);
+            const recordId =
+              this.sanitizeId(detail.serviceRecordId) ||
+              this.sanitizeId(detail.serviceId) ||
+              fallbackOptionId ||
+              fallbackParentId;
+            const { primaryId, optionId } = this.resolveServicePrefill(
+              recordId,
+              fallbackParentId,
+              fallbackOptionId
+            );
+            this.form.service = primaryId || "";
+            this.form.serviceOption = optionId || "";
+            this.pendingServiceId = this.form.service;
+            this.pendingServiceOptionId = optionId || "";
+            this.ensureTempSelectOption(
+              "service",
+              this.$refs.serviceSelect,
+              this.form.service
+            );
+            if (this.form.serviceOption) {
+              this.ensureTempSelectOption(
+                "service-option",
+                this.$refs.serviceOptionSelect,
+                this.form.serviceOption
+              );
+            }
+            this.$nextTick(() => {
+              this.handleServiceChange();
+              if (
+                this.pendingServiceOptionId &&
+                this.form.serviceOption !== this.pendingServiceOptionId
+              ) {
+                this.form.serviceOption = this.pendingServiceOptionId;
+                this.ensureTempSelectOption(
+                  "service-option",
+                  this.$refs.serviceOptionSelect,
+                  this.pendingServiceOptionId
+                );
+              }
+            });
+          },
+          async handleSubmit() {
+            if (this.isSubmitting) return;
+            const serviceId = this.getServiceIdForPayload();
+            if (!serviceId) {
+              this.notify("Select a service first.", "error");
+              return;
+            }
+            const payload = {
+              job_id: JOB_ID,
+              service_id: serviceId,
+              task: this.form.job,
+              option: this.form.option,
+              activity_price: parseFloat(
+                this.normalizePrice(this.form.activityPrice)
+              ),
+              activity_text: this.form.activityText,
+              warranty: this.form.warranty,
+              note: this.form.note,
+              invoice_to_client: Boolean(this.form.invoiceClient),
+            };
+            const isEdit = this.mode === "edit" && this.activityId;
+            const mutation = isEdit
+              ? UPDATE_ACTIVITY_MUTATION
+              : CREATE_ACTIVITY_MUTATION;
+            const variables = isEdit
+              ? { id: this.activityId, payload }
+              : { payload };
+            this.isSubmitting = true;
+            try {
+              await graphqlRequest(mutation, variables);
+              this.notify(isEdit ? "Activity updated." : "Activity created.");
+              this.open = false;
+            } catch (error) {
+              console.error("Failed to submit activity", error);
+              this.notify(
+                error?.message || "Unable to save activity right now.",
+                "error"
+              );
+            } finally {
+              this.isSubmitting = false;
+            }
+          },
+          getServiceIdForPayload() {
+            if (this.filteredServiceOptions.length && this.form.serviceOption) {
+              return this.form.serviceOption;
+            }
+            return this.form.service || null;
+          },
+          ensureServicesCatalog() {
+            if (this.servicesCatalogLoaded) {
+              return Promise.resolve();
+            }
+            if (!this.servicesCatalogLoaded) {
+              return fetchServicesCatalog().then((catalog) => {
+                const list = Array.isArray(catalog) ? catalog : [];
+                this.serviceCatalog = list;
+                this.servicesById = new Map();
+                list.forEach((entry) => {
+                  if (!entry) return;
+                  const id = this.sanitizeId(
+                    entry.serviceid ?? entry.serviceId ?? entry.id
+                  );
+                  if (!id) return;
+                  const parentId = this.sanitizeId(
+                    entry.primary_service_id ?? entry.Primary_Service_ID ?? ""
+                  );
+                  this.servicesById.set(id, {
+                    id,
+                    name:
+                      entry.service_name ||
+                      entry.Service_Name ||
+                      entry.name ||
+                      "",
+                    type:
+                      entry.service_type ||
+                      entry.Service_Type ||
+                      entry.type ||
+                      "",
+                    parentId,
+                  });
+                });
+                this.servicesCatalogLoaded = true;
+              });
+            }
+            return Promise.resolve();
+          },
+          getServiceMetaById(id) {
+            const key = this.sanitizeId(id);
+            if (!key) return null;
+            return this.servicesById.get(key) || null;
+          },
+          resolveServicePrefill(recordId, fallbackParentId, fallbackOptionId) {
+            const meta = this.getServiceMetaById(recordId);
+            if (meta) {
+              const type = (meta.type || "").toLowerCase();
+              if (type.includes("option") && meta.parentId) {
+                return { primaryId: meta.parentId, optionId: meta.id };
+              }
+              return { primaryId: meta.id, optionId: "" };
+            }
+            if (fallbackParentId) {
+              return {
+                primaryId: fallbackParentId,
+                optionId: fallbackOptionId || recordId || "",
+              };
+            }
+            if (recordId) {
+              return { primaryId: recordId, optionId: "" };
+            }
+            return { primaryId: "", optionId: "" };
+          },
+          ensureServiceData() {
+            if (this.tryLoadServiceData()) {
+              return Promise.resolve();
+            }
+            return new Promise((resolve) => {
+              const maxAttempts = 10;
+              const attemptLoad = (attempt = 0) => {
+                if (this.tryLoadServiceData() || attempt >= maxAttempts) {
+                  resolve();
+                } else {
+                  setTimeout(() => attemptLoad(attempt + 1), 100);
+                }
+              };
+              attemptLoad();
+            });
+          },
+          tryLoadServiceData() {
+            let hasServices = false;
+            if (this.$refs.serviceSource) {
+              const parsedServices = this.parseOptions(
+                this.$refs.serviceSource,
+                false
+              );
+              if (parsedServices.length) {
+                this.services = parsedServices;
+                hasServices = true;
+                const hasCurrentSelection = parsedServices.some(
+                  (service) => service.id === this.form.service
+                );
+                if (!this.form.service || !hasCurrentSelection) {
+                  this.form.service = parsedServices[0].id;
+                }
+              }
+            }
+            if (this.$refs.serviceOptionSource) {
+              const parsedOptions = this.parseOptions(
+                this.$refs.serviceOptionSource,
+                true
+              );
+              if (parsedOptions.length) {
+                this.serviceOptions = parsedOptions;
+              }
+            }
+            this.handleServiceChange();
+            return hasServices;
+          },
+          parseOptions(container, withParent = false) {
+            if (!container) return [];
+            const options = Array.from(container.querySelectorAll("option"));
+            return options
+              .map((option) => {
+                const id = this.sanitizeId(
+                  option.value ??
+                    option.getAttribute("value") ??
+                    option.textContent
+                );
+                const name =
+                  option.dataset.serviceName?.trim() ||
+                  option.textContent?.trim() ||
+                  "";
+                if (!id || (name && name.includes("["))) return null;
+                const type = option.dataset.serviceType?.trim() || "";
+                if (!withParent && type && /option/i.test(type)) return null;
+                const parentId = this.sanitizeId(option.dataset.parentService);
+                return {
+                  id,
+                  name: name || id,
+                  type,
+                  parentId: withParent ? parentId : "",
+                };
+              })
+              .filter(Boolean);
+          },
+          handleServiceChange() {
+            const targetServiceId = this.pendingServiceId || this.form.service;
+            if (targetServiceId && targetServiceId !== this.form.service) {
+              this.form.service = targetServiceId;
+            }
+            if (this.form.service) {
+              this.pendingServiceId = "";
+            }
+            this.ensureTempSelectOption(
+              "service",
+              this.$refs.serviceSelect,
+              this.form.service
+            );
+            if (!this.form.service) {
+              this.filteredServiceOptions = [];
+              if (!this.pendingServiceOptionId) {
+                this.form.serviceOption = "";
+              }
+              return;
+            }
+            this.filteredServiceOptions = this.serviceOptions.filter(
+              (option) => option.parentId === this.form.service
+            );
+            if (!this.filteredServiceOptions.length) {
+              if (!this.pendingServiceOptionId) {
+                this.form.serviceOption = "";
+              }
+              return;
+            }
+            const desiredOptionId =
+              this.pendingServiceOptionId || this.form.serviceOption;
+            const hasDesired =
+              desiredOptionId &&
+              this.filteredServiceOptions.some(
+                (option) => option.id === desiredOptionId
+              );
+            if (hasDesired) {
+              this.form.serviceOption = desiredOptionId;
+              this.pendingServiceOptionId = "";
+            } else {
+              const hasSelected = this.filteredServiceOptions.some(
+                (option) => option.id === this.form.serviceOption
+              );
+              if (!hasSelected) {
+                this.form.serviceOption = this.filteredServiceOptions[0].id;
+              }
+            }
+            this.ensureTempSelectOption(
+              "service-option",
+              this.$refs.serviceOptionSelect,
+              this.form.serviceOption
+            );
+          },
+          cleanupTempOptions() {
+            Object.values(this.tempSelectOptions || {}).forEach((option) => {
+              if (option && typeof option.remove === "function") {
+                option.remove();
+              }
+            });
+            this.tempSelectOptions = {};
+          },
+          ensureTempSelectOption(key, selectEl, value) {
+            if (
+              !selectEl ||
+              value === undefined ||
+              value === null ||
+              value === ""
+            )
+              return;
+            const normalizedValue = String(value);
+            const options = Array.from(selectEl.options);
+            const hasRealOption = options.some(
+              (option) =>
+                option.value === normalizedValue &&
+                option.dataset.tempOption !== key
+            );
+            if (hasRealOption) {
+              if (this.tempSelectOptions[key]) {
+                this.tempSelectOptions[key].remove();
+                delete this.tempSelectOptions[key];
+              }
+              return;
+            }
+            if (
+              this.tempSelectOptions[key] &&
+              this.tempSelectOptions[key].value === normalizedValue
+            ) {
+              return;
+            }
+            if (this.tempSelectOptions[key]) {
+              this.tempSelectOptions[key].remove();
+            }
+            const option = document.createElement("option");
+            option.value = normalizedValue;
+            option.textContent = normalizedValue;
+            option.dataset.tempOption = key;
+            selectEl.appendChild(option);
+            this.tempSelectOptions[key] = option;
+          },
+          sanitizeId(value) {
+            if (value === null || value === undefined) return "";
+            const trimmed = String(value).trim();
+            if (!trimmed) return "";
+            const lower = trimmed.toLowerCase();
+            if (
+              lower === "null" ||
+              lower === "undefined" ||
+              trimmed.includes("[") ||
+              trimmed.includes("]")
+            ) {
+              return "";
+            }
+            return trimmed;
+          },
+        }));
+
+        Alpine.data("deleteActivityModal", () => ({
+          open: false,
+          activityId: null,
+          isSubmitting: false,
+          boundListener: null,
+          init() {
+            this.boundListener = (event) => {
+              const id = event?.detail?.activityId;
+              if (!id) return;
+              this.activityId = id;
+              this.open = true;
+            };
+            window.addEventListener(
+              "activity:confirm-delete",
+              this.boundListener
+            );
+          },
+          destroy() {
+            if (this.boundListener) {
+              window.removeEventListener(
+                "activity:confirm-delete",
+                this.boundListener
+              );
+              this.boundListener = null;
+            }
+          },
+          close() {
+            if (this.isSubmitting) return;
+            this.open = false;
+          },
+          async confirm() {
+            if (!this.activityId || this.isSubmitting) return;
+            this.isSubmitting = true;
+            try {
+              await graphqlRequest(DELETE_ACTIVITY_MUTATION, {
+                id: this.activityId,
+              });
+              this.emitToast("Activity deleted.");
+              this.open = false;
+            } catch (error) {
+              console.error("Failed to delete activity", error);
+              this.emitToast(
+                error?.message || "Unable to delete activity right now.",
                 "error"
               );
             } finally {
