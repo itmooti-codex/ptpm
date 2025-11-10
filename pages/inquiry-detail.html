@@ -62,7 +62,7 @@
           <div class="flex gap-2 justify-start items-center">
             <!-- Generate Emails -->
             <div
-              x-data="{ open: false }"
+              x-data="{ open: false, groupKey: 'general' }"
               class="flex flex-inline gap-1 justify-around items-center relative"
             >
               <!-- Trigger: clicking this toggles the email options -->
@@ -71,9 +71,10 @@
                 @click="open = !open"
                 class="flex items-center gap-1 justify-end"
               >
-                <div class="text-white text-[14px] font-medium f-inter">
-                  General Emails
-                </div>
+                <div
+                  class="text-white text-[14px] font-medium f-inter"
+                  x-text="EMAIL_OPTIONS_DATA[groupKey].label"
+                ></div>
                 <svg
                   :class="open ? 'rotate-180 transition-transform' : 'transition-transform'"
                   width="14"
@@ -100,59 +101,30 @@
                 <div
                   class="self-stretch bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 flex flex-col justify-start items-start overflow-hidden"
                 >
-                  <div
-                    data-state="Default"
-                    class="self-stretch px-6 py-4 bg-white inline-flex justify-start items-start gap-2 cursor-pointer hover:bg-[#E3EFFF]"
+                  <template
+                    x-for="button in EMAIL_OPTIONS_DATA[groupKey].buttons"
+                    :key="button.message_id"
                   >
-                    <div class="justify-start">
-                      <span
-                        class="text-slate-500 text-sm font-medium font-['Inter'] leading-4"
-                      >
-                        Email Customer
-                      </span>
-                      <span
-                        class="text-blue-700 text-sm font-medium font-['Inter'] leading-4"
-                      >
-                        (Job Email)
-                      </span>
-                    </div>
-                  </div>
+                    <div
+                      data-state="Default"
+                      class="self-stretch px-6 py-4 bg-white inline-flex justify-start items-start gap-2 cursor-pointer hover:bg-[#E3EFFF]"
+                    >
+                      <div class="justify-start">
+                        <!-- Main email action label (API later) -->
+                        <span
+                          class="text-slate-500 text-sm font-medium font-['Inter'] leading-4"
+                          x-text="button.button_name"
+                        ></span>
 
-                  <div
-                    data-state="Default"
-                    class="self-stretch px-6 py-4 bg-white inline-flex justify-start items-start gap-2 cursor-pointer hover:bg-[#E3EFFF]"
-                  >
-                    <div class="justify-start">
-                      <span
-                        class="text-slate-500 text-sm font-medium font-['Inter'] leading-4"
-                      >
-                        Email Tenant
-                      </span>
-                      <span
-                        class="text-blue-700 text-sm font-medium font-['Inter'] leading-4"
-                      >
-                        (Job Email)
-                      </span>
+                        <!-- Template link (opens Ontraport message in new tab) -->
+                        <span
+                          class="text-blue-700 text-sm font-medium font-['Inter'] leading-4 cursor-pointer underline"
+                          x-text="'(' + button.template_link_button + ')'"
+                          @click.stop="openTemplateLink(button.message_id)"
+                        ></span>
+                      </div>
                     </div>
-                  </div>
-
-                  <div
-                    data-state="Default"
-                    class="self-stretch px-6 py-4 bg-white inline-flex justify-start items-start gap-2 cursor-pointer hover:bg-[#E3EFFF]"
-                  >
-                    <div class="justify-start">
-                      <span
-                        class="text-slate-500 text-sm font-medium font-['Inter'] leading-4"
-                      >
-                        Request Review
-                      </span>
-                      <span
-                        class="text-blue-700 text-sm font-medium font-['Inter'] leading-4"
-                      >
-                        (Job Email)
-                      </span>
-                    </div>
-                  </div>
+                  </template>
                 </div>
               </div>
             </div>
@@ -160,7 +132,7 @@
 
             <!-- Quote Emails -->
             <div
-              x-data="{ openQuote: false }"
+              x-data="{ openQuote: false, groupKey: 'quote' }"
               class="flex flex-inline gap-1 justify-around items-center relative"
             >
               <!-- Trigger -->
@@ -171,9 +143,8 @@
               >
                 <div
                   class="justify-end text-white text-[14px] font-medium f-inter"
-                >
-                  Quote Emails
-                </div>
+                  x-text="EMAIL_OPTIONS_DATA[groupKey].label"
+                ></div>
                 <svg
                   :class="openQuote ? 'rotate-180 transition-transform' : 'transition-transform'"
                   width="14"
@@ -198,88 +169,32 @@
                 class="w-max shadow-[0px_4px_6px_-4px_rgba(0,0,0,0.10)] shadow-lg inline-flex flex-col justify-start items-start absolute top-8 left-0 z-10"
               >
                 <div
-                  data-state="Default"
-                  class="self-stretch px-6 py-4 bg-white inline-flex justify-start items-start gap-2 cursor-pointer hover:bg-[#E3EFFF]"
+                  class="self-stretch bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 flex flex-col justify-start items-start overflow-hidden"
                 >
-                  <div class="justify-start">
-                    <span
-                      class="text-slate-500 text-sm font-medium font-['Inter'] leading-4"
-                      >Email Manual Quote </span
-                    ><span
-                      class="text-blue-700 text-sm font-medium font-['Inter'] leading-4"
-                      >(Job Email)</span
+                  <template
+                    x-for="button in EMAIL_OPTIONS_DATA[groupKey].buttons"
+                    :key="button.message_id"
+                  >
+                    <div
+                      data-state="Default"
+                      class="self-stretch px-6 py-4 bg-white inline-flex justify-start items-start gap-2 cursor-pointer hover:bg-[#E3EFFF]"
                     >
-                  </div>
-                </div>
-                <div
-                  data-state="Default"
-                  class="self-stretch px-6 py-4 bg-white inline-flex justify-start items-start gap-2 cursor-pointer hover:bg-[#E3EFFF]"
-                >
-                  <div class="justify-start">
-                    <span
-                      class="text-slate-500 text-sm font-medium font-['Inter'] leading-4"
-                      >Email Electronic Quote </span
-                    ><span
-                      class="text-blue-700 text-sm font-medium font-['Inter'] leading-4"
-                      >(Job Email)</span
-                    >
-                  </div>
-                </div>
-                <div
-                  data-state="Default"
-                  class="self-stretch px-6 py-4 bg-white inline-flex justify-start items-start gap-2 cursor-pointer hover:bg-[#E3EFFF]"
-                >
-                  <div class="justify-start">
-                    <span
-                      class="text-slate-500 text-sm font-medium font-['Inter'] leading-4"
-                      >Email RE Quote FU </span
-                    ><span
-                      class="text-blue-700 text-sm font-medium font-['Inter'] leading-4"
-                      >(Job Email)</span
-                    >
-                  </div>
-                </div>
-                <div
-                  data-state="Default"
-                  class="self-stretch px-6 py-4 bg-white inline-flex justify-start items-start gap-2 cursor-pointer hover:bg-[#E3EFFF]"
-                >
-                  <div class="justify-start">
-                    <span
-                      class="text-slate-500 text-sm font-medium font-['Inter'] leading-4"
-                      >Email BC Quote FU </span
-                    ><span
-                      class="text-blue-700 text-sm font-medium font-['Inter'] leading-4"
-                      >(Job Email)</span
-                    >
-                  </div>
-                </div>
-                <div
-                  data-state="Default"
-                  class="self-stretch px-6 py-4 bg-white inline-flex justify-start items-start gap-2 cursor-pointer hover:bg-[#E3EFFF]"
-                >
-                  <div class="justify-start">
-                    <span
-                      class="text-slate-500 text-sm font-medium font-['Inter'] leading-4"
-                      >Email O Quote FU </span
-                    ><span
-                      class="text-blue-700 text-sm font-medium font-['Inter'] leading-4"
-                      >(Job Email)</span
-                    >
-                  </div>
-                </div>
-                <div
-                  data-state="Default"
-                  class="self-stretch px-6 py-4 bg-white inline-flex justify-start items-start gap-2 cursor-pointer hover:bg-[#E3EFFF]"
-                >
-                  <div class="justify-start">
-                    <span
-                      class="text-slate-500 text-sm font-medium font-['Inter'] leading-4"
-                      >Email 2nd Quote FU </span
-                    ><span
-                      class="text-blue-700 text-sm font-medium font-['Inter'] leading-4"
-                      >(Job Email)</span
-                    >
-                  </div>
+                      <div class="justify-start">
+                        <!-- Main email action label (API later) -->
+                        <span
+                          class="text-slate-500 text-sm font-medium font-['Inter'] leading-4"
+                          x-text="button.button_name"
+                        ></span>
+
+                        <!-- Template link (opens Ontraport message in new tab) -->
+                        <span
+                          class="text-blue-700 text-sm font-medium font-['Inter'] leading-4 cursor-pointer underline"
+                          x-text="'(' + button.template_link_button + ')'"
+                          @click.stop="openTemplateLink(button.message_id)"
+                        ></span>
+                      </div>
+                    </div>
+                  </template>
                 </div>
               </div>
             </div>
@@ -287,7 +202,7 @@
 
             <!-- Invoice Emails -->
             <div
-              x-data="{ openInvoice: false }"
+              x-data="{ openInvoice: false, groupKey: 'invoice' }"
               class="flex flex-inline gap-1 justify-around items-center relative"
             >
               <!-- Trigger -->
@@ -298,9 +213,8 @@
               >
                 <div
                   class="justify-end text-white text-[14px] font-medium f-inter"
-                >
-                  Invoice Emails
-                </div>
+                  x-text="EMAIL_OPTIONS_DATA[groupKey].label"
+                ></div>
 
                 <svg
                   :class="openInvoice ? 'rotate-180 transition-transform' : 'transition-transform'"
@@ -328,48 +242,30 @@
                 <div
                   class="self-stretch bg-white rounded border-l border-r border-t border-gray-300 flex flex-col justify-start items-start overflow-hidden"
                 >
-                  <div
-                    data-state="Default"
-                    class="self-stretch px-6 py-4 bg-white inline-flex justify-start items-start gap-2 cursor-pointer hover:bg-[#E3EFFF]"
+                  <template
+                    x-for="button in EMAIL_OPTIONS_DATA[groupKey].buttons"
+                    :key="button.message_id"
                   >
-                    <div class="justify-start">
-                      <span
-                        class="text-slate-500 text-sm font-medium font-['Inter'] leading-4"
-                        >Email Invoice </span
-                      ><span
-                        class="text-blue-700 text-sm font-medium font-['Inter'] leading-4"
-                        >(Account Email)</span
-                      >
+                    <div
+                      data-state="Default"
+                      class="self-stretch px-6 py-4 bg-white inline-flex justify-start items-start gap-2 cursor-pointer hover:bg-[#E3EFFF]"
+                    >
+                      <div class="justify-start">
+                        <!-- Main email action label (API later) -->
+                        <span
+                          class="text-slate-500 text-sm font-medium font-['Inter'] leading-4"
+                          x-text="button.button_name"
+                        ></span>
+
+                        <!-- Template link (opens Ontraport message in new tab) -->
+                        <span
+                          class="text-blue-700 text-sm font-medium font-['Inter'] leading-4 cursor-pointer underline"
+                          x-text="'(' + button.template_link_button + ')'"
+                          @click.stop="openTemplateLink(button.message_id)"
+                        ></span>
+                      </div>
                     </div>
-                  </div>
-                  <div
-                    data-state="Default"
-                    class="px-6 py-4 bg-white inline-flex justify-start items-start gap-2 cursor-pointer hover:bg-[#E3EFFF]"
-                  >
-                    <div class="justify-start">
-                      <span
-                        class="text-slate-500 text-sm font-medium font-['Inter'] leading-4"
-                        >Email Invoice FU </span
-                      ><span
-                        class="text-blue-700 text-sm font-medium font-['Inter'] leading-4"
-                        >(Account Email)</span
-                      >
-                    </div>
-                  </div>
-                  <div
-                    data-state="Default"
-                    class="px-6 py-4 bg-white inline-flex justify-start items-start gap-2 cursor-pointer hover:bg-[#E3EFFF]"
-                  >
-                    <div class="justify-start">
-                      <span
-                        class="text-slate-500 text-sm font-medium font-['Inter'] leading-4"
-                        >Email RE INV FU </span
-                      ><span
-                        class="text-blue-700 text-sm font-medium font-['Inter'] leading-4"
-                        >(Account Email)</span
-                      >
-                    </div>
-                  </div>
+                  </template>
                 </div>
               </div>
             </div>
@@ -4612,67 +4508,105 @@
       ];
 
       const EMAIL_OPTIONS_DATA = {
-        "Invoice Email": {
+        general: {
+          label: "General Emails",
           buttons: [
             {
-              button_name: "Invoice Template",
-              message_id: "123",
-              field_id: "f1234",
+              button_name: "Email Customer",
+              template_link_button: "Job Email",
+              message_id: "msg_gen_1",
+              field_id: "field_gen_1",
             },
             {
-              button_name: "Invoice Reminder",
-              message_id: "124",
-              field_id: "f1235",
+              button_name: "Email Tenant",
+              template_link_button: "Job Email",
+              message_id: "msg_gen_2",
+              field_id: "field_gen_2",
             },
             {
-              button_name: "Invoice Follow-Up",
-              message_id: "125",
-              field_id: "f1236",
+              button_name: "Request Review",
+              template_link_button: "Job Email",
+              message_id: "msg_gen_3",
+              field_id: "field_gen_3",
             },
           ],
         },
-        "Quote Emails": {
+
+        quote: {
+          label: "Quote Emails",
           buttons: [
             {
-              button_name: "Quote Template",
-              message_id: "223",
-              field_id: "f2234",
+              button_name: "Email Manual Quote",
+              template_link_button: "Job Email",
+              message_id: "msg_quote_1",
+              field_id: "field_quote_1",
             },
             {
-              button_name: "Quote Reminder",
-              message_id: "224",
-              field_id: "f2235",
+              button_name: "Email Electronic Quote",
+              template_link_button: "Job Email",
+              message_id: "msg_quote_2",
+              field_id: "field_quote_2",
             },
             {
-              button_name: "Quote Follow-Up",
-              message_id: "225",
-              field_id: "f2236",
+              button_name: "Email RE Quote FU",
+              template_link_button: "Job Email",
+              message_id: "msg_quote_3",
+              field_id: "field_quote_3",
+            },
+            {
+              button_name: "Email BC Quote FU",
+              template_link_button: "Job Email",
+              message_id: "msg_quote_4",
+              field_id: "field_quote_4",
+            },
+            {
+              button_name: "Email O Quote FU",
+              template_link_button: "Job Email",
+              message_id: "msg_quote_5",
+              field_id: "field_quote_5",
+            },
+            {
+              button_name: "Email 2nd Quote FU",
+              template_link_button: "Job Email",
+              message_id: "msg_quote_6",
+              field_id: "field_quote_6",
             },
           ],
         },
-        "General Emails": {
+
+        invoice: {
+          label: "Invoice Emails",
           buttons: [
             {
-              button_name: "Welcome Email",
-              message_id: "323",
-              field_id: "f3234",
+              button_name: "Email Invoice",
+              template_link_button: "Account Email",
+              message_id: "msg_inv_1",
+              field_id: "field_inv_1",
             },
             {
-              button_name: "Feedback Request",
-              message_id: "324",
-              field_id: "f3235",
+              button_name: "Email Invoice FU",
+              template_link_button: "Account Email",
+              message_id: "msg_inv_2",
+              field_id: "field_inv_2",
             },
             {
-              button_name: "Thank You Email",
-              message_id: "325",
-              field_id: "f3236",
+              button_name: "Email RE INV FU",
+              template_link_button: "Account Email",
+              message_id: "msg_inv_3",
+              field_id: "field_inv_3",
             },
           ],
         },
       };
-      
+
       function fetchServicesCatalog() {
         return Promise.resolve(SERVICES_DATA);
+      }
+
+      function openTemplateLink(messageId) {
+        if (!messageId) return;
+        const url = `https://app.ontraport.com/#!/message/edit&id=${messageId}`;
+        window.open(url, "_blank");
       }
 
       const CALC_DEALS_QUERY = `
