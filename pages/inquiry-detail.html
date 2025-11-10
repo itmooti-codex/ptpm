@@ -542,7 +542,7 @@
             class="flex flex-col lg:flex-row gap-6 p-4 bg-white rounded-b-xl"
           >
             <!-- LEFT COLUMN -->
-            <section class="flex-1 flex flex-col gap-4 min-w-[550px]">
+            <section class="flex-1 flex flex-col gap-4 w-[400px]">
               <!-- toolbar -->
 
               <!-- Inquiry Details -->
@@ -1537,7 +1537,7 @@
           x-cloak
         >
           <div class="space-y-6">
-            <div class="rounded-xl border border-slate-200">
+            <div class="rounded-xl ">
               <div
                 class="flex flex-wrap items-center justify-between gap-3 bg-[#f3edff] px-4 py-3"
               >
@@ -1570,19 +1570,34 @@
               <div class="space-y-4 px-5 py-5">
                 <div class="space-y-1">
                   <label class="text-xs font-semibold uppercase text-slate-500"
-                    >Send Quote To:</label
+                    >Send Quote To:<span class="text-rose-600">*</span></label
                   >
-                  <div class="relative">
-                    <div
-                      class="flex items-center justify-between rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800"
+                  <div class="relative" @keydown.escape.window="closeRecipientDropdown">
+                    <button
+                      type="button"
+                      class="flex w-full items-center justify-between rounded-lg border border-slate-300 bg-white px-3 py-2 text-left text-sm text-slate-800 transition focus:outline-none focus:ring-2 focus:ring-sky-500"
+                      @click="toggleRecipientDropdown"
+                      :aria-expanded="recipientDropdownOpen"
                     >
-                      <span x-text="quoteRecipients"></span>
+                      <div class="flex flex-wrap gap-1">
+                        <span
+                          x-show="selectedRecipientIds.length"
+                          class="text-slate-800"
+                          x-text="quoteRecipients"
+                        ></span>
+                        <span
+                          x-show="!selectedRecipientIds.length"
+                          class="text-slate-400"
+                          >Select recipients or type to search...</span
+                        >
+                      </div>
                       <svg
                         width="14"
                         height="14"
                         viewBox="0 0 14 14"
                         fill="none"
-                        class="text-slate-400"
+                        class="text-slate-400 transition"
+                        :class="recipientDropdownOpen ? 'rotate-180' : ''"
                       >
                         <path
                           d="M3.5 5.25L7 8.75L10.5 5.25"
@@ -1592,10 +1607,127 @@
                           stroke-linejoin="round"
                         />
                       </svg>
+                    </button>
+                    <div
+                      x-show="recipientDropdownOpen"
+                      x-cloak
+                      x-transition
+                      @click.outside="closeRecipientDropdown"
+                      class="absolute z-20 mt-1 w-full rounded-lg border border-slate-200 bg-white shadow-xl"
+                    >
+                      <div class="border-b border-slate-100 px-3 py-2">
+                        <input
+                          type="text"
+                          x-model="recipientSearchTerm"
+                          class="w-full rounded-md border border-slate-200 px-3 py-1.5 text-sm text-slate-800 focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                          placeholder="Search recipients"
+                          @keydown.stop
+                        />
+                      </div>
+                      <div class="max-h-72 divide-y divide-slate-100 overflow-y-auto">
+                        <template x-if="filteredRecipients.length">
+                          <div>
+                            <template
+                              x-for="recipient in filteredRecipients"
+                              :key="recipient.id"
+                            >
+                              <label
+                                class="flex cursor-pointer items-start gap-3 px-4 py-3 hover:bg-slate-50"
+                              >
+                                <input
+                                  type="checkbox"
+                                  class="mt-1 h-4 w-4 rounded border-slate-300 text-sky-600 focus:ring-sky-500"
+                                  :value="recipient.id"
+                                  :checked="isRecipientSelected(recipient.id)"
+                                  @change="toggleRecipient(recipient.id)"
+                                />
+                                <div class="flex-1">
+                                  <div class="flex items-center gap-2">
+                                    <svg
+                                      width="14"
+                                      height="14"
+                                      viewBox="0 0 14 14"
+                                      fill="none"
+                                      class="text-amber-400"
+                                      x-show="recipient.isImportant"
+                                    >
+                                      <path
+                                        d="M6.08085 2.1472C6.47693 1.22242 7.52309 1.22242 7.91917 2.1472L8.74416 4.07619C8.812 4.23845 8.92155 4.3787 9.06056 4.48049C9.19956 4.58228 9.36294 4.64154 9.5329 4.65127L11.6036 4.7729C12.6073 4.8308 13.0172 6.08494 12.2481 6.71173L10.6271 8.02795C10.492 8.13925 10.387 8.28539 10.3228 8.45279C10.2585 8.62019 10.2371 8.80326 10.2607 8.98269L10.5315 11.034C10.6708 12.0361 9.59277 12.7615 8.70702 12.2903L6.88459 11.3346C6.72812 11.252 6.56154 11.2091 6.39233 11.2091C6.22312 11.2091 6.05653 11.252 5.90006 11.3346L4.07764 12.2894C3.19349 12.7607 2.11599 12.0354 2.25486 11.0337L2.52561 8.98269C2.54923 8.80326 2.52779 8.62019 2.46355 8.45279C2.39932 8.28539 2.2943 8.13925 2.1593 8.02795L0.538292 6.71173C-0.23079 6.08494 0.178603 4.8308 1.18351 4.7729L3.2542 4.65127C3.4242 4.64154 3.58757 4.58228 3.72658 4.48049C3.86559 4.3787 3.97513 4.23845 4.04297 4.07619L4.86796 2.1472H6.08085Z"
+                                        fill="currentColor"
+                                      />
+                                    </svg>
+                                    <span
+                                      class="text-sm font-semibold text-slate-900"
+                                      x-text="recipient.displayName"
+                                    ></span>
+                                    <span
+                                      class="text-xs font-medium text-slate-500"
+                                      x-text="recipient.role"
+                                    ></span>
+                                  </div>
+                                  <div
+                                    class="text-xs text-slate-500"
+                                    x-text="recipient.phone"
+                                  ></div>
+                                  <div
+                                    class="text-xs text-slate-500"
+                                    x-text="recipient.email"
+                                  ></div>
+                                </div>
+                              </label>
+                            </template>
+                          </div>
+                        </template>
+                        <p
+                          class="px-4 py-3 text-sm text-slate-500"
+                          x-show="!filteredRecipients.length"
+                        >
+                          No contacts found.
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        class="flex w-full items-center justify-center gap-1 border-t border-slate-100 px-4 py-2 text-sm font-medium text-sky-700 hover:bg-slate-50"
+                        @click="handleAddContact"
+                      >
+                        <svg
+                          width="14"
+                          height="14"
+                          viewBox="0 0 14 14"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M7.89744 2.06406C7.89744 1.56767 7.4964 1.16663 7 1.16663C6.50361 1.16663 6.10257 1.56767 6.10257 2.06406V6.10252H2.06411C1.56771 6.10252 1.16667 6.50356 1.16667 6.99996C1.16667 7.49635 1.56771 7.89739 2.06411 7.89739H6.10257V11.9359C6.10257 12.4323 6.50361 12.8333 7 12.8333C7.4964 12.8333 7.89744 12.4323 7.89744 11.9359V7.89739H11.9359C12.4323 7.89739 12.8333 7.49635 12.8333 6.99996C12.8333 6.50356 12.4323 6.10252 11.9359 6.10252H7.89744V2.06406Z"
+                            fill="currentColor"
+                          />
+                        </svg>
+                        <span>Add New Contact</span>
+                      </button>
                     </div>
-                    <span class="mt-1 block text-xs text-rose-600"
+                    <span
+                      class="mt-1 block text-xs text-rose-600"
+                      x-show="!selectedRecipientIds.length"
                       >Required</span
                     >
+                  </div>
+                </div>
+                <div class="hidden" x-ref="recipientSource" aria-hidden="true">
+                  <div
+                    data-dynamic-list="fVMO6Q_mHpunK_535VPVl"
+                    data-entity="peterpm"
+                    data-entity-key="1rBR-jpR3yE3HE1VhFD0j"
+                    data-var-propertyid="174"
+                  >
+                    <div
+                      data-recipient-option
+                      data-recipient-id="[ContactEmail]"
+                      data-recipient-name="[Contact_First_Name] [Contact_Last_Name]"
+                      data-recipient-role="[Role]"
+                      data-recipient-phone="[Contact_SMS_Number]"
+                      data-recipient-email="[ContactEmail]"
+                      data-recipient-important="[Role]"
+                    ></div>
                   </div>
                 </div>
                 <div class="grid gap-3 text-sm text-slate-700">
@@ -1604,12 +1736,12 @@
                     <a
                       href="#"
                       class="font-semibold text-sky-700"
-                      x-text="quoteNumber"
+                      x-text="formatQuoteNumberDisplay(quoteNumber)"
                     ></a>
                     <span
                       class="rounded-full bg-violet-100 px-2 py-0.5 text-xs font-semibold text-violet-700"
-                      >New Quote</span
-                    >
+                      x-text="quoteStatus"
+                    ></span>
                   </div>
                   <div class="flex items-center gap-2">
                     <span class="text-slate-500">Quote Date:</span>
@@ -3411,7 +3543,12 @@
         query calcJobs($inquiry_record_id: PeterpmDealID!) {
           calcJobs(query: [{ where: { inquiry_record_id: $inquiry_record_id } }]) {
             Inquiry_Record_ID: field(arg: ["Inquiry_Record", "id"])
-             ID: field(arg: ["id"])
+            ID: field(arg: ["id"])
+            Unique_ID: field(arg: ["unique_id"])
+            Quote_Date: field(arg: ["quote_date"])
+              @dateFormat(value: "DD-MM-YYYY")
+            Quote_Total: field(arg: ["quote_total"])
+            Quote_Status: field(arg: ["quote_status"]) 
           }
         }
       `;
@@ -3923,10 +4060,17 @@
 
         Alpine.data("quotePanel", () => ({
           hasQuote: false,
-          quoteRecipients: "Devon Lane (Manager), Ron Potter (Owner)",
-          quoteNumber: "#Q6669",
-          quoteDate: "15 May, 2020",
-          quotePrice: "$0.00",
+          quoteRecipients: "Select recipients or type to search...",
+          quoteNumber: "",
+          quoteDate: "",
+          quotePrice: "",
+          quoteStatus: "",
+          availableRecipients: [],
+          selectedRecipientIds: [],
+          recipientDropdownOpen: false,
+          recipientSearchTerm: "",
+          recipientsLoaded: false,
+          recipientLoadPromise: null,
           boundQuoteListener: null,
           initCheckRan: false,
           init() {
@@ -3934,6 +4078,7 @@
               this.handleQuoteCreated(event?.detail || {});
             window.addEventListener("quote:created", this.boundQuoteListener);
             this.checkExistingQuote();
+            this.$nextTick(() => this.ensureRecipientsLoaded());
           },
 
           destroy() {
@@ -3947,10 +4092,200 @@
           },
           handleQuoteCreated(detail = {}) {
             this.hasQuote = true;
-            if (detail.quoteNumber) this.quoteNumber = detail.quoteNumber;
-            if (detail.quoteDate) this.quoteDate = detail.quoteDate;
-            if (detail.quotePrice) this.quotePrice = detail.quotePrice;
+            const uniqueId =
+              detail.uniqueId ||
+              detail.Unique_ID ||
+              detail.unique_id ||
+              detail.ID ||
+              detail.id;
+            if (detail.quoteNumber || uniqueId) {
+              this.quoteNumber = detail.quoteNumber || uniqueId;
+            }
+            if (detail.quoteDate || detail.quote_date) {
+              this.quoteDate = detail.quoteDate || detail.quote_date || "";
+            }
+            if (
+              detail.quotePrice ||
+              detail.quoteTotal ||
+              detail.quote_total !== undefined
+            ) {
+              const raw =
+                detail.quotePrice ??
+                detail.quoteTotal ??
+                detail.quote_total ??
+                "";
+              this.quotePrice = this.formatQuoteTotal(raw);
+            }
+            if (detail.quoteStatus || detail.quote_status) {
+              this.quoteStatus = this.formatQuoteStatus(
+                detail.quoteStatus || detail.quote_status
+              );
+            }
             if (detail.recipients) this.quoteRecipients = detail.recipients;
+            this.$nextTick(() => this.ensureRecipientsLoaded());
+          },
+          get filteredRecipients() {
+            const term = this.recipientSearchTerm.trim().toLowerCase();
+            if (!term) return this.availableRecipients;
+            return this.availableRecipients.filter((recipient) => {
+              const haystack = [
+                recipient.displayName,
+                recipient.role,
+                recipient.email,
+                recipient.phone,
+              ]
+                .filter(Boolean)
+                .join(" ")
+                .toLowerCase();
+              return haystack.includes(term);
+            });
+          },
+          toggleRecipientDropdown() {
+            this.recipientDropdownOpen = !this.recipientDropdownOpen;
+            if (this.recipientDropdownOpen) {
+              this.$nextTick(() => this.ensureRecipientsLoaded());
+            }
+          },
+          closeRecipientDropdown() {
+            this.recipientDropdownOpen = false;
+            this.recipientSearchTerm = "";
+          },
+          toggleRecipient(id) {
+            const key = this.sanitizeRecipientId(id);
+            if (!key) return;
+            if (this.isRecipientSelected(key)) {
+              this.selectedRecipientIds = this.selectedRecipientIds.filter(
+                (value) => value !== key
+              );
+            } else {
+              this.selectedRecipientIds = [...this.selectedRecipientIds, key];
+            }
+            this.refreshRecipientSummary();
+          },
+          isRecipientSelected(id) {
+            const key = this.sanitizeRecipientId(id);
+            if (!key) return false;
+            return this.selectedRecipientIds.includes(key);
+          },
+          refreshRecipientSummary() {
+            const names = this.availableRecipients
+              .filter((recipient) =>
+                this.selectedRecipientIds.includes(recipient.id)
+              )
+              .map((recipient) => recipient.displayName)
+              .filter(Boolean);
+            this.quoteRecipients = names.length
+              ? names.join(", ")
+              : "Select recipients or type to search...";
+          },
+          handleAddContact() {
+            window.dispatchEvent(
+              new CustomEvent("property-contacts:add-requested")
+            );
+            this.closeRecipientDropdown();
+          },
+          ensureRecipientsLoaded() {
+            if (this.recipientsLoaded) return Promise.resolve();
+            if (!this.recipientLoadPromise) {
+              this.recipientLoadPromise = new Promise((resolve) => {
+                const attemptLoad = (attempt = 0) => {
+                  if (this.loadRecipientsFromSource() || attempt >= 10) {
+                    resolve();
+                    this.recipientLoadPromise = null;
+                    return;
+                  }
+                  setTimeout(() => attemptLoad(attempt + 1), 200);
+                };
+                attemptLoad();
+              });
+            }
+            return this.recipientLoadPromise;
+          },
+          loadRecipientsFromSource() {
+            const source = this.$refs.recipientSource;
+            if (!source) return false;
+            const nodes = source.querySelectorAll("[data-recipient-option]");
+            if (!nodes.length) return false;
+            this.availableRecipients = Array.from(nodes)
+              .map((node) => this.parseRecipientNode(node))
+              .filter(Boolean);
+            this.recipientsLoaded = this.availableRecipients.length > 0;
+            if (this.recipientsLoaded && !this.selectedRecipientIds.length) {
+              const important = this.availableRecipients.filter(
+                (recipient) => recipient.isImportant
+              );
+              const defaults = (important.length
+                ? important
+                : this.availableRecipients.slice(0, 1)
+              ).map((recipient) => recipient.id);
+              this.selectedRecipientIds = defaults;
+              this.refreshRecipientSummary();
+            } else if (this.recipientsLoaded) {
+              this.refreshRecipientSummary();
+            }
+            return this.recipientsLoaded;
+          },
+          parseRecipientNode(node) {
+            if (!node) return null;
+            const id =
+              this.sanitizeRecipientId(node.dataset.recipientId) ||
+              this.sanitizeRecipientId(node.dataset.recipientEmail) ||
+              this.sanitizeRecipientId(node.dataset.recipientPhone) ||
+              this.sanitizeRecipientId(node.dataset.recipientName);
+            if (!id) return null;
+            const displayName =
+              this.normalizeRecipientValue(node.dataset.recipientName) ||
+              "Unnamed Contact";
+            const role = this.normalizeRecipientValue(
+              node.dataset.recipientRole
+            );
+            const phone = this.normalizeRecipientValue(
+              node.dataset.recipientPhone
+            );
+            const email = this.normalizeRecipientValue(
+              node.dataset.recipientEmail
+            );
+            const importantHint = this.normalizeRecipientValue(
+              node.dataset.recipientImportant
+            );
+            const isImportant =
+              /owner|manager/i.test(role || "") ||
+              /primary|preferred|yes|true|1/i.test(importantHint || "");
+            return {
+              id,
+              displayName,
+              role: role || "",
+              phone,
+              email,
+              isImportant,
+            };
+          },
+          normalizeRecipientValue(value) {
+            if (value == null) return "";
+            const trimmed = String(value).trim();
+            if (
+              !trimmed ||
+              trimmed === "-" ||
+              trimmed === "—" ||
+              (trimmed.startsWith("[") && trimmed.endsWith("]"))
+            ) {
+              return "";
+            }
+            return trimmed;
+          },
+          sanitizeRecipientId(value) {
+            if (value == null) return "";
+            const trimmed = String(value).trim();
+            if (
+              !trimmed ||
+              trimmed === "-" ||
+              trimmed === "—" ||
+              trimmed.includes("[") ||
+              trimmed.includes("]")
+            ) {
+              return "";
+            }
+            return trimmed.toLowerCase();
           },
 
           async checkExistingQuote() {
@@ -3960,12 +4295,9 @@
               const data = await graphqlRequest(CALC_JOBS_QUERY, {
                 inquiry_record_id: INQUIRY_RECORD_ID,
               });
-              const recordId = this.extractJobId(data);
-              if (recordId) {
-                this.handleQuoteCreated({
-                  quoteNumber: this.formatQuoteNumber(recordId),
-                  quoteDate: this.formatQuoteDate(),
-                });
+              const record = this.extractJobRecord(data);
+              if (record) {
+                this.handleQuoteCreated(this.mapQuoteRecord(record));
               } else {
                 this.hasQuote = false;
               }
@@ -3974,20 +4306,34 @@
               this.hasQuote = false;
             }
           },
-          extractJobId(payload) {
+          extractJobRecord(payload) {
             if (!payload) return null;
             const calcJobs = this.normalizeCalcJobs(payload.calcJobs);
             const candidate =
               calcJobs?.[0] ?? payload.calcJobs ?? payload?.createJob;
             if (!candidate) return null;
-            return (
-              candidate.ID ??
-              candidate.Inquiry_Record_ID ??
-              candidate.inquiry_record_id ??
-              candidate?.Inquiry_Record?.id ??
-              candidate.id ??
-              null
-            );
+            return candidate;
+          },
+          mapQuoteRecord(record = {}) {
+            const uniqueId =
+              record.Unique_ID ||
+              record.unique_id ||
+              record.UniqueId ||
+              record.UniqueID ||
+              record.ID ||
+              record.id ||
+              "";
+            return {
+              uniqueId,
+              quoteNumber: uniqueId || "",
+              quoteDate: record.Quote_Date || record.quote_date || "",
+              quotePrice: this.formatQuoteTotal(
+                record.Quote_Total ?? record.quote_total
+              ),
+              quoteStatus: this.formatQuoteStatus(
+                record.Quote_Status || record.quote_status
+              ),
+            };
           },
           normalizeCalcJobs(value) {
             if (Array.isArray(value)) return value;
@@ -3995,17 +4341,36 @@
             if (Array.isArray(value?.nodes)) return value.nodes;
             return null;
           },
-          formatQuoteNumber(id) {
-            if (!id) return this.quoteNumber;
-            const numeric = String(id).replace(/\D/g, "") || String(id);
-            return `#Q${numeric.padStart(4, "0")}`;
+          formatQuoteNumberDisplay(value) {
+            if (!value) return "#";
+            return String(value).startsWith("#") ? value : `#${value}`;
           },
-          formatQuoteDate(date = new Date()) {
-            return date.toLocaleDateString("en-US", {
-              day: "2-digit",
-              month: "short",
-              year: "numeric",
-            });
+          formatQuoteTotal(value) {
+            if (value == null || value === "") return this.quotePrice;
+            const numeric =
+              typeof value === "number"
+                ? value
+                : parseFloat(String(value).replace(/[^0-9.-]/g, ""));
+            if (Number.isFinite(numeric)) {
+              return numeric.toLocaleString("en-US", {
+                style: "currency",
+                currency: "USD",
+                minimumFractionDigits: 2,
+              });
+            }
+            return String(value);
+          },
+          formatQuoteStatus(status) {
+            if (!status) return this.quoteStatus || "New Quote";
+            const words = String(status)
+              .trim()
+              .split(/[\s_]+/)
+              .filter(Boolean)
+              .map(
+                (word) =>
+                  word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+              );
+            return words.length ? words.join(" ") : this.quoteStatus;
           },
         }));
 
