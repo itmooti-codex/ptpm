@@ -108,15 +108,16 @@
                     <div
                       data-state="Default"
                       class="self-stretch px-6 py-4 bg-white inline-flex justify-start items-start gap-2 cursor-pointer hover:bg-[#E3EFFF]"
+                      @click="updateJobEmailCheckbox(button.field_id)"
                     >
                       <div class="justify-start">
-                        <!-- Main email action label (API later) -->
+                        <!-- main action: runs updateJob mutation -->
                         <span
                           class="text-slate-500 text-sm font-medium font-['Inter'] leading-4"
                           x-text="button.button_name"
                         ></span>
 
-                        <!-- Template link (opens Ontraport message in new tab) -->
+                        <!-- template link: opens Ontraport in new tab -->
                         <span
                           class="text-blue-700 text-sm font-medium font-['Inter'] leading-4 cursor-pointer underline"
                           x-text="'(' + button.template_link_button + ')'"
@@ -178,15 +179,16 @@
                     <div
                       data-state="Default"
                       class="self-stretch px-6 py-4 bg-white inline-flex justify-start items-start gap-2 cursor-pointer hover:bg-[#E3EFFF]"
+                      @click="updateJobEmailCheckbox(button.field_id)"
                     >
                       <div class="justify-start">
-                        <!-- Main email action label (API later) -->
+                        <!-- main action: runs updateJob mutation -->
                         <span
                           class="text-slate-500 text-sm font-medium font-['Inter'] leading-4"
                           x-text="button.button_name"
                         ></span>
 
-                        <!-- Template link (opens Ontraport message in new tab) -->
+                        <!-- template link: opens Ontraport in new tab -->
                         <span
                           class="text-blue-700 text-sm font-medium font-['Inter'] leading-4 cursor-pointer underline"
                           x-text="'(' + button.template_link_button + ')'"
@@ -249,15 +251,16 @@
                     <div
                       data-state="Default"
                       class="self-stretch px-6 py-4 bg-white inline-flex justify-start items-start gap-2 cursor-pointer hover:bg-[#E3EFFF]"
+                      @click="updateJobEmailCheckbox(button.field_id)"
                     >
                       <div class="justify-start">
-                        <!-- Main email action label (API later) -->
+                        <!-- main action: runs updateJob mutation -->
                         <span
                           class="text-slate-500 text-sm font-medium font-['Inter'] leading-4"
                           x-text="button.button_name"
                         ></span>
 
-                        <!-- Template link (opens Ontraport message in new tab) -->
+                        <!-- template link: opens Ontraport in new tab -->
                         <span
                           class="text-blue-700 text-sm font-medium font-['Inter'] leading-4 cursor-pointer underline"
                           x-text="'(' + button.template_link_button + ')'"
@@ -4514,8 +4517,8 @@
             {
               button_name: "Email Customer",
               template_link_button: "Job Email",
-              message_id: "msg_gen_1",
-              field_id: "field_gen_1",
+              message_id: "35",
+              field_id: "email_customer_job_email",
             },
             {
               button_name: "Email Tenant",
@@ -4607,6 +4610,36 @@
         if (!messageId) return;
         const url = `https://app.ontraport.com/#!/message/edit&id=${messageId}`;
         window.open(url, "_blank");
+      }
+
+      async function updateJobEmailCheckbox(fieldId) {
+        if (!fieldId) return;
+
+        const mutation = `
+      mutation updateJob($id: PeterpmJobID!, $payload: JobUpdateInput = null) {
+        updateJob(
+          query: [{ where: { id: $id } }]
+          payload: $payload
+        ) {
+          ${fieldId}
+        }
+      }
+    `;
+
+        const variables = {
+          id: JOB_ID,
+          payload: {
+            [fieldId]: true, // checkbox field set to true
+          },
+        };
+
+        try {
+          await graphqlRequest(mutation, variables);
+          // optional: toast or console log
+          // console.log(\`Updated job field \${fieldId} to true\`);
+        } catch (error) {
+          console.error("Failed to update job email checkbox:", error);
+        }
       }
 
       const CALC_DEALS_QUERY = `
