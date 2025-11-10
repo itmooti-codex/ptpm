@@ -1,3 +1,4 @@
+import { contactFields } from "../models/new-enquiry.js";
 export class NewEnquiryController {
   constructor(model, view) {
     this.model = model;
@@ -38,6 +39,32 @@ export class NewEnquiryController {
       { value: 727, text: "On roof" },
       { value: 726, text: "Underneath House" },
       { value: 725, text: "Under Solar Panels" },
+    ];
+
+    this.times = [
+      { value: "747", text: "Dawn" },
+      { value: "746", text: "Dusk" },
+      { value: "745", text: "Dusk & Dawn" },
+      { value: "744", text: "During Day" },
+      { value: "743", text: "Middle of night" },
+      { value: "742", text: "Night" },
+      { value: "741", text: "Early morning" },
+      { value: "740", text: "Evening" },
+      { value: "739", text: "1-2 am" },
+      { value: "738", text: "3-4 am" },
+      { value: "737", text: "7 - 8 pm" },
+      { value: "736", text: "7.30-10 pm" },
+    ];
+
+    this.stateOptions = [
+      { value: "NSW", displayValue: "New South Wales" },
+      { value: "QLD", displayValue: "Queensland" },
+      { value: "VIC", displayValue: "Victoria" },
+      { value: "TAS", displayValue: "Tasmania" },
+      { value: "SA", displayValue: "South Australia" },
+      { value: "ACT", displayValue: "Australian Capital Territory" },
+      { value: "NT", displayValue: "Northern Territory" },
+      { value: "WA", displayValue: "Western Australia" },
     ];
 
     this.inquiryConfigs = [
@@ -98,6 +125,21 @@ export class NewEnquiryController {
         ],
       },
     ];
+
+    this.inputContactPopupFields = [
+      "first_name",
+      "last_name",
+      "email",
+      "sms_number",
+      "office_phone",
+    ];
+
+    this.renderDropdownForStates();
+    this.onContactFieldChanges();
+    this.onAddAffiliationButtonClicked();
+    this.onAddPropertyContactButtonClicked();
+    this.onAddContactSaveButtonClicked();
+    this.onSubmitButtonClicked();
   }
 
   init() {
@@ -122,12 +164,15 @@ export class NewEnquiryController {
       "location-card"
     );
 
+    this.#renderDropdownOptionsForTab(this.times, "times-list", "times-card");
+
     flatpickr(".date-picker", {
       dateFormat: "d/m/Y",
       allowInput: true,
     });
 
     this.createInquiryDetailOption();
+    this.showHideAddAddressModal();
   }
 
   async #loadContacts() {
@@ -208,6 +253,7 @@ export class NewEnquiryController {
     this.view.showRelatedLoading();
     try {
       const related = await this.model.fetchRelated(normalized);
+      this.view.createPropertyList(related.properties || []);
       if (this.relatedRequestId !== requestId) return;
       this.view.renderRelated(related);
     } catch (error) {
@@ -300,12 +346,19 @@ export class NewEnquiryController {
         "noise-all",
         'input[type="checkbox"]:not(#noise-all)'
       );
-    } else {
+    } else if (listId == "location-list") {
       this.#initDropdown(
         "location-btn",
         "location-card",
         "location-all",
         'input[type="checkbox"]:not(#location-all)'
+      );
+    } else if (listId == "times-list") {
+      this.#initDropdown(
+        "times-btn",
+        "times-card",
+        "times-all",
+        'input[type="checkbox"]:not(#times-all)'
       );
     }
   }
@@ -360,6 +413,83 @@ export class NewEnquiryController {
   }
 
   createInquiryDetailOption() {
-    this.view.createInquiryOptions(this.inquiryConfigs);
+    this.view.createOptionsForSelectbox(this.inquiryConfigs);
+  }
+
+  showHideAddAddressModal() {
+    const element = document.querySelector(
+      "[data-contact-id='add-new-contact']"
+    );
+
+    element.addEventListener("click", () => {
+      document.querySelector("[data-search-panel]").classList.toggle("hidden");
+      this.view.toggleModal("addressDetailsModalWrapper");
+    });
+  }
+
+  renderDropdownForStates() {
+    this.view.renderDropdownOptionsForStates(this.stateOptions);
+  }
+
+  onContactFieldChanges() {
+    this.view.onContactFieldChanges(this.inputContactPopupFields);
+  }
+
+  onAddAffiliationButtonClicked() {
+    let addContactBtn = document.getElementById("add-contact-btn");
+    addContactBtn.addEventListener("click", () => {
+      // Reset modal fields before opening (preserve search input)
+      if (typeof this.view.resetAffiliationModal === "function") {
+        this.view.resetAffiliationModal({ preserveSearch: true });
+      } else {
+        this.view.affiliationId = null;
+      }
+      const saveBtn = document.getElementById("pcSaveBtn");
+      if (saveBtn) saveBtn.textContent = "Save Contact";
+      this.view.toggleModal("propertyContactModalWrapper");
+      const contacts = this.model.getContacts();
+      if (typeof this.view.setAffiliationContacts === "function") {
+        this.view.setAffiliationContacts(contacts);
+      }
+    });
+  }
+
+  onAddPropertyContactButtonClicked() {
+    let element = document.querySelector(
+      "[data-contact-id='add-new-property-contact']"
+    );
+
+    element.addEventListener("click", () => {
+      this.view.toggleModal("addressDetailsModalWrapper");
+    });
+  }
+
+  onAddContactSaveButtonClicked() {
+    let saveBtn = document.getElementById("updateAddressDetailsBtn");
+    saveBtn.addEventListener("click", () => {
+      let elements = document.querySelectorAll(
+        "#addressDetailsModalWrapper [data-contact-id]"
+      );
+      this.view.getValuesFromContactDetailModal(elements);
+    });
+  }
+
+  onSubmitButtonClicked() {
+    let submitBtn = document.getElementById("submit-btn");
+    let dealsObj = {};
+    submitBtn.addEventListener("click", () => {
+      let inquiryValues = this.view.getValuesFromFields(
+        "[data-inquiry-id]",
+        "data-inquiry-id"
+      );
+      let feedbackValues = this.view.getValuesFromFields(
+        "[data-feedback-id]",
+        "data-feedback-id"
+      );
+
+      Object.assign(dealsObj, inquiryValues, feedbackValues);
+      this.model.createNewInquiry(dealsObj);
+      return;
+    });
   }
 }

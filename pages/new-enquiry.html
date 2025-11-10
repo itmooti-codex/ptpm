@@ -70,6 +70,7 @@
               Save
             </button>
             <button
+            id="submit-btn"
               type="button"
               class="inline-flex items-center gap-2 rounded border border-white bg-white px-4 py-3 text-sky-900 transition hover:bg-slate-100"
             >
@@ -97,7 +98,7 @@
 
       <!-- Main Form Section -->
       <section class="flex-1 px-6 py-10">
-        <form class="flex w-full gap-6">
+        <div class="flex w-full gap-6">
           <!-- Contact Details -->
           <div
             class="grow-[1] space-y-2 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm"
@@ -185,7 +186,7 @@
                   </button>
 
                   <div
-                    class="absolute left-0 right-0 top-full z-20 mt-2 hidden overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg"
+                    class="absolute left-0 right-0 top-full z-[999] mt-2 hidden overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg"
                     data-search-panel
                   >
                     <ul
@@ -223,6 +224,7 @@
                 >
                 <input
                   type="text"
+                  data-contact-field="role"
                   placeholder="Resident, Owner, Property Manager..."
                   class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100"
                 />
@@ -242,7 +244,7 @@
                   <input
                     type="text"
                     data-contact-field="first_name"
-                    data-contact-id="first-name"
+                    data-contact-id="first_name"
                     class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100"
                   />
                 </div>
@@ -253,7 +255,7 @@
                   <input
                     type="text"
                     data-contact-field="last_name"
-                    data-contact-id="last-name"
+                    data-contact-id="last_name"
                     class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100"
                   />
                 </div>
@@ -278,7 +280,7 @@
                   <input
                     type="tel"
                     data-contact-field="sms_number"
-                    data-contact-id="sms-number"
+                    data-contact-id="sms_number"
                     class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100"
                   />
                 </div>
@@ -291,7 +293,7 @@
                 <input
                   type="tel"
                   data-contact-field="office_phone"
-                  data-contact-id="office-phone"
+                  data-contact-id="office_phone"
                   class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100"
                 />
               </div>
@@ -332,29 +334,6 @@
                 </div>
               </div>
 
-              <div class="mt-6 hidden" id="contact-add-new-footer">
-                <button
-                  type="button"
-                  class="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-3 text-sm font-semibold text-sky-900 hover:bg-slate-50"
-                  data-contact-save
-                  data-contact-id="save-new-contact"
-                  data-base-label="Add New Contact"
-                  data-loading-label="Adding..."
-                >
-                  <span
-                    class="inline-flex h-5 w-5 items-center justify-center rounded-full border border-sky-900 text-sky-900"
-                    data-contact-save-icon
-                    data-contact-id="save-new-contact-icon"
-                  >
-                    +
-                  </span>
-                  <span
-                    data-contact-save-label
-                    data-contact-id="save-new-contact-label"
-                    >Add New Contact</span
-                  >
-                </button>
-              </div>
             </div>
 
             <div
@@ -437,13 +416,13 @@
                 <div class="inline-flex justify-start items-center gap-[3px]">
                   <div
                     data-state="off"
-                    class="w-5 h-5 relative overflow-hidden"
+                    class="w-5 h-5 relative"
                   >
                   <input type="checkbox" id="same-as-contact" class="accent-[#003882] h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-200">
                 </input>
                   </div>
                   <div
-                    class="justify-start text-slate-500 text-sm font-medium font-['Inter'] leading-4"
+                    class="justify-start text-slate-500 text-sm font-medium leading-4"
                   >
                     Same as contact
                   </div>
@@ -451,17 +430,21 @@
               </header>
 
               <div class="space-y-4">
-                <div>
-                  <label class="block text-sm font-medium text-slate-600"
-                    >Property Search</label
-                  >
-
+                <div data-search-root="property" class="relative">
+                  <label class="block text-sm font-medium text-slate-600">Property Search</label>
                   <input
                     type="text"
                     placeholder="Search properties"
                     class="mt-2 w-full rounded-lg border border-slate-200 bg-white px-11 py-3 text-sm text-slate-700 placeholder:text-slate-400 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
-                    data-property-id="search-properties"
+                    data-search-input
                   />
+                  <div
+                    class="absolute left-0 right-0 top-full z-[999] mt-2 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg hidden"
+                    data-search-panel
+                  >
+                    <ul class="max-h-72 overflow-auto py-2" data-search-results></ul>
+                    <div data-search-footer></div>
+                  </div>
                 </div>
 
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -570,187 +553,192 @@
                     </span>
                   </div>
                 </div>
+
+                <div>
+                  <h3 class="mt-[70px] mb-9 text-sm font-semibold text-slate-800">
+                    Property Description
+                  </h3>
+                </div>
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div>
+                    <label class="block text-sm font-medium text-slate-600"
+                      >Property Type</label
+                    >
+                    <div class="relative mt-1">
+                      <select
+                        class="w-full appearance-none rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                        data-property-id="property-type"
+                      >
+                        <option value="" disabled selected hidden>
+                          Select None
+                        </option>
+                        <option value="Residential">Residential</option>
+                        <option value="Commercial">Commercial</option>
+                        <option value="Industrial">Industrial</option>
+                      </select>
+                      <span
+                        class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400"
+                      >
+                        <svg
+                          class="h-4 w-4"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <path d="M6 9l6 6 6-6" />
+                        </svg>
+                      </span>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-slate-600"
+                      >Building Type</label
+                    >
+                    <div class="relative mt-1">
+                      <select
+                        class="w-full appearance-none rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                        data-property-id="building-type"
+                      >
+                        <option value="" disabled selected hidden>
+                          Select None
+                        </option>
+                        <option value="House">House</option>
+                        <option value="Unit">Unit</option>
+                        <option value="Unit Block">Unit Block</option>
+                        <option value="Offices">Offices</option>
+                        <option value="Warehouse">Warehouse</option>
+                        <option value="Other">Other</option>
+                      </select>
+                      <span
+                        class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400"
+                      >
+                        <svg
+                          class="h-4 w-4"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <path d="M6 9l6 6 6-6" />
+                        </svg>
+                      </span>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-slate-600"
+                      >Foundation Type</label
+                    >
+                    <div class="relative mt-1">
+                      <select
+                        class="w-full appearance-none rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                        data-property-id="foundation-type"
+                      >
+                        <option value="" disabled selected hidden>
+                          Select None
+                        </option>
+                        <option value="Slab on Ground">Slab on Ground</option>
+                        <option value="Lowset">Lowset</option>
+                        <option value="Highset">Highset</option>
+                      </select>
+                      <span
+                        class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400"
+                      >
+                        <svg
+                          class="h-4 w-4"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <path d="M6 9l6 6 6-6" />
+                        </svg>
+                      </span>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-slate-600"
+                      >Building Features</label
+                    >
+                    <div class="relative mt-1">
+                      <select
+                        class="w-full appearance-none rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                        data-property-id="building-features"
+                      >
+                        <option>Select</option>
+                      </select>
+                      <span
+                        class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400"
+                      >
+                        <svg
+                          class="h-4 w-4"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="1.5"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        >
+                          <path d="M6 9l6 6 6-6" />
+                        </svg>
+                      </span>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-slate-600"
+                      >Storeys</label
+                    >
+                    <input
+                      type="number"
+                      value="1"
+                      data-property-id="stories"
+                      class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-slate-600"
+                      >Bedrooms</label
+                    >
+                    <input
+                      type="number"
+                      value="1"
+                      data-property-id="bedrooms"
+                      class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-slate-600"
+                      >Building Age</label
+                    >
+                    <input
+                      type="number"
+                      value="1"
+                      data-property-id="building-age"
+                      class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                    />
+                  </div>
+                  <label
+                    class="inline-flex items-center gap-2 text-sm text-slate-600"
+                  >
+                    <input
+                      type="checkbox"
+                      checked
+                      data-property-id="has-manhole"
+                      class="accent-[#003882] h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-200"
+                    />
+                    Manhole
+                  </label>
+                </div>
+
+                <div id="add-property-btn" class="float-right hidden px-4 py-3 rounded outline outline-1 outline-offset-[-1px] outline-sky-900 inline-flex justify-center items-center gap-2 overflow-hidden">
+                  <div class="justify-start text-sky-900 text-sm font-medium  leading-4">Add Property</div>
               </div>
-            </div>
-            <div class="rounded-2xl border border-slate-200 p-6 bg-white">
-              <h3 class="mb-4 text-sm font-semibold text-slate-800">
-                Property Description
-              </h3>
-              <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div>
-                  <label class="block text-sm font-medium text-slate-600"
-                    >Property Type</label
-                  >
-                  <div class="relative mt-1">
-                    <select
-                      class="w-full appearance-none rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
-                      data-property-id="property-type"
-                    >
-                      <option value="" disabled selected hidden>
-                        Select None
-                      </option>
-                      <option value="Residential">Residential</option>
-                      <option value="Commercial">Commercial</option>
-                      <option value="Industrial">Industrial</option>
-                    </select>
-                    <span
-                      class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400"
-                    >
-                      <svg
-                        class="h-4 w-4"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      >
-                        <path d="M6 9l6 6 6-6" />
-                      </svg>
-                    </span>
-                  </div>
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-slate-600"
-                    >Building Type</label
-                  >
-                  <div class="relative mt-1">
-                    <select
-                      class="w-full appearance-none rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
-                      data-property-id="building-type"
-                    >
-                      <option value="" disabled selected hidden>
-                        Select None
-                      </option>
-                      <option value="House">House</option>
-                      <option value="Unit">Unit</option>
-                      <option value="Unit Block">Unit Block</option>
-                      <option value="Offices">Offices</option>
-                      <option value="Warehouse">Warehouse</option>
-                      <option value="Other">Other</option>
-                    </select>
-                    <span
-                      class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400"
-                    >
-                      <svg
-                        class="h-4 w-4"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      >
-                        <path d="M6 9l6 6 6-6" />
-                      </svg>
-                    </span>
-                  </div>
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-slate-600"
-                    >Foundation Type</label
-                  >
-                  <div class="relative mt-1">
-                    <select
-                      class="w-full appearance-none rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
-                      data-property-id="foundation-type"
-                    >
-                      <option value="" disabled selected hidden>
-                        Select None
-                      </option>
-                      <option value="Slab on Ground">Slab on Ground</option>
-                      <option value="Lowset">Lowset</option>
-                      <option value="Highset">Highset</option>
-                    </select>
-                    <span
-                      class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400"
-                    >
-                      <svg
-                        class="h-4 w-4"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      >
-                        <path d="M6 9l6 6 6-6" />
-                      </svg>
-                    </span>
-                  </div>
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-slate-600"
-                    >Building Features</label
-                  >
-                  <div class="relative mt-1">
-                    <select
-                      class="w-full appearance-none rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
-                      data-property-id="building-features"
-                    >
-                      <option>Select</option>
-                    </select>
-                    <span
-                      class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400"
-                    >
-                      <svg
-                        class="h-4 w-4"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      >
-                        <path d="M6 9l6 6 6-6" />
-                      </svg>
-                    </span>
-                  </div>
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-slate-600"
-                    >Storeys</label
-                  >
-                  <input
-                    type="number"
-                    value="1"
-                    data-property-id="storeys"
-                    class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
-                  />
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-slate-600"
-                    >Bedrooms</label
-                  >
-                  <input
-                    type="number"
-                    value="1"
-                    data-property-id="bedrooms"
-                    class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
-                  />
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-slate-600"
-                    >Building Age</label
-                  >
-                  <input
-                    type="number"
-                    value="1"
-                    data-property-id="building-age"
-                    class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
-                  />
-                </div>
-                <label
-                  class="inline-flex items-center gap-2 text-sm text-slate-600"
-                >
-                  <input
-                    type="checkbox"
-                    checked
-                    data-property-id="has-manhole"
-                    class="accent-[#003882] h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-200"
-                  />
-                  Manhole
-                </label>
               </div>
             </div>
           </div>
@@ -766,17 +754,10 @@
                 >
                   Property Contacts
                 </div>
-                <div
-                  class="px-4 py-3 rounded outline outline-1 outline-offset-[-1px] outline-sky-900 inline-flex justify-center items-center gap-2 overflow-hidden"
-                >
-                  <div
-                    id="add-contact-btn"
-                    class="justify-start text-sky-900 text-sm font-medium font-sans leading-none"
-                    data-property-contact-id="add-contact"
-                  >
-                    Add Contact
-                  </div>
-                </div>
+                <button  id="add-contact-btn"
+                  class="hidden px-2 py-2 rounded outline outline-1 outline-offset-[-1px] outline-sky-900 inline-flex justify-center items-center gap-2 overflow-hidden"
+                >Add Affiliation
+                </button>
               </header>
 
               <div
@@ -1066,38 +1047,38 @@
                   Inquiry Detail
                 </div>
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <div>
+                  <div class="hidden">
                     <label class="block text-sm font-medium text-slate-600"
                       >Job Date</label
                     >
                     <div class="relative mt-1">
                       <input
                         id="job-date"
-                        data-inquiry-id="job-date"
+                        
                         type="date"
                         placeholder="dd-mm-yyyy"
                         class="date-picker w-full rounded-lg border border-slate-200 bg-white px-4 py-3 pr-10 text-sm text-slate-700 placeholder:text-slate-400 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
                       />
                     </div>
                   </div>
-                  <div>
+                  <div class="hidden">
                     <label class="block text-sm font-medium text-slate-600"
                       >Job Taken By</label
                     >
                     <input
                       id="job-taken-by"
-                      data-inquiry-id="job-taken-by"
+                      
                       type="text"
                       class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
                     />
                   </div>
-                  <div>
+                  <div class="hidden">
                     <label class="block text-sm font-medium text-slate-600"
                       >Entered By</label
                     >
                     <input
                       id="entered-by"
-                      data-inquiry-id="entered-by"
+                      
                       type="text"
                       class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
                     />
@@ -1138,7 +1119,7 @@
                     <div class="relative mt-1">
                       <select
                         id="inquiry-type"
-                        data-inquiry-id="inquiry-type"
+                        data-inquiry-id="type"
                         class="w-full appearance-none rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
                       >
                         <option>Select</option>
@@ -1167,7 +1148,7 @@
                     <div class="relative mt-1">
                       <select
                         id="service-inquiry"
-                        data-inquiry-id="service-inquiry"
+                        data-inquiry-id="service-name"
                         class="w-full appearance-none rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
                       >
                         <option>Select</option>
@@ -1198,7 +1179,7 @@
                     >
                     <textarea
                       id="help-text"
-                      data-inquiry-id="help-text"
+                      data-inquiry-id="how-can-we-help"
                       rows="3"
                       class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
                       placeholder="Enter Text..."
@@ -1210,7 +1191,7 @@
                     >
                     <textarea
                       id="recommendations"
-                      data-inquiry-id="recommendations"
+                      data-inquiry-id="admin-notes"
                       rows="3"
                       class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
                       placeholder="Enter Text..."
@@ -1224,7 +1205,7 @@
                       <div class="relative mt-1">
                         <select
                           id="referral-source"
-                          data-inquiry-id="referral-source"
+                          data-inquiry-id="how-did-you-hear"
                           class="w-full appearance-none rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
                         >
                           <option>Select</option>
@@ -1246,13 +1227,12 @@
                         </span>
                       </div>
                     </div>
-                    <div>
+                    <div class="hidden">
                       <label class="block text-sm font-medium text-slate-600"
                         >BCC</label
                       >
                       <input
                         id="bcc"
-                        data-inquiry-id="bcc"
                         type="text"
                         class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
                       />
@@ -1270,42 +1250,59 @@
                   Resident Feedback
                 </div>
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <div class="hidden">
-                    <label class="block text-sm font-medium text-slate-600"
-                      >Animal</label
+                  <div class="relative">
+                    <button
+                      id="noises-btn"
+                      type="button"
+                      class="flex w-full items-center justify-between rounded border border-slate-200 px-4 py-3 text-left text-sm font-medium transition"
                     >
-                    <div class="relative mt-1">
-                      <select
-                        class="w-full appearance-none rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
-                        data-feedback-id="animal"
+                      <span class="text-slate-500">Noises</span>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-4 w-4 text-slate-400 transition-transform"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
                       >
-                        <option>Select</option>
-                      </select>
-                      <span
-                        class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400"
+                        <path
+                          fill-rule="evenodd"
+                          d="M5.23 7.21a.75.75 0 011.06.02L10 11.21l3.71-3.98a.75.75 0 111.08 1.04l-4.25 4.56a.75.75 0 01-1.1 0L5.21 8.27a.75.75 0 01.02-1.06z"
+                          clip-rule="evenodd"
+                        />
+                      </svg>
+                    </button>
+
+                    <!-- Noise Dropdown Card -->
+                    <div
+                      id="noises-card"
+                      class="hidden absolute left-0 right-0 z-20 mt-1 w-full rounded border border-slate-200 bg-white shadow-xl p-2"
+                    >
+                      <ul
+                      data-feedback-id="noise-signs-options-as-text"
+                        id="noises-list"
+                        class="max-h-64 overflow-auto text-sm text-slate-700 space-y-1"
                       >
-                        <svg
-                          class="h-4 w-4"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        >
-                          <path d="M6 9l6 6 6-6" />
-                        </svg>
-                      </span>
+                        <li class="px-2 py-1 flex items-center gap-2">
+                          <input
+                            id="noise-all"
+                            type="checkbox"
+                            class="h-4 w-4 accent-[#003882]"
+                            data-skip="true"
+                          />
+                          <label for="noise-all">All</label>
+
+                          <!-- Add more items as needed -->
+                        </li>
+                      </ul>
                     </div>
                   </div>
-                  <div>
+                  
                     <div class="relative">
                       <button
                         id="noises-btn"
                         type="button"
                         class="flex w-full items-center justify-between rounded border border-slate-200 px-4 py-3 text-left text-sm font-medium transition"
                       >
-                        <span class="text-slate-500">Noises</span>
+                        <span class="text-slate-500">Animal</span>
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           class="h-4 w-4 text-slate-400 transition-transform"
@@ -1326,7 +1323,9 @@
                         class="hidden absolute left-0 right-0 z-20 mt-1 w-full rounded border border-slate-200 bg-white shadow-xl p-2"
                       >
                         <ul
+                        data-feedback-id="noises"
                           id="noises-list"
+                          data-same-as-contact="noise-signs-options-as-text"
                           class="max-h-64 overflow-auto text-sm text-slate-700 space-y-1"
                         >
                           <li class="px-2 py-1 flex items-center gap-2">
@@ -1341,6 +1340,52 @@
                           </li>
                         </ul>
                       </div>
+                    </div>
+                  
+
+                  <div class="relative">
+                    <button
+                      id="times-btn"
+                      
+                      type="button"
+                      class="flex w-full items-center justify-between rounded border border-slate-200 px-4 py-3 text-left text-sm font-medium transition"
+                    >
+                      <span class="text-slate-500">Times</span>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-4 w-4 text-slate-400 transition-transform"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          d="M5.23 7.21a.75.75 0 011.06.02L10 11.21l3.71-3.98a.75.75 0 111.08 1.04l-4.25 4.56a.75.75 0 01-1.1 0L5.21 8.27a.75.75 0 01.02-1.06z"
+                          clip-rule="evenodd"
+                        />
+                      </svg>
+                    </button>
+
+                    <!-- Noise Dropdown Card -->
+                    <div
+                      id="times-card"
+                      class="hidden absolute left-0 right-0 z-20 mt-1 w-full rounded border border-slate-200 bg-white shadow-xl p-2"
+                    >
+                      <ul
+                      data-feedback-id= "pest-active-times-options-as-text"
+                        id="times-list"
+                        class="max-h-64 overflow-auto text-sm text-slate-700 space-y-1"
+                      >
+                        <li class="px-2 py-1 flex items-center gap-2">
+                          <input
+                            id="times-all"
+                            type="checkbox"
+                            class="h-4 w-4 accent-[#003882]"
+                          />
+                          <label for="times-all">All</label>
+
+                          <!-- Add more items as needed -->
+                        </li>
+                      </ul>
                     </div>
                   </div>
                   <div class="relative">
@@ -1370,6 +1415,7 @@
                       class="hidden absolute left-0 right-0 z-20 mt-1 w-full rounded border border-slate-200 bg-white shadow-xl p-2"
                     >
                       <ul
+                      data-feedback-id= "pest-location-options-as-text"
                         id="location-list"
                         class="max-h-64 overflow-auto text-sm text-slate-700 space-y-1"
                       ></ul>
@@ -1382,18 +1428,18 @@
                     <input
                       type="number"
                       value="1"
-                      data-feedback-id="renovation"
+                      data-feedback-id="renovations"
                       class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
                     />
                   </div>
-                  <div>
+                  <div class="hidden">
                     <label class="block text-sm font-medium text-slate-600"
                       >Access</label
                     >
                     <input
                       type="number"
                       value="3"
-                      data-feedback-id="access"
+                     
                       class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
                     />
                   </div>
@@ -1408,7 +1454,7 @@
                       id="job-required-by"
                       type="date"
                       placeholder="dd-mm-yyyy"
-                      data-feedback-id="job-required-by"
+                      data-feedback-id="date-job-required-by"
                       class="date-picker w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 placeholder:text-slate-400 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
                     />
                   </div>
@@ -1513,7 +1559,7 @@
               </div>
             </div>
           </div>
-        </form>
+        </div>
       </section>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
