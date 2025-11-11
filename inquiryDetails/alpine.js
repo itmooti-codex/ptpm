@@ -2765,19 +2765,12 @@ document.addEventListener("alpine:init", () => {
     titleSuffix: "",
 
     form: {
-      taskType: "urgent_call",
       subject: "",
       assigneeId: null,
       assigneeName: "",
       dueDate: "", // store as YYYY-MM-DD (normalized)
       notes: "",
     },
-
-    taskTypeOptions: [
-      { value: "urgent_call", label: "Urgent Call" },
-      { value: "follow_up", label: "Follow Up" },
-      { value: "site_visit", label: "Site Visit" },
-    ],
 
     init() {
       // Open modal (optionally pass jobId + jobLabel)
@@ -2866,22 +2859,19 @@ document.addEventListener("alpine:init", () => {
         if (!jobId) throw new Error("Missing job ID");
 
         const payload = {
-          job_id: jobId,
-          task_type: this.form.taskType || null,
+          Job_id: jobId,
           subject: this.form.subject || null,
-          assignee_id: this.form.assigneeId || null,
-          assignee_name: this.form.assigneeName || null,
-          due_date: this.form.dueDate
+          assignee_id: 1,
+          date_due: this.form.dueDate
             ? this.convertDateToUnix(this.form.dueDate)
-            : null, // unix (seconds)
-          notes: this.form.notes || null,
-          notify: true,
+            : null,
+          details: this.form.notes || null,
         };
 
-        // Reuse your existing GraphQL helper & mutation
-        // Example shape; replace with your actual mutation key if different:
-        // await graphqlRequest(CREATE_TASK_MUTATION, { input: payload });
-        await createTaskForJob(payload); // <- call your existing wrapper
+        
+        await graphqlRequest(CREATE_JOB_TASK, {
+          payload,
+        });
 
         window.dispatchEvent(
           new CustomEvent("toast:show", {

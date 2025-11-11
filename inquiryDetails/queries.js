@@ -437,3 +437,15 @@ const DELETE_JOB_QUERY = `
     }
   }
 `;
+
+const CREATE_JOB_TASK = `
+  mutation createTask($payload: TaskCreateInput = null) {
+    createTask(payload: $payload) {
+      Job_id 
+      subject 
+      date_due 
+      details 
+      assignee_id
+    }
+  }
+`;

@@ -4954,20 +4954,6 @@
 
             <!-- Body -->
             <div class="px-5 py-4 space-y-4">
-              <!-- Task Type -->
-              <label class="block space-y-1">
-                <span class="text-xs font-semibold uppercase text-slate-500"
-                  >Task Type</span
-                >
-                <select
-                  x-model="form.taskType"
-                  class="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm focus:border-sky-600 focus:ring-1 focus:ring-sky-500 focus:outline-none"
-                >
-                  <template x-for="opt in taskTypeOptions" :key="opt.value">
-                    <option :value="opt.value" x-text="opt.label"></option>
-                  </template>
-                </select>
-              </label>
 
               <!-- Subject -->
               <label class="block space-y-1">
