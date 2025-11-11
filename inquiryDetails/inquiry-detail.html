@@ -557,6 +557,9 @@
                   <div
                     data-state="Default"
                     class="self-stretch px-6 py-4 bg-white inline-flex justify-start items-start gap-2 cursor-pointer hover:bg-[#E3EFFF]"
+                    x-data="{}"
+                    class="px-4 py-[12px] bg-white text-[#003882] f-inter font-medium text-[14px] rounded border border-sky-900"
+                    @click="window.dispatchEvent(new CustomEvent('addTask:open', {detail: { jobId: JOB_ID}}))"
                   >
                     <div class="flex items-center gap-2">
                       <svg
@@ -2517,9 +2520,7 @@
         </div>
 
         <!-- Client and payment section -->
-        <div
-          class="space-y-5 relative text-slate-700 flex flex-col rounded-sm"
-        >
+        <div class="space-y-5 relative text-slate-700 flex flex-col rounded-sm">
           <!-- Card: Client Job Invoice -->
           <div
             class="rounded-sm border border-slate-200 bg-white shadow-sm flex-1"
@@ -3075,33 +3076,33 @@
               </div>
             </div>
           </div>
-
-          <!-- Floating Action Button with notification -->
-          <button
-            class="absolute -bottom-2 right-3 h-24 w-24 rounded-full bg-sky-800 text-white shadow-lg grid place-items-center"
-          >
-            <!-- document/edit icon -->
-            <svg
-              width="40"
-              height="40"
-              viewBox="0 0 40 40"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M35 35V24.045L38.325 21.585C39.1245 20.9934 39.6562 20.1084 39.8031 19.1248C39.9501 18.1412 39.7003 17.1395 39.1087 16.34L37.2375 13.8125C36.6923 13.0761 35.8964 12.5647 35 12.375V11.25C34.9999 10.9185 34.8682 10.6006 34.6338 10.3663L25.8838 1.61625C25.6494 1.38181 25.3315 1.25007 25 1.25H8.75C7.75544 1.25 6.80161 1.64509 6.09835 2.34835C5.39509 3.05161 5 4.00544 5 5V35C5 35.9946 5.39509 36.9484 6.09835 37.6516C6.80161 38.3549 7.75544 38.75 8.75 38.75H31.25C32.2446 38.75 33.1984 38.3549 33.9017 37.6516C34.6049 36.9484 35 35.9946 35 35ZM7.5 35V5C7.5 4.66848 7.6317 4.35054 7.86612 4.11612C8.10054 3.8817 8.41848 3.75 8.75 3.75H23.75V10.6337C23.75 11.665 24.5863 12.5 25.6162 12.5H32.5V12.7125C32.325 12.8025 32.1558 12.9079 31.9925 13.0288L28.7238 15.4475C28.6855 15.3183 28.6065 15.205 28.4986 15.1244C28.3908 15.0437 28.2597 15.0001 28.125 15H11.875C11.7092 15 11.5503 15.0658 11.4331 15.1831C11.3158 15.3003 11.25 15.4592 11.25 15.625C11.25 15.7908 11.3158 15.9497 11.4331 16.0669C11.5503 16.1842 11.7092 16.25 11.875 16.25H27.6388L24.26 18.75H11.875C11.7092 18.75 11.5503 18.8158 11.4331 18.9331C11.3158 19.0503 11.25 19.2092 11.25 19.375C11.25 19.5408 11.3158 19.6997 11.4331 19.8169C11.5503 19.9342 11.7092 20 11.875 20H22.5712L19.1925 22.5H11.875C11.7092 22.5 11.5503 22.5658 11.4331 22.6831C11.3158 22.8003 11.25 22.9592 11.25 23.125C11.25 23.2908 11.3158 23.4497 11.4331 23.5669C11.5503 23.6842 11.7092 23.75 11.875 23.75H17.5037L14.195 26.1975L14.13 26.25H11.875C11.7092 26.25 11.5503 26.3158 11.4331 26.4331C11.3158 26.5503 11.25 26.7092 11.25 26.875C11.25 27.0408 11.3158 27.1997 11.4331 27.3169C11.5503 27.4342 11.7092 27.5 11.875 27.5H13.5413L11.7475 33.38C11.6905 33.5668 11.678 33.7644 11.7111 33.9569C11.7442 34.1494 11.822 34.3315 11.9382 34.4885C12.0544 34.6455 12.2057 34.7731 12.3802 34.8611C12.5546 34.9491 12.7472 34.9949 12.9425 34.995L19.7825 35C20.0507 35.0004 20.3119 34.9145 20.5275 34.755L32.5 25.895V35C32.5 35.3315 32.3683 35.6495 32.1339 35.8839C31.8995 36.1183 31.5815 36.25 31.25 36.25H8.75C8.41848 36.25 8.10054 36.1183 7.86612 35.8839C7.6317 35.6495 7.5 35.3315 7.5 35ZM25.6162 11.25C25.5353 11.25 25.4552 11.2341 25.3804 11.2031C25.3057 11.1721 25.2377 11.1267 25.1805 11.0695C25.1233 11.0123 25.0779 10.9443 25.0469 10.8696C25.0159 10.7948 25 10.7147 25 10.6337V4.2675L31.9825 11.25H25.6162ZM32.795 22.5675L29.4438 18.025L30.9062 16.9425L34.2637 21.48L32.795 22.5675ZM16.965 27.2587L28.4387 18.7688L31.7887 23.3113L20.4363 31.7113L16.965 27.2587ZM15.99 28.04L19.43 32.4562L19.3713 32.5L16.1038 32.4975L15.0612 31.0875L15.99 28.04Z"
-                fill="white"
-              />
-            </svg>
-
-            <span
-              class="absolute top-1 right-2 h-4 w-4 rounded-full bg-red-500 ring-2 ring-white"
-            ></span>
-          </button>
         </div>
       </main>
     </div>
     <!-- Main Job Sheet -->
+
+    <!-- Floating Action Button with notification -->
+    <button
+      class="fixed bottom-2 right-2 h-24 w-24 rounded-full bg-sky-800 text-white shadow-lg grid place-items-center"
+    >
+      <!-- document/edit icon -->
+      <svg
+        width="40"
+        height="40"
+        viewBox="0 0 40 40"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M35 35V24.045L38.325 21.585C39.1245 20.9934 39.6562 20.1084 39.8031 19.1248C39.9501 18.1412 39.7003 17.1395 39.1087 16.34L37.2375 13.8125C36.6923 13.0761 35.8964 12.5647 35 12.375V11.25C34.9999 10.9185 34.8682 10.6006 34.6338 10.3663L25.8838 1.61625C25.6494 1.38181 25.3315 1.25007 25 1.25H8.75C7.75544 1.25 6.80161 1.64509 6.09835 2.34835C5.39509 3.05161 5 4.00544 5 5V35C5 35.9946 5.39509 36.9484 6.09835 37.6516C6.80161 38.3549 7.75544 38.75 8.75 38.75H31.25C32.2446 38.75 33.1984 38.3549 33.9017 37.6516C34.6049 36.9484 35 35.9946 35 35ZM7.5 35V5C7.5 4.66848 7.6317 4.35054 7.86612 4.11612C8.10054 3.8817 8.41848 3.75 8.75 3.75H23.75V10.6337C23.75 11.665 24.5863 12.5 25.6162 12.5H32.5V12.7125C32.325 12.8025 32.1558 12.9079 31.9925 13.0288L28.7238 15.4475C28.6855 15.3183 28.6065 15.205 28.4986 15.1244C28.3908 15.0437 28.2597 15.0001 28.125 15H11.875C11.7092 15 11.5503 15.0658 11.4331 15.1831C11.3158 15.3003 11.25 15.4592 11.25 15.625C11.25 15.7908 11.3158 15.9497 11.4331 16.0669C11.5503 16.1842 11.7092 16.25 11.875 16.25H27.6388L24.26 18.75H11.875C11.7092 18.75 11.5503 18.8158 11.4331 18.9331C11.3158 19.0503 11.25 19.2092 11.25 19.375C11.25 19.5408 11.3158 19.6997 11.4331 19.8169C11.5503 19.9342 11.7092 20 11.875 20H22.5712L19.1925 22.5H11.875C11.7092 22.5 11.5503 22.5658 11.4331 22.6831C11.3158 22.8003 11.25 22.9592 11.25 23.125C11.25 23.2908 11.3158 23.4497 11.4331 23.5669C11.5503 23.6842 11.7092 23.75 11.875 23.75H17.5037L14.195 26.1975L14.13 26.25H11.875C11.7092 26.25 11.5503 26.3158 11.4331 26.4331C11.3158 26.5503 11.25 26.7092 11.25 26.875C11.25 27.0408 11.3158 27.1997 11.4331 27.3169C11.5503 27.4342 11.7092 27.5 11.875 27.5H13.5413L11.7475 33.38C11.6905 33.5668 11.678 33.7644 11.7111 33.9569C11.7442 34.1494 11.822 34.3315 11.9382 34.4885C12.0544 34.6455 12.2057 34.7731 12.3802 34.8611C12.5546 34.9491 12.7472 34.9949 12.9425 34.995L19.7825 35C20.0507 35.0004 20.3119 34.9145 20.5275 34.755L32.5 25.895V35C32.5 35.3315 32.3683 35.6495 32.1339 35.8839C31.8995 36.1183 31.5815 36.25 31.25 36.25H8.75C8.41848 36.25 8.10054 36.1183 7.86612 35.8839C7.6317 35.6495 7.5 35.3315 7.5 35ZM25.6162 11.25C25.5353 11.25 25.4552 11.2341 25.3804 11.2031C25.3057 11.1721 25.2377 11.1267 25.1805 11.0695C25.1233 11.0123 25.0779 10.9443 25.0469 10.8696C25.0159 10.7948 25 10.7147 25 10.6337V4.2675L31.9825 11.25H25.6162ZM32.795 22.5675L29.4438 18.025L30.9062 16.9425L34.2637 21.48L32.795 22.5675ZM16.965 27.2587L28.4387 18.7688L31.7887 23.3113L20.4363 31.7113L16.965 27.2587ZM15.99 28.04L19.43 32.4562L19.3713 32.5L16.1038 32.4975L15.0612 31.0875L15.99 28.04Z"
+          fill="white"
+        />
+      </svg>
+
+      <span
+        class="absolute top-1 right-2 h-4 w-4 rounded-full bg-red-500 ring-2 ring-white"
+      ></span>
+    </button>
 
     <!-- Modals -->
     <div>
@@ -4918,6 +4919,193 @@
           </div>
         </div>
       </div>
+
+      <!-- Add Task Modal -->
+      <div x-data="addTaskModal" x-cloak>
+        <!-- Backdrop -->
+        <div
+          x-show="open"
+          x-transition.opacity
+          class="fixed inset-0 bg-black/40 z-40"
+          @click="handleClose()"
+        ></div>
+
+        <!-- Dialog -->
+        <div
+          x-show="open"
+          x-transition
+          class="fixed inset-0 z-50 grid place-items-center p-4"
+          @keydown.escape.window="handleClose()"
+        >
+          <div class="w-full max-w-md rounded-lg bg-white shadow-xl">
+            <!-- Header -->
+            <div class="flex items-center justify-between px-5 py-4 border-b">
+              <h3 class="text-lg font-semibold">
+                Add Task to
+                <span x-text="titleSuffix || '[Current Job]'"></span>
+              </h3>
+              <button
+                class="text-slate-500 hover:text-slate-700"
+                @click="handleClose()"
+              >
+                &times;
+              </button>
+            </div>
+
+            <!-- Body -->
+            <div class="px-5 py-4 space-y-4">
+              <!-- Task Type -->
+              <label class="block space-y-1">
+                <span class="text-xs font-semibold uppercase text-slate-500"
+                  >Task Type</span
+                >
+                <select
+                  x-model="form.taskType"
+                  class="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm focus:border-sky-600 focus:ring-1 focus:ring-sky-500 focus:outline-none"
+                >
+                  <template x-for="opt in taskTypeOptions" :key="opt.value">
+                    <option :value="opt.value" x-text="opt.label"></option>
+                  </template>
+                </select>
+              </label>
+
+              <!-- Subject -->
+              <label class="block space-y-1">
+                <span class="text-xs font-semibold uppercase text-slate-500"
+                  >Subject</span
+                >
+                <input
+                  type="text"
+                  x-model.trim="form.subject"
+                  class="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm focus:border-sky-600 focus:ring-1 focus:ring-sky-500 focus:outline-none"
+                />
+              </label>
+
+              <!-- Assignee -->
+              <div class="space-y-1">
+                <span class="text-xs font-semibold uppercase text-slate-500"
+                  >Assignee</span
+                >
+                <input
+                  type="text"
+                  x-model.trim="form.assigneeName"
+                  placeholder="Search or type a name"
+                  class="w-full rounded border border-slate-300 bg-white px-3 py-2 pr-10 text-sm focus:border-sky-600 focus:ring-1 focus:ring-sky-500 focus:outline-none"
+                />
+                <button
+                  type="button"
+                  class="text-sky-700 text-sm hover:underline"
+                  @click="assignToMe()"
+                >
+                  Assign to me
+                </button>
+              </div>
+
+              <!-- Due Date (date only) -->
+              <label class="block space-y-1">
+                <span class="text-xs font-semibold uppercase text-slate-500"
+                  >Due Date/Time</span
+                >
+                <div class="relative">
+                  <input
+                    type="text"
+                    :value="form.dueDate ? form.dueDate.split('-').reverse().join('/') : ''"
+                    placeholder="dd/mm/yy"
+                    readonly
+                    class="w-full rounded border border-slate-300 bg-white px-3 py-2 pr-10 text-sm focus:border-sky-600 focus:ring-1 focus:ring-sky-500 focus:outline-none cursor-pointer"
+                  />
+                  <span
+                    class="pointer-events-none absolute inset-y-0 right-3 inline-flex items-center"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4 text-slate-400"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="1.5"
+                        d="M8 7V5m8 2V5M5 9h14M5 19h14a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2z"
+                      />
+                    </svg>
+                  </span>
+                  <!-- actual calendar (overlay so popover anchors correctly) -->
+                  <input
+                    type="date"
+                    class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    @input="handlePickDate($event)"
+                    x-ref="dueDateNative"
+                  />
+                </div>
+              </label>
+
+              <!-- Notes -->
+              <label class="block space-y-1">
+                <span class="text-xs font-semibold uppercase text-slate-500"
+                  >Notes</span
+                >
+                <textarea
+                  x-model.trim="form.notes"
+                  rows="4"
+                  class="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm focus:border-sky-600 focus:ring-1 focus:ring-sky-500 focus:outline-none"
+                ></textarea>
+              </label>
+
+              <template x-if="error">
+                <p class="text-sm text-red-600" x-text="error"></p>
+              </template>
+            </div>
+
+            <!-- Footer -->
+            <div class="flex items-center justify-between px-5 py-4 border-t">
+              <button
+                class="text-slate-600 hover:text-slate-800"
+                @click="handleClose()"
+                :disabled="isSubmitting"
+              >
+                Cancel
+              </button>
+              <button
+                class="inline-flex items-center gap-2 rounded bg-sky-800 text-white px-4 py-2 hover:bg-sky-900 disabled:opacity-60"
+                @click="handleSave()"
+                :disabled="isSubmitting"
+              >
+                <template x-if="!isSubmitting"
+                  ><span>Add Task &amp; Notify</span></template
+                >
+                <template x-if="isSubmitting">
+                  <span class="inline-flex items-center gap-2">
+                    <svg
+                      class="h-4 w-4 animate-spin"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                    >
+                      <circle
+                        class="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke-width="4"
+                      ></circle>
+                      <path
+                        class="opacity-75"
+                        stroke-width="4"
+                        d="M4 12a8 8 0 0 1 8-8"
+                      ></path>
+                    </svg>
+                    Saving…
+                  </span>
+                </template>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Add Task Modal -->
     </div>
     <!-- Modals -->
 

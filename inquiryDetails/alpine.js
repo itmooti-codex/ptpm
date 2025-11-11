@@ -2756,4 +2756,153 @@ document.addEventListener("alpine:init", () => {
       }
     },
   }));
+
+  Alpine.data("addTaskModal", () => ({
+    open: false,
+    isSubmitting: false,
+    error: "",
+    jobId: null,
+    titleSuffix: "",
+
+    form: {
+      taskType: "urgent_call",
+      subject: "",
+      assigneeId: null,
+      assigneeName: "",
+      dueDate: "", // store as YYYY-MM-DD (normalized)
+      notes: "",
+    },
+
+    taskTypeOptions: [
+      { value: "urgent_call", label: "Urgent Call" },
+      { value: "follow_up", label: "Follow Up" },
+      { value: "site_visit", label: "Site Visit" },
+    ],
+
+    init() {
+      // Open modal (optionally pass jobId + jobLabel)
+      this.boundOpenListener = (event) => {
+        const d = event?.detail || {};
+        this.jobId = d.jobId ?? document.body.dataset.inquiryId ?? null;
+        this.titleSuffix = d.jobLabel ?? "";
+        if (d.prefill) this.prefill(d.prefill);
+        this.open = true;
+      };
+
+      window.addEventListener("addTask:open", this.boundOpenListener);
+    },
+
+    // === date helpers (same approach/semantics as your dealInfoModal) ===
+    normalizeDateInput(value) {
+      if (!value) return "";
+      if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value))
+        return value;
+      const ts = this.convertDateToUnix(value);
+      if (ts === null) return "";
+      const date = new Date(ts * 1000);
+      const yyyy = date.getUTCFullYear();
+      const mm = String(date.getUTCMonth() + 1).padStart(2, "0");
+      const dd = String(date.getUTCDate()).padStart(2, "0");
+      return `${yyyy}-${mm}-${dd}`;
+    },
+
+    convertDateToUnix(value) {
+      if (value === null || value === undefined) return null;
+      if (typeof value === "number" && Number.isFinite(value))
+        return Math.floor(value);
+      const str = String(value).trim();
+      if (!str) return null;
+
+      if (/^\d+$/.test(str)) {
+        const num = Number(str);
+        if (!Number.isFinite(num)) return null;
+        return num > 4102444800 ? Math.floor(num / 1000) : num; // seconds vs ms
+      }
+
+      let parsed = null;
+      const slash = str.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+      const dash = str.match(/^(\d{2})-(\d{2})-(\d{4})$/);
+
+      if (slash) {
+        const [, d, m, y] = slash.map(Number);
+        parsed = new Date(y, m - 1, d);
+      } else if (dash) {
+        const [, d, m, y] = dash.map(Number);
+        parsed = new Date(y, m - 1, d);
+      } else if (/^\d{4}-\d{2}-\d{2}/.test(str)) {
+        parsed = new Date(str);
+      } else {
+        parsed = new Date(str);
+      }
+
+      if (!parsed || isNaN(parsed)) return null;
+      return Math.floor(parsed.getTime() / 1000);
+    },
+
+    handleClose() {
+      this.open = false;
+    },
+
+    // Calendar overlay pick -> store yyyy-mm-dd
+    handlePickDate(e) {
+      const iso = e.target.value; // yyyy-mm-dd
+      this.form.dueDate = iso || "";
+    },
+
+    assignToMe() {
+      const me = window?.CURRENT_USER || { id: null, name: "Me" };
+      this.form.assigneeId = me.id;
+      this.form.assigneeName = me.name;
+    },
+
+    // === SAVE (keeps modal open & shows "Saving…" until success) ===
+    handleSave: async function () {
+      if (this.isSubmitting) return;
+      this.isSubmitting = true;
+      this.error = "";
+
+      try {
+        const jobId = this.jobId || document.body.dataset.inquiryId;
+        if (!jobId) throw new Error("Missing job ID");
+
+        const payload = {
+          job_id: jobId,
+          task_type: this.form.taskType || null,
+          subject: this.form.subject || null,
+          assignee_id: this.form.assigneeId || null,
+          assignee_name: this.form.assigneeName || null,
+          due_date: this.form.dueDate
+            ? this.convertDateToUnix(this.form.dueDate)
+            : null, // unix (seconds)
+          notes: this.form.notes || null,
+          notify: true,
+        };
+
+        // Reuse your existing GraphQL helper & mutation
+        // Example shape; replace with your actual mutation key if different:
+        // await graphqlRequest(CREATE_TASK_MUTATION, { input: payload });
+        await createTaskForJob(payload); // <- call your existing wrapper
+
+        window.dispatchEvent(
+          new CustomEvent("toast:show", {
+            detail: {
+              type: "success",
+              message: "Task added and notification sent.",
+            },
+          })
+        );
+        this.handleClose();
+      } catch (error) {
+        console.error(error);
+        this.error = error?.message || "Failed to add task.";
+        window.dispatchEvent(
+          new CustomEvent("toast:show", {
+            detail: { type: "error", message: this.error },
+          })
+        );
+      } finally {
+        this.isSubmitting = false;
+      }
+    },
+  }));
 });
