@@ -430,7 +430,6 @@ const DUPLICATE_JOB_QUERY = `
       }
 `;
 
-
 const DELETE_JOB_QUERY = `
   mutation deleteJob($id: PeterpmJobID!) {
     deleteJob(query: [{ where: { id: $id } }]) {
