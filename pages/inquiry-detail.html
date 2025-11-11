@@ -687,11 +687,13 @@
 
           <div class="flex items-center gap-2">
             <button
-              id="deal-info-btn"
+              x-data="{}"
               class="px-4 py-[12px] bg-white text-[#003882] f-inter font-medium text-[14px] rounded border border-sky-900"
+              @click.prevent="$dispatch('dealInfo:open')"
             >
               Deal Info
             </button>
+
             <button
               class="px-4 py-[12px] bg-sky-900 text-white f-inter font-medium text-[14px] rounded border border-sky-900"
             >
@@ -4411,6 +4413,248 @@
       </div>
     </div>
 
+    <!-- Deal Info Modal -->
+    <div x-data="dealInfoModal()" x-cloak>
+      <div
+        class="fixed inset-0 z-40 flex min-h-screen items-center justify-center bg-slate-900/50 px-4 py-10 text-slate-800"
+        x-show="open"
+        x-transition.opacity
+        @keydown.escape.window="handleClose"
+      >
+        <div class="w-full max-w-2xl bg-white shadow-2xl">
+          <!-- Header -->
+          <div
+            class="flex items-center justify-between border-b border-slate-200 px-6 py-4"
+          >
+            <h3 class="text-lg font-semibold text-slate-900">
+              Deal Information
+            </h3>
+            <button
+              class="text-slate-400 transition hover:text-slate-600"
+              @click="handleClose"
+            >
+              <span class="sr-only">Close modal</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+
+          <!-- Body -->
+          <div class="space-y-5 px-6 py-6 text-sm text-slate-700">
+            <!-- Deal Name -->
+            <label class="space-y-1 block">
+              <span class="text-xs font-semibold uppercase text-slate-500">
+                Deal Name
+              </span>
+              <input
+                type="text"
+                class="w-full rounded-lg border border-slate-300 bg-slate-100 px-3 py-2 text-sm shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                x-model="form.dealName"
+                readonly
+              />
+            </label>
+
+            <!-- Deal Value / Sales Stage -->
+            <div class="grid gap-4 sm:grid-cols-2">
+              <label class="space-y-1">
+                <span class="text-xs font-semibold uppercase text-slate-500">
+                  Deal Value
+                </span>
+                <input
+                  type="text"
+                  class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                  x-model="form.dealValue"
+                />
+              </label>
+
+              <label class="space-y-1">
+                <span class="text-xs font-semibold uppercase text-slate-500">
+                  Sales Stage
+                </span>
+                <div class="relative">
+                  <select
+                    class="w-full appearance-none rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                    x-model="form.salesStage"
+                  >
+                    <option value="">Select</option>
+                    <template x-for="stage in salesStageOptions" :key="stage">
+                      <option :value="stage" x-text="stage"></option>
+                    </template>
+                  </select>
+                  <span
+                    class="pointer-events-none absolute inset-y-0 right-3 inline-flex items-center"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4 text-slate-400"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="1.5"
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </span>
+                </div>
+              </label>
+            </div>
+
+            <!-- Expected Win % / Expected Close Date / Actual Close Date -->
+            <div class="grid gap-4 sm:grid-cols-3">
+              <label class="space-y-1">
+                <span class="text-xs font-semibold uppercase text-slate-500">
+                  Expected Win Percentage
+                </span>
+                <input
+                  type="text"
+                  class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                  x-model="form.expectedWinPercentage"
+                  placeholder="0"
+                />
+              </label>
+
+              <!-- Expected Close Date (date only) -->
+              <label class="space-y-1">
+                <span class="text-xs font-semibold uppercase text-slate-500"
+                  >Expected Close Date</span
+                >
+                <div class="relative">
+                  <input
+                    type="date"
+                    class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 pr-10 text-sm text-slate-800 shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                    x-model="form.expectedCloseDate"
+                  />
+                </div>
+              </label>
+
+              <!-- Actual Close Date (date only) -->
+              <label class="space-y-1">
+                <span class="text-xs font-semibold uppercase text-slate-500"
+                  >Actual Close Date</span
+                >
+                <div class="relative">
+                  <input
+                    type="date"
+                    class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 pr-10 text-sm text-slate-800 shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                    x-model="form.actualCloseDate"
+                  />
+                </div>
+              </label>
+            </div>
+
+            <!-- Weighted Value / Recent Activity -->
+            <div class="grid gap-4 sm:grid-cols-2">
+              <label class="space-y-1">
+                <span class="text-xs font-semibold uppercase text-slate-500">
+                  Weighted Value
+                </span>
+                <input
+                  type="text"
+                  class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                  x-model="form.weightedValue"
+                />
+              </label>
+
+              <label class="space-y-1">
+                <span class="text-xs font-semibold uppercase text-slate-500">
+                  Recent Activity
+                </span>
+                <div class="relative">
+                  <select
+                    class="w-full appearance-none rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                    x-model="form.recentActivity"
+                  >
+                    <option value="">Select</option>
+                    <template
+                      x-for="activity in recentActivityOptions"
+                      :key="activity"
+                    >
+                      <option :value="activity" x-text="activity"></option>
+                    </template>
+                  </select>
+                  <span
+                    class="pointer-events-none absolute inset-y-0 right-3 inline-flex items-center"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4 text-slate-400"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="1.5"
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </span>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <div
+            class="flex items-center justify-end gap-3 border-t border-slate-200 bg-slate-50 px-6 py-4"
+          >
+            <button
+              type="button"
+              class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100"
+              @click="handleClose"
+            >
+              Cancel
+            </button>
+            <button
+              class="inline-flex items-center gap-2 rounded-lg bg-sky-700 px-4 py-2 font-semibold text-white shadow-sm transition hover:bg-sky-800 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500"
+              @click="handleSave"
+              :disabled="isSubmitting"
+            >
+              <svg
+                x-show="isSubmitting"
+                class="-ml-1 h-4 w-4 animate-spin text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                ></path>
+              </svg>
+              <span x-text="isSubmitting ? 'Saving…' : 'Save'"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script>
       const DEFAULT_PROVIDER_PLACEHOLDER = "Allocate To Service Provider";
       const DEFAULT_RECIPIENT_PLACEHOLDER =
@@ -4616,15 +4860,15 @@
         if (!fieldId) return;
 
         const mutation = `
-      mutation updateJob($id: PeterpmJobID!, $payload: JobUpdateInput = null) {
-        updateJob(
-          query: [{ where: { id: $id } }]
-          payload: $payload
-        ) {
-          ${fieldId}
+        mutation updateJob($id: PeterpmJobID!, $payload: JobUpdateInput = null) {
+          updateJob(
+            query: [{ where: { id: $id } }]
+            payload: $payload
+          ) {
+            ${fieldId}
+          }
         }
-      }
-    `;
+      `;
 
         const variables = {
           id: JOB_ID,
@@ -4643,116 +4887,127 @@
       }
 
       const CALC_DEALS_QUERY = `
-        query calcDeals($id: PeterpmDealID!) {
-          calcDeals(query: [{ where: { id: $id } }]) {
-            Service_Provider_ID: field(arg: ["service_provider_id"])
-            Popup_Comment: field(arg: ["Primary_Contact", "popup_comment"])
+          query calcDeals($id: PeterpmDealID!) {
+            calcDeals(query: [{ where: { id: $id } }]) {
+              Service_Provider_ID: field(arg: ["service_provider_id"])
+              Popup_Comment: field(arg: ["Primary_Contact", "popup_comment"])
+              Deal_Name: field(arg: ["deal_name"])
+              Deal_Value: field(arg: ["deal_value"])
+              Sales_Stage: field(arg: ["sales_stage"])
+              Expected_Win: field(arg: ["expected_win"])
+              Expected_Close_Date: field(arg: ["expected_close_date"])
+                @dateFormat(value: "DD-MM-YYYY")
+              Actual_Close_Date: field(arg: ["actual_close_date"])
+                @dateFormat(value: "DD-MM-YYYY")
+              Weighted_Value: field(arg: ["weighted_value"])
+              Recent_Activity: field(arg: ["recent_activity"])
+            }
           }
-        }
-      `;
+        `;
 
       const UPDATE_DEAL_MUTATION = `
-        mutation updateDeal($id: PeterpmDealID!, $payload: DealUpdateInput = null) {
-          updateDeal(query: [{ where: { id: $id } }], payload: $payload) {
-            service_provider_id
+          mutation updateDeal($id: PeterpmDealID!, $payload: DealUpdateInput = null) {
+            updateDeal(query: [{ where: { id: $id } }], payload: $payload) {
+              service_provider_id
+
+            }
           }
-        }
-      `;
+        `;
 
       const UPDATE_CONTACT_MUTATION = `
-        mutation updateContact($id: PeterpmContactID!, $payload: ContactUpdateInput = null) {
-          updateContact(query: [{ where: { id: $id } }], payload: $payload) {
-            popup_comment
+          mutation updateContact($id: PeterpmContactID!, $payload: ContactUpdateInput = null) {
+            updateContact(query: [{ where: { id: $id } }], payload: $payload) {
+              popup_comment
+            }
           }
-        }
-      `;
+        `;
 
       const UPDATE_JOB_MUTATION = `
-        mutation updateJob($id: PeterpmJobID!, $payload: JobUpdateInput = null) {
-          updateJob(query: [{ where: { id: $id } }], payload: $payload) {
-            admin_recommendation
-            quote_date
-            follow_up_date
-            quote_status
-            date_quote_sent
-            date_quoted_accepted
+          mutation updateJob($id: PeterpmJobID!, $payload: JobUpdateInput = null) {
+            updateJob(query: [{ where: { id: $id } }], payload: $payload) {
+              admin_recommendation
+              quote_date
+              follow_up_date
+              quote_status
+              date_quote_sent
+              date_quoted_accepted
+            }
           }
-        }
-      `;
+        `;
 
       const CREATE_UPLOAD_MUTATION = `
-        mutation createUpload($payload: UploadCreateInput = null) {
-          createUpload(payload: $payload) {
-            photo_upload
-            file_upload
-            job_id
+          mutation createUpload($payload: UploadCreateInput = null) {
+            createUpload(payload: $payload) {
+              photo_upload
+              file_upload
+              job_id
+            }
           }
-        }
-      `;
+        `;
 
       const CREATE_JOB_MUTATION = `
-        mutation createJob($payload: JobCreateInput = null) {
-          createJob(payload: $payload) {
-            Inquiry_Record {
-              id
+          mutation createJob($payload: JobCreateInput = null) {
+            createJob(payload: $payload) {
+              Inquiry_Record {
+                id
+              }
             }
           }
-        }
-      `;
+        `;
 
       const CALC_JOBS_QUERY = `
-        query calcJobs($inquiry_record_id: PeterpmDealID!) {
-          calcJobs(query: [{ where: { inquiry_record_id: $inquiry_record_id } }]) {
-            Inquiry_Record_ID: field(arg: ["Inquiry_Record", "id"])
-            ID: field(arg: ["id"])
-            Unique_ID: field(arg: ["unique_id"])
-            Quote_Date: field(arg: ["quote_date"])
-              @dateFormat(value: "DD/MM/YYYY")
-            Quote_Total: field(arg: ["quote_total"])
-            Quote_Status: field(arg: ["quote_status"]) 
-            Follow_Up_Date: field(arg: ["follow_up_date"])
-              @dateFormat(value: "DD/MM/YYYY")
-            Date_Quote_Sent: field(arg: ["date_quote_sent"])
-              @dateFormat(value: "DD/MM/YYYY")
-            Date_Quoted_Accepted: field(arg: ["date_quoted_accepted"])
-              @dateFormat(value: "DD/MM/YYYY")
+          query calcJobs($inquiry_record_id: PeterpmDealID!) {
+            calcJobs(query: [{ where: { inquiry_record_id: $inquiry_record_id } }]) {
+              Inquiry_Record_ID: field(arg: ["Inquiry_Record", "id"])
+              ID: field(arg: ["id"])
+              Unique_ID: field(arg: ["unique_id"])
+              Quote_Date: field(arg: ["quote_date"])
+                @dateFormat(value: "DD/MM/YYYY")
+              Quote_Total: field(arg: ["quote_total"])
+              Quote_Status: field(arg: ["quote_status"])
+              Follow_Up_Date: field(arg: ["follow_up_date"])
+                @dateFormat(value: "DD/MM/YYYY")
+              Date_Quote_Sent: field(arg: ["date_quote_sent"])
+                @dateFormat(value: "DD/MM/YYYY")
+              Date_Quoted_Accepted: field(arg: ["date_quoted_accepted"])
+                @dateFormat(value: "DD/MM/YYYY")
+            }
           }
-        }
-      `;
+        `;
 
       const CREATE_ACTIVITY_MUTATION = `
-        mutation createActivity($payload: ActivityCreateInput = null) {
-          createActivity(payload: $payload) {
-            task
-            option
-            activity_price
-            activity_text
-            warranty
-            note
-            invoice_to_client
-            job_id
-            Service {
+          mutation createActivity($payload: ActivityCreateInput = null) {
+            createActivity(payload: $payload) {
+              task
+              option
+              activity_price
+              activity_text
+              warranty
+              note
+              invoice_to_client
+              job_id
+              Service {
+                id
+              }
+            }
+          }
+        `;
+
+      const UPDATE_ACTIVITY_MUTATION = `
+          mutation updateActivity($id: PeterpmActivityID!, $payload: ActivityUpdateInput = null) {
+            updateActivity(query: [{ where: { id: $id } }], payload: $payload) {
               id
             }
           }
-        }
-      `;
-
-      const UPDATE_ACTIVITY_MUTATION = `
-        mutation updateActivity($id: PeterpmActivityID!, $payload: ActivityUpdateInput = null) {
-          updateActivity(query: [{ where: { id: $id } }], payload: $payload) {
-            id
-          }
-        }
-      `;
+        `;
 
       const DELETE_ACTIVITY_MUTATION = `
-        mutation deleteActivity($id: PeterpmActivityID!) {
-          deleteActivity(query: [{ where: { id: $id } }]) {
-            id
+          mutation deleteActivity($id: PeterpmActivityID!) {
+            deleteActivity(query: [{ where: { id: $id } }]) {
+              id
+            }
           }
-        }
-      `;
+        `;
 
       async function graphqlRequest(query, variables = {}) {
         const response = await fetch(GRAPHQL_ENDPOINT, {
@@ -4927,6 +5182,20 @@
                   })
                 );
               }
+              window.dispatchEvent(
+                new CustomEvent("dealInfo:prefill", {
+                  detail: {
+                    dealName: record.Deal_Name || "",
+                    dealValue: record.Deal_Value || "",
+                    salesStage: record.Sales_Stage || "",
+                    expectedWin: record.Expected_Win || "",
+                    expectedCloseDate: record.Expected_Close_Date || "",
+                    actualCloseDate: record.Actual_Close_Date || "",
+                    weightedValue: record.Weighted_Value || "",
+                    recentActivity: record.Recent_Activity || "",
+                  },
+                })
+              );
             } catch (error) {
               console.error("Failed to fetch allocation", error);
               this.feedbackVariant = "error";
@@ -7475,6 +7744,182 @@
             window.dispatchEvent(
               new CustomEvent("toast:show", { detail: { message, variant } })
             );
+          },
+        }));
+
+        Alpine.data("dealInfoModal", () => ({
+          open: false,
+          isSubmitting: false,
+          form: {
+            dealName: "Possum Roof Service Request - Baldivis 11/7/24",
+            dealValue: "0.00",
+            salesStage: "",
+            expectedWinPercentage: "",
+            expectedCloseDate: "",
+            actualCloseDate: "",
+            weightedValue: "0.00",
+            recentActivity: "",
+          },
+          salesStageOptions: [
+            "New Lead",
+            "Qualified Prospect",
+            "Visit Scheduled",
+            "Consideration",
+            "Committed",
+            "Closed - Won",
+            "Closed - Lost",
+          ],
+          recentActivityOptions: [
+            "Active more than a month ago",
+            "Active in the last month",
+            "Active in the last week",
+          ],
+
+          init() {
+            this.boundOpenListener = (event) => {
+              const detail = event?.detail || {};
+              // later we can hydrate from detail or server
+              if (detail.dealName) {
+                this.form.dealName = detail.dealName;
+              }
+              this.open = true;
+            };
+
+            window.addEventListener("dealInfo:open", this.boundOpenListener);
+            window.addEventListener("dealInfo:prefill", (event) => {
+              const data = event.detail || {};
+              console.log("Prefilling deal info modal with data:", data);
+              this.form.dealName = data.dealName ?? "";
+              this.form.dealValue = data.dealValue ?? "";
+              this.form.salesStage = data.salesStage ?? "";
+              this.form.expectedWinPercentage = data.expectedWin ?? "";
+
+              // 👇 IMPORTANT: normalize the DD/MM/YYYY or DD-MM-YYYY
+              this.form.expectedCloseDate = this.normalizeDateInput(
+                data.expectedCloseDate
+              );
+              this.form.actualCloseDate = this.normalizeDateInput(
+                data.actualCloseDate
+              );
+
+              this.form.weightedValue = data.weightedValue ?? "";
+              this.form.recentActivity = data.recentActivity ?? "";
+            });
+          },
+
+          normalizeDateInput(value) {
+            if (!value) return "";
+            if (
+              typeof value === "string" &&
+              /^\d{4}-\d{2}-\d{2}$/.test(value)
+            ) {
+              return value; // already correct
+            }
+            const timestamp = this.convertDateToUnix(value);
+            if (timestamp === null) return "";
+            const date = new Date(timestamp * 1000);
+            const yyyy = date.getUTCFullYear();
+            const mm = String(date.getUTCMonth() + 1).padStart(2, "0");
+            const dd = String(date.getUTCDate()).padStart(2, "0");
+            return `${yyyy}-${mm}-${dd}`;
+          },
+
+          convertDateToUnix(value) {
+            if (value === null || value === undefined) return null;
+            if (typeof value === "number" && Number.isFinite(value)) {
+              return Math.floor(value);
+            }
+            const str = String(value).trim();
+            if (!str) return null;
+
+            // pure digits (timestamp)
+            if (/^\d+$/.test(str)) {
+              const num = Number(str);
+              if (!Number.isFinite(num)) return null;
+              return num > 4102444800 ? Math.floor(num / 1000) : num; // seconds vs ms
+            }
+
+            let parsed = null;
+            const slashMatch = str.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+            const dashMatch = str.match(/^(\d{2})-(\d{2})-(\d{4})$/);
+
+            if (slashMatch) {
+              const [, day, month, year] = slashMatch.map(Number);
+              parsed = new Date(year, month - 1, day);
+            } else if (dashMatch) {
+              const [, day, month, year] = dashMatch.map(Number);
+              parsed = new Date(year, month - 1, day);
+            } else if (/^\d{4}-\d{2}-\d{2}/.test(str)) {
+              parsed = new Date(str);
+            } else {
+              parsed = new Date(str);
+            }
+
+            if (!parsed || isNaN(parsed)) return null;
+            return Math.floor(parsed.getTime() / 1000);
+          },
+
+          handleClose() {
+            this.open = false;
+          },
+
+          handleSave: async function () {
+            if (this.isSubmitting) return;
+
+            this.isSubmitting = true;
+            this.error = "";
+
+            try {
+              const dealId = document.body.dataset.inquiryId;
+              if (!dealId) throw new Error("Missing deal ID");
+
+              // Build payload – tweak field names to what your API expects
+              const payload = {
+                deal_value: this.form.dealValue || null,
+                sales_stage: this.form.salesStage || null,
+                expected_win: this.form.expectedWinPercentage || null,
+                expected_close_date: this.convertDateToUnix(
+                  this.form.expectedCloseDate
+                ),
+                actual_close_date: this.convertDateToUnix(
+                  this.form.actualCloseDate
+                ),
+                weighted_value: this.form.weightedValue || null,
+                recent_activity: this.form.recentActivity || null,
+              };
+
+              // 🔹 Wait for the API call to finish
+              await graphqlRequest(UPDATE_DEAL_MUTATION, {
+                id: dealId,
+                payload,
+              });
+
+              // Only after success:
+              window.dispatchEvent(
+                new CustomEvent("toast:show", {
+                  detail: {
+                    type: "success",
+                    message: "Deal updated successfully.",
+                  },
+                })
+              );
+
+              this.handleClose();
+            } catch (error) {
+              console.error(error);
+              this.error = "Failed to save deal information. Please try again.";
+
+              window.dispatchEvent(
+                new CustomEvent("toast:show", {
+                  detail: {
+                    type: "error",
+                    message: this.error,
+                  },
+                })
+              );
+            } finally {
+              this.isSubmitting = false;
+            }
           },
         }));
       });
