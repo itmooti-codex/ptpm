@@ -84,6 +84,12 @@ export class NewEnquiryView {
     this.#bindRelatedTabs();
     this.#updateRelatedUI();
     this.#handleRelatedPropertiesClick();
+    this.#createContactDetailsModalUI();
+    this.#createPropertyContactModalUI();
+    this.affiliationId = null;
+    this.onAddNewContactButtonClick();
+    this.contactId = null;
+    this.propertyId = null;
   }
 
   isActive() {
@@ -845,9 +851,11 @@ export class NewEnquiryView {
       element.addEventListener("click", async (e) => {
         let article = e.target.closest("article");
         if (article) {
-          let propertyId = article.id;
+          document.getElementById("add-contact-btn").classList.remove("hidden");
+
+          this.propertyId = article.id;
           let propertyData = this.relatedData.properties.filter(
-            (item) => item.id == propertyId
+            (item) => item.id == this.propertyId
           )[0];
           const fields = document.querySelectorAll(
             "#property-information input, #property-information select"
@@ -862,7 +870,7 @@ export class NewEnquiryView {
               propertyData
             );
             let affiliationData = await this.model.fetchAffiliationByPropertyId(
-              "167"
+              this.propertyId
             );
             this.setPropertyInformationToFields(fieldIds, values);
             this.createPropertyContactTable(affiliationData);
@@ -907,7 +915,7 @@ export class NewEnquiryView {
         case "foundation-type":
           mappedValues[key] = data.foundationType || "";
           break;
-        case "storeys":
+        case "stories":
           mappedValues[key] = data.stories || "";
           break;
         case "bedrooms":
@@ -1037,6 +1045,7 @@ export class NewEnquiryView {
     // Render rows
     rows.forEach((row, idx) => {
       const tr = document.createElement("tr");
+      tr.id = row.ID;
       tr.className = `${idx % 2 === 1 ? "bg-slate-50/50" : ""}`;
 
       const primary = Boolean(row?.Primary_Owner_Contact);
@@ -1048,6 +1057,19 @@ export class NewEnquiryView {
         sms_number: row.Contact_SMS_Number,
       };
       const company = row?.CompanyName;
+
+      tr.dataset.affiliationId = row?.ID || row?.id || "";
+      tr.dataset.contactId = row?.Contact_ID || row?.contact_id || "";
+      tr.dataset.propertyId = row?.Property_ID || row?.property_id || "";
+      tr.dataset.role = role;
+      tr.dataset.firstName = contact.first_name || "";
+      tr.dataset.lastName = contact.last_name || "";
+      tr.dataset.email = contact.email || "";
+      tr.dataset.sms = contact.sms_number || "";
+      tr.dataset.company =
+        typeof company === "object"
+          ? company?.name || company?.company || ""
+          : company || "";
 
       tr.innerHTML = `
         <td class="px-4 py-2">${
@@ -1072,26 +1094,45 @@ export class NewEnquiryView {
     container.appendChild(table);
 
     // Attach events
-    tbody
-      .querySelectorAll(".star-btn")
-      .forEach((btn, i) =>
-        btn.addEventListener("click", () => console.log("⭐ Star clicked:", i))
-      );
-    tbody
-      .querySelectorAll(".edit-btn")
-      .forEach((btn, i) =>
-        btn.addEventListener("click", () => console.log("✏️ Edit clicked:", i))
-      );
-    tbody
-      .querySelectorAll(".delete-btn")
-      .forEach((btn, i) =>
-        btn.addEventListener("click", () =>
-          console.log("🗑️ Delete clicked:", i)
-        )
-      );
+    tbody.querySelectorAll(".star-btn").forEach((btn, i) =>
+      btn.addEventListener("click", (e) => {
+        console.log("✏️ Edit clicked:", i);
+      })
+    );
+    tbody.querySelectorAll(".edit-btn").forEach((btn) =>
+      btn.addEventListener("click", async (e) => {
+        const tr = e.target.closest("tr");
+        if (!tr) return;
+        this.affiliationId = tr.id;
+        this.contactId = tr.dataset.contactId || "";
+        this.propertyId = tr.dataset.propertyId || "";
+
+        document.getElementById("pcSaveBtn").textContent = "Update Contact";
+        this.toggleModal("propertyContactModalWrapper");
+
+        // populate modal from dataset immediately
+        const $ = (id) => document.getElementById(id);
+        const roleInput = $("pcRole");
+        const firstNameInput = $("pcFirstName");
+        const lastNameInput = $("pcLastName");
+        const emailInput = $("pcEmail");
+        const smsInput = $("pcSms");
+
+        if (roleInput) roleInput.value = tr.dataset.role || "";
+        if (firstNameInput) firstNameInput.value = tr.dataset.firstName || "";
+        if (lastNameInput) lastNameInput.value = tr.dataset.lastName || "";
+        if (emailInput) emailInput.value = tr.dataset.email || "";
+        if (smsInput) smsInput.value = tr.dataset.sms || "";
+      })
+    );
+    tbody.querySelectorAll(".delete-btn").forEach((btn, i) =>
+      btn.addEventListener("click", (e) => {
+        console.log("✏️ Edit clicked:", i);
+      })
+    );
   }
 
-  createInquiryOptions(configs) {
+  createOptionsForSelectbox(configs) {
     configs.forEach(({ id, options, placeholder }) => {
       const element = document.getElementById(id);
       if (!element) return;
@@ -1114,5 +1155,796 @@ export class NewEnquiryView {
         element.add(option);
       });
     });
+  }
+
+  #createContactDetailsModalUI() {
+    // Wrapper
+    const wrapper = document.createElement("div");
+    wrapper.id = "addressDetailsModalWrapper";
+    wrapper.className =
+      "fixed inset-0 z-[9999] hidden flex items-center justify-center bg-black/50";
+    wrapper.innerHTML = `
+      <div id="addressDetailsModalBox" class="bg-white rounded-lg shadow-xl w-[40vw] max-w-3xl max-h-[90vh] overflow-auto">
+        <div class="flex items-center justify-between px-5 py-3 bg-[#003882] text-white rounded-t-lg">
+          <h3 class="text-base font-semibold">Contact Details</h3>
+          <button id="closeAddressDetailsBtn" class="p-1 rounded hover:bg-white/10" aria-label="Close">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M18.75 6.82 17.18 5.25 12 10.43 6.82 5.25 5.25 6.82 10.43 12 5.25 17.18 6.82 18.75 12 13.57 17.18 18.75 18.75 17.18 13.57 12 18.75 6.82Z" fill="white"/>
+            </svg>
+          </button>
+        </div>
+ 
+        <div class="px-5 py-5 space-y-6">
+          <div class="space-y-3">
+           <div class="flex gap-4">
+                <div class="flex-1 min-w-[150px]">
+                  <label class="text-sm font-medium text-slate-600">First Name <span class="text-rose-500">*</span></label>
+                  <input type="text" data-contact-field="first_name" data-contact-id="first_name" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100">
+                </div>
+                <div class="flex-1 min-w-[150px]">
+                  <label class="text-sm font-medium text-slate-600">Last Name</label>
+                  <input type="text" data-contact-field="last_name" data-contact-id="last_name" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100">
+                </div>
+              </div>
+
+              <div class="flex gap-4">
+                <div class="flex-1 min-w-[150px]">
+                  <label class="text-sm font-medium text-slate-600">Email <span class="text-rose-500">*</span></label>
+                  <input type="email" data-contact-field="email" data-contact-id="email" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100">
+                </div>
+                <div class="flex-1 min-w-[150px]">
+                  <label class="text-sm font-medium text-slate-600">SMS Number</label>
+                  <input type="tel" data-contact-field="sms_number" data-contact-id="sms_number" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100">
+                </div>
+              </div>
+              <div>
+                <label class="text-sm font-medium text-slate-600">Office Number</label>
+                <input type="tel" data-contact-field="office_phone" data-contact-id="office_phone" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100">
+              </div>
+            <div>
+              <label class="block text-sm  font-medium text-gray-700 mb-1">Address</label>
+            <div class="relative hidden">
+              <input id="adTopSearch" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 pr-9 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                <svg class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" viewBox="0 0 24 24" fill="currentColor"><path d="M21 20l-5.6-5.6a7.5 7.5 0 10-1.4 1.4L20 21l1-1Zm-13.5-5A5.5 5.5 0 1113 9.5 5.51 5.51 0 017.5 15Z"/></svg>
+              </div>
+            </div>
+            <div class="flex gap-3">
+              <div class="flex-1">
+                <label class="block font-medium text-sm text-gray-700 mb-1">Address line 1</label>
+                <input id="adTopLine1" data-contact-id="address" data-contact-field="top_address_line1" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+              </div>
+              <div class="flex-1">
+                <label class="block font-medium text-sm text-gray-700 mb-1">Address line 2</label>
+                <input id="adTopLine2" data-contact-id="address_2" data-contact-field="top_address_line2" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+              </div>
+            </div>
+            <div class="flex gap-3">
+              <div class="flex-1">
+                <label class="block text-sm font-medium text-gray-700 mb-1">City</label>
+                <input id="adTopCity" data-contact-id="city" data-contact-field="top_city" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+              </div>
+              <div class="flex-1">
+                <label class="block text-sm font-medium text-gray-700 mb-1">State*</label>
+                 <select id="adTopState" data-contact-id="state" data-contact-field="top_state" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </select>
+              </div>
+            </div>
+            <div class="flex gap-3">
+              <div class="flex-1">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Postal Code*</label>
+                <input id="adTopPostal" data-contact-id="zip_code" data-contact-field="top_postal" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+              </div>
+              <div class="flex-1">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                <select id="adTopCountry" data-contact-id="country" data-contact-field="top_country" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                   <option value="AU">Australia</option>
+                </select>
+              </div>
+            </div>
+          </div>
+  
+          <div class="pt-2">
+            <div class="mb-2 flex items-center justify-between">
+              <h4 class="text-sm font-medium text-gray-900">Postal Address</h4>
+              <label class="inline-flex items-center gap-2 text-sm">
+                <input id="adSameAsAbove" type="checkbox" class="h-4 w-4 font-medium rounded border-gray-300 text-blue-600 focus:ring-blue-500"/>
+                <span>Same as above</span>
+              </label>
+            </div>
+  
+            <div class="space-y-3">
+              <div class="hidden">
+                <label class="block font-medium text-sm text-gray-700 mb-1">Address</label>
+              <input id="adBotSearch" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+              </div>
+              <div class="flex gap-3">
+                <div class="flex-1">
+                  <label class="block font-medium text-sm text-gray-700 mb-1">Address line 1</label>
+                  <input id="adBotLine1" data-contact-id="postal_address"  data-contact-field="bot_address_line1" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                </div>
+                <div class="flex-1">
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Address line 2</label>
+                  <input id="adBotLine2" data-contact-id="postal_address_2"  data-contact-field="bot_address_line2" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                </div>
+              </div>
+              <div class="flex gap-3">
+                <div class="flex-1">
+                  <label class="block text-sm font-medium text-gray-700 mb-1">City</label>
+                  <input id="adBotCity" data-contact-id="postal_city" data-contact-field="bot_city" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                </div>
+                <div class="flex-1">
+                  <label class="block text-sm font-medium text-gray-700 mb-1">State*</label>
+                  <select id="adBotState" data-contact-id="postal_state" data-contact-field="bot_state" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    
+                  </select>
+                </div>
+              </div>
+              <div class="flex gap-3">
+                <div class="flex-1">
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Postal Code*</label>
+                  <input id="adBotPostal" data-contact-id="postal_code" data-contact-field="bot_postal" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                </div>
+                <div class="flex-1">
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                  <select id="adBotCountry" data-contact-id="postal_country" data-contact-field="bot_country" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="AU">Australia</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+  
+        <div class="flex justify-end gap-3 px-5 py-4 border-t rounded-b-lg">
+          <button id="cancelAddressDetailsBtn" class="text-sm text-slate-600 font-medium hover:text-gray-800">Cancel</button>
+          <button id="updateAddressDetailsBtn" class="px-4 py-2 bg-[#003882] text-white text-sm font-medium rounded hover:bg-blue-700">Save</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(wrapper);
+
+    // Refs
+    const $ = (id) => document.getElementById(id);
+    const modal = $("addressDetailsModalWrapper");
+    const modalBox = $("addressDetailsModalBox");
+    const closeBtn = $("closeAddressDetailsBtn");
+    const cancelBtn = $("cancelAddressDetailsBtn");
+    const sameAsAboveBtn = $("adSameAsAbove");
+
+    const topInputs = [
+      $("adTopSearch"),
+      $("adTopLine1"),
+      $("adTopLine2"),
+      $("adTopCity"),
+      $("adTopState"),
+      $("adTopPostal"),
+      $("adTopCountry"),
+    ];
+    const botInputs = [
+      $("adBotSearch"),
+      $("adBotLine1"),
+      $("adBotLine2"),
+      $("adBotCity"),
+      $("adBotState"),
+      $("adBotPostal"),
+      $("adBotCountry"),
+    ];
+
+    sameAsAboveBtn.addEventListener("change", () => {
+      const isChecked = sameAsAboveBtn.checked;
+      if (isChecked) {
+        botInputs.forEach((input, idx) => {
+          input.value = topInputs[idx].value;
+          input.disabled = true;
+        });
+      } else {
+        botInputs.forEach((input) => {
+          input.disabled = false;
+          if (input.id === "adBotCountry") return;
+          input.value = "";
+        });
+      }
+    });
+
+    const hide = () => {
+      // reset fields (preserve search)
+      this.resetAffiliationModal?.({ preserveSearch: true });
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+      document.body.style.overflow = "";
+    };
+
+    modal.addEventListener("click", (e) => {
+      // Prevent bubbling to other modals under this overlay
+      e.stopPropagation();
+      if (e.currentTarget === modal && !modalBox.contains(e.target)) hide();
+    });
+    closeBtn.onclick = hide;
+    cancelBtn.onclick = hide;
+    document.addEventListener("keydown", (e) => {
+      if (!modal.classList.contains("hidden") && e.key === "Escape") hide();
+    });
+  }
+
+  toggleModal(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    let isHidden = el.classList.toggle("hidden");
+    el.classList.toggle("flex", !isHidden);
+    document.body.style.overflow = isHidden ? "" : "hidden";
+  }
+
+  renderDropdownOptionsForStates(states) {
+    let elements = document.querySelectorAll("#adTopState, #adBotState");
+    if (!elements) return;
+    elements.forEach((el) => {
+      const placeholderOption = document.createElement("option");
+      placeholderOption.text = "Select";
+      placeholderOption.value = "";
+      placeholderOption.disabled = true;
+      placeholderOption.selected = true;
+      el.add(placeholderOption);
+      states.forEach((state) => {
+        let option = document.createElement("option");
+        option.value = state.value;
+        option.text = state.displayValue;
+        el.add(option);
+      });
+    });
+  }
+
+  onContactFieldChanges(data) {
+    if (!Array.isArray(data) || data.length === 0) return;
+    data.forEach((item) => {
+      const source = document.querySelector(
+        `#addressDetailsModalBox [data-contact-field="${item}"]`
+      );
+      const target = document.querySelector(
+        `[data-contact-section="individual"] [data-contact-field="${item}"]`
+      );
+
+      if (!source || !target) return;
+
+      target.value = source.value ?? "";
+      source.addEventListener("input", (e) => {
+        target.value = e.target.value;
+        const evt = new Event("input", { bubbles: true });
+        target.dispatchEvent(evt);
+      });
+    });
+  }
+
+  #createPropertyContactModalUI() {
+    const wrapper = document.createElement("div");
+    wrapper.id = "propertyContactModalWrapper";
+    wrapper.className =
+      "fixed inset-0 z-[999] hidden items-center justify-center bg-black/50";
+
+    wrapper.innerHTML = `
+      <div id="propertyContactModalBox" class="bg-white rounded-lg shadow-xl w-[95vw] max-w-md max-h-[90vh] overflow-auto">
+        <!-- Header -->
+        <div class="flex items-center justify-between px-5 py-3 bg-[#003882] text-white rounded-t-lg">
+          <h3 class="text-base font-semibold">Add Property Contact</h3>
+          <button id="pcCloseBtn" class="p-1 rounded hover:bg-white/10" aria-label="Close">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M18.75 6.82 17.18 5.25 12 10.43 6.82 5.25 5.25 6.82 10.43 12 5.25 17.18 6.82 18.75 12 13.57 17.18 18.75 18.75 17.18 13.57 12 18.75 6.82Z" fill="white"/>
+            </svg>
+          </button>
+        </div>
+  
+        <!-- Body -->
+        <div class="px-5 py-5 space-y-5">
+          <!-- Contact search -->
+          <div>
+            <label class="block font-medium text-sm text-gray-700 mb-1">Contact</label>
+            <div class="relative">
+              <input id="pcSearch" type="text" placeholder="Search by name, email, phone"
+                     class="w-full border border-gray-300 rounded-md px-3 py-2 pr-9 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"/>
+              <div id="pcSearchList" class="absolute z-10 mt-1 left-0 right-0 bg-white border border-slate-200 rounded-lg shadow-md hidden">
+                <div id="pcSearchScroll" class="max-h-64 overflow-auto"></div>
+                <div id="pcSearchFooter" data-contact-id="add-new-property-contact" class="border-t sticky bottom-0 bg-white"></div>
+              </div>
+              <svg xmlns="http://www.w3.org/2000/svg" class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" viewBox="0 0 24 24" fill="currentColor">
+                      <path fill-rule="evenodd" d="M12.9 14.32a8 8 0 111.414-1.414l3.387 3.386a1 1 0 01-1.414 1.415l-3.387-3.387zM14 8a6 6 0 11-12 0 6 6 0 0112 0z" clip-rule="evenodd"></path>
+                    </svg>
+            </div>
+          </div>
+
+           <!-- Role -->
+           <div class="flex gap-3">
+            <div class="flex-1">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Role</label>
+              <input id="pcRole" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"/>
+            </div>
+          </div>
+  
+          <!-- Names -->
+          <div class="flex gap-3">
+            <div class="flex-1">
+              <label class="block text-sm font-medium text-gray-700 mb-1">First Name*</label>
+              <input id="pcFirstName" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"/>
+            </div>
+            <div class="flex-1">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+              <input id="pcLastName" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"/>
+            </div>
+          </div>
+  
+          <!-- Email / SMS -->
+          <div class="flex gap-3">
+            <div class="flex-1">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Email*</label>
+              <input id="pcEmail" type="email" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"/>
+            </div>
+            <div class="flex-1">
+              <label class="block text-sm font-medium text-gray-700 mb-1">SMS Number</label>
+              <input id="pcSms" type="tel" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"/>
+            </div>
+          </div>
+  
+          <!-- Primary -->
+          <label class="inline-flex text-gray-700 font-medium items-center gap-2 text-sm">
+            <input id="pcPrimary" type="checkbox" class="h-4 w-4 accent-[#003882] rounded border-gray-300 text-blue-600 focus:ring-blue-500"/>
+            <span>Is Primary Contact</span>
+          </label>
+        </div>
+  
+        <!-- Footer -->
+        <div class="flex justify-end gap-3 px-5 py-4 border-t rounded-b-lg">
+          <button id="pcCancelBtn" class="text-sm text-slate-600 font-medium hover:text-gray-800">Cancel</button>
+          <button id="pcSaveBtn" class="px-4 py-2 text-white text-sm bg-[#003882] font-medium rounded"></button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(wrapper);
+
+    // Refs
+    const $ = (id) => document.getElementById(id);
+    const modal = $("propertyContactModalWrapper");
+    const modalBox = $("propertyContactModalBox");
+    const closeBtn = $("pcCloseBtn");
+    const cancelBtn = $("pcCancelBtn");
+    const saveBtn = $("pcSaveBtn");
+    const searchInput = $("pcSearch");
+    const searchList = $("pcSearchList");
+    const searchScroll = $("pcSearchScroll");
+    const searchFooter = $("pcSearchFooter");
+    const firstNameInput = $("pcFirstName");
+    const lastNameInput = $("pcLastName");
+    const emailInput = $("pcEmail");
+    const smsInput = $("pcSms");
+    const role = $("pcRole");
+    const isPrimaryContact = $("pcPrimary");
+
+    const hide = () => {
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+      document.body.style.overflow = "";
+    };
+
+    // Close interactions
+    modal.addEventListener("click", (e) => {
+      // Prevent bubbling to other overlays (e.g., property contact modal beneath)
+      e.stopPropagation();
+      if (e.currentTarget === modal && !modalBox.contains(e.target)) hide();
+    });
+    closeBtn.onclick = hide;
+    cancelBtn.onclick = hide;
+    document.addEventListener("keydown", (e) => {
+      if (!modal.classList.contains("hidden") && e.key === "Escape") hide();
+    });
+
+    saveBtn.addEventListener("click", async () => {
+      const contact = {
+        first_name: firstNameInput.value,
+        last_name: lastNameInput.value,
+        email: emailInput.value,
+        sms_number: smsInput.value,
+      };
+
+      if (this.contactId == null) {
+        let contactResult = await this.model.createNewContact(contact);
+        let contactId = Object.keys(
+          contactResult.mutations.PeterpmContact.managedData
+        )[0];
+
+        if (contactId) {
+          this.contactId = contactId;
+          contact.contact_id = contactId;
+          contact.role = role.value;
+          contact.property_id = this.propertyId;
+          contact.isPrimary = isPrimaryContact.checked;
+          let affiliationResult = await this.model.createNewAffiliation(
+            contact
+          );
+        }
+      } else {
+        let isAffiliationExisting =
+          await this.model.fetchAffiliationByContactId(this.contactId);
+        if (isAffiliationExisting && isAffiliationExisting.length != 0) {
+          let affiliation = {};
+          affiliation.role = role.value;
+          affiliation.property_id = this.propertyId;
+          affiliation.primary_owner_contact = isPrimaryContact.checked;
+          let affiliationResult = await this.model.updateExistingAffiliation(
+            contact,
+            this.affiliationId
+          );
+
+          let contactResult = await this.model.updateContact(
+            this.contactId,
+            contact
+          );
+        } else {
+          contact.contact_id = this.contactId;
+          contact.role = role.value;
+          contact.property_id = this.propertyId;
+          contact.isPrimary = isPrimaryContact.checked;
+          let affiliationResult = await this.model.createNewAffiliation(
+            contact
+          );
+
+          return affiliationResult;
+        }
+      }
+    });
+
+    // Affiliation contact search wiring
+    this.affiliationContacts = [];
+
+    // Helper to reset modal fields; keep search unless specified
+    this.resetAffiliationModal = ({ preserveSearch = true } = {}) => {
+      try {
+        const role = document.getElementById("pcRole");
+        const first = document.getElementById("pcFirstName");
+        const last = document.getElementById("pcLastName");
+        const email = document.getElementById("pcEmail");
+        const sms = document.getElementById("pcSms");
+        const primary = document.getElementById("pcPrimary");
+        const search = document.getElementById("pcSearch");
+
+        if (role) role.value = "";
+        if (first) first.value = "";
+        if (last) last.value = "";
+        if (email) email.value = "";
+        if (sms) sms.value = "";
+        if (primary) primary.checked = false;
+        if (!preserveSearch && search) search.value = "";
+        this.affiliationId = undefined;
+      } catch (_) {}
+    };
+
+    this.setAffiliationContacts = (contacts = []) => {
+      this.affiliationContacts = Array.isArray(contacts) ? contacts : [];
+      renderList("");
+    };
+
+    const formatParts = (c) => {
+      const name = [c?.fields?.first_name, c?.fields?.last_name]
+        .filter(Boolean)
+        .join(" ")
+        .trim();
+      const email = c?.fields?.email || "";
+      const sms = c?.fields?.sms_number || "";
+      return {
+        name: name || email || sms || "Unknown Contact",
+        sub: email || sms,
+      };
+    };
+
+    const renderList = (term = "") => {
+      if (!searchList) return;
+      const q = String(term || "").toLowerCase();
+      const items = this.affiliationContacts.filter((c) => {
+        const f = c?.fields || {};
+        const name = `${(f.first_name || "").toLowerCase()} ${(
+          f.last_name || ""
+        ).toLowerCase()}`;
+        return (
+          name.includes(q) ||
+          (f.email || "").toLowerCase().includes(q) ||
+          (f.sms_number || "").toLowerCase().includes(q)
+        );
+      });
+
+      const frag = document.createDocumentFragment();
+
+      if (items.length) {
+        items.forEach((c) => {
+          const { name, sub } = formatParts(c);
+          const li = document.createElement("div");
+          li.className =
+            "px-4 py-2 cursor-pointer border-b last:border-b-0 hover:bg-slate-50";
+          li.innerHTML = `
+            <div class="text-[15px] font-medium text-slate-800">${this.#escapeHtml(
+              name
+            )}</div>
+            <div class="text-xs text-slate-500">${this.#escapeHtml(sub)}</div>
+          `;
+          li.addEventListener("click", () => {
+            this.contactId = c.id;
+            populateInputs(c);
+            searchList.classList.add("hidden");
+          });
+          frag.appendChild(li);
+        });
+      } else {
+        const empty = document.createElement("div");
+        empty.className = "px-4 py-2 text-sm text-slate-500";
+        empty.textContent = "No contacts";
+        frag.appendChild(empty);
+      }
+
+      // Add New Contact CTA (fixed footer, non-scrollable)
+      const addBtn = document.createElement("button");
+      addBtn.type = "button";
+      addBtn.className =
+        "w-full flex items-center gap-2 px-4 py-3 text-[15px] font-medium text-sky-800 hover:bg-sky-50";
+      addBtn.innerHTML = `
+        <span class="inline-flex items-center justify-center h-5 w-5 rounded-full border border-sky-800 text-sky-800">+</span>
+        <span>Add New Contact</span>
+      `;
+      addBtn.addEventListener("click", () => {
+        // Clear inputs to allow adding new
+        populateInputs({ fields: {} });
+        if (searchInput) searchInput.value = "";
+        searchList.classList.add("hidden");
+        // focus first name to start entry
+        firstNameInput?.focus();
+      });
+      // Populate scrollable area and fixed footer
+      if (searchScroll) {
+        searchScroll.innerHTML = "";
+        searchScroll.appendChild(frag);
+      }
+      if (searchFooter) {
+        searchFooter.innerHTML = "";
+        searchFooter.appendChild(addBtn);
+      }
+      // Ensure container is visible
+      searchList.classList.remove("hidden");
+    };
+
+    const populateInputs = (contact) => {
+      const f = contact?.fields || {};
+      if (firstNameInput) firstNameInput.value = f.first_name || "";
+      if (lastNameInput) lastNameInput.value = f.last_name || "";
+      if (emailInput) emailInput.value = f.email || "";
+      if (smsInput) smsInput.value = f.sms_number || "";
+    };
+
+    if (searchInput) {
+      searchInput.addEventListener("input", (e) => {
+        renderList(e.target.value || "");
+      });
+      searchInput.addEventListener("focus", () => {
+        renderList(searchInput.value || "");
+      });
+    }
+
+    document.addEventListener("click", (e) => {
+      if (
+        searchList &&
+        !searchList.contains(e.target) &&
+        e.target !== searchInput
+      ) {
+        searchList.classList.add("hidden");
+      }
+    });
+  }
+
+  onAddNewContactButtonClick() {
+    let button = document.getElementById("pcSearchFooter");
+    button.addEventListener("click", () => {
+      let firstname = document.getElementById("pcFirstName").value;
+      let lastName = document.getElementById("pcLastName").value;
+      let email = document.getElementById("pcEmail").value;
+      let smsNumber = document.getElementById("pcSms").value;
+
+      let contactObj = {
+        first_name: firstname,
+        last_name: lastName,
+        email: email,
+        sms_number: smsNumber,
+      };
+      this.model.createNewContact(contactObj);
+    });
+  }
+
+  async getValuesFromContactDetailModal(elements) {
+    let element = Array.from(elements);
+    let contactDetailObj = {};
+    element.map((item) => {
+      let key = item.getAttribute("Data-contact-id");
+      let value = item.value;
+      contactDetailObj[key] = value;
+    });
+
+    let result = await this.model.createNewContact(contactDetailObj);
+    if (result) {
+      element.map((item) => {
+        item.value = "";
+      });
+      alert("New contact has been created");
+    } else {
+      alert("New contact creation failed");
+    }
+  }
+
+  async createPropertyList(properties) {
+    // Root elements (reuse contact search structure conventions)
+    const root = document.querySelector('[data-search-root="property"]');
+    const input = root?.querySelector("[data-search-input]");
+    const panel = root?.querySelector("[data-search-panel]");
+    const results = root?.querySelector("[data-search-results]");
+    const footer = root?.querySelector("[data-search-footer]");
+
+    if (!root || !input || !panel || !results) return;
+
+    const filter = (q = "") => {
+      const term = q.trim().toLowerCase();
+      if (!term) return properties;
+      return properties.filter((p) => {
+        const hay = [p.property_name].filter(Boolean).join(" ").toLowerCase();
+        return hay.includes(term);
+      });
+    };
+
+    const render = (q = "") => {
+      const list = filter(q);
+      results.innerHTML = "";
+
+      if (!list.length) {
+        const empty = document.createElement("div");
+        empty.className =
+          "px-4 py-6 text-sm text-slate-500 text-center select-none";
+        empty.textContent = "No matching properties. Add a new property.";
+        results.appendChild(empty);
+      } else {
+        list.forEach((p, idx) => {
+          const li = document.createElement("li");
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.dataset.optionIndex = String(idx);
+          btn.className =
+            "w-full px-4 py-3 text-left hover:bg-slate-50 focus:bg-slate-50 focus:outline-none";
+          btn.innerHTML = `
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <p class="text-sm font-medium text-slate-700">${this.#escapeHtml(
+                  p.property_name || p.id
+                )}</p>
+              </div>
+            </div>`;
+          btn.addEventListener("mousedown", (e) => {
+            e.preventDefault();
+            // Store the chosen property id similar to contacts
+            this.propertyId = p.id;
+            // Fill the input with selected label
+            input.value = `${p.property_name || p.id} — ${
+              p.address_1 || ""
+            }`.trim();
+            input.dispatchEvent(new Event("input", { bubbles: true }));
+            input.dispatchEvent(new Event("change", { bubbles: true }));
+            panel.classList.add("hidden");
+          });
+          li.appendChild(btn);
+          results.appendChild(li);
+        });
+      }
+
+      // Fixed footer with Add New Property
+      if (footer) footer.innerHTML = "";
+      const addBtn = document.createElement("button");
+      addBtn.type = "button";
+      addBtn.innerHTML = `
+                    <span class="inline-flex h-5 w-5 items-center justify-center rounded-full border border-sky-900 text-sky-900">
+                        +
+                      </span>
+
+                    <span class="text-sky-900 hover:bg-slate-50">Add New Property</span>
+                   `;
+      addBtn.className =
+        "flex w-full items-center gap-2 border-t border-slate-200 px-4 py-3 text-sm font-medium text-sky-900 hover:bg-slate-50";
+      addBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        this.clearPropertyFieldValues("#property-information input");
+        let addPropertyBtn = document.getElementById("add-property-btn");
+        addPropertyBtn.classList.remove("hidden");
+        addPropertyBtn.addEventListener("click", () => {
+          let details = this.getValuesFromFields(
+            "[data-property-id]",
+            "data-property-id"
+          );
+          let contactId = document.querySelector(
+            "[data-contact-field='contact_id']"
+          ).value;
+          this.model.createNewProperties(details, contactId);
+        });
+      });
+      if (footer) footer.appendChild(addBtn);
+
+      panel.classList.remove("hidden");
+    };
+
+    input.addEventListener("input", (e) => render(e.target.value || ""));
+    input.addEventListener("focus", () => render(input.value || ""));
+    document.addEventListener("click", (e) => {
+      if (!root.contains(e.target)) panel.classList.add("hidden");
+    });
+  }
+
+  clearPropertyFieldValues(section) {
+    let fields = document.querySelectorAll(section);
+    fields.forEach((item) => {
+      item.value = "";
+    });
+  }
+
+  getValuesFromFields(section, attribute) {
+    let fields = document.querySelectorAll(section);
+    const obj = {};
+
+    fields = Array.from(fields);
+    fields.forEach((el) => {
+      let key = el.getAttribute(attribute);
+      if (!key) return;
+
+      const parts = key.split("-").filter(Boolean);
+      if (parts.length >= 2) {
+        key = key.toLowerCase().replaceAll("-", "_");
+      } else {
+        key = key.toLowerCase();
+      }
+
+      let value = "";
+
+      const tag = el.tagName.toLowerCase();
+      const type = el.type ? el.type.toLowerCase() : null;
+
+      if (tag === "ul") {
+        let checkedItems = Array.from(
+          el.querySelectorAll("li input:checked")
+        ).map((liInput) => liInput.value || true);
+
+        if (checkedItems.length > 0) {
+          checkedItems = checkedItems
+            .map((v) => {
+              if (v != "on") {
+                return `*/*${v}*/*`;
+              }
+            })
+            .join("");
+          obj[key] = checkedItems.length === 1 ? checkedItems[0] : checkedItems;
+        }
+      } else if (type === "checkbox") {
+        if (!obj[key]) obj[key] = [];
+        if (el.checked) {
+          obj[key].push(el.value || true);
+        }
+      } else if (type === "radio") {
+        if (el.checked) {
+          obj[key] = el.value;
+        }
+      } else {
+        if (key === "date_job_required_by") {
+          value = el.value
+            ? Math.floor(new Date(el.value).getTime() / 1000)
+            : "";
+        } else {
+          value = el.value?.trim() || "";
+        }
+        obj[key] = value;
+      }
+    });
+
+    // Flatten single-item arrays
+    for (const key in obj) {
+      if (Array.isArray(obj[key]) && obj[key].length === 1) {
+        obj[key] = obj[key][0];
+      }
+    }
+
+    return obj;
   }
 }

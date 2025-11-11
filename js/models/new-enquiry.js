@@ -1,7 +1,32 @@
+export const contactFields = [
+  { key: "first_name", value: document.getElementById("first_name") },
+  { key: "last_name", value: document.getElementById("last_name") },
+  { key: "email", value: document.getElementById("email") },
+  { key: "sms_number", value: document.getElementById("sms_number") },
+  { key: "office_phone", value: document.getElementById("office_phone") },
+  { key: "address", value: document.getElementById("address") },
+  { key: "address_2", value: document.getElementById("address_2") },
+  { key: "city", value: document.getElementById("city") },
+  { key: "state", value: document.getElementById("state") },
+  { key: "zip_code", value: document.getElementById("zip_code") },
+  { key: "country", value: document.getElementById("country") },
+  { key: "postal_address", value: document.getElementById("postal_address") },
+  {
+    key: "postal_address_2",
+    value: document.getElementById("postal_address_2"),
+  },
+  { key: "postal_city", value: document.getElementById("postal_city") },
+  { key: "postal_code", value: document.getElementById("postal_code") },
+  { key: "postal_country", value: document.getElementById("postal_country") },
+  { key: "postal_state", value: document.getElementById("postal_state") },
+];
+
 export class NewEnquiryModel {
   constructor(plugin, { maxRecords = 200 } = {}) {
     window.plugin = plugin;
     this.affiliationModel = plugin.switchTo("PeterpmAffiliation");
+    this.propertyModel = plugin.switchTo("PeterpmProperty");
+    this.dealModel = plugin.switchTo("PeterpmDeal");
     this.plugin = plugin;
     this.maxRecords = maxRecords;
     this.contactModel = null;
@@ -16,6 +41,7 @@ export class NewEnquiryModel {
     };
     this.relatedData = null;
     this.affiliationQuery = null;
+    this.contactModel = plugin.switchTo("PeterpmContact");
   }
 
   async loadContacts() {
@@ -1178,7 +1204,13 @@ export class NewEnquiryModel {
 
       let query = await this.affiliationQuery
         .deSelectAll()
-        .select(["role", "primary_owner_contact"])
+        .select([
+          "id",
+          "role",
+          "primary_owner_contact",
+          "contact_id",
+          "property_id",
+        ])
         .include("Contact", (q) =>
           q
             .deSelectAll()
@@ -1195,5 +1227,76 @@ export class NewEnquiryModel {
       console.warn("[NewEnquiry] fetchAffiliationByPropertyId failed", error);
       return [];
     }
+  }
+
+  async createNewContact(contactObj) {
+    let query = await this.contactModel.mutation();
+    query.createOne(contactObj);
+    let result = await query.execute(true).toPromise();
+    return result;
+  }
+
+  async createNewAffiliation(affiliationObj) {
+    let query = await this.affiliationModel.mutation();
+    query.createOne(affiliationObj);
+    let result = await query.execute(true).toPromise();
+    return result;
+  }
+
+  async updateExistingAffiliation(affiliationObj, affiliationId) {
+    let query = await this.affiliationModel.mutation();
+    query.update((q) => q.where("id", affiliationId).set(affiliationObj));
+    let result = await query.execute(true).toPromise();
+    return result;
+  }
+
+  async updateContact(contactId, contactObj) {
+    let query = await this.contactModel.mutation();
+    query.update((q) => q.where("id", contactId).set(contactObj));
+    let result = await query.execute(true).toPromise();
+    return result;
+  }
+
+  async fetchAffiliationByContactId(contactId) {
+    try {
+      this.affiliationQuery = await this.affiliationModel.query();
+      if (id) {
+        this.affiliationQuery = this.affiliationQuery.where(
+          "contact_id",
+          contactId
+        );
+      }
+
+      let query = await this.affiliationQuery
+        .deSelectAll()
+        .select()
+        .noDestroy();
+
+      query.getOrInitQueryCalc?.();
+
+      const payload = await query.fetchDirect().toPromise();
+      return payload.resp;
+    } catch (error) {
+      console.warn("[NewEnquiry] fetchAffiliationByPropertyId failed", error);
+      return [];
+    }
+  }
+
+  async createNewProperties(propertyDetails, contactId) {
+    let query = await this.propertyModel.mutation();
+    propertyDetails["individual_owner_id"] = contactId;
+    query.createOne(propertyDetails);
+    let result = await query.execute(true).toPromise();
+    return result;
+  }
+
+  async createNewInquiry(inquiryObj) {
+    let query = await this.dealModel.mutation();
+    inquiryObj["Service_Inquiry"] = {
+      service_name: inquiryObj["service_name"],
+    };
+    query.createOne(inquiryObj);
+    let result = await query.execute(true).toPromise();
+    return result;
   }
 }
