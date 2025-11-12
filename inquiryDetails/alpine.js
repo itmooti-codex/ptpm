@@ -3117,4 +3117,164 @@ document.addEventListener("alpine:init", () => {
       this.open = false;
     },
   }));
+
+  Alpine.data("propertyContactModal", () => ({
+    open: false,
+    isSubmitting: false,
+    error: "",
+    propertyId: null,
+
+    // live search (mocked suggestions list)
+    suggestions: [],
+
+    form: {
+      search: "",
+      role: "",
+      firstName: "",
+      lastName: "",
+      email: "",
+      sms: "",
+      isPrimary: false,
+      // if picked from suggestions:
+      existingContactId: null,
+    },
+
+    init() {
+      // open with: window.dispatchEvent(new CustomEvent('propertyContact:add:open', { detail: { propertyId, prefill } }))
+      window.addEventListener("propertyContact:add:open", (e) => {
+        const d = e?.detail || {};
+        this.reset();
+        this.propertyId = d.propertyId ?? null;
+        // optional prefill
+        if (d.prefill) Object.assign(this.form, d.prefill);
+        this.open = true;
+      });
+    },
+
+    reset() {
+      this.error = "";
+      this.isSubmitting = false;
+      this.suggestions = [];
+      this.form = {
+        search: "",
+        role: "Resident",
+        firstName: "",
+        lastName: "",
+        email: "",
+        sms: "",
+        isPrimary: false,
+        existingContactId: null,
+      };
+    },
+
+    onSearchChange() {
+      // TODO: wire to your contact search endpoint.
+      // For now, clear suggestions if short.
+      const q = this.form.search.trim();
+      if (q.length < 2) {
+        this.suggestions = [];
+        return;
+      }
+      // mock: show a single suggestion echoing the query
+      this.suggestions = [
+        {
+          id: "mock_" + q,
+          name: q,
+          email: `${q.replace(/\s+/g, "").toLowerCase()}@example.com`,
+        },
+      ];
+    },
+
+    pickSuggestion(s) {
+      this.form.search = `${s.name}${s.email ? " · " + s.email : ""}`;
+      this.form.existingContactId = s.id;
+      if (s.name) {
+        const parts = s.name.split(" ");
+        this.form.firstName = parts[0] || "";
+        this.form.lastName = parts.slice(1).join(" ");
+      }
+      if (s.email) this.form.email = s.email;
+      this.suggestions = [];
+    },
+
+    validate() {
+      if (!this.form.firstName.trim()) return "First name is required.";
+      if (!this.form.email.trim()) return "Email is required.";
+      // basic email format
+      if (!/^\S+@\S+\.\S+$/.test(this.form.email.trim()))
+        return "Enter a valid email.";
+      return "";
+    },
+
+    async handleSave() {
+      if (this.isSubmitting) return;
+      const v = this.validate();
+      if (v) {
+        this.error = v;
+        this.toast("error", v);
+        return;
+      }
+      if (!this.propertyId) {
+        this.error = "Missing property ID.";
+        this.toast("error", this.error);
+        return;
+      }
+
+      this.isSubmitting = true;
+      this.error = "";
+
+      try {
+        // build payload expected by your API
+        const payload = {
+          first_name: this.form.firstName.trim(),
+          last_name: this.form.lastName.trim() || null,
+          email: this.form.email.trim(),
+          sms_number: this.form.sms.trim() || null,
+        };
+
+        const contactRes = await graphqlRequest(CREATE_CONTACT_MUTAION, {
+          payload,
+        });
+        const contactId = contactRes?.createContact?.id;
+        console.log("Created contact ID:", contactId);
+
+        if (!contactId) {
+          throw new Error("Failed to create contact (no id returned)");
+        } else if(contactId){
+          const propertyRes = await graphqlRequest(CREATE_AFFILIATION_MUTATION, {
+            payload : {
+              contact_id: contactId,
+              property_id: this.propertyId,
+              role: this.form.role,
+            }
+          }); 
+        }
+
+        this.toast("success", "Property contact saved.");
+        // let the list refresh
+        window.dispatchEvent(
+          new CustomEvent("propertyContacts:changed", {
+            detail: { propertyId: this.propertyId },
+          })
+        );
+        this.handleClose();
+      } catch (e) {
+        console.error(e);
+        this.error = e?.message || "Failed to save contact.";
+        this.toast("error", this.error);
+      } finally {
+        this.isSubmitting = false;
+      }
+    },
+
+    handleClose() {
+      this.open = false;
+    },
+
+    toast(type, message) {
+      window.dispatchEvent(
+        new CustomEvent("toast:show", { detail: { type, message } })
+      );
+    },
+  }));
 });
