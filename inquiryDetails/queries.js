@@ -478,3 +478,36 @@ const UPDATE_TASK_MUTATION = `
     }
   }
 `;
+
+const CREATE_PROPERTY_CONTACT_MUTATION = `
+    mutation upsertPropertyContact($payload: PropertyContactCreateInput!) {
+      createPropertyContact(payload: $payload) {
+        id
+      }
+    }
+  `;
+
+const CREATE_CONTACT_MUTAION = `
+  mutation createContact(
+    $payload: ContactCreateInput = null
+  ) {
+    createContact(payload: $payload) {
+      id
+      first_name
+      last_name
+      email
+      sms_number
+    }
+  }
+`;
+
+const CREATE_AFFILIATION_MUTATION = `mutation createAffiliation(
+  $payload: AffiliationCreateInput = null
+) {
+  createAffiliation(payload: $payload) {
+    contact_id
+    role
+    property_id
+  }
+}
+`;

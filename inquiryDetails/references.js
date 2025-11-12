@@ -5,4 +5,5 @@ const GRAPHQL_API_KEY = "1rBR-jpR3yE3HE1VhFD0j";
 const INQUIRY_RECORD_ID = "312"; // update with the current inquiry record id
 const CONTACT_ID = "168";
 const JOB_ID = "375";
+const PROPERTY_ID = "174";
 const UPLOAD_ENDPOINT = "https://peterpm.vitalstats.app/api/v1/rest/upload";
