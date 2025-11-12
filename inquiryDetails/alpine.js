@@ -3157,7 +3157,7 @@ document.addEventListener("alpine:init", () => {
       this.suggestions = [];
       this.form = {
         search: "",
-        role: "Resident",
+        role: "",
         firstName: "",
         lastName: "",
         email: "",
