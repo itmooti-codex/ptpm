@@ -34,7 +34,7 @@ import { VitalStatsSDK } from "../sdk/init.js";
       this.maybeInitDashboard();
 
       // Page-specific
-      if (page === "new-enquiry") this.initNewEnquiry();
+      if (page == "new-enquiry") this.initNewEnquiry();
       if (page === "dashboard") this.maybeInitDashboard();
     },
 
