@@ -511,8 +511,27 @@
               data-trail-icon="true"
               data-type="main"
               class="px-4 py-3 bg-white rounded outline outline-1 outline-offset-[-1px] outline-white inline-flex justify-center items-center gap-2 relative cursor-pointer"
-              x-data="{ open: false}"
-              @click="open = !open"
+              x-data="{
+    open: false,
+    jobId: JOB_ID,
+    count: 0,
+    isLoading: false,
+    async fetchCount() {
+      try {
+        this.isLoading = true;
+        const data = await graphqlRequest(JOB_TASKS_QUERY, { Job_id: this.jobId });
+        const rows = Array.isArray(data?.calcTasks) ? data.calcTasks : [];
+        this.count = rows.length;
+      } catch (e) {
+        console.error('Failed to fetch task count', e);
+        this.count = 0;
+      } finally {
+        this.isLoading = false;
+      }
+    }
+  }"
+              x-init="fetchCount(); window.addEventListener('tasks:changed', () => fetchCount())"
+              @click="open = !open; if (open) fetchCount()"
             >
               <svg
                 width="14"
@@ -530,7 +549,10 @@
               <div
                 class="justify-start text-sky-900 text-[14px] font-medium f-inter"
               >
-                Tasks(4)
+                <span x-show="!isLoading"
+                  >Tasks(<span x-text="count">0</span>)</span
+                >
+                <span x-show="isLoading">Tasks(…)</span>
               </div>
               <svg
                 width="14"
@@ -584,6 +606,7 @@
                   <div
                     data-state="Default"
                     class="self-stretch px-6 py-4 bg-white inline-flex justify-start items-start gap-2 cursor-pointer hover:bg-[#E3EFFF]"
+                    @click="window.dispatchEvent(new CustomEvent('taskList:open', {detail: { jobId: JOB_ID}}))"
                   >
                     <div class="flex items-center gap-2">
                       <svg
@@ -4954,7 +4977,6 @@
 
             <!-- Body -->
             <div class="px-5 py-4 space-y-4">
-
               <!-- Subject -->
               <label class="block space-y-1">
                 <span class="text-xs font-semibold uppercase text-slate-500"
@@ -5092,6 +5114,419 @@
         </div>
       </div>
       <!-- Add Task Modal -->
+
+      <!-- Task List Modal -->
+      <div x-data="taskListModal" x-cloak>
+        <!-- Backdrop -->
+        <div
+          x-show="open"
+          x-transition.opacity
+          class="fixed inset-0 bg-black/40 z-40"
+          @click="handleClose()"
+        ></div>
+
+        <!-- Dialog -->
+        <div
+          x-show="open"
+          x-transition.opacity
+          class="fixed inset-0 z-50 grid place-items-center p-4"
+          @keydown.escape.window="handleClose()"
+        >
+          <div class="w-full max-w-3xl rounded-lg bg-white shadow-xl">
+            <!-- Header -->
+            <div class="flex items-center justify-between px-5 py-4 border-b">
+              <h3 class="text-lg font-semibold">
+                Task List for
+                <span x-text="titleSuffix || '[Current Job]'"></span>
+              </h3>
+              <button
+                class="text-slate-500 hover:text-slate-700"
+                @click="handleClose()"
+              >
+                &times;
+              </button>
+            </div>
+
+            <!-- Body -->
+            <div class="px-4 py-4">
+              <template x-if="error"
+                ><p class="text-sm text-red-600 mb-3" x-text="error"></p
+              ></template>
+
+              <template x-if="isLoading">
+                <div class="flex items-center gap-3 text-slate-500 p-4">
+                  <svg
+                    class="h-5 w-5 animate-spin"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                  >
+                    <circle
+                      class="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke-width="4"
+                    ></circle>
+                    <path
+                      class="opacity-75"
+                      stroke-width="4"
+                      d="M4 12a8 8 0 0 1 8-8"
+                    ></path>
+                  </svg>
+                  Loading tasks…
+                </div>
+              </template>
+
+              <div class="space-y-4" x-show="!isLoading">
+                <template x-for="task in tasks" :key="task.uid">
+                  <div class="rounded-lg border border-slate-200 p-4">
+                    <div class="flex items-start justify-between">
+                      <div class="flex items-center gap-2">
+                        <span
+                          class="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium"
+                          :class="pillClass(task.status)"
+                          x-text="pillText(task.status)"
+                        ></span>
+                      </div>
+
+                      <!-- Row right-side controls (scoped popovers) -->
+                      <div
+                        class="text-sm text-slate-600 flex flex-col items-end gap-2"
+                        x-data="taskRowPopovers(task, assignees)"
+                      >
+                        <!-- Assignee + Reassign -->
+                        <div class="relative flex items-center gap-1">
+                          <span class="font-medium">Assignee:</span>
+                          <span x-text="task.assigneeName"></span>
+                          <span
+                            class="text-slate-400"
+                            x-show="task.assigneeEmail"
+                            >(<span x-text="task.assigneeEmail"></span>)</span
+                          >
+                          <button
+                            type="button"
+                            class="p-1 rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex items-center hover:bg-slate-50"
+                            @click.stop="reassignOpen = !reassignOpen"
+                            title="Reassign"
+                            aria-label="Reassign"
+                          >
+                            <svg
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <g clip-path="url(#clip0_8687_22430)">
+                                <path
+                                  d="M19.2749 6.6969C18.153 5.15641 16.5714 4.01122 14.7573 3.42737C12.9434 2.84356 10.9909 2.85103 9.18115 3.44788C7.41997 4.0288 5.88372 5.14026 4.77881 6.62659C5.88358 5.14078 7.41948 4.02972 9.18018 3.44885C10.99 2.85183 12.9432 2.84457 14.7573 3.42834C16.5712 4.01211 18.153 5.1567 19.2749 6.6969ZM19.2749 6.6969C20.3967 8.23737 21.0005 10.094 20.9995 11.9996C21.0003 10.0942 20.3967 8.23715 19.2749 6.6969ZM17.6704 18.9879C16.8267 19.6726 15.8614 20.2042 14.8169 20.5485C13.7904 20.8868 12.7179 21.0342 11.6509 20.9928C11.7672 20.9972 11.8837 20.9998 12.0005 20.9996C13.9969 20.997 15.9362 20.3321 17.5142 19.109L17.6704 18.9879ZM11.5024 20.985C11.4298 20.981 11.3572 20.9761 11.2847 20.9703C11.3572 20.9761 11.4297 20.981 11.5024 20.985ZM11.1401 20.9567C11.0711 20.95 11.002 20.9444 10.9331 20.9362C11.0019 20.9443 11.071 20.9501 11.1401 20.9567ZM10.6519 20.8971C10.6405 20.8954 10.6291 20.894 10.6177 20.8922C10.629 20.894 10.6405 20.8954 10.6519 20.8971ZM10.3345 20.8434C10.3019 20.8373 10.2693 20.8313 10.2368 20.8248C10.2693 20.8313 10.3019 20.8373 10.3345 20.8434ZM9.99561 20.7731C9.96043 20.765 9.92523 20.7571 9.89014 20.7487C9.92522 20.7571 9.96041 20.765 9.99561 20.7731ZM9.65674 20.6881C9.61543 20.677 9.5739 20.6666 9.53271 20.6549C9.57387 20.6667 9.61541 20.677 9.65674 20.6881ZM9.32178 20.5914C9.29554 20.5833 9.26886 20.5764 9.24268 20.568C9.21644 20.5596 9.19068 20.5493 9.16455 20.5406C9.21682 20.558 9.26919 20.575 9.32178 20.5914ZM8.99365 20.4821C8.93809 20.4624 8.88273 20.4423 8.82764 20.4215C8.88276 20.4423 8.93813 20.4623 8.99365 20.4821ZM8.65479 20.3541C8.59362 20.3296 8.5327 20.3047 8.47217 20.2789C8.53273 20.3048 8.59369 20.3296 8.65479 20.3541ZM8.33643 20.2194C8.2672 20.1885 8.19872 20.1562 8.13037 20.1237C8.19875 20.1563 8.26729 20.1885 8.33643 20.2194ZM8.00439 20.0621C7.94448 20.0324 7.88487 20.0023 7.82568 19.9713C7.88488 20.0024 7.94456 20.0324 8.00439 20.0621ZM7.0835 19.5367C6.82295 19.3668 6.57117 19.184 6.32959 18.9879L6.48389 19.108C6.67834 19.2595 6.87851 19.4026 7.0835 19.5367ZM6.31299 18.1129L5.95654 18.6676C5.94971 18.6614 5.94285 18.6553 5.93604 18.649L6.45264 17.902C6.48063 17.8614 6.50975 17.8217 6.53857 17.7819C6.46028 17.8897 6.385 18.0003 6.31299 18.1129ZM13.2983 14.9957L14.5063 15.4772C15.7379 15.9679 16.7971 16.8123 17.5493 17.9039L18.062 18.649C18.0552 18.6553 18.0483 18.6614 18.0415 18.6676L17.687 18.1129C17.0766 17.1583 16.2355 16.3719 15.2417 15.8278C14.2518 15.2858 13.1416 15.0009 12.0132 14.9987C12.7502 14.9961 13.4705 14.7774 14.0835 14.3678C14.1322 14.3352 14.1781 14.299 14.2251 14.2643L13.2983 14.9957ZM4.09717 16.3053C4.42248 16.9008 4.81665 17.4616 5.2749 17.9752L5.45166 18.1735C5.19286 17.8989 4.95004 17.6078 4.72607 17.3004C4.49377 16.9816 4.28432 16.6489 4.09717 16.3053ZM18.6919 18.0153C18.6701 18.0395 18.6494 18.0646 18.6274 18.0885L18.6919 18.0153ZM18.9946 17.6598C18.9111 17.763 18.8256 17.8643 18.7378 17.9635C18.8258 17.8643 18.911 17.7627 18.9946 17.6598ZM9.79736 14.2838C10.4287 14.7422 11.1913 14.9947 11.981 14.9987C10.8545 15.0018 9.74653 15.2867 8.7583 15.8278C7.89626 16.2998 7.14915 16.9538 6.56787 17.7418C7.31148 16.7293 8.32428 15.9434 9.49365 15.4772L10.7007 14.9957L9.79736 14.2838ZM19.2915 17.276C19.2136 17.3836 19.1326 17.4886 19.0503 17.5924C19.1329 17.4887 19.2134 17.3833 19.2915 17.276ZM3.88037 15.8785C3.8445 15.8034 3.80962 15.728 3.77588 15.652C3.8097 15.728 3.84444 15.8035 3.88037 15.8785ZM3.7085 15.4977C3.67982 15.4297 3.65247 15.3612 3.62549 15.2926C3.65252 15.3612 3.67977 15.4297 3.7085 15.4977ZM3.5708 15.1549C3.5315 15.0499 3.49482 14.9439 3.45947 14.8375C3.49488 14.9439 3.53143 15.0499 3.5708 15.1549ZM3.44775 14.8043C3.40778 14.6824 3.37018 14.5597 3.33545 14.4362C3.37023 14.5597 3.40773 14.6824 3.44775 14.8043ZM23.2505 11.9996V12.0006L21.0005 14.2506L22.2808 12.9694L23.2495 11.9996H23.2505ZM3.271 14.1852C3.2625 14.1513 3.25273 14.1176 3.24463 14.0836C3.25273 14.1177 3.2625 14.1513 3.271 14.1852ZM3.18213 13.7975C3.17728 13.7737 3.17213 13.75 3.16748 13.7262C3.17213 13.75 3.17728 13.7737 3.18213 13.7975ZM3.12549 13.4928C3.11642 13.4389 3.10819 13.3848 3.1001 13.3307C3.10818 13.3848 3.11642 13.4389 3.12549 13.4928ZM19.7192 12.9694L20.0464 13.2975L18.7495 11.9996L19.7192 12.9694ZM3.0708 13.1207C3.06314 13.0596 3.05671 12.9984 3.05029 12.9371C3.05669 12.9984 3.06315 13.0597 3.0708 13.1207ZM5.25049 11.9996L5.24951 12.0006L5.25049 11.9996ZM3.03174 12.7506C3.02473 12.6668 3.0198 12.5828 3.01514 12.4987C3.01976 12.5828 3.02477 12.6668 3.03174 12.7506ZM15.5171 12.5426C15.5102 12.5613 15.5028 12.5797 15.4956 12.5983C15.5028 12.5797 15.5102 12.5613 15.5171 12.5426ZM15.5981 12.3004C15.5973 12.3034 15.5961 12.3062 15.5952 12.3092C15.5982 12.2992 15.6002 12.289 15.603 12.2789C15.6011 12.2858 15.6002 12.2936 15.5981 12.3004ZM15.6763 11.9781C15.6717 12.0013 15.6667 12.0244 15.6616 12.0475C15.6667 12.0244 15.6717 12.0013 15.6763 11.9781ZM15.7212 11.691C15.7176 11.7214 15.7138 11.7516 15.7095 11.7819C15.7138 11.7516 15.7176 11.7214 15.7212 11.691ZM8.28369 11.7418C8.28239 11.7321 8.28101 11.7223 8.27979 11.7125C8.281 11.7223 8.2824 11.7321 8.28369 11.7418ZM15.7446 11.3971C15.7431 11.4349 15.7405 11.4726 15.7378 11.5104C15.7404 11.4726 15.7431 11.4349 15.7446 11.3971ZM15.7456 11.1041C15.7472 11.1458 15.7474 11.1874 15.7476 11.2291C15.7473 11.1875 15.7472 11.1458 15.7456 11.1041ZM8.25146 11.1871C8.25209 11.147 8.25444 11.1071 8.25635 11.067C8.25439 11.107 8.25214 11.147 8.25146 11.1871ZM15.7241 10.8199C15.7298 10.8693 15.7331 10.9188 15.7368 10.9684C15.7331 10.9189 15.7298 10.8694 15.7241 10.8199ZM8.26611 10.9156C8.27058 10.8651 8.27619 10.8147 8.28271 10.7643C8.27614 10.8146 8.27065 10.865 8.26611 10.9156ZM15.6831 10.5485C15.6904 10.587 15.6956 10.6259 15.7017 10.6647C15.6955 10.626 15.6905 10.5871 15.6831 10.5485ZM8.29932 10.649C8.309 10.5889 8.31989 10.529 8.33252 10.4694C8.31984 10.5289 8.30909 10.5889 8.29932 10.649ZM8.35303 10.3824C8.36985 10.3114 8.38864 10.2408 8.40967 10.1705C8.38861 10.2406 8.36996 10.3113 8.35303 10.3824ZM15.6157 10.2594C15.6269 10.3002 15.6363 10.3414 15.646 10.3824C15.6362 10.3413 15.6269 10.3001 15.6157 10.2594ZM11.9995 7.49573C12.7789 7.49573 13.5393 7.73819 14.1743 8.19006C14.8093 8.64203 15.2882 9.28082 15.5435 10.0172C15.5609 10.0676 15.5741 10.1196 15.5894 10.1705C15.4114 9.57889 15.0913 9.03776 14.6519 8.59827C14.1275 8.07391 13.4592 7.71664 12.7319 7.5719C12.0045 7.4272 11.2502 7.50194 10.5649 7.78577C9.8798 8.06957 9.29436 8.55004 8.88232 9.16663C8.78619 9.3105 8.70035 9.46037 8.62549 9.61487C8.89895 9.04894 9.30983 8.55726 9.82568 8.19006C10.4605 7.73831 11.2203 7.49581 11.9995 7.49573ZM8.42725 10.1149C8.43745 10.0826 8.44545 10.0492 8.45654 10.0172C8.46834 9.98319 8.48287 9.95022 8.49561 9.91663C8.47073 9.982 8.44842 10.0482 8.42725 10.1149ZM8.51904 9.85608C8.54391 9.79377 8.57006 9.7322 8.59814 9.67151C8.56994 9.73228 8.54391 9.79397 8.51904 9.85608ZM7.68115 19.8942C7.58938 19.844 7.49858 19.7922 7.40869 19.7389C7.49861 19.7924 7.58956 19.8439 7.68115 19.8942ZM7.39502 19.7301C7.29601 19.6711 7.19769 19.6112 7.10107 19.5485C7.19771 19.6114 7.29624 19.6711 7.39502 19.7301ZM4.09619 16.3024C4.04003 16.1992 3.98608 16.095 3.93408 15.9899C3.9862 16.095 4.03993 16.1993 4.09619 16.3024Z"
+                                  fill="black"
+                                  stroke="#0052CC"
+                                  stroke-width="1.5"
+                                />
+                              </g>
+                              <defs>
+                                <clipPath id="clip0_8687_22430">
+                                  <rect width="24" height="24" fill="white" />
+                                </clipPath>
+                              </defs>
+                            </svg>
+                          </button>
+
+                          <!-- Reassign popover -->
+                          <div
+                            x-show="reassignOpen"
+                            x-transition.opacity
+                            @click.outside="reassignOpen=false"
+                            class="absolute right-0 top-full mt-2 z-50 w-64 bg-white rounded-lg shadow-lg border border-slate-200"
+                          >
+                            <div class="py-2 max-h-64 overflow-auto">
+                              <template
+                                x-for="user in assignees"
+                                :key="user.id"
+                              >
+                                <button
+                                  type="button"
+                                  class="w-full text-left px-3 py-2 hover:bg-slate-50 flex items-center justify-between"
+                                  :class="{'bg-sky-50': tempAssigneeId === user.id}"
+                                  @click="tempAssigneeId = user.id"
+                                >
+                                  <span
+                                    class="truncate"
+                                    x-text="user.name"
+                                  ></span>
+                                  <span x-show="tempAssigneeId === user.id"
+                                    >✓</span
+                                  >
+                                </button>
+                              </template>
+                            </div>
+                            <div
+                              class="flex items-center justify-between px-3 py-2 border-t"
+                            >
+                              <button
+                                class="text-slate-600 hover:text-slate-800"
+                                @click="reassignOpen=false"
+                                :disabled="savingReassign"
+                              >
+                                Cancel
+                              </button>
+                              <button
+                                class="inline-flex items-center gap-2 rounded bg-sky-800 text-white px-3 py-2 hover:bg-sky-900 disabled:opacity-60"
+                                @click="confirmReassign()"
+                                :disabled="savingReassign"
+                              >
+                                <svg
+                                  x-show="savingReassign"
+                                  class="h-4 w-4 animate-spin"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                >
+                                  <circle
+                                    class="opacity-25"
+                                    cx="12"
+                                    cy="12"
+                                    r="10"
+                                    stroke-width="4"
+                                  ></circle>
+                                  <path
+                                    class="opacity-75"
+                                    stroke-width="4"
+                                    d="M4 12a8 8 0 0 1 8-8"
+                                  ></path>
+                                </svg>
+                                <span>Reassign</span>
+                                <span x-show="!savingReassign">✓</span>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Due + Reschedule -->
+                        <div class="relative flex items-center gap-1">
+                          <span class="font-medium">Due:</span>
+                          <span x-text="humanDue(task.dueISO)"></span>
+                          <button
+                            type="button"
+                            class="p-1 rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex items-center hover:bg-slate-50"
+                            @click.stop="reschedOpen = !reschedOpen"
+                            title="Reschedule"
+                            aria-label="Reschedule"
+                          >
+                            <svg
+                              width="20"
+                              height="20"
+                              viewBox="0 0 20 20"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M9.75 5.75V9.75L12.75 12.75M0.973 11.75C1.34948 13.4018 2.18453 14.9138 3.38212 16.1121C4.57971 17.3104 6.0912 18.1463 7.74276 18.5238C9.39433 18.9012 11.1189 18.8049 12.7181 18.2458C14.3174 17.6867 15.7263 16.6875 16.783 15.3633C17.8396 14.039 18.501 12.4434 18.6911 10.76C18.8812 9.07652 18.5923 7.3736 17.8576 5.84704C17.123 4.32049 15.9723 3.03229 14.5381 2.13061C13.1038 1.22893 11.4441 0.750384 9.75 0.75C7.97986 0.749521 6.24889 1.27105 4.77364 2.24933C3.29839 3.22761 2.14439 4.6192 1.456 6.25M4.75 6.75H0.75V2.75"
+                                stroke="#0052CC"
+                                stroke-width="1.5"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                              />
+                            </svg>
+                          </button>
+
+                          <!-- Reschedule popover -->
+                          <div
+                            x-show="reschedOpen"
+                            x-transition.opacity
+                            @click.outside="reschedOpen=false"
+                            class="absolute right-0 top-full mt-2 z-50 w-72 bg-white rounded-lg shadow-lg border border-slate-200 p-3"
+                          >
+                            <div class="mb-3">
+                              <input
+                                type="date"
+                                x-model="tempDue"
+                                class="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                              />
+                            </div>
+                            <div class="flex items-center justify-between">
+                              <button
+                                class="text-slate-600 hover:text-slate-800"
+                                @click="reschedOpen=false"
+                                :disabled="savingResched"
+                              >
+                                Cancel
+                              </button>
+                              <button
+                                class="inline-flex items-center gap-2 rounded bg-sky-800 text-white px-3 py-2 hover:bg-sky-900 disabled:opacity-60"
+                                @click="confirmReschedule()"
+                                :disabled="savingResched"
+                              >
+                                <svg
+                                  x-show="savingResched"
+                                  class="h-4 w-4 animate-spin"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                >
+                                  <circle
+                                    class="opacity-25"
+                                    cx="12"
+                                    cy="12"
+                                    r="10"
+                                    stroke-width="4"
+                                  ></circle>
+                                  <path
+                                    class="opacity-75"
+                                    stroke-width="4"
+                                    d="M4 12a8 8 0 0 1 8-8"
+                                  ></path>
+                                </svg>
+                                <span>Reschedule</span>
+                                <span x-show="!savingResched">✓</span>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <h4
+                      class="mt-3 text-lg font-semibold"
+                      x-text="task.subject"
+                    ></h4>
+                    <p class="mt-2 text-slate-700" x-text="task.notes"></p>
+
+                    <ul class="mt-3 list-disc pl-5 text-slate-700 space-y-1">
+                      <template x-for="b in task.bullets"
+                        ><li x-text="b"></li
+                      ></template>
+                    </ul>
+
+                    <hr class="my-4" />
+
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-5 text-sky-700">
+                        <a
+                          :href="mailtoLink(task)"
+                          x-show="task.assigneeEmail"
+                          @click.stop
+                          class="hover:underline"
+                          :title="`Email ${task.assigneeName || task.assigneeEmail}`"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-5 w-5"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                          >
+                            <path d="M4 6h16v12H4z" stroke-width="1.5"></path>
+                            <path d="M4 7l8 6 8-6" stroke-width="1.5"></path>
+                          </svg>
+                        </a>
+                        <span class="w-px h-5 bg-slate-200"></span>
+                      </div>
+
+                      <div>
+                        <template x-if="task.status !== 'Completed'">
+                          <button
+                            type="button"
+                            class="rounded border border-slate-300 px-3 py-2 text-sm hover:bg-slate-50 disabled:opacity-60 cursor-pointer"
+                            @click="handleMarkComplete(task)"
+                            :disabled="isBusy(task)"
+                          >
+                            <span x-show="!actionLoading[task.uid]"
+                              >Mark As Complete</span
+                            >
+                            <span
+                              x-show="actionLoading[task.uid]"
+                              class="inline-flex items-center gap-2"
+                            >
+                              <svg
+                                class="h-4 w-4 animate-spin"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                              >
+                                <circle
+                                  class="opacity-25"
+                                  cx="12"
+                                  cy="12"
+                                  r="10"
+                                  stroke-width="4"
+                                ></circle>
+                                <path
+                                  class="opacity-75"
+                                  stroke-width="4"
+                                  d="M4 12a8 8 0 0 1 8-8"
+                                ></path>
+                              </svg>
+                              Saving…
+                            </span>
+                          </button>
+                        </template>
+
+                        <template x-if="task.status === 'Completed'">
+                          <button
+                            class="rounded border border-slate-300 px-3 py-2 text-sm hover:bg-slate-50 disabled:opacity-60"
+                            @click="reopen(task)"
+                            :disabled="actionLoading[task.uid]"
+                          >
+                            <span x-show="!actionLoading[task.uid]"
+                              >Reopen</span
+                            >
+                            <span
+                              x-show="actionLoading[task.uid]"
+                              class="inline-flex items-center gap-2"
+                            >
+                              <svg
+                                class="h-4 w-4 animate-spin"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                              >
+                                <circle
+                                  class="opacity-25"
+                                  cx="12"
+                                  cy="12"
+                                  r="10"
+                                  stroke-width="4"
+                                ></circle>
+                                <path
+                                  class="opacity-75"
+                                  stroke-width="4"
+                                  d="M4 12a8 8 0 0 1 8-8"
+                                ></path>
+                              </svg>
+                              Saving…
+                            </span>
+                          </button>
+                        </template>
+                      </div>
+                    </div>
+                  </div>
+                </template>
+
+                <div
+                  x-show="!tasks.length && !error"
+                  class="text-slate-500 p-4"
+                >
+                  No tasks yet.
+                </div>
+              </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="flex items-center justify-end px-5 py-4 border-t">
+              <button
+                class="text-slate-600 hover:text-slate-800"
+                @click="handleClose()"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- /Task List Modal -->
     </div>
     <!-- Modals -->
 

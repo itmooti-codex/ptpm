@@ -449,3 +449,32 @@ const CREATE_JOB_TASK = `
     }
   }
 `;
+
+const JOB_TASKS_QUERY = `query calcTasks($Job_id: PeterpmJobID!) {
+  calcTasks(query: [{ where: { Job_id: $Job_id } }]) {
+    Subject: field(arg: ["subject"])
+    Assignee_ID: field(arg: ["assignee_id"])
+    Date_Due: field(arg: ["date_due"])
+    Details: field(arg: ["details"])
+    Assignee_First_Name: field(
+      arg: ["Assignee", "first_name"]
+    )
+    Assignee_Last_Name: field(
+      arg: ["Assignee", "last_name"]
+    )
+    AssigneeEmail: field(arg: ["Assignee", "email"])
+    ID: field(arg: ["id"])
+    Status: field(arg: ["status"])
+  }
+}
+`;
+
+const UPDATE_TASK_MUTATION = `
+  mutation updateTask($id: PeterpmTaskID!, $payload: TaskUpdateInput = null) {
+    updateTask(query: [{ where: { id: $id } }], payload: $payload) {
+      assignee_id
+      date_due
+      status
+    }
+  }
+`;

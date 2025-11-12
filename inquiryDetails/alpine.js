@@ -2868,7 +2868,6 @@ document.addEventListener("alpine:init", () => {
           details: this.form.notes || null,
         };
 
-        
         await graphqlRequest(CREATE_JOB_TASK, {
           payload,
         });
@@ -2893,6 +2892,229 @@ document.addEventListener("alpine:init", () => {
       } finally {
         this.isSubmitting = false;
       }
+    },
+  }));
+
+  Alpine.data("taskListModal", () => ({
+    open: false,
+    isLoading: false,
+    error: "",
+    jobId: null,
+    titleSuffix: "",
+
+    tasks: [],
+    actionLoading: {},
+
+    // demo assignees — replace with real list
+    assignees: [
+      {
+        id: "1",
+        name: "Andrew Wadsworth",
+        email: "andrew+inspect@itmooti.com",
+      },
+    ],
+
+    init() {
+      this.boundOpenListener = (e) => {
+        const d = e?.detail || {};
+        this.jobId = JOB_ID;
+        this.titleSuffix = d.jobLabel ?? "";
+        this.fetchTasks();
+        this.open = true;
+      };
+      window.addEventListener("taskList:open", this.boundOpenListener);
+    },
+
+    async fetchTasks() {
+      if (!this.jobId) {
+        this.error = "Missing job ID.";
+        return;
+      }
+      this.isLoading = true;
+      this.error = "";
+      try {
+        const data = await graphqlRequest(JOB_TASKS_QUERY, {
+          Job_id: this.jobId,
+        });
+        const rows = Array.isArray(data?.calcTasks) ? data.calcTasks : [];
+        this.tasks = rows.map((row, idx) => this.normalizeTask(row, idx));
+        this.tasks.sort(
+          (a, b) => (a.dueTs ?? Infinity) - (b.dueTs ?? Infinity)
+        );
+        this.actionLoading = {};
+        for (const t of this.tasks) this.actionLoading[t.uid] = false;
+        // nudge reactivity
+        this.actionLoading = { ...this.actionLoading };
+      } catch (err) {
+        console.error(err);
+        this.error = err?.message || "Failed to load tasks.";
+        this.tasks = [];
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    normalizeTask(row, idx = 0) {
+      const subject = row?.Subject ?? "";
+      const notes = row?.Details ?? "";
+      const assigneeName = [
+        row?.Assignee_First_Name ?? "",
+        row?.Assignee_Last_Name ?? "",
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .trim();
+      const assigneeEmail = row?.AssigneeEmail ?? "";
+      const dueRaw = row?.Date_Due ?? "";
+      const dueDate = this.parseDate(dueRaw);
+      const dueISO = dueDate
+        ? new Date(
+            dueDate.getTime() - dueDate.getTimezoneOffset() * 60000
+          ).toISOString()
+        : "";
+      const dueTs = dueDate ? Math.floor(dueDate.getTime() / 1000) : null;
+
+      const id = row?.ID ?? null; // might not be present in your current query
+      const uid = id ?? `${this.jobId}::${idx}::${subject.slice(0, 16)}`;
+      const status = (row?.Status ?? "open").toLowerCase();
+
+      return {
+        id,
+        uid,
+        status,
+        subject,
+        notes,
+        bullets: [],
+        assigneeName,
+        assigneeEmail,
+        dueISO,
+        dueTs,
+      };
+    },
+
+    // UI helpers
+    pillClass(s) {
+      return s === "completed"
+        ? "bg-emerald-100 text-emerald-700"
+        : "bg-amber-100 text-amber-700";
+    },
+    pillText(s) {
+      return s === "completed" ? "Completed" : "Open";
+    },
+
+    humanDue(iso) {
+      if (!iso) return "No due date";
+      const d = this.parseDate(iso);
+      if (!d) return "No due date";
+      const now = new Date(),
+        tmr = new Date(now);
+      tmr.setDate(now.getDate() + 1);
+      const same = (a, b) =>
+        a.getFullYear() === b.getFullYear() &&
+        a.getMonth() === b.getMonth() &&
+        a.getDate() === b.getDate();
+      const hh = String(d.getHours()).padStart(2, "0"),
+        mm = String(d.getMinutes()).padStart(2, "0");
+      const hasTime = d.getHours() + d.getMinutes() !== 0;
+      if (same(d, now) && hasTime) return `Today ${this.to12h(hh, mm)}`;
+      if (same(d, tmr) && hasTime) return `Tomorrow ${this.to12h(hh, mm)}`;
+      const day = d.getDate(),
+        month = d.toLocaleString(undefined, { month: "long" }),
+        year = d.getFullYear();
+      return hasTime
+        ? `${day} ${month}, ${year} ${this.to12h(hh, mm)}`
+        : `${day} ${month}, ${year}`;
+    },
+    to12h(hh, mm) {
+      let h = parseInt(hh, 10),
+        ap = h >= 12 ? "PM" : "AM";
+      h = h % 12 || 12;
+      return `${h}${mm !== "00" ? `:${mm}` : ""}${ap}`;
+    },
+    parseDate(v) {
+      if (!v) return null;
+      if (/^\d{10}$/.test(v)) return new Date(Number(v) * 1000);
+      if (/^\d{13}$/.test(v)) return new Date(Number(v));
+      if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return new Date(`${v}T00:00:00`);
+      const d = new Date(v);
+      return isNaN(d) ? null : d;
+    },
+
+    mailtoLink(task) {
+      if (!task?.assigneeEmail) return null;
+      const addr = task.assigneeEmail.trim();
+      const qs = new URLSearchParams({
+        subject: `Job task: ${task.subject || ""}`,
+        // body: `Hi ${task.assigneeName || ''},\n\nRe: ${task.subject || ''}\n\nThanks,\n`
+      }).toString();
+      return qs ? `mailto:${addr}?${qs}` : `mailto:${addr}`;
+    },
+
+    // Actions (kept — guarded if no real id yet)
+    async markComplete(task) {
+      const key = task.uid;
+      if (this.actionLoading[key]) return;
+
+      this.actionLoading[key] = true;
+      this.actionLoading = { ...this.actionLoading };
+
+      try {
+        if (!task.id) throw new Error("Missing task ID for update.");
+        await graphqlRequest(UPDATE_TASK_MUTATION, {
+          id: task.id,
+          payload: { status: "completed" },
+        });
+        task.status = "completed";
+        this.toast("success", "Task marked as complete.");
+      } catch (e) {
+        console.error(e);
+        this.toast("error", e?.message || "Failed to complete task.");
+      } finally {
+        this.actionLoading[key] = false;
+        this.actionLoading = { ...this.actionLoading };
+      }
+    },
+
+    async reopen(task) {
+      const key = task.uid;
+      if (this.actionLoading[key]) return;
+
+      this.actionLoading[key] = true;
+      this.actionLoading = { ...this.actionLoading };
+
+      try {
+        if (!task.id) throw new Error("Missing task ID for update.");
+        await graphqlRequest(UPDATE_TASK_MUTATION, {
+          id: task.id,
+          payload: { status: "open" },
+        });
+        task.status = "open";
+        this.toast("success", "Task reopened.");
+      } catch (e) {
+        console.error(e);
+        this.toast("error", e?.message || "Failed to reopen task.");
+      } finally {
+        this.actionLoading[key] = false;
+        this.actionLoading = { ...this.actionLoading };
+      }
+    },
+
+    isBusy(task) {
+      return !!this.actionLoading[task.uid];
+    },
+
+    handleMarkComplete(task) {
+      console.log("clicked mark complete for", task);
+      this.markComplete(task);
+    },
+
+    toast(type, message) {
+      window.dispatchEvent(
+        new CustomEvent("toast:show", { detail: { type, message } })
+      );
+    },
+    handleClose() {
+      this.open = false;
     },
   }));
 });
