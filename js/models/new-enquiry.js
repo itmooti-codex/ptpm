@@ -1,26 +1,3 @@
-export const contactFields = [
-  { key: "first_name", value: document.getElementById("first_name") },
-  { key: "last_name", value: document.getElementById("last_name") },
-  { key: "email", value: document.getElementById("email") },
-  { key: "sms_number", value: document.getElementById("sms_number") },
-  { key: "office_phone", value: document.getElementById("office_phone") },
-  { key: "address", value: document.getElementById("address") },
-  { key: "address_2", value: document.getElementById("address_2") },
-  { key: "city", value: document.getElementById("city") },
-  { key: "state", value: document.getElementById("state") },
-  { key: "zip_code", value: document.getElementById("zip_code") },
-  { key: "country", value: document.getElementById("country") },
-  { key: "postal_address", value: document.getElementById("postal_address") },
-  {
-    key: "postal_address_2",
-    value: document.getElementById("postal_address_2"),
-  },
-  { key: "postal_city", value: document.getElementById("postal_city") },
-  { key: "postal_code", value: document.getElementById("postal_code") },
-  { key: "postal_country", value: document.getElementById("postal_country") },
-  { key: "postal_state", value: document.getElementById("postal_state") },
-];
-
 export class NewEnquiryModel {
   constructor(plugin, { maxRecords = 200 } = {}) {
     window.plugin = plugin;
@@ -42,6 +19,7 @@ export class NewEnquiryModel {
     this.relatedData = null;
     this.affiliationQuery = null;
     this.contactModel = plugin.switchTo("PeterpmContact");
+    this.affiliationCallback = null;
   }
 
   async loadContacts() {
@@ -519,7 +497,7 @@ export class NewEnquiryModel {
       limit: this.maxRecords,
     });
 
-    return this.#mapProperties(this.#extractCalcRecords(payload));
+    return this.mapProperties(this.#extractCalcRecords(payload));
   }
 
   async #queryJobs(email) {
@@ -721,7 +699,7 @@ export class NewEnquiryModel {
     return [];
   }
 
-  #mapProperties(list = []) {
+  mapProperties(list = []) {
     return list.map((item, index) => {
       const state = this.#unwrap(item) || {};
       const lookup = this.#buildLookup(state);
@@ -1195,14 +1173,14 @@ export class NewEnquiryModel {
     };
   }
 
-  async fetchAffiliationByPropertyId(id) {
+  async fetchAffiliationByPropertyId(id, callback) {
     try {
       this.affiliationQuery = this.affiliationModel.query();
       if (id) {
         this.affiliationQuery = this.affiliationQuery.where("property_id", id);
       }
 
-      let query = await this.affiliationQuery
+      this.affiliationQuery = await this.affiliationQuery
         .deSelectAll()
         .select([
           "id",
@@ -1219,13 +1197,51 @@ export class NewEnquiryModel {
         .include("Company", (q) => q.deSelectAll().select(["name"]))
         .noDestroy();
 
-      query.getOrInitQueryCalc?.();
+      this.affiliationQuery.getOrInitQueryCalc?.();
 
-      const payload = await query.fetchDirect().toPromise();
-      return payload.resp;
+      const payload = await this.affiliationQuery.fetchDirect().toPromise();
+      this.affiliationCallback = callback;
+      this.subscribeToAffiliationChanges();
+      if (this.affiliationCallback) {
+        this.affiliationCallback(payload.resp);
+      }
     } catch (error) {
       console.warn("[NewEnquiry] fetchAffiliationByPropertyId failed", error);
       return [];
+    }
+  }
+
+  subscribeToAffiliationChanges() {
+    let liveObs = null;
+    try {
+      if (typeof this.affiliationQuery.subscribe === "function")
+        liveObs = this.affiliationQuery.subscribe();
+    } catch (_) {}
+    if (
+      !liveObs &&
+      typeof this.affiliationQuery.localSubscribe === "function"
+    ) {
+      try {
+        liveObs = this.affiliationQuery.localSubscribe();
+      } catch (_) {}
+    }
+
+    if (liveObs) {
+      this.sub = liveObs
+        .pipe(window.toMainInstance?.(true) ?? ((x) => x))
+        .subscribe({
+          next: (payload) => {
+            const data = Array.isArray(payload?.records)
+              ? payload.records
+              : Array.isArray(payload)
+              ? payload
+              : [];
+            if (this.affiliationCallback) {
+              this.affiliationCallback(data);
+            }
+          },
+          error: () => {},
+        });
     }
   }
 
@@ -1260,16 +1276,11 @@ export class NewEnquiryModel {
   async fetchAffiliationByContactId(contactId) {
     try {
       this.affiliationQuery = await this.affiliationModel.query();
-      if (id) {
-        this.affiliationQuery = this.affiliationQuery.where(
-          "contact_id",
-          contactId
-        );
-      }
 
       let query = await this.affiliationQuery
+        .where("contact_id", contactId)
         .deSelectAll()
-        .select()
+        .select(["id"])
         .noDestroy();
 
       query.getOrInitQueryCalc?.();
@@ -1297,6 +1308,78 @@ export class NewEnquiryModel {
     };
     query.createOne(inquiryObj);
     let result = await query.execute(true).toPromise();
+    return result;
+  }
+
+  async fetchcontactDetailsById(id) {
+    let query = this.contactModel.query();
+    query = query
+      .where("id", id)
+      .deSelectAll()
+      .select([
+        "first_name",
+        "last_name",
+        "email",
+        "sms_number",
+        "office_phone",
+        "address",
+        "address_2",
+        "city",
+        "state",
+        "zip_code",
+        "country",
+        "postal_address",
+        "postal_address_2",
+        "postal_city",
+        "postal_code",
+        "postal_country",
+        "postal_state",
+      ])
+      .noDestroy();
+    query.getOrInitQueryCalc();
+    let result = await query.fetchDirect().toPromise();
+    return result;
+  }
+
+  async deleteAffiliationById(affiliationId) {
+    let query = await this.affiliationModel.mutation();
+    query.delete((q) => q.where("id", affiliationId));
+    let result = await query.execute(true).toPromise();
+    return result;
+  }
+
+  async fetchPropertiesById(propertyId) {
+    let query = this.propertyModel.query();
+    query = await query
+      .where("id", propertyId)
+      .deSelectAll()
+      .select([
+        "id",
+        "unique_id",
+        "property_name",
+        "address",
+        "address_1",
+        "address_2",
+        "suburb_town",
+        "city",
+        "state",
+        "postal_code",
+        "postcode",
+        "map_url",
+        "owner_name",
+        "status",
+        "property_status",
+        "lot_number",
+        "unit_number",
+        "property_type",
+        "building_type",
+        "foundation_type",
+        "stories",
+        "bedrooms",
+        "manhole",
+      ])
+      .noDestroy();
+    let result = await query.fetchDirect().toPromise();
     return result;
   }
 }

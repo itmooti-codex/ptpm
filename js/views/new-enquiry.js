@@ -78,7 +78,7 @@ export class NewEnquiryView {
     this.selectHandler = null;
     this.manualHandler = null;
 
-    this.#bindDropdown();
+    this.#bindContactListDropdown();
     this.#bindSameAsContact();
     this.#bindTabs();
     this.#bindRelatedTabs();
@@ -90,6 +90,9 @@ export class NewEnquiryView {
     this.onAddNewContactButtonClick();
     this.contactId = null;
     this.propertyId = null;
+    this.createStatusModal();
+    this.customModalHeader = document.getElementById("statusTitle");
+    this.customModalBody = document.getElementById("statusMessage");
   }
 
   isActive() {
@@ -119,6 +122,9 @@ export class NewEnquiryView {
   }
 
   populateContact(contact) {
+    if (contact.id) {
+      document.getElementById("view-contact-detail").classList.remove("hidden");
+    }
     if (!contact?.fields || !this.section) return;
 
     Object.entries(contact.fields).forEach(([field, value]) => {
@@ -279,7 +285,7 @@ export class NewEnquiryView {
     this.#setActiveRelatedTab(this.activeRelatedTab);
   }
 
-  #bindDropdown() {
+  #bindContactListDropdown() {
     if (!this.searchInput) return;
 
     this.searchInput.addEventListener("focus", () => {
@@ -869,11 +875,13 @@ export class NewEnquiryView {
               fieldIds,
               propertyData
             );
-            let affiliationData = await this.model.fetchAffiliationByPropertyId(
-              this.propertyId
+            await this.model.fetchAffiliationByPropertyId(
+              this.propertyId,
+              (affiliationData) => {
+                this.setPropertyInformationToFields(fieldIds, values);
+                this.createPropertyContactTable(affiliationData);
+              }
             );
-            this.setPropertyInformationToFields(fieldIds, values);
-            this.createPropertyContactTable(affiliationData);
           }
         }
       });
@@ -1126,8 +1134,19 @@ export class NewEnquiryView {
       })
     );
     tbody.querySelectorAll(".delete-btn").forEach((btn, i) =>
-      btn.addEventListener("click", (e) => {
-        console.log("✏️ Edit clicked:", i);
+      btn.addEventListener("click", async (e) => {
+        const tr = e.target.closest("tr");
+        if (!tr) return;
+        debugger;
+        let result = await this.model.deleteAffiliationById(
+          tr.getAttribute("data-affiliation-id")
+        );
+        if (!result.isCancelling) {
+          this.customModalHeader.innerText = "Successfult";
+          this.customModalBody.innerText = "Affiliation deleted successfully.";
+
+          setTimeout(() => {}, 2000);
+        }
       })
     );
   }
@@ -1164,7 +1183,7 @@ export class NewEnquiryView {
     wrapper.className =
       "fixed inset-0 z-[9999] hidden flex items-center justify-center bg-black/50";
     wrapper.innerHTML = `
-      <div id="addressDetailsModalBox" class="bg-white rounded-lg shadow-xl w-[40vw] max-w-3xl max-h-[90vh] overflow-auto">
+      <div modal-name="contact-detail-modal" id="addressDetailsModalBox" class="bg-white rounded-lg shadow-xl w-[40vw] max-w-3xl max-h-[90vh] overflow-auto">
         <div class="flex items-center justify-between px-5 py-3 bg-[#003882] text-white rounded-t-lg">
           <h3 class="text-base font-semibold">Contact Details</h3>
           <button id="closeAddressDetailsBtn" class="p-1 rounded hover:bg-white/10" aria-label="Close">
@@ -1196,6 +1215,9 @@ export class NewEnquiryView {
                   <label class="text-sm font-medium text-slate-600">SMS Number</label>
                   <input type="tel" data-contact-field="sms_number" data-contact-id="sms_number" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100">
                 </div>
+              </div>
+              <div  class="hidden">
+              <input id="contact-address" type="text"/>
               </div>
               <div>
                 <label class="text-sm font-medium text-slate-600">Office Number</label>
@@ -1554,13 +1576,18 @@ export class NewEnquiryView {
           contact.role = role.value;
           contact.property_id = this.propertyId;
           contact.isPrimary = isPrimaryContact.checked;
-          let affiliationResult = await this.model.createNewAffiliation(
-            contact
-          );
+          let result = await this.model.createNewAffiliation(contact);
+          if (!result.isCancelling) {
+            this.customModalHeader.innerText = "Successfult";
+            this.customModalBody.innerText =
+              "Affiliation deleted successfully.";
+          }
         }
       } else {
         let isAffiliationExisting =
-          await this.model.fetchAffiliationByContactId(this.contactId);
+          await this.model.fetchAffiliationByContactId(
+            this.contactId.toString()
+          );
         if (isAffiliationExisting && isAffiliationExisting.length != 0) {
           let affiliation = {};
           affiliation.role = role.value;
@@ -1575,6 +1602,12 @@ export class NewEnquiryView {
             this.contactId,
             contact
           );
+
+          if (!affiliationResult.isCancelling) {
+            this.customModalHeader.innerText = "Successfult";
+            this.customModalBody.innerText =
+              "Affiliation updated successfully.";
+          }
         } else {
           contact.contact_id = this.contactId;
           contact.role = role.value;
@@ -1584,7 +1617,11 @@ export class NewEnquiryView {
             contact
           );
 
-          return affiliationResult;
+          if (!affiliationResult.isCancelling) {
+            this.customModalHeader.innerText = "Successfult";
+            this.customModalBody.innerText =
+              "Affiliation creation successfully.";
+          }
         }
       }
     });
@@ -1760,14 +1797,43 @@ export class NewEnquiryView {
       contactDetailObj[key] = value;
     });
 
-    let result = await this.model.createNewContact(contactDetailObj);
-    if (result) {
-      element.map((item) => {
-        item.value = "";
-      });
-      alert("New contact has been created");
+    let contactId = document.querySelector(
+      "[data-contact-field='contact_id']"
+    ).value;
+    if (contactId) {
+      let result = await this.model.updateContact(contactId, contactDetailObj);
+      if (result) {
+        if (!result.isCancelling) {
+          this.customModalHeader.innerText = "Successfult";
+          this.customModalBody.innerText = "Contact updated successfully.";
+        }
+        element.map((item) => {
+          item.value = "";
+        });
+      } else {
+        if (!result.isCancelling) {
+          this.customModalHeader.innerText = "Failed";
+          this.customModalBody.innerText = "contact update Failed.";
+        }
+      }
     } else {
-      alert("New contact creation failed");
+      let result = await this.model.createNewContact(contactDetailObj);
+      if (result) {
+        element.map((item) => {
+          item.value = "";
+        });
+        if (!result.isCancelling) {
+          this.customModalHeader.innerText = "Successfult";
+          this.customModalBody.innerText = "New contact created successfully.";
+
+          document
+            .getElementById("addressDetailsModalWrapper")
+            .classList.add("hidden");
+        } else {
+          this.customModalHeader.innerText = "Failed";
+          this.customModalBody.innerText = "Contact create Failed.";
+        }
+      }
     }
   }
 
@@ -1806,21 +1872,32 @@ export class NewEnquiryView {
           const btn = document.createElement("button");
           btn.type = "button";
           btn.dataset.optionIndex = String(idx);
+
           btn.className =
             "w-full px-4 py-3 text-left hover:bg-slate-50 focus:bg-slate-50 focus:outline-none";
           btn.innerHTML = `
-            <div class="flex items-start justify-between gap-3">
+            <div data-property-id= ${
+              p.id
+            } class="flex items-start justify-between gap-3">
               <div>
                 <p class="text-sm font-medium text-slate-700">${this.#escapeHtml(
                   p.property_name || p.id
                 )}</p>
               </div>
             </div>`;
-          btn.addEventListener("mousedown", (e) => {
+          btn.addEventListener("mousedown", async (e) => {
             e.preventDefault();
             // Store the chosen property id similar to contacts
             this.propertyId = p.id;
-            // Fill the input with selected label
+            let propertyDetail = await this.model.fetchPropertiesById(
+              this.propertyId
+            );
+            this.populatePropertyFields(
+              document.querySelectorAll(
+                "[data-section-id='property'] input:not([data-search-input]), [data-section-id='property'] select"
+              ),
+              propertyDetail.resp
+            );
             input.value = `${p.property_name || p.id} — ${
               p.address_1 || ""
             }`.trim();
@@ -1851,7 +1928,7 @@ export class NewEnquiryView {
         this.clearPropertyFieldValues("#property-information input");
         let addPropertyBtn = document.getElementById("add-property-btn");
         addPropertyBtn.classList.remove("hidden");
-        addPropertyBtn.addEventListener("click", () => {
+        addPropertyBtn.addEventListener("click", async () => {
           let details = this.getValuesFromFields(
             "[data-property-id]",
             "data-property-id"
@@ -1859,7 +1936,19 @@ export class NewEnquiryView {
           let contactId = document.querySelector(
             "[data-contact-field='contact_id']"
           ).value;
-          this.model.createNewProperties(details, contactId);
+          let result = await this.model.createNewProperties(details, contactId);
+          if (!result.isCancelling) {
+            this.customModalHeader.innerText = "Successfult";
+            this.customModalBody.innerText =
+              "New Property created successfully.";
+
+            this.clearPropertyFieldValues(
+              "[#property-information input, #property-information select"
+            );
+          } else {
+            this.customModalHeader.innerText = "Successfult";
+            this.customModalBody.innerText = "Properties create failed.";
+          }
         });
       });
       if (footer) footer.appendChild(addBtn);
@@ -1946,5 +2035,106 @@ export class NewEnquiryView {
     }
 
     return obj;
+  }
+
+  async onViewDetailLinkClicked(id) {
+    let contactDetail = await this.model.fetchcontactDetailsById(id);
+    this.populateAddressDetails(contactDetail.resp[0]);
+    this.toggleModal("addressDetailsModalWrapper");
+  }
+
+  populateAddressDetails(data) {
+    this.clearPropertyFieldValues(
+      "[modal-name='contact-detail-modal'] input, [modal-name='contact-detail-modal'] select"
+    );
+    for (const [key, value] of Object.entries(data)) {
+      if (value === null || value === undefined) continue;
+      const normalizedKey = key.toLowerCase();
+
+      // find ALL elements that match either field or id
+      const elements = document.querySelectorAll(
+        `[data-contact-field*="${normalizedKey}"], [data-contact-id*="${normalizedKey}"]`
+      );
+
+      // set value for each match
+      elements.forEach((el) => {
+        if (
+          el.tagName === "INPUT" ||
+          el.tagName === "SELECT" ||
+          el.tagName === "TEXTAREA"
+        ) {
+          el.value = value;
+        }
+      });
+    }
+  }
+
+  createStatusModal() {
+    let modal = document.getElementById("statusModal");
+    if (modal) return modal;
+    modal = document.createElement("div");
+    modal.id = "statusModal";
+    modal.className =
+      "fixed inset-0 z-[9999] hidden items-center justify-center bg-black/40 transition-opacity duration-200";
+
+    modal.innerHTML = `
+      <div class="bg-white rounded-lg shadow-xl w-[350px] text-center p-6 flex flex-col items-center space-y-4">
+        <div id="statusIcon" class="w-12 h-12 rounded-full flex items-center justify-center text-white text-2xl"></div>
+        <h3 id="statusTitle" class="text-lg font-semibold text-gray-800">Success</h3>
+        <p id="statusMessage" class="text-sm text-gray-600">Your action was successful.</p>
+        <button id="statusCloseBtn" class="mt-3 px-4 py-2 bg-[#003882] text-white rounded hover:bg-blue-700">
+          OK
+        </button>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    const closeBtn = document.getElementById("statusCloseBtn");
+    const hide = () => {
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+      document.body.style.overflow = "";
+    };
+    closeBtn.onclick = hide;
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) hide();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (!modal.classList.contains("hidden") && e.key === "Escape") hide();
+    });
+
+    document.body.appendChild(modal);
+  }
+
+  populatePropertyFields(fields, data) {
+    if (!fields || !data) return;
+
+    fields.forEach((field) => {
+      const key = field.getAttribute("data-property-id");
+
+      if (!key) return;
+      const normalizedKey = key.replace(/-/g, "_");
+      let value = data[0][normalizedKey];
+      if (value === undefined || value === null) return;
+      if (field.type === "checkbox") {
+        field.checked = Boolean(value);
+      } else if (field.tagName === "SELECT") {
+        const optionExists = Array.from(field.options).some(
+          (opt) => opt.value == value
+        );
+        if (optionExists) field.value = value;
+      } else {
+        field.value = value;
+      }
+    });
+  }
+
+  onSameAsContactCheckboxClicked(address = {}) {
+    for (const key in address) {
+      let field = document.querySelector(`[data-property-id=${key}]`);
+      field.value = address[key];
+    }
   }
 }

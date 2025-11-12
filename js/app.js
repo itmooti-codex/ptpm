@@ -59,7 +59,6 @@ import { VitalStatsSDK } from "../sdk/init.js";
       ctrl.init();
       this.controllers.newEnquiry = ctrl;
     },
-
   };
 
   document.addEventListener("DOMContentLoaded", () => App.start());
