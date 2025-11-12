@@ -1,4 +1,3 @@
-import { contactFields } from "../models/new-enquiry.js";
 export class NewEnquiryController {
   constructor(model, view) {
     this.model = model;
@@ -140,6 +139,7 @@ export class NewEnquiryController {
     this.onAddPropertyContactButtonClicked();
     this.onAddContactSaveButtonClicked();
     this.onSubmitButtonClicked();
+    this.onViewDetailLinkClicked();
   }
 
   init() {
@@ -173,6 +173,7 @@ export class NewEnquiryController {
 
     this.createInquiryDetailOption();
     this.showHideAddAddressModal();
+    this.onSameAsContactCheckboxClicked();
   }
 
   async #loadContacts() {
@@ -422,6 +423,9 @@ export class NewEnquiryController {
     );
 
     element.addEventListener("click", () => {
+      this.view.clearPropertyFieldValues(
+        "[modal-name='contact-detail-modal'] input, [modal-name='contact-detail-modal'] select"
+      );
       document.querySelector("[data-search-panel]").classList.toggle("hidden");
       this.view.toggleModal("addressDetailsModalWrapper");
     });
@@ -467,6 +471,15 @@ export class NewEnquiryController {
   onAddContactSaveButtonClicked() {
     let saveBtn = document.getElementById("updateAddressDetailsBtn");
     saveBtn.addEventListener("click", () => {
+      let addressobj = {
+        "address-1": document.getElementById("adTopLine1").value,
+        "address-2": document.getElementById("adTopLine2").value,
+        "suburb-town": document.getElementById("adTopCity").value,
+        state: document.getElementById("adTopState").value,
+        "postal-code": document.getElementById("adTopPostal").value,
+      };
+      document.getElementById("contact-address").value =
+        JSON.stringify(addressobj);
       let elements = document.querySelectorAll(
         "#addressDetailsModalWrapper [data-contact-id]"
       );
@@ -490,6 +503,28 @@ export class NewEnquiryController {
       Object.assign(dealsObj, inquiryValues, feedbackValues);
       this.model.createNewInquiry(dealsObj);
       return;
+    });
+  }
+
+  onViewDetailLinkClicked() {
+    let link = document.getElementById("view-contact-detail");
+    link.addEventListener("click", () => {
+      let contactId = document.querySelector(
+        "[data-contact-field='contact_id']"
+      ).value;
+      this.view.onViewDetailLinkClicked(contactId);
+    });
+  }
+
+  onSameAsContactCheckboxClicked() {
+    let checkbox = document.getElementById("same-as-contact");
+    checkbox.addEventListener("change", () => {
+      if (checkbox.checked) {
+        let address = JSON.parse(
+          document.getElementById("contact-address").value
+        );
+        this.view.onSameAsContactCheckboxClicked(address);
+      }
     });
   }
 }
