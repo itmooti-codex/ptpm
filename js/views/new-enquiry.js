@@ -1145,11 +1145,7 @@ export class NewEnquiryView {
         if (!result.isCancelling) {
           this.customModalHeader.innerText = "Successfult";
           this.customModalBody.innerText = "Affiliation deleted successfully.";
-          this.statusModel.classList.remove("hidden");
-
-          setTimeout(() => {
-            this.statusModel.classList.add("hidden");
-          }, 2000);
+          this.toggleModal("statusModal");
         }
       })
     );
@@ -1273,7 +1269,7 @@ export class NewEnquiryView {
             <div class="mb-2 flex items-center justify-between">
               <h4 class="text-sm font-medium text-gray-900">Postal Address</h4>
               <label class="inline-flex items-center gap-2 text-sm">
-                <input id="adSameAsAbove" type="checkbox" class="h-4 w-4 font-medium rounded border-gray-300 text-blue-600 focus:ring-blue-500"/>
+                <input id="adSameAsAbove" name="adSameAsAbove" type="checkbox" class="h-4 w-4 font-medium rounded border-gray-300 text-blue-600 focus:ring-blue-500"/>
                 <span>Same as above</span>
               </label>
             </div>
@@ -1585,11 +1581,7 @@ export class NewEnquiryView {
             this.customModalHeader.innerText = "Successfult";
             this.customModalBody.innerText =
               "Affiliation deleted successfully.";
-            this.statusModel.classList.remove("hidden");
-
-            setTimeout(() => {
-              this.statusModel.classList.add("hidden");
-            }, 2000);
+            this.toggleModal("statusModal");
           }
         }
       } else {
@@ -1616,11 +1608,7 @@ export class NewEnquiryView {
             this.customModalHeader.innerText = "Successfult";
             this.customModalBody.innerText =
               "Affiliation updated successfully.";
-            this.statusModel.classList.remove("hidden");
-
-            setTimeout(() => {
-              this.statusModel.classList.add("hidden");
-            }, 2000);
+            this.toggleModal("statusModal");
           }
         } else {
           contact.contact_id = this.contactId;
@@ -1635,11 +1623,7 @@ export class NewEnquiryView {
             this.customModalHeader.innerText = "Successfult";
             this.customModalBody.innerText =
               "Affiliation creation successfully.";
-            this.statusModel.classList.remove("hidden");
-
-            setTimeout(() => {
-              this.statusModel.classList.add("hidden");
-            }, 2000);
+            this.toggleModal("statusModal");
           }
         }
       }
@@ -1825,11 +1809,7 @@ export class NewEnquiryView {
         if (!result.isCancelling) {
           this.customModalHeader.innerText = "Successfult";
           this.customModalBody.innerText = "Contact updated successfully.";
-          this.statusModel.classList.remove("hidden");
-
-          setTimeout(() => {
-            this.statusModel.classList.add("hidden");
-          }, 2000);
+          this.toggleModal("statusModal");
         }
         element.map((item) => {
           item.value = "";
@@ -1838,11 +1818,7 @@ export class NewEnquiryView {
         if (!result.isCancelling) {
           this.customModalHeader.innerText = "Failed";
           this.customModalBody.innerText = "contact update Failed.";
-          this.statusModel.classList.remove("hidden");
-
-          setTimeout(() => {
-            this.statusModel.classList.add("hidden");
-          }, 2000);
+          this.toggleModal("statusModal");
         }
       }
     } else {
@@ -1858,19 +1834,11 @@ export class NewEnquiryView {
           document
             .getElementById("addressDetailsModalWrapper")
             .classList.add("hidden");
-          this.statusModel.classList.remove("hidden");
-
-          setTimeout(() => {
-            this.statusModel.classList.add("hidden");
-          }, 2000);
+          this.toggleModal("statusModal");
         } else {
           this.customModalHeader.innerText = "Failed";
           this.customModalBody.innerText = "Contact create Failed.";
-          this.statusModel.classList.remove("hidden");
-
-          setTimeout(() => {
-            this.statusModel.classList.add("hidden");
-          }, 2000);
+          this.toggleModal("statusModal");
         }
       }
     }
@@ -1984,19 +1952,11 @@ export class NewEnquiryView {
             this.clearPropertyFieldValues(
               "[#property-information input, #property-information select"
             );
-            this.statusModel.classList.remove("hidden");
-
-            setTimeout(() => {
-              this.statusModel.classList.add("hidden");
-            }, 2000);
+            this.toggleModal("statusModal");
           } else {
             this.customModalHeader.innerText = "Successfult";
             this.customModalBody.innerText = "Properties create failed.";
-            this.statusModel.classList.remove("hidden");
-
-            setTimeout(() => {
-              this.statusModel.classList.add("hidden");
-            }, 2000);
+            this.toggleModal("statusModal");
           }
         });
       });
