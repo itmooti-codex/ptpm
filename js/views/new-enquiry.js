@@ -1268,10 +1268,19 @@ export class NewEnquiryView {
           <div class="pt-2">
             <div class="mb-2 flex items-center justify-between">
               <h4 class="text-sm font-medium text-gray-900">Postal Address</h4>
-              <label class="inline-flex items-center gap-2 text-sm">
-                <input id="adSameAsAbove" name="adSameAsAbove" type="checkbox" class="h-4 w-4 font-medium rounded border-gray-300 text-blue-600 focus:ring-blue-500"/>
-                <span>Same as above</span>
+              <div class="flex items-center gap-2">
+              <input
+                id="adSameAsAbove"
+                name="adSameAsAbove"
+                type="checkbox"
+                value="1"
+                class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 accent-blue-600"
+              />
+              <label for="adSameAsAbove" class="text-sm text-gray-700 select-none cursor-pointer">
+                Same as above
               </label>
+            </div>
+
             </div>
   
             <div class="space-y-3">
