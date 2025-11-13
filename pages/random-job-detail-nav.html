@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>New Direct Job — Flex + Sidebar CSS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-50 text-gray-800">
+    <!-- HEADER -->
+    <header class="sticky top-0 z-10 bg-[#093a7a] text-white">
+      <div class="mx-auto max-w-7xl px-4 py-3 flex items-center gap-3">
+        <h1 class="text-lg font-semibold flex-1">New Direct Job</h1>
+        <button
+          class="px-3 py-2 rounded-lg bg-white/10 hover:bg-white/15 border border-white/20 text-sm"
+        >
+          Cancel
+        </button>
+        <button
+          class="px-3 py-2 rounded-lg bg-white/10 hover:bg-white/15 border border-white/20 text-sm"
+        >
+          Reset Form
+        </button>
+        <button
+          class="px-3 py-2 rounded-lg bg-white/10 hover:bg-white/15 border border-white/20 text-sm"
+        >
+          Save draft
+        </button>
+        <button
+          id="backBtn"
+          class="px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          ← Back
+        </button>
+        <button
+          id="nextBtn"
+          class="px-3 py-2 rounded-lg bg-white text-[#093a7a] font-semibold text-sm flex items-center gap-2"
+        >
+          Next: <span id="nextLabel">Add Activities</span> →
+        </button>
+      </div>
+    </header>
+
+    <!-- MAIN (FLEX, not grid) -->
+    <main class="mx-auto px-4 py-6 flex gap-6">
+      <!-- SIDEBAR (uses your provided CSS classes) -->
+      <aside class="w-64">
+        <div data-property-1="extendedStep1" class="w-64">
+          <div
+            id="sidebar"
+            class="w-64 h-[920px] pl-4 pr-16 py-6 bg-white shadow-[0px_4px_6px_-4px_rgba(0,0,0,0.10)] shadow-lg inline-flex flex-col justify-start items-start gap-6 overflow-hidden"
+          >
+            <!-- top icon (static, optional) -->
+            <div class="inline-flex justify-start items-center gap-10">
+              <div
+                class="p-3 bg-neutral-100 rounded-lg flex justify-start items-center gap-2"
+              >
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21Z"
+                    stroke="#414042"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M7.25 10L5.5 12L7.25 14M9.5 21V3"
+                    stroke="#414042"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </div>
+            </div>
+
+            <!-- Steps get injected here -->
+            <div
+              id="sidebar-steps"
+              class="flex flex-col justify-start items-start w-full"
+            ></div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- CONTENT (flex) -->
+      <section class="flex-1 min-w-0">
+        <!-- Dynamic pane -->
+        <div
+          id="content"
+          class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm min-h-[520px]"
+        ></div>
+      </section>
+    </main>
+
+    <script>
+      /* ============== DATA (drives everything) ============== */
+      const SECTIONS = [
+        {
+          id: "job-information",
+          label: "Job Information",
+          icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M10.29 21.961H9.39C6.142 21.961 4.517 21.961 3.508 20.936C2.499 19.911 2.5 18.261 2.5 14.961V9.961C2.5 6.661 2.5 5.011 3.51 3.987C4.517 2.96 6.142 2.96 9.39 2.96H12.343C15.592 2.96 17.49 3.016 18.499 4.04C19.509 5.066 19.499 6.66 19.499 9.96V11.147M15.945 2V4M10.945 2V4M5.945 2V4M7 15H11M7 10H15" stroke="#0052CC" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path opacity="0.93" d="M20.7601 14.8789C19.8541 13.8639 19.3111 13.9249 18.7081 14.1059C18.2851 14.1659 16.8371 15.8559 16.2331 16.3959C15.2421 17.3739 14.2461 18.3819 14.1811 18.5139C13.9931 18.8189 13.8191 19.3589 13.7341 19.9629C13.5771 20.8689 13.3511 21.8879 13.6371 21.9759C13.9231 22.0639 14.7241 21.8959 15.6291 21.7629C16.2331 21.6529 16.6551 21.5329 16.9571 21.3519C17.3801 21.0979 18.1641 20.2049 19.5171 18.8759C20.3641 17.9829 21.1821 17.3659 21.4241 16.7629C21.6651 15.8569 21.3041 15.3739 20.7601 14.8789Z" stroke="#0052CC" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      `,
+        },
+        {
+          id: "add-activities",
+          label: "Add Activities",
+          icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M2 12C2 7.286 2 4.929 3.464 3.464C4.93 2 7.286 2 12 2C16.714 2 19.071 2 20.535 3.464C22 4.93 22 7.286 22 12C22 16.714 22 19.071 20.535 20.535C19.072 22 16.714 22 12 22C7.286 22 4.929 22 3.464 20.535C2 19.072 2 16.714 2 12Z" stroke="#414042" stroke-width="1.5"/>
+                      <path d="M6 15.8L7.143 17L10 14M6 8.8L7.143 10L10 7" stroke="#414042" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M13 9H18M13 16H18" stroke="#414042" stroke-width="1.5" stroke-linecap="round"/>
+                      </svg>
+                      `,
+        },
+        {
+          id: "materials",
+          label: "Materials",
+          icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M10.0501 10.6069L2.98013 17.6769C2.79418 17.8626 2.64666 18.0832 2.54601 18.326C2.44536 18.5688 2.39355 18.8291 2.39355 19.0919C2.39355 19.3547 2.44536 19.615 2.54601 19.8578C2.64666 20.1006 2.79418 20.3211 2.98013 20.5069C3.35518 20.8818 3.8638 21.0925 4.39413 21.0925C4.92446 21.0925 5.43307 20.8818 5.80813 20.5069L12.8781 13.4349M17.1931 13.7999L21.0711 17.6779C21.4461 18.0529 21.6567 18.5616 21.6567 19.0919C21.6567 19.6222 21.4461 20.1308 21.0711 20.5059C20.6961 20.8808 20.1875 21.0915 19.6571 21.0915C19.1268 21.0915 18.6182 20.8808 18.2431 20.5059L12.0341 14.2979M6.73313 5.90389L4.61013 6.60989L2.49013 3.07489L3.90413 1.66089L7.44013 3.78189L6.73313 5.90389ZM6.73313 5.90389L9.56313 8.73389" stroke="#414042" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M10.0502 10.607C9.20617 8.45396 9.37117 5.62896 11.1112 3.88896C12.8512 2.14896 16.0612 1.76796 17.8282 2.82896L14.7882 5.86896L14.5052 8.97996L17.6162 8.69796L20.6562 5.65696C21.7182 7.42496 21.3362 10.635 19.5962 12.374C17.8562 14.114 15.0322 14.279 12.8792 13.435" stroke="#414042" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      `,
+        },
+        {
+          id: "uploads",
+          label: "Uploads",
+          icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M4 17V19C4 19.5304 4.21071 20.0391 4.58579 20.4142C4.96086 20.7893 5.46957 21 6 21H18C18.5304 21 19.0391 20.7893 19.4142 20.4142C19.7893 20.0391 20 19.5304 20 19V17M7 9L12 4M12 4L17 9M12 4V16" stroke="#414042" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      `,
+        },
+        {
+          id: "invoice",
+          label: "Invoice",
+          icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M20.016 2C18.903 2 18 4.686 18 8H20.016C20.988 8 21.473 8 21.774 7.665C22.074 7.329 22.022 6.887 21.918 6.004C21.64 3.67 20.894 2 20.016 2Z" stroke="#414042" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M18 8.054V18.646C18 20.157 18 20.913 17.538 21.211C16.783 21.697 15.616 20.677 15.029 20.307C14.544 20.001 14.302 19.849 14.033 19.84C13.742 19.83 13.495 19.977 12.971 20.307L11.06 21.512C10.544 21.837 10.287 22 10 22C9.713 22 9.455 21.837 8.94 21.512L7.03 20.307C6.544 20.001 6.302 19.849 6.033 19.84C5.742 19.83 5.495 19.977 4.971 20.307C4.384 20.677 3.217 21.697 2.461 21.211C2 20.913 2 20.158 2 18.646V8.054C2 5.2 2 3.774 2.879 2.887C3.757 2 5.172 2 8 2H20" stroke="#414042" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M10 8C8.895 8 8 8.672 8 9.5C8 10.328 8.895 11 10 11C11.105 11 12 11.672 12 12.5C12 13.328 11.105 14 10 14M10 8C10.87 8 11.612 8.417 11.886 9M10 8V7M10 14C9.13 14 8.388 13.583 8.114 13M10 14V15" stroke="#414042" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      `,
+        },
+      ];
+      const TABS = ["overview", "appointments"];
+
+      let currentSectionIdx = 0;
+      let currentTab = "overview";
+
+      /* ============== DOM refs ============== */
+      const sidebarSteps = document.getElementById("sidebar-steps");
+      const content = document.getElementById("content");
+      const nextBtn = document.getElementById("nextBtn");
+      const backBtn = document.getElementById("backBtn");
+      const nextLabel = document.getElementById("nextLabel");
+
+      function buildStepItem(section, index) {
+        const wrapper = document.createElement("div");
+        wrapper.className = "w-full";
+
+        const row = document.createElement("div");
+        row.className =
+          "inline-flex justify-center items-center gap-2 cursor-pointer select-none";
+        row.setAttribute("data-index", index);
+        row.setAttribute("data-section", section.id);
+
+        const bubble = document.createElement("div");
+        bubble.className =
+          "p-3 bg-neutral-100 rounded-[32px] flex justify-start items-center gap-2 transition-colors";
+
+        // 🔽 icon slot: inject SVG string or fallback outline
+        const iconSlot = document.createElement("span");
+        iconSlot.className =
+          "icon-slot flex items-center justify-center w-6 h-6";
+        iconSlot.innerHTML = section.icon;
+        bubble.appendChild(iconSlot);
+
+        const label = document.createElement("div");
+        label.className =
+          "justify-start text-neutral-700 text-base font-medium leading-none";
+        label.textContent = section.label;
+
+        row.appendChild(bubble);
+        row.appendChild(label);
+        wrapper.appendChild(row);
+
+        if (index < SECTIONS.length - 1) {
+          const connWrap = document.createElement("div");
+          connWrap.className =
+            " my-4 mx-2 flex justify-center bg-red items-center h-2 bg-neutral-100 rotate-90 w-[30px]"; // Center horizontally + spacing
+
+          const conn = document.createElement("div");
+          conn.className = ""; // Horizontal line
+
+          connWrap.appendChild(conn);
+          wrapper.appendChild(connWrap);
+        }
+
+        return wrapper;
+      }
+
+      function renderSidebar() {
+        sidebarSteps.innerHTML = "";
+        SECTIONS.forEach((s, i) => {
+          const node = buildStepItem(s, i);
+          sidebarSteps.appendChild(node);
+        });
+        setSidebarActive(currentSectionIdx);
+      }
+
+      function setSidebarActive(idx) {
+        [...sidebarSteps.querySelectorAll("[data-index]")].forEach((row, i) => {
+          const bubble = row.querySelector("div.p-3");
+          const outline =
+            row.parentElement.nextElementSibling?.querySelector("div.outline");
+          const svg = row.querySelector("svg");
+
+          // Reset everything to neutral first
+          bubble?.classList.remove("bg-sky-100", "bg-[#D9ECDA]");
+          bubble?.classList.add("bg-neutral-100");
+
+          if (outline) {
+            outline.classList.remove("outline-sky-100", "outline-teal-700");
+            outline.classList.add("outline-neutral-100");
+          }
+
+          if (svg) {
+            svg.querySelectorAll("path").forEach((path) => {
+              path.setAttribute("stroke", "#414042");
+            });
+          }
+
+          // Previous steps (before clicked index) → green
+          if (i < idx) {
+            bubble?.classList.remove("bg-neutral-100");
+            bubble?.classList.add("bg-[#D9ECDA]");
+
+            if (outline) {
+              outline.classList.remove("outline-neutral-100");
+              outline.classList.add("outline-teal-700");
+            }
+
+            if (svg) {
+              svg.querySelectorAll("path").forEach((path) => {
+                path.setAttribute("stroke", "#00875A");
+              });
+            }
+          }
+
+          // Current step (clicked index) → blue
+          if (i === idx) {
+            bubble?.classList.remove("bg-neutral-100", "bg-[#D9ECDA]");
+            bubble?.classList.add("bg-sky-100");
+
+            if (outline) {
+              outline.classList.remove(
+                "outline-neutral-100",
+                "outline-teal-700"
+              );
+              outline.classList.add("outline-sky-100");
+            }
+
+            if (svg) {
+              svg.querySelectorAll("path").forEach((path) => {
+                path.setAttribute("stroke", "#0052CC");
+              });
+            }
+          }
+
+          // Steps after clicked index automatically remain neutral because we reset at the start
+        });
+      }
+
+      function renderContent() {
+        const s = SECTIONS[currentSectionIdx];
+        const html = renderOverview(s);
+
+        content.innerHTML = html;
+      }
+
+      // Overview per section
+      function renderOverview(section) {
+        if (section.id === "add-activities") return uiActivities();
+        if (section.id === "materials") return uiMaterials();
+        if (section.id === "job-information") return uiJobInfo();
+        if (section.id === "uploads") return uploadActivities();
+        if (section.id == "invoice") return uiInvoice();
+        return `<div class="text-sm text-gray-600">No UI implemented for <b>${section.label}</b> yet.</div>`;
+      }
+
+      function checkboxRow(label, value) {
+        return `
+          <div class="flex items-center justify-between p-2 border border-slate-200 rounded-lg">
+            <div class="flex items-center gap-2">
+              <input type="checkbox" class="w-4 h-4 text-blue-500 rounded focus:ring-blue-200" checked />
+              <span class="text-slate-700 text-sm font-medium">${label}</span>
+            </div>
+            <span class="text-slate-600 text-sm">${value}</span>
+          </div>
+        `;
+      }
+
+      // FLEX: Job Info (left form + right card)
+      function uiJobInfo() {
+        return `<div class="flex flex-col">
+        <!-- Horizontal tabs -->
+        <div class="mb-4 flex items-center gap-6 border-b border-gray-200">
+          <button
+            data-tab="overview"
+            id="tab-overview"
+            class="inline-flex items-center gap-2 px-1 py-2 -mb-[1px] border-b-2 border-transparent text-gray-600 hover:text-gray-900"
+          >
+            <span class="inline-block w-3 h-3 bg-teal-700 rounded-full"></span>
+            Overview
+          </button>
+
+          <button
+            data-tab="appointments"
+            id="tab-appointments"
+            class="tab px-1 py-3 -mb-[1px] border-b-2 border-transparent text-gray-600 hover:text-gray-900"
+          >
+            Appointments
+            <span class="ml-1 text-blue-700 text-sm rounded-full bg-gray-100 px-2 py-0.5">03</span>
+          </button>
+        </div>
+        <div class="flex flex-col">
+          <!-- Responsive row: stack on small, two columns on md+ -->
+          <div id="tab-section" class="flex flex-row flex-wrap gap-6 w-full">
+            <div id="overview-section" class="flex flex-col gap-4 w-full md:basis-[40rem] md:grow">
+              <div class="basis-[640px] grow rounded-xl border border-gray-200 p-5 text-neutral-700 text-sm font-medium ">
+                <div class="justify-end text-neutral-700 text-base font-bold font-sans leading-none my-3">Job Details </div>
+                <div class="mb-4 flex items-center gap-2">
+                  <span
+                    class="text-sm rounded-full bg-blue-50 text-blue-700 px-2 py-1"
+                    >Individual</span
+                  >
+                  <span class="text-sm text-gray-500">Entity</span>
+                </div>
+                <div class="flex flex-col gap-4">
+                  ${row("Client", "Search by name, email, phone")} ${row(
+          "PropertySearch",
+          "Search properties"
+        )} ${row("Job Type", "Select one")}
+                            ${row("Priority", "Select one")} ${row(
+          "Job Status",
+          "Select one"
+        )}${row("Payment Status", "Select one")}
+                        </div>
+
+                        
+                          
+                            </div>
+                        <div class="grow rounded-xl border border-gray-200 p-2">
+                              ${dateRow("Job Required By")}
+                          </div>
+                          <div class="mt-4 flex flex-col gap-2">
+                            ${checkboxRow("Mark Complete")} ${checkboxRow(
+          "PCA Done"
+        )}
+                            ${checkboxRow("Prestart Done")}
+                          </div>
+
+              
+            </div>
+            <div class="w-full h-fit md:flex-1 md:min-w-[20rem] lg:min-w-[24rem] rounded-xl border border-gray-200 p-5">
+                <h3 class="text-sm font-semibold mb-3">Assign Serviceman</h3>
+                <div class="relative">
+                  <input
+                    type="text"
+                    class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"
+                    placeholder="Assign Serviceman"
+                  />
+                  <span class="absolute right-3 top-2.5 text-gray-400">🔎</span>
+                </div>
+              </div>
+          </div>
+
+          <!-- Appointments tab content -->
+          <div id="appointment-section" class="min-h-screen bg-neutral-50 hidden">
+  <div class="grid grid-cols-1 lg:grid-cols-[540px_1fr] gap-6">
+
+    <!-- Left: Appointments -->
+    <section class="bg-white rounded-xl border border-neutral-200 shadow-sm">
+      <header class="p-4 md:p-5 border-b border-neutral-200">
+        <h2 class="text-neutral-900 font-semibold">Appointments</h2>
+      </header>
+
+      <div class="p-4 md:p-5 space-y-4">
+
+        <!-- Status -->
+        <div>
+          <label class="block text-sm text-neutral-600 mb-1">Status</label>
+          <div class="relative">
+            <select class="w-full appearance-none rounded-lg border border-neutral-300 pl-3 pr-9 py-2.5 text-sm focus:border-neutral-500 focus:ring-2 focus:ring-neutral-200">
+              <option>Select one</option>
+            </select>
+            <span class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-neutral-500">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+          </div>
+        </div>
+
+        <!-- Type -->
+          <div>
+            <label class="block text-sm text-neutral-600 mb-1">Type</label>
+            <div class="relative">
+              <select class="w-full appearance-none rounded-lg border border-neutral-300 pl-3 pr-9 py-2.5 text-sm focus:border-neutral-500 focus:ring-2 focus:ring-neutral-200">
+                <option>Select one</option>
+              </select>
+              <span class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-neutral-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+            </div>
+          </div>
+
+          <!-- Title -->
+          <div>
+            <label class="block text-sm text-neutral-600 mb-1">Title</label>
+            <input type="text" class="w-full rounded-lg border border-neutral-300 pl-3 py-2.5 text-sm placeholder-neutral-400 focus:border-neutral-500 focus:ring-2 focus:ring-neutral-200" />
+          </div>
+
+          <!-- Date/Time -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm text-neutral-600 mb-1">Start Time</label>
+              <div class="relative">
+                <input type="text" placeholder="Select date & time" class="w-full rounded-lg border border-neutral-300 pr-10 pl-3 py-2.5 text-sm placeholder-neutral-400 focus:border-neutral-500 focus:ring-2 focus:ring-neutral-200" />
+                <span class="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-500">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-width="2"/><path d="M16 2v4M8 2v4M3 10h18" stroke-width="2" stroke-linecap="round"/></svg>
+                </span>
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm text-neutral-600 mb-1">End Time</label>
+              <div class="relative">
+                <input type="text" placeholder="Select date & time" class="w-full rounded-lg border border-neutral-300 pr-10 pl-3 py-2.5 text-sm placeholder-neutral-400 focus:border-neutral-500 focus:ring-2 focus:ring-neutral-200" />
+                <span class="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-500">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-width="2"/><path d="M16 2v4M8 2v4M3 10h18" stroke-width="2" stroke-linecap="round"/></svg>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div>
+            <label class="block text-sm text-neutral-600 mb-1">Description</label>
+            <textarea rows="4" class="w-full rounded-lg border border-neutral-300 p-3 text-sm placeholder-neutral-400 focus:border-neutral-500 focus:ring-2 focus:ring-neutral-200"></textarea>
+          </div>
+
+          <!-- Location -->
+          <div>
+            <label class="block text-sm text-neutral-600 mb-1">Location</label>
+            <div class="relative">
+              <select class="w-full appearance-none rounded-lg border border-neutral-300 pl-3 pr-9 py-2.5 text-sm focus:border-neutral-500 focus:ring-2 focus:ring-neutral-200">
+                <option>Select one</option>
+              </select>
+              <span class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-neutral-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+            </div>
+          </div>
+
+          <!-- Host -->
+          <div>
+            <label class="block text-sm text-neutral-600 mb-1">Host</label>
+            <div class="relative">
+              <select class="w-full appearance-none rounded-lg border border-neutral-300 pl-3 pr-9 py-2.5 text-sm focus:border-neutral-500 focus:ring-2 focus:ring-neutral-200">
+                <option>Select one</option>
+              </select>
+              <span class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-neutral-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+            </div>
+          </div>
+
+          <!-- Primary Guest -->
+          <div class="pb-1">
+            <label class="block text-sm text-neutral-600 mb-1">Primary Guest</label>
+            <div class="relative">
+              <select class="w-full appearance-none rounded-lg border border-neutral-300 pl-3 pr-9 py-2.5 text-sm focus:border-neutral-500 focus:ring-2 focus:ring-neutral-200">
+                <option>Select one</option>
+              </select>
+              <span class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-neutral-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Right column -->
+      <div class="space-y-6">
+        <!-- Inquiry or Job Information -->
+        <section class="bg-white rounded-xl border border-neutral-200 shadow-sm">
+          <header class="p-4 md:p-5 border-b border-neutral-200">
+            <h2 class="text-neutral-900 font-semibold">Inquiry or Job Information</h2>
+          </header>
+          <div class="p-4 md:p-5 space-y-4">
+            <div>
+              <label class="block text-sm text-neutral-600 mb-1">Inquiry</label>
+              <div class="relative">
+                <select class="w-full appearance-none rounded-lg border border-neutral-300 pl-3 pr-9 py-2.5 text-sm focus:border-neutral-500 focus:ring-2 focus:ring-neutral-200">
+                  <option>Select one</option>
+                </select>
+                <span class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-neutral-500">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm text-neutral-600 mb-1">Job</label>
+              <div class="relative">
+                <select class="w-full appearance-none rounded-lg border border-neutral-300 pl-3 pr-9 py-2.5 text-sm focus:border-neutral-500 focus:ring-2 focus:ring-neutral-200">
+                  <option>Select one</option>
+                </select>
+                <span class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-neutral-500">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Google Calendar -->
+        <section class="bg-white rounded-xl border border-neutral-200 shadow-sm">
+          <header class="p-4 md:p-5 border-b border-neutral-200">
+            <h2 class="text-neutral-900 font-semibold">Google Calendar</h2>
+          </header>
+          <div class="p-4 md:p-5">
+            <label class="block text-sm text-neutral-600 mb-1">Event Color</label>
+            <div class="relative">
+              <select class="w-full appearance-none rounded-lg border border-neutral-300 pl-3 pr-9 py-2.5 text-sm focus:border-neutral-500 focus:ring-2 focus:ring-neutral-200">
+                <option>Select one</option>
+              </select>
+              <span class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-neutral-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- Bottom pager -->
+    <div class="fixed inset-x-0 bottom-5 flex justify-center">
+      <div class="bg-neutral-900 text-white rounded-full shadow-lg flex items-center">
+        <button class="px-3 py-2 hover:bg-neutral-800 rounded-l-full" aria-label="Previous">
+          <span class="inline-flex items-center justify-center h-5 w-5">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m15 18-6-6 6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </button>
+        <div class="w-px h-6 bg-white/20"></div>
+        <button class="px-3 py-2 hover:bg-neutral-800 rounded-r-full" aria-label="Next">
+          <span class="inline-flex items-center justify-center h-5 w-5">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 6 6 6-6 6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+        </div>
+      </div>`;
+      }
+
+      // FLEX: Activities (left narrow form + right table)
+      function uiActivities() {
+        return `
+              <div class="flex gap-6 flex-wrap">
+                <div class="basis-[380px] grow rounded-xl border border-gray-200 p-5">
+                  <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-semibold">Add New Activity</h3>
+                    <label class="inline-flex items-center gap-2 text-sm">
+                      <input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600"> Invoice to client
+                    </label>
+                  </div>
+
+                  <div class="flex flex-wrap gap-4">
+                    ${selectRow("Task", "Job 1")}
+                    ${selectRow("Options", "Option 1")}
+                    ${selectRow("Service", "Possum")}
+                    ${rowHalf("Quantity", "0")}
+                    ${moneyRow("Activity Price")}
+                    ${selectRow("Activity Text", "Possum")}
+                    ${selectRow("Activity Status", "Select One")}
+                    ${dateRow("Date Required")}
+                    ${moneyRow("Quoted Price")}
+                    ${selectRow("Quoted Text", "")}
+                  </div>
+
+                  <div class="mt-4 flex flex-col gap-3">
+                    ${textareaRow("Quoted Text")}
+                    ${textareaRow("Warranty")}
+                    ${textareaRow("Note")}
+                  </div>
+
+                  <div class="mt-4 flex items-center justify-between">
+                    <div class="flex gap-6 text-sm">
+                      <label class="inline-flex items-center gap-2"><input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600"> Include in Quote</label>
+                      <label class="inline-flex items-center gap-2"><input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600"> Include in Quote Subtotal</label>
+                    </div>
+                    <div class="ml-auto flex gap-3">
+                      <button class="px-3 py-2 text-sm rounded-lg border hover:bg-gray-50">Cancel</button>
+                      <button class="px-3 py-2 text-sm rounded-lg bg-[#0b4ea2] text-white">Add</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="min-w-[520px] flex-1 rounded-xl border border-gray-200 overflow-hidden">
+                  ${tableActivities()}
+                </div>
+              </div>`;
+      }
+
+      function uiInvoice() {}
+      function uploadActivities() {
+        return `<div class="bg-neutral-50">
+
+  <!-- Top bar -->
+  <div class="bg-white">
+    <div class="px-5 pt-4 pb-2 border-b-4 border-blue-900 rounded-t-xl"></div>
+
+    <!-- Header -->
+    <div class="px-5 py-4 flex flex-wrap items-start gap-4">
+      <div class="flex-1">
+        <h1 class="text-2xl font-semibold text-neutral-900">Invoice Detail</h1>
+
+        <div class="mt-4 text-sm text-neutral-700 space-y-2">
+          <div class="flex flex-wrap gap-2 items-center">
+            <span class="text-neutral-500">Invoice Number :</span>
+            <a href="#" class="text-blue-600 hover:underline font-medium">#INV-0004</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3 ml-auto">
+        <span class="text-sm text-neutral-500">Xero Invoice Status :</span>
+        <span class="inline-flex items-center rounded-full bg-violet-700 text-white text-xs font-semibold px-3 py-1">
+          Create Invoice
+        </span>
+      </div>
+    </div>
+
+    <!-- Xero Entity Info -->
+    <div class="px-5">
+      <h3 class="text-neutral-900 font-semibold">Xero Entity Info</h3>
+      <ul class="mt-3 space-y-2 text-sm text-neutral-800">
+        <li class="flex flex-wrap gap-2 items-center">
+          <span class="inline-flex items-center justify-center h-5 w-5 rounded bg-blue-50 text-blue-700">
+            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-5.33 0-8 2.67-8 4v1h16v-1c0-1.33-2.67-4-8-4Z"/></svg>
+          </span>
+          <span class="text-neutral-600">Contact Xero ID</span>
+          <a href="#" class="text-blue-600 hover:underline">1fdc14b3-b461-458b-b4b4-52a2acce2737</a>
+          <span class="ml-[145px] text-neutral-600 hidden md:inline">Invoice ID:</span>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="inline-flex items-center justify-center h-5 w-5 rounded bg-blue-50 text-blue-700">
+            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-5.33 0-8 2.67-8 4v1h16v-1c0-1.33-2.67-4-8-4Z"/></svg>
+          </span>
+          <span class="text-neutral-600">Company Xero ID</span>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="inline-flex items-center justify-center h-5 w-5 rounded bg-blue-50 text-blue-700">
+            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-5.33 0-8 2.67-8 4v1h16v-1c0-1.33-2.67-4-8-4Z"/></svg>
+          </span>
+          <span class="text-neutral-600">Accounts Contact</span>
+        </li>
+      </ul>
+      <div class="mt-4 border-t border-neutral-200"></div>
+    </div>
+
+    <!-- Empty state -->
+    <div class="px-5">
+      <div class="py-16 flex flex-col items-center text-center">
+        <!-- Illustration placeholder -->
+        <svg width="252" height="106" viewBox="0 0 252 106" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M78.9907 0.122178C80.9693 -0.0320611 83.0044 0.0548375 84.9901 0.0652463L94.742 0.0994683L129.712 0.0750237L142.118 0.083066C144.008 0.0808581 146.208 -0.156493 148.051 0.181319C148.856 0.328618 149.677 0.763894 150.245 1.35357C150.527 1.64738 150.827 2.06546 150.827 2.48733C150.827 2.57549 150.816 2.65829 150.792 2.74282C151.185 3.16658 151.663 8.98256 151.609 9.89049C151.597 10.1065 151.559 10.2846 151.477 10.4839C151.936 11.0583 152.174 15.9896 152.078 16.8957C152.057 17.0861 152.005 17.2265 151.917 17.3947L167.035 17.3842C169.225 17.3824 171.801 17.1049 173.942 17.4767C174.575 17.5867 175.141 17.8915 175.591 18.3519C176.15 18.9251 176.313 19.6295 176.406 20.4059C176.747 23.2195 176.467 26.8618 176.458 29.7539C176.441 34.6107 176.575 39.482 176.448 44.3367C176.437 44.7482 176.452 45.1074 176.24 45.473C177.472 45.6127 180.852 45.15 182.096 44.8311C182.146 44.7469 182.191 44.6618 182.228 44.5703C182.572 43.7098 182.639 39.3995 182.299 38.6469C185.64 38.9319 188.86 39.482 192.235 39.5408C192.298 40.9573 192.552 43.6848 192.216 44.9698C199.783 45.852 208.351 47.906 213.329 54.187C214.967 56.2544 215.942 58.675 216.759 61.1608C218.164 65.4293 219.076 69.9686 220.107 74.3408L224.184 91.1852L226.508 101C226.784 102.209 227.308 103.747 227.328 104.976L227.355 105.235C232.799 105.395 238.278 105.272 243.725 105.266C245.985 105.263 249.149 104.902 251.278 105.47L251.376 105.641C251.248 105.712 251.123 105.762 250.982 105.797C249.51 106.163 247.471 105.883 245.946 105.881L235.785 105.893L194.396 105.951L4.73375 105.934C3.90531 105.938 1.20849 106.143 0.674017 105.808L0.624023 105.55C0.89891 105.329 1.15708 105.292 1.49804 105.267C3.81683 105.103 6.28986 105.286 8.62647 105.284L24.4435 105.29C25.5037 105.277 26.5638 105.272 27.624 105.276L35.3584 105.298C35.1237 103.248 33.4758 90.516 33.9081 89.5612C35.2816 89.173 40.8116 89.4863 42.6628 89.5079C42.6047 88.9636 42.5348 88.4208 42.4532 87.8796C42.3715 87.3383 42.2782 86.7991 42.1733 86.2618C42.0683 85.7246 41.9517 85.1899 41.8235 84.6578C41.6953 84.1255 41.5558 83.5964 41.4048 83.0703C41.2537 82.544 41.0913 82.0214 40.9176 81.5023C40.744 80.9833 40.5593 80.4682 40.3633 79.9571C40.1673 79.446 39.9603 78.9394 39.7424 78.4373C39.5244 77.9351 39.2957 77.4379 39.0563 76.9456C38.2628 77.2286 37.4414 77.4128 36.5989 77.4579C32.0046 77.703 27.1651 74.8073 23.898 71.8152C20.6688 68.858 17.9929 65.064 17.8182 60.5425C17.7416 58.5622 18.3334 56.5514 19.7186 55.0921C20.9366 53.8089 22.5692 53.2909 24.3073 53.2659C28.0756 53.2115 31.3461 55.2139 33.9486 57.7787C37.2317 61.0142 41.3646 67.0498 41.3619 71.8373C41.3609 73.7156 40.7717 75.2484 39.4512 76.5796C41.5811 80.4477 42.7287 85.1593 43.1721 89.5291C44.2582 89.5488 46.1154 89.8039 47.1238 89.4144L47.2583 89.0195C47.7052 83.7527 48.4048 78.5997 49.2905 73.3887C48.3651 72.8889 47.5291 72.3601 46.8227 71.5616C45.2527 69.7873 44.9004 67.1116 45.0348 64.8169C45.3456 59.5054 48.5636 50.0505 52.6992 46.4366C54.0708 45.238 55.4615 44.626 57.2856 44.761C57.2242 39.1983 57.2955 33.637 57.2714 28.0743C57.2611 25.7206 56.9727 21.7273 57.2971 19.5511C57.3857 18.9559 57.677 18.4301 58.1004 18.0046C58.5215 17.5815 59.0076 17.3011 59.5957 17.1891C61.1608 16.8909 63.0213 17.093 64.6233 17.1083L73.9987 17.2055C73.973 14.0068 73.9756 10.8082 74.0068 7.60971C73.9768 6.53697 73.9156 5.44973 73.9503 4.37716C73.9894 3.1617 74.3287 1.9363 75.2525 1.09272C76.3234 0.114924 77.6227 0.0559403 78.9907 0.122178ZM112.413 70.6354L112.411 70.3451L113.666 70.3274C114.257 68.5519 115.219 67.0845 116.308 65.5813L116.544 65.1995C115.074 65.1377 113.585 65.1809 112.113 65.1744L112.195 64.9447C110.017 64.3334 107.41 63.2097 105.68 61.708C105.545 61.4047 105.505 61.3505 105.552 61.009C105.802 60.8272 106.056 60.6592 106.317 60.4954C106.397 60.1016 106.261 59.9723 106.083 59.6363C106.094 59.2542 106.171 59.1766 106.386 58.8522C107.924 58.8686 109.474 58.9257 111.011 58.8904C111.92 58.8194 112.827 58.8353 113.738 58.8428C113.11 58.4102 112.24 57.7897 112.03 57.0006C111.943 56.6749 112.054 56.5517 112.218 56.2942C112.834 55.9181 113.432 55.8799 114.12 56.0475C115.95 56.4924 118.559 58.8079 120.12 58.8874L139.936 58.8883C143.634 58.8857 147.417 58.7052 151.1 58.9804C150.494 59.4408 141.36 59.2116 139.865 59.2162C139.883 61.2523 139.911 63.2883 139.949 65.3241L150.731 65.318C151.474 64.8579 154.494 61.3863 154.702 60.6033L154.663 60.4107C154.849 59.7624 151.152 11.2059 150.966 10.6197L151.477 10.4839C151.559 10.2846 151.597 10.1065 151.609 9.89049C151.663 8.98256 151.185 3.16658 150.792 2.74282C150.816 2.65829 150.827 2.57549 150.827 2.48733C150.827 2.06546 150.527 1.64738 150.245 1.35357C149.677 0.763894 148.856 0.328618 148.051 0.181319C146.208 -0.156493 144.008 0.0808581 142.118 0.083066L129.712 0.0750237L94.742 0.0994683L84.9901 0.0652463C83.0044 0.0548375 80.9693 -0.0320611 78.9907 0.122178C77.6227 0.0559403 76.3234 0.114924 75.2525 1.09272C74.3287 1.9363 73.9894 3.1617 73.9503 4.37716C73.9156 5.44973 73.9768 6.53697 74.0068 7.60971C73.9756 10.8082 73.973 14.0068 73.9987 17.2055L64.6233 17.1083C63.0213 17.093 61.1608 16.8909 59.5957 17.1891C59.0076 17.3011 58.5215 17.5815 58.1004 18.0046C57.677 18.4301 57.3857 18.9559 57.2971 19.5511C56.9727 21.7273 57.2611 25.7206 57.2714 28.0743C57.2955 33.637 57.2242 39.1983 57.2856 44.761C55.4615 44.626 54.0708 45.238 52.6992 46.4366C48.5636 50.0505 45.3456 59.5054 45.0348 64.8169C44.9004 67.1116 45.2527 69.7873 46.8227 71.5616C47.5291 72.3601 48.3651 72.8889 49.2905 73.3887C48.4048 78.5997 47.7052 83.7527 47.2583 89.0195L47.1238 89.4144C46.1154 89.8039 44.2582 89.5488 43.1721 89.5291C42.7287 85.1593 41.5811 80.4477 39.4512 76.5796C40.7717 75.2484 41.3609 73.7156 41.3619 71.8373C41.3646 67.0498 37.2317 61.0142 33.9486 57.7787C31.3461 55.2139 28.0756 53.2115 24.3073 53.2659C22.5692 53.2909 20.9366 53.8089 19.7186 55.0921C18.3334 56.5514 17.7416 58.5622 17.8182 60.5425C17.9929 65.064 20.6688 68.858 23.898 71.8152C27.1651 74.8073 32.0046 77.703 36.5989 77.4579C37.4414 77.4128 38.2628 77.2286 39.0563 76.9456C39.2957 77.4379 39.5244 77.9351 39.7424 78.4373C39.9603 78.9394 40.1673 79.446 40.3633 79.9571C40.5593 80.4682 40.744 80.9833 40.9176 81.5023C41.0913 82.0214 41.2537 82.544 41.4048 83.0703C41.5558 83.5964 41.6953 84.1255 41.8235 84.6578C41.9517 85.1899 42.0683 85.7246 42.1733 86.2618C42.2782 86.7991 42.3715 87.3383 42.4532 87.8796C42.5348 88.4208 42.6047 88.9636 42.6628 89.5079C40.8116 89.4863 35.2816 89.173 33.9081 89.5612L34.0199 89.9096C34.5891 90.1097 54.9316 90.1791 56.0244 89.9697C55.983 93.7971 55.2126 97.9135 54.8073 101.745C54.6834 102.917 54.4435 104.202 54.4785 105.378C58.6715 105.252 90.162 105.58 90.9423 105.253C90.6368 104.999 90.2911 104.604 90.2293 104.195C90.1869 103.916 90.2408 103.705 90.4222 103.483C90.7266 103.109 91.5097 102.956 91.9671 102.899C92.9655 102.776 94.0411 102.855 95.0505 102.863C97.7309 102.884 100.493 103.042 103.163 102.899C103.53 102.88 103.693 102.903 103.943 102.616L104.037 102.95C104.921 103.17 109.51 102.948 110.771 102.95C119.492 102.907 128.212 102.964 136.932 103.122C139.395 103.177 141.978 102.924 144.418 103.136C144.768 103.167 145.027 103.262 145.268 103.524C145.467 103.957 145.452 104.239 145.367 104.7L145.279 105.178C145.616 105.411 146.015 105.31 146.419 105.299L157.944 105.286C159.902 105.29 161.985 105.43 163.933 105.251C164.071 105.101 164.15 104.904 164.183 104.702C164.418 103.228 164.355 101.586 164.453 100.085C164.609 97.7152 164.955 95.2045 164.907 92.837C164.903 92.5978 164.83 92.4268 164.694 92.2306C161.689 92.1117 158.66 92.1994 155.651 92.1918C155.442 92.1842 155.274 92.2156 155.088 92.3166C154.402 92.6872 153.753 93.3587 153.145 93.8523C152.655 94.2458 152.146 94.6112 151.616 94.9486C151.086 95.2858 150.539 95.5931 149.975 95.8702C149.779 95.9645 149.58 96.0535 149.378 96.1372C149.176 96.2209 148.972 96.2992 148.767 96.3722C148.561 96.4451 148.354 96.5125 148.144 96.5744C147.935 96.6363 147.724 96.6926 147.512 96.7433C147.3 96.794 147.086 96.839 146.872 96.8784C146.656 96.9179 146.44 96.9516 146.224 96.9795C146.008 97.0075 145.791 97.0297 145.574 97.0462C145.356 97.0626 145.138 97.0733 144.919 97.0783C140.451 97.189 137.457 95.0787 134.364 92.1202L122.415 80.2514L111.872 80.2793C109.353 80.2905 106.807 80.3823 104.292 80.2698L62.7784 80.3058C62.7626 79.1359 62.7273 77.9614 62.7945 76.7928L84.6494 76.8092C84.7073 77.583 84.7768 78.3579 84.8147 79.1329L100.328 79.1443C103.012 79.1459 105.725 79.2271 108.406 79.1375C112.731 79.148 117.061 79.2055 121.386 79.1681L120.932 78.601C119.274 77.0214 116.002 74.2277 114.701 72.6044C114.275 72.0732 113.954 71.3748 113.639 70.7693C113.323 70.5368 112.793 70.6282 112.413 70.6354ZM120.472 59.2755C121.082 59.7594 121.682 60.2662 122.32 60.7119C123.153 60.3041 124.018 59.9633 124.874 59.6078C127.577 61.6874 130.627 63.4742 133.487 65.3418L139.606 65.334L139.602 59.2192C133.226 59.2648 126.849 59.1628 120.472 59.2755ZM133.974 65.6376C135.514 67.1597 137.794 68.3791 139.612 69.5699L139.605 65.6272L133.974 65.6376ZM140.972 70.4794C142.756 70.481 144.542 70.5063 146.325 70.4746C146.842 70.1766 148.102 68.9609 148.225 68.3821C148.23 68.3575 148.228 68.3319 148.23 68.3069C148.742 67.9787 150.289 66.3155 150.397 65.7424C150.403 65.7105 150.4 65.6777 150.401 65.6454C146.914 65.6008 143.427 65.5919 139.94 65.6187L139.936 69.7787C140.274 70.0139 140.612 70.2806 140.972 70.4794ZM165.854 27.7958C163.879 27.6247 161.772 27.7598 159.785 27.751C157.596 27.7414 155 27.4685 152.854 27.8519C153.155 28.7147 153.713 34.206 153.373 34.9092C153.355 34.9456 153.333 34.9803 153.314 35.016C154.628 35.0136 161.759 34.7991 162.398 35.1284L162.441 35.3743C161.778 35.8047 154.793 35.5864 153.371 35.5943C153.682 36.1198 153.817 36.9277 153.671 37.5275C153.642 37.6412 153.593 37.7287 153.537 37.8295C155.019 37.8251 163.497 37.5808 164.224 38.0235C163.942 38.2932 163.548 38.36 163.16 38.3992C162.034 38.5127 160.829 38.4023 159.693 38.3955L153.592 38.4056C153.988 39.0117 153.723 39.7375 154.096 40.303C154.568 40.3189 155.137 40.2402 155.524 40.506L155.513 40.8089C155.014 41.0236 154.53 40.7944 154.063 41.0569C153.749 44.2031 155.732 57.949 155.145 59.5808L155.438 59.7713C156.386 59.401 158.337 56.5514 159.102 55.6791C160.651 53.9122 162.542 52.19 164.485 50.8652C165.298 50.3115 167.377 49.273 167.83 48.6215C167.874 48.537 167.918 48.4476 167.945 48.3556C168.196 47.498 168.123 33.1024 168.008 31.3215C167.992 31.0901 167.923 30.8858 167.825 30.6765L165.828 30.6711C165.884 30.5837 165.917 30.5424 165.953 30.4511C166.227 29.7738 166.156 28.4496 165.854 27.7958Z" fill="#274E82"/>
+          <path d="M86.5859 29.0964L147.355 29.1161C147.367 29.1373 147.378 29.1584 147.391 29.1792C147.446 29.2724 147.495 29.3639 147.536 29.4644C147.85 30.2296 148.059 33.0322 147.79 33.7195C147.632 33.7955 147.517 33.8443 147.339 33.8479C141.325 33.9698 135.271 33.7723 129.252 33.7725L86.9755 33.7995C86.8763 32.2298 86.7984 30.6559 86.5859 29.0964Z" fill="#C0C9D5"/>
+          <path d="M85.6943 13.7256L146.343 13.7313C146.423 13.8502 146.49 13.9415 146.526 14.083C146.777 15.0529 147.035 17.331 146.594 18.1889C145.291 18.457 143.501 18.2392 142.142 18.2372L131.241 18.2299L85.9172 18.3312C85.8598 16.7952 85.7855 15.26 85.6943 13.7256Z" fill="#C0C9D5"/>
+          <path d="M86.1836 21.8505L105.731 21.8446C108.104 21.842 112.122 21.5706 114.293 21.9021C114.514 22.2757 114.427 22.7894 114.415 23.2119L94.5966 23.1662C92.5752 23.1685 88.1288 23.4406 86.4389 23.1054C86.2 22.761 86.221 22.2593 86.1836 21.8505Z" fill="#C0C9D5"/>
+          <path d="M125.255 50.168C125.837 50.1588 126.971 49.9371 127.443 50.2844C127.623 50.4171 127.62 50.6575 127.668 50.8687C127.054 50.8769 126.079 51.0806 125.529 50.7819C125.303 50.6594 125.314 50.4053 125.255 50.168Z" fill="#FEFEFE"/>
+          <path d="M86.3486 25.2046L96.9414 25.195C98.7721 25.194 100.719 25.0612 102.535 25.2678C102.749 25.6806 102.671 26.017 102.656 26.4768C100.779 26.4787 87.0061 26.7369 86.4318 26.3395L86.3486 25.2046Z" fill="#C0C9D5"/>
+          <path d="M78.9906 0.122178C80.9692 -0.0320611 83.0042 0.0548376 84.99 0.0652463L94.7419 0.0994683L129.712 0.0750237L142.118 0.083066C144.008 0.0808581 146.208 -0.156493 148.051 0.181319C148.856 0.328618 149.677 0.763894 150.245 1.35357C150.527 1.64738 150.827 2.06546 150.827 2.48733C150.827 2.57549 150.816 2.65829 150.792 2.74282C151.185 3.16659 151.663 8.98256 151.609 9.89049C151.597 10.1066 151.559 10.2846 151.477 10.4839L150.966 10.6197L150.889 10.416C149.822 9.99663 124.536 10.2802 121.8 10.2838L80.4252 10.2182C81.4918 27.1913 82.6568 44.1578 83.9202 61.1177C84.0838 63.3919 84.9332 77.2907 85.4505 78.6123L89.6914 78.5909C92.6302 78.7229 95.5971 78.6448 98.5392 78.6439C101.179 78.6431 103.856 78.7309 106.491 78.5898L120.932 78.601L121.386 79.1681C117.061 79.2055 112.731 79.1481 108.406 79.1375C105.725 79.2271 103.012 79.1459 100.328 79.1443L84.8146 79.1329C84.7767 78.3579 84.7072 77.583 84.6493 76.8092L62.7944 76.7928C62.7272 77.9615 62.7625 79.1359 62.7783 80.3058L104.292 80.2698C106.807 80.3823 109.353 80.2905 111.872 80.2793L122.415 80.2514L134.364 92.1202L131.895 92.1787C132.57 95.7358 133.158 99.3683 134.021 102.883C135.748 102.877 144.534 102.452 145.52 103.39C145.717 103.578 145.746 103.676 145.813 103.938C145.709 104.28 145.66 104.482 145.367 104.7C145.452 104.239 145.466 103.957 145.268 103.524C145.026 103.262 144.768 103.167 144.418 103.136C141.978 102.924 139.395 103.177 136.932 103.122C128.212 102.964 119.492 102.907 110.771 102.95C109.51 102.948 104.921 103.17 104.037 102.95L103.943 102.616C103.318 99.1053 102.809 95.5687 102.086 92.077L72.4791 92.0658L64.6525 92.0745C63.1968 92.0775 61.6322 92.1883 60.1904 92.0011C59.4536 91.9054 58.7375 91.5861 58.2109 91.0525C57.6651 90.4995 57.4887 89.8603 57.3787 89.1069C57.064 86.951 57.2714 84.512 57.2788 82.3328L57.2951 70.2126C55.9825 71.9649 54.4295 73.2513 52.1893 73.5595C51.4173 73.6656 50.5988 73.6136 49.8258 73.5265C49.3862 76.1111 48.9902 78.7023 48.6377 81.3002C48.4599 82.6855 48.124 88.0264 47.7315 88.9232L47.848 89.3693C49.3787 90.1782 54.5079 88.8773 55.9646 89.6549L56.0243 89.9697C54.9315 90.1791 34.589 90.1098 34.0198 89.9096L33.908 89.5612C35.2815 89.173 40.8115 89.4863 42.6627 89.5079C42.6046 88.9636 42.5347 88.4209 42.4531 87.8796C42.3714 87.3383 42.2781 86.7991 42.1732 86.2618C42.0682 85.7246 41.9516 85.1899 41.8234 84.6578C41.6952 84.1255 41.5556 83.5964 41.4047 83.0703C41.2536 82.5441 41.0912 82.0214 40.9175 81.5023C40.7439 80.9833 40.5591 80.4682 40.3632 79.9571C40.1672 79.446 39.9602 78.9394 39.7423 78.4373C39.5243 77.9351 39.2956 77.4379 39.0562 76.9457C38.2626 77.2286 37.4413 77.4128 36.5988 77.4579C32.0044 77.703 27.165 74.8073 23.8979 71.8152C20.6687 68.858 17.9928 65.0641 17.8181 60.5425C17.7414 58.5622 18.3333 56.5514 19.7185 55.0921C20.9365 53.8089 22.5691 53.2909 24.3072 53.2659C28.0755 53.2115 31.346 55.2139 33.9485 57.7787C37.2315 61.0143 41.3645 67.0498 41.3618 71.8373C41.3608 73.7156 40.7716 75.2484 39.4511 76.5796C41.581 80.4477 42.7286 85.1593 43.172 89.5291C44.2581 89.5488 46.1153 89.804 47.1237 89.4144L47.2582 89.0195C47.7051 83.7527 48.4047 78.5997 49.2904 73.3887C48.365 72.8889 47.529 72.3601 46.8226 71.5616C45.2526 69.7873 44.9003 67.1116 45.0347 64.8169C45.3455 59.5055 48.5635 50.0505 52.6991 46.4366C54.0707 45.238 55.4614 44.626 57.2855 44.761C57.2241 39.1983 57.2954 33.637 57.2713 28.0743C57.261 25.7206 56.9726 21.7273 57.297 19.5511C57.3856 18.9559 57.6769 18.4301 58.1003 18.0046C58.5214 17.5815 59.0075 17.3011 59.5956 17.1891C61.1607 16.8909 63.0212 17.093 64.6232 17.1083L73.9986 17.2055C73.9729 14.0068 73.9755 10.8082 74.0067 7.60971C73.9767 6.53697 73.9155 5.44973 73.9502 4.37716C73.9893 3.1617 74.3286 1.9363 75.2524 1.09272C76.3232 0.114924 77.6226 0.0559403 78.9906 0.122178ZM80.2895 10.1193C80.0166 7.98853 80.3379 5.69718 79.9346 3.614C79.6687 2.23973 79.0803 1.54408 77.9363 0.781873C76.9918 0.767364 76.2644 0.785658 75.5416 1.4668C74.6597 2.29793 74.5058 3.46907 74.4923 4.62302C74.4703 6.46553 74.5512 8.30962 74.5441 10.1524C76.4499 10.0368 78.3804 10.1084 80.2895 10.1193ZM74.1144 35.2891L67.0137 35.2652C67.097 46.9979 66.8334 58.7552 67.0616 70.4817L84.1019 70.4719C84.0486 67.4503 83.6329 64.3408 83.4042 61.318L81.9621 41.7803L80.4398 18.5712C80.3388 16.996 80.2828 11.868 79.8906 10.7732C79.4889 10.53 79.0401 10.6082 78.5753 10.6018C77.3264 10.615 75.6708 10.4034 74.4829 10.7254C74.6796 13.0601 74.6914 34.6384 74.4519 35.1668L74.1144 35.2891Z" fill="#263238"/>
+          <path d="M77.9361 0.781925C81.9944 1.04908 86.1686 0.675314 90.2459 0.725466C104.515 0.900837 118.785 0.674684 133.053 0.781295C136.176 0.803479 139.298 0.799537 142.421 0.769467C144.301 0.75417 146.277 0.583371 148.141 0.84154C148.972 0.956825 149.781 1.47553 150.324 2.10368C150.494 2.30129 150.664 2.51451 150.792 2.74287C151.185 3.16664 151.663 8.98261 151.609 9.89054C151.596 10.1066 151.559 10.2847 151.477 10.484L150.966 10.6198L150.888 10.416C149.822 9.99668 124.536 10.2802 121.8 10.2839L80.4251 10.2183C78.9795 10.1949 77.534 10.2003 76.0887 10.2345L74.5439 10.1525C76.4497 10.0369 78.3802 10.1085 80.2893 10.1194C80.0164 7.98858 80.3377 5.69723 79.9344 3.61406C79.6685 2.23978 79.0801 1.54413 77.9361 0.781925Z" fill="#274E82"/>
+          <path d="M89.1333 3.90193C89.291 3.89878 89.4489 3.89814 89.606 3.91439C90.0764 3.96296 90.5499 4.2 90.8358 4.58197C91.0873 4.9182 91.1498 5.34055 91.0659 5.74633C90.9206 6.44955 90.5 6.75172 89.945 7.13007C89.8988 7.12912 89.8528 7.12928 89.8066 7.12707C89.2716 7.10278 88.7712 6.87868 88.4263 6.46469C88.1289 6.10764 88.0347 5.65391 88.1177 5.20098C88.2366 4.55043 88.6354 4.26639 89.1333 3.90193Z" fill="#FEFEFE"/>
+          <path d="M94.464 3.88722C94.4876 3.88707 94.5113 3.88659 94.5348 3.88675C95.0893 3.89022 95.6405 4.02033 96.0261 4.44772C96.2822 4.73191 96.3879 5.07382 96.3532 5.45311C96.2841 6.20775 95.8417 6.57332 95.2891 7.0056C95.1025 7.01253 94.9139 7.01868 94.7278 7.00197C94.3055 6.9638 93.8945 6.72141 93.6393 6.38438C93.3997 6.06802 93.3181 5.68684 93.3805 5.29761C93.4958 4.57972 93.8984 4.26494 94.464 3.88722Z" fill="#FEFEFE"/>
+          <path d="M83.9426 3.9043C84.4936 3.90824 85.0679 4.0016 85.471 4.40975C85.7447 4.687 85.883 5.04327 85.8685 5.43297C85.842 6.14896 85.4325 6.55822 84.9325 6.99822C84.6936 7.00926 84.4482 7.01999 84.2117 6.97678C84.1568 6.96689 84.1025 6.95433 84.0487 6.93908C83.9951 6.92373 83.9424 6.90575 83.8906 6.88514C83.8387 6.86454 83.7881 6.84136 83.7387 6.8156C83.6892 6.78984 83.6411 6.76166 83.5944 6.73107C83.5477 6.70047 83.5027 6.66761 83.4594 6.6325C83.4161 6.59738 83.3746 6.56016 83.335 6.52084C83.2954 6.48152 83.2579 6.4403 83.2225 6.3972C83.1871 6.35409 83.1539 6.3093 83.123 6.26283C82.8972 5.92139 82.844 5.541 82.9287 5.14389C83.065 4.50501 83.4353 4.24258 83.9426 3.9043Z" fill="#FEFEFE"/>
+          <path d="M39.0562 76.9458C38.2626 77.2287 37.4413 77.4129 36.5988 77.458C32.0044 77.7031 27.165 74.8074 23.8979 71.8153C20.6687 68.8581 17.9928 65.0642 17.8181 60.5427C17.7414 58.5623 18.3333 56.5515 19.7185 55.0922C20.9365 53.809 22.5691 53.2911 24.3072 53.266C28.0755 53.2116 31.346 55.214 33.9485 57.7788C37.2315 61.0144 41.3645 67.0499 41.3618 71.8374C41.3608 73.7157 40.7716 75.2485 39.4511 76.5797C36.4952 72.0764 35.0651 69.3505 30.2712 66.3736L30.0342 66.4592L29.9937 66.2829L30.1272 66.3042L30.0027 66.4342C30.7209 67.5643 31.8488 68.0251 32.8364 68.8484C35.2793 70.8845 37.7925 74.0073 39.0562 76.9458Z" fill="#374349"/>
+          <path d="M49.2907 73.3886C48.3653 72.8888 47.5293 72.36 46.8229 71.5615C45.2529 69.7872 44.9006 67.1115 45.0349 64.8168C45.3458 59.5053 48.5638 50.0504 52.6994 46.4365C54.071 45.2379 55.4617 44.6258 57.2857 44.7608C57.2919 46.4865 57.6139 51.5992 57.1682 53.0051C57.0631 53.3367 56.7334 53.6496 56.4972 53.8991C52.8715 57.7888 51.0927 63.5881 50.0892 68.7042C49.7892 70.2338 49.6929 71.8938 49.2907 73.3886Z" fill="#374349"/>
+          <path d="M57.1956 53.9583C57.544 55.5675 57.3082 57.6226 57.3068 59.282L57.2954 70.2128C55.9828 71.9651 54.4298 73.2515 52.1896 73.5597C51.4176 73.6658 50.5991 73.6138 49.8262 73.5267C50.8123 66.4459 52.6537 59.6129 57.1956 53.9583Z" fill="#374349"/>
+          <path d="M62.7775 22.1328L73.9636 22.135C73.9603 24.0811 73.6878 34.2713 74.1149 35.289L67.0142 35.265C67.0975 46.9978 66.8339 58.7551 67.0621 70.4815L84.1024 70.4717C84.2579 72.3808 84.4624 74.3012 84.5533 76.2138C77.3072 76.2153 69.9851 75.9878 62.7471 76.2396C63.0156 70.511 62.7586 64.5391 62.7671 58.7862L62.7775 22.1328Z" fill="#C0C9D5"/>
+          <path d="M211.968 105.275C211.983 105.251 211.999 105.227 212.013 105.202C212.876 103.69 211.952 71.469 211.826 66.7351C211.755 64.0909 211.296 60.2061 211.558 57.7135C211.638 56.9374 211.923 55.6701 212.665 55.2588C212.832 55.5316 212.736 55.8257 212.661 56.1338C212.529 56.6927 212.349 57.2144 212.302 57.7925C212.177 59.2975 212.352 60.9027 212.398 62.4161L212.635 71.0544C212.736 74.8213 213.42 103.97 212.592 105.272L222.663 105.289C224.146 105.292 225.909 105.474 227.355 105.235C232.799 105.395 238.278 105.271 243.725 105.266C245.985 105.263 249.149 104.901 251.278 105.47L251.376 105.641C251.248 105.712 251.123 105.761 250.982 105.797C249.51 106.162 247.471 105.883 245.946 105.881L235.785 105.893L194.396 105.951L4.73375 105.934C3.90531 105.938 1.20849 106.143 0.674017 105.808L0.624023 105.55C0.89891 105.329 1.15708 105.291 1.49804 105.267C3.81683 105.103 6.28986 105.286 8.62647 105.283L24.4435 105.289C25.5037 105.277 26.5638 105.272 27.624 105.276L35.3584 105.298C35.1237 103.248 33.4758 90.5158 33.9081 89.561L34.0199 89.9094C34.5891 90.1096 54.9316 90.1789 56.0244 89.9695C55.983 93.7969 55.2126 97.9133 54.8073 101.745C54.6834 102.917 54.4435 104.201 54.4785 105.377C58.6715 105.251 90.162 105.58 90.9423 105.252C90.6368 104.999 90.2911 104.604 90.2293 104.195C90.1869 103.915 90.2408 103.705 90.4222 103.483C90.7266 103.109 91.5097 102.956 91.9671 102.899C92.9655 102.776 94.0411 102.855 95.0505 102.863C97.7309 102.884 100.493 103.042 103.163 102.899C103.53 102.879 103.693 102.903 103.943 102.615L104.037 102.95C104.921 103.17 109.51 102.948 110.771 102.95C119.492 102.907 128.212 102.964 136.932 103.122C139.395 103.177 141.978 102.923 144.418 103.136C144.768 103.166 145.027 103.261 145.268 103.523C145.467 103.957 145.452 104.239 145.367 104.7L145.279 105.178C145.616 105.41 146.015 105.31 146.419 105.298L157.944 105.286C159.902 105.289 161.985 105.43 163.933 105.251C169.82 105.489 175.759 105.284 181.654 105.269L211.968 105.275Z" fill="#263238"/>
+          <path d="M35.3582 105.298C35.1235 103.248 33.4756 90.516 33.9079 89.5613L34.0197 89.9097C34.5889 90.1098 54.9314 90.1792 56.0242 89.9697C55.9829 93.7972 55.2125 97.9135 54.8071 101.745C54.6832 102.917 54.4433 104.202 54.4783 105.378C48.8067 105.34 43.1233 105.251 37.4523 105.312C33.2883 105.357 28.543 105.691 24.4434 105.29C25.5035 105.277 26.5636 105.272 27.6239 105.276L35.3582 105.298Z" fill="#274E82"/>
+          <path d="M103.943 102.615L104.038 102.95C104.921 103.17 109.511 102.948 110.771 102.95C119.492 102.907 128.212 102.964 136.932 103.122C139.395 103.177 141.978 102.923 144.418 103.136C144.768 103.167 145.027 103.262 145.268 103.524C145.467 103.957 145.453 104.239 145.367 104.7L145.279 105.178C145.617 105.411 146.016 105.31 146.419 105.298C145.888 105.473 138.343 105.286 136.904 105.288L90.9425 105.253C90.637 104.999 90.2913 104.604 90.2295 104.195C90.1871 103.915 90.241 103.705 90.4224 103.483C90.7268 103.109 91.5099 102.956 91.9673 102.899C92.9658 102.776 94.0413 102.855 95.0507 102.863C97.7311 102.884 100.493 103.042 103.164 102.899C103.53 102.879 103.693 102.903 103.943 102.615Z" fill="#274E82"/>
+          <path d="M151.477 10.4839C151.936 11.0583 152.174 15.9895 152.078 16.8957C152.057 17.086 152.005 17.2264 151.917 17.3947L167.035 17.3841C169.225 17.3824 171.801 17.1048 173.942 17.4767C174.575 17.5866 175.141 17.8915 175.59 18.3518C176.15 18.9251 176.313 19.6294 176.406 20.4058C176.746 23.2195 176.467 26.8618 176.458 29.7538C176.44 34.6106 176.575 39.4819 176.448 44.3367C176.437 44.7481 176.452 45.1074 176.24 45.473C175.341 45.9794 172.274 46.7124 171.069 47.1291C171.091 47.0819 171.113 47.0354 171.132 46.9876C171.383 46.3673 171.391 44.744 171.112 44.1422C171.268 44.8727 171.326 46.5553 170.944 47.1988C170.211 47.717 168.71 48.4191 167.83 48.6215C167.874 48.5369 167.918 48.4475 167.945 48.3556C168.195 47.4979 168.123 33.1023 168.008 31.3215C167.992 31.0901 167.923 30.8857 167.825 30.6764L165.828 30.6711C165.883 30.5837 165.917 30.5424 165.953 30.4511C166.227 29.7737 166.156 28.4496 165.854 27.7957C163.879 27.6246 161.772 27.7598 159.785 27.7509C157.596 27.7413 155 27.4685 152.854 27.8519C153.155 28.7147 153.713 34.2059 153.372 34.9092C153.355 34.9456 153.333 34.9803 153.314 35.0159C154.628 35.0136 161.759 34.7991 162.398 35.1284L162.441 35.3742C161.778 35.8046 154.793 35.5864 153.371 35.5942C153.682 36.1197 153.817 36.9277 153.671 37.5274C153.642 37.6411 153.593 37.7287 153.536 37.8295C155.019 37.825 163.497 37.5807 164.224 38.0234C163.942 38.2931 163.548 38.36 163.16 38.3991C162.034 38.5126 160.829 38.4022 159.693 38.3955L153.592 38.4056C153.988 39.0116 153.723 39.7374 154.096 40.303C154.568 40.3189 155.137 40.2402 155.524 40.5059L155.513 40.8089C155.014 41.0235 154.53 40.7944 154.063 41.0568C153.749 44.2031 155.732 57.949 155.145 59.5808L155.276 60.0629C155.098 60.314 154.95 60.3144 154.663 60.4106C154.849 59.7623 151.152 11.2059 150.966 10.6197L151.477 10.4839Z" fill="#263238"/>
+          <path d="M152.407 21.8978L170.911 21.8774C171.044 22.1347 171.1 22.3512 171.115 22.6392C171.354 27.1266 171.175 31.711 171.189 36.2106C171.195 38.2148 171.462 42.3081 171.111 44.1423C171.268 44.8728 171.326 46.5554 170.944 47.1988C170.211 47.717 168.71 48.4192 167.83 48.6215C167.874 48.537 167.918 48.4475 167.945 48.3556C168.195 47.498 168.123 33.1023 168.008 31.3215C167.992 31.0901 167.923 30.8858 167.825 30.6765L165.828 30.6711C165.883 30.5837 165.917 30.5424 165.953 30.4511C166.227 29.7737 166.156 28.4496 165.853 27.7958C163.879 27.6247 161.772 27.7598 159.785 27.751C157.596 27.7414 155 27.4685 152.854 27.8519C153.117 26.9902 152.794 22.6367 152.407 21.8978Z" fill="#C0C9D5"/>
+          <path d="M113.738 58.8427C113.11 58.4102 112.239 57.7897 112.029 57.0006C111.943 56.6749 112.054 56.5517 112.218 56.2942C112.834 55.918 113.432 55.8799 114.12 56.0475C115.95 56.4924 118.558 58.8079 120.12 58.8874C120.232 59.1197 120.252 59.1408 120.472 59.2755C121.081 59.7594 121.682 60.2662 122.32 60.7119C120.706 61.5445 119.377 62.4377 118.06 63.6939C117.558 64.1728 117.076 64.7682 116.544 65.1995C115.074 65.1377 113.585 65.1809 112.113 65.1744L112.195 64.9446C110.016 64.3334 107.409 63.2097 105.68 61.708C105.545 61.4047 105.505 61.3505 105.552 61.009C105.801 60.8272 106.056 60.6592 106.317 60.4954C106.396 60.1016 106.26 59.9723 106.083 59.6363C106.094 59.2542 106.171 59.1766 106.385 58.8522C107.924 58.8686 109.473 58.9257 111.011 58.8904C111.92 58.8194 112.827 58.8353 113.738 58.8427Z" fill="#F4958D"/>
+          <path d="M106.385 58.8523C107.924 58.8687 109.473 58.9258 111.011 58.8905C110.99 58.9061 110.97 58.9228 110.949 58.9371C109.848 59.6662 107.488 58.3566 106.511 59.6106C106.575 59.8372 106.596 60.0105 106.832 60.113C108.419 60.8006 113.76 61.3674 114.65 62.3336C114.379 62.5471 114.048 62.546 113.718 62.5115C111.696 62.299 107.602 60.7065 106.098 60.8798L105.992 61.0285C106.631 62.4053 110.419 63.5957 111.749 64.1415C111.941 64.2202 112.52 64.4148 112.443 64.6318C112.386 64.7927 112.322 64.8414 112.195 64.9447C110.016 64.3335 107.409 63.2098 105.68 61.7081C105.545 61.4048 105.505 61.3506 105.552 61.0091C105.801 60.8273 106.056 60.6593 106.317 60.4955C106.396 60.1017 106.26 59.9723 106.083 59.6364C106.094 59.2543 106.171 59.1767 106.385 58.8523Z" fill="#263238"/>
+          <path d="M165.019 83.2309C165.032 83.2011 165.043 83.1716 165.054 83.1415C165.524 81.8166 165.541 77.4632 165.669 75.8338C165.965 72.0923 166.33 68.3576 166.585 64.6128C166.702 62.899 166.897 61.1309 166.833 59.4146C166.79 58.2933 166.555 57.151 166.039 56.1481C165.508 55.1132 164.316 54.2526 163.582 53.3254L163.748 53.1553C164.497 53.2221 165.36 54.102 165.812 54.6538C166.631 55.6515 167.258 57.0075 167.418 58.2922C167.818 61.5315 167.117 65.4611 166.877 68.7467C166.525 73.5536 166.328 78.4082 165.785 83.1962C165.741 83.582 165.707 83.8887 165.483 84.2171C165.626 84.84 165.248 91.3778 164.935 91.9601C164.875 92.0718 164.789 92.1493 164.694 92.2306C161.688 92.1117 158.66 92.1993 155.651 92.1918C155.512 92.0992 155.544 92.0806 155.511 91.9246C157.611 89.9269 160.121 88.1811 162.407 86.3958C163.289 85.7085 164.283 85.041 165.058 84.237C165.133 83.8723 165.092 83.5932 165.019 83.2309Z" fill="#263238"/>
+          <path d="M182.3 38.647C185.64 38.932 188.861 39.482 192.236 39.5409C192.299 40.9574 192.553 43.6848 192.217 44.9698L182.097 44.8312C182.147 44.747 182.191 44.6618 182.229 44.5703C182.573 43.7099 182.639 39.3996 182.3 38.647Z" fill="#F4958D"/>
+          <path d="M141.448 70.7803C142.965 70.6762 144.542 70.7604 146.066 70.7569C146.053 70.8809 146.045 70.9965 145.99 71.1107C145.837 71.4228 145.588 71.6786 145.265 71.8062C145.113 72.3719 144.785 72.665 144.322 72.9786C143.82 72.1599 142.265 71.3395 141.448 70.7803Z" fill="#FEFEFE"/>
+          <path d="M144.33 72.9495L144.608 73.0187C145.079 73.4492 145.175 74.2152 145.295 74.8164C145.483 75.7475 146.27 79.1171 145.775 79.8596L145.63 79.9591L145.42 79.8035C144.877 77.6831 144.499 75.1321 144.33 72.9495Z" fill="#263238"/>
+          <path d="M143.188 72.6545C143.216 72.675 143.248 72.6929 143.276 72.7162C143.762 73.1333 144.072 76.9717 144.084 77.7037C144.09 78.1803 144.05 78.2955 143.729 78.6203C143.617 78.4131 143.558 78.2294 143.516 77.9998C143.345 77.0887 142.644 73.8566 142.898 73.0799C142.937 72.9577 143.11 72.7679 143.188 72.6545Z" fill="#263238"/>
+          <path d="M178.535 25.0884C178.543 25.0633 178.55 25.0384 178.557 25.013C178.781 24.1743 178.549 22.9155 178.513 22.0325C178.361 18.4821 179.997 15.6461 183.001 13.8162C184.365 12.9858 186.866 12.0062 188.481 12.3941C189.175 12.561 189.625 12.9994 189.983 13.5933C190 13.623 190.017 13.6533 190.035 13.6831C193.291 13.5328 196.616 14.0387 199.119 16.3255C201.536 18.5342 200.902 21.8476 202.663 24.4058C203.921 26.2357 207.318 26.7182 207.402 28.6553C207.444 29.6112 206.968 30.5177 206.49 31.3151C207.053 31.9252 207.294 32.8357 207.249 33.6553C207.189 34.7752 206.512 35.8222 205.683 36.5374C202.344 39.4123 196.37 39.485 192.235 39.5407C188.86 39.4818 185.639 38.9317 182.299 38.6468C181.528 38.0834 179.498 37.8538 178.468 37.4042C177.89 37.1515 177.26 36.7631 177.057 36.1274C176.365 33.9682 179.375 34.5758 179.904 33.3104C179.919 33.2728 179.93 33.2334 179.943 33.1949C180.006 32.4293 178.885 31.1949 178.662 30.345C178.227 28.686 179.243 26.78 178.535 25.0884Z" fill="#263238"/>
+          <path d="M178.535 25.0884C179.016 25.5647 179.106 26.7386 179.101 27.4012C179.101 27.4641 179.097 27.5269 179.092 27.5896L179.179 27.5412C180.019 27.0643 180.494 26.4672 181.582 26.7442C182.203 26.9025 182.718 27.3223 183.035 27.8764C183.33 28.3932 183.424 29.0387 183.262 29.6143C183.139 30.0518 182.85 30.5263 182.438 30.7403C181.76 31.0931 181.166 30.9764 180.88 31.8003C180.689 32.3545 180.566 32.8618 180.007 33.1672C179.986 33.178 179.964 33.1858 179.944 33.1949C180.007 32.4292 178.885 31.1949 178.663 30.345C178.228 28.686 179.243 26.78 178.535 25.0884Z" fill="#F4958D"/>
+        </svg>
+
+        <p class="text-neutral-600 text-lg">No invoice has been generated yet.</p>
+        <button class="mt-4 inline-flex items-center gap-2 bg-blue-800 text-white px-4 py-2 rounded-md shadow hover:bg-blue-900">
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 5v14m-7-7h14"/></svg>
+          Generate Invoice
+        </button>
+      </div>
+    </div>
+
+    <!-- Form row -->
+    <div class="px-5 pb-6">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end border-t border-neutral-200 pt-4">
+        <!-- Payment ID -->
+        <div class="md:col-span-1">
+          <label class="block text-sm text-neutral-600 mb-1">Payment ID</label>
+          <input type="text" class="w-full rounded-lg border border-neutral-300 px-3 py-2.5 text-sm focus:border-neutral-500 focus:ring-2 focus:ring-neutral-200" />
+        </div>
+
+        <!-- Payment Method -->
+        <div class="md:col-span-1">
+          <label class="block text-sm text-neutral-600 mb-1">Payment Method</label>
+          <div class="relative">
+            <select class="w-full appearance-none rounded-lg border border-neutral-300 pl-3 pr-9 py-2.5 text-sm focus:border-neutral-500 focus:ring-2 focus:ring-neutral-200">
+              <option>Select One</option>
+            </select>
+            <span class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-neutral-500">
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+          </div>
+        </div>
+
+        <!-- Invoice Date -->
+        <div>
+          <label class="block text-sm text-neutral-600 mb-1">Invoice Date</label>
+          <div class="relative">
+            <input type="text" value="26/08/2025" class="w-full rounded-lg border border-neutral-300 pr-10 pl-3 py-2.5 text-sm focus:border-neutral-500 focus:ring-2 focus:ring-neutral-200" />
+            <span class="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-500">
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-width="2"/><path d="M16 2v4M8 2v4M3 10h18" stroke-width="2" stroke-linecap="round"/></svg>
+            </span>
+          </div>
+        </div>
+
+        <!-- Due Date -->
+        <div>
+          <label class="block text-sm text-neutral-600 mb-1">Due Date</label>
+          <div class="relative">
+            <input type="text" value="25/07/2025" class="w-full rounded-lg border border-neutral-300 pr-10 pl-3 py-2.5 text-sm focus:border-neutral-500 focus:ring-2 focus:ring-neutral-200" />
+            <span class="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-500">
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-width="2"/><path d="M16 2v4M8 2v4M3 10h18" stroke-width="2" stroke-linecap="round"/></svg>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- Bottom sticky action bar -->
+  <div class="sticky bottom-4 mt-6">
+    <div class="bg-white/90 backdrop-blur rounded-xl border border-neutral-200 shadow-lg p-3 flex flex-nowrap gap-2 justify-between">
+      <div class="flex"><div class="self-stretch inline-flex flex-col justify-center items-start gap-1">
+    <div class="self-stretch justify-end text-neutral-700 text-base font-normal font-['Inter'] leading-tight">Invoice Total</div>
+    <div class="self-stretch justify-end text-neutral-700 text-lg font-semibold font-['Inter'] leading-tight">$ X.XX</div>
+</div></div>
+      <div class="flex gap-3"><button class="px-2 rounded-md border border-neutral-300 text-neutral-500 cursor-not-allowed" disabled>
+        Download Invoice (PDF)
+      </button>
+      <button class="px-2 py-2 rounded-md border border-neutral-300 text-neutral-500 cursor-not-allowed" disabled>
+        View Xero Invoice (Admin)
+      </button>
+      <button class="px-2 py-2 rounded-md border border-neutral-300 text-neutral-500 cursor-not-allowed" disabled>
+        Send To Customer
+      </button>
+      <button class="px-2 py-2 rounded-md bg-blue-800 text-white hover:bg-blue-900">
+        Generate Invoice
+      </button></div>
+    </div>
+  </div>
+`;
+      }
+      function tableActivities() {
+        return `
+              <table class="min-w-full text-sm">
+                <thead class="bg-gray-50 text-gray-600">
+                  <tr>${th("ID")}${th("Services")}${th("Status")}${th(
+          "Price"
+        )}${th("Include in Quote")}${th("Invoice to Client")}${th(
+          "Option"
+        )}${th("Task")}</tr>
+                </thead>
+                <tbody class="divide-y">
+                  ${activityRow(
+                    677,
+                    "Possum Roof Removal",
+                    badge("Quoted", "violet"),
+                    "$4,169.00",
+                    true,
+                    false,
+                    "Option 2",
+                    "Option 2"
+                  )}
+                  ${activityRow(
+                    676,
+                    "Wasp Removal",
+                    badge("To Be Scheduled", "amber"),
+                    "$49.00",
+                    false,
+                    true,
+                    "Option 4",
+                    "Option 4"
+                  )}
+                  ${activityRow(
+                    675,
+                    "Possum Roof",
+                    badge("Rescheduled", "rose"),
+                    "$69.00",
+                    true,
+                    true,
+                    "Option 6",
+                    "Option 6"
+                  )}
+                  ${activityRow(
+                    674,
+                    "Wasp Removal",
+                    badge("Completed", "emerald"),
+                    "$089.00",
+                    true,
+                    false,
+                    "Option 1",
+                    "Option 1"
+                  )}
+                  ${activityRow(
+                    673,
+                    "Possum Roof Removal",
+                    badge("Cancelled", "gray"),
+                    "$608.00",
+                    false,
+                    true,
+                    "Option 3",
+                    "Option 3"
+                  )}
+                </tbody>
+              </table>`;
+      }
+
+      // FLEX: Materials (left stack + payment, right table)
+      function uiMaterials() {
+        return `
+              <div class="flex gap-6 flex-wrap">
+                <div class="basis-[420px] grow flex flex-col gap-4">
+                  <div class="rounded-xl border border-gray-200 p-5">
+                    <h3 class="text-sm font-semibold mb-4">Add Materials</h3>
+                    <div class="flex flex-wrap gap-4">
+                      ${rowFull("Material Name", "Enter material name")}
+                      ${selectRow("Status", "Select One")}
+                      ${moneyRow("Total")}
+                      ${textareaRow("Description", 2)}
+                      ${selectRow("Transaction Type", "Select one")}
+                      ${selectRow("Tax", "Select one")}
+                    </div>
+
+                    <div class="mt-4">
+                      <label class="text-sm text-gray-500">Receipt</label>
+                      <div class="mt-1 flex items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-6 text-sm text-gray-600">
+                        ⬆️ <span class="ml-2 text-blue-700 cursor-pointer">Click to upload</span> <span class="mx-1">or</span> drag and drop
+                      </div>
+                    </div>
+
+                    <div class="mt-4">
+                      ${selectRow("Service Provider", "Select one")}
+                    </div>
+                  </div>
+
+                  <div class="rounded-xl border border-gray-200 p-5">
+                    <h3 class="text-sm font-semibold mb-4">Payment</h3>
+                    <div class="flex flex-wrap gap-4">
+                      ${rowHalf("Batch Code")}
+                      ${rowHalf("Xero Bill ID")}
+                      ${dateRow("Date Scheduled")}
+                      ${dateRow("Date Paid")}
+                    </div>
+                    <div class="mt-4 flex justify-end gap-3">
+                      <button class="px-3 py-2 text-sm rounded-lg border hover:bg-gray-50">Cancel</button>
+                      <button class="px-3 py-2 text-sm rounded-lg bg-[#0b4ea2] text-white">Add</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="min-w-[520px] flex-1 rounded-xl border border-gray-200 overflow-hidden">
+                  ${tableMaterials()}
+                </div>
+              </div>`;
+      }
+
+      function tableMaterials() {
+        return `
+              <table class="min-w-full text-sm">
+                <thead class="bg-gray-50 text-gray-600">
+                  <tr>${th("Date Added")}${th("Status")}${th(
+          "Material Name"
+        )}${th("Total")}${th("Transaction Type")}${th("Tax")}${th(
+          "Service Provider"
+        )}</tr>
+                </thead>
+                <tbody class="divide-y">
+                  ${materialRow(
+                    "Nov 1, 2024",
+                    badge("Quoted", "violet"),
+                    "Shovel",
+                    "$4,169.00",
+                    "Deduct",
+                    "Exempt Expenses",
+                    "Jack Lawson"
+                  )}
+                  ${materialRow(
+                    "Nov 1, 2024",
+                    badge("To Be Scheduled", "amber"),
+                    "Net",
+                    "$49.00",
+                    "Reimburse",
+                    "Input",
+                    "Brooklyn Simmons"
+                  )}
+                  ${materialRow(
+                    "Nov 1, 2024",
+                    badge("Rescheduled", "rose"),
+                    "Mouse Trap",
+                    "$69.00",
+                    "Deduct",
+                    "Exempt Expenses",
+                    "Kathryn Murphy"
+                  )}
+                  ${materialRow(
+                    "Nov 1, 2024",
+                    badge("Completed", "emerald"),
+                    "Glue",
+                    "$089.00",
+                    "Reimburse",
+                    "Input",
+                    "Arlene McCoy"
+                  )}
+                  ${materialRow(
+                    "Nov 1, 2024",
+                    badge("Cancelled", "gray"),
+                    "Tape",
+                    "$608.00",
+                    "Deduct",
+                    "Input",
+                    "Leslie Alexander"
+                  )}
+                </tbody>
+              </table>`;
+      }
+
+      /* ============== tiny UI helpers (flex-friendly) ============== */
+      function row(label, placeholder = "") {
+        return `<label class="flex flex-col gap-1 text-sm text-gray-500">
+              ${label}
+              <input type="text" class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200" placeholder="${placeholder}">
+            </label>`;
+      }
+      function rowHalf(label, placeholder = "") {
+        return `<label class="basis-[160px] grow flex flex-col gap-1 text-sm text-gray-500">
+              ${label}
+              <input type="text" class="mt-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200" placeholder="${placeholder}">
+            </label>`;
+      }
+      function rowFull(label, placeholder = "") {
+        return `<label class="w-full flex flex-col gap-1 text-sm text-gray-500">
+              ${label}
+              <input type="text" class="mt-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200" placeholder="${placeholder}">
+            </label>`;
+      }
+      function selectRow(label, placeholder = "Select one") {
+        return `<label class="basis-[160px] grow flex flex-col gap-1 text-sm text-gray-500">
+              ${label}
+              <div class="relative">
+                <select class="w-full appearance-none rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200">
+                  <option>${placeholder}</option>
+                </select>
+                <span class="pointer-events-none absolute right-3 top-2.5 text-gray-400">⌄</span>
+              </div>
+            </label>`;
+      }
+      function dateRow(label) {
+        return `<label class="basis-[160px] grow flex flex-col gap-1 text-sm text-gray-500">
+              ${label}
+              <div class="relative">
+                <input type="text" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200" placeholder="dd/mm/yyyy">
+                <span class="absolute right-3 top-2.5 text-gray-400">📅</span>
+              </div>
+            </label>`;
+      }
+      function moneyRow(label) {
+        return `<label class="basis-[160px] grow flex flex-col gap-1 text-sm text-gray-500">
+              ${label}
+              <div class="relative">
+                <input type="text" class="w-full rounded-lg border border-gray-300 pl-8 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200" placeholder="$ 0.00">
+                <span class="absolute left-3 top-2.5 text-gray-400">$</span>
+              </div>
+            </label>`;
+      }
+      function textareaRow(label, rows = 3) {
+        return `<label class="w-full flex flex-col gap-1 text-sm text-gray-500">
+              ${label}
+              <textarea rows="${rows}" class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"></textarea>
+            </label>`;
+      }
+      function th(text) {
+        return `<th class="px-4 py-2 text-left font-semibold">${text}</th>`;
+      }
+      function td(text) {
+        return `<td class="px-4 py-3 text-gray-700">${text}</td>`;
+      }
+      function badge(text, tone = "gray") {
+        const map = {
+          violet: "bg-violet-100 text-violet-700",
+          amber: "bg-amber-100  text-amber-700",
+          rose: "bg-rose-100   text-rose-700",
+          emerald: "bg-emerald-100 text-emerald-700",
+          gray: "bg-gray-100   text-gray-600",
+        };
+        return `<span class="inline-flex items-center rounded-full px-2 py-0.5 text-sm font-medium ${
+          map[tone] || map.gray
+        }">${text}</span>`;
+      }
+      function checkbox(on = true) {
+        return `<input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-700" ${
+          on ? "checked" : ""
+        }>`;
+      }
+      function activityRow(
+        id,
+        service,
+        statusBadge,
+        price,
+        includeQuote,
+        invoiceClient,
+        optionTxt,
+        taskTxt
+      ) {
+        return `<tr class="odd:bg-white even:bg-gray-50">
+              ${td(
+                `<a href="#" class="text-blue-700 hover:underline">${id}</a>`
+              )}
+              ${td(service)} ${td(statusBadge)} ${td(price)}
+              ${td(
+                `<div class="flex items-center">${checkbox(includeQuote)}</div>`
+              )}
+              ${td(
+                `<div class="flex items-center">${checkbox(
+                  invoiceClient
+                )}</div>`
+              )}
+              ${td(optionTxt)} ${td(taskTxt)}
+            </tr>`;
+      }
+      function materialRow(
+        date,
+        statusBadge,
+        name,
+        total,
+        trxType,
+        tax,
+        provider
+      ) {
+        return `<tr class="odd:bg-white even:bg-gray-50">
+              ${td(date)} ${td(statusBadge)} ${td(name)} ${td(total)} ${td(
+          trxType
+        )} ${td(tax)} ${td(provider)}
+            </tr>`;
+      }
+
+      /* ============== Header nav state + events ============== */
+      function updateHeaderNav() {
+        backBtn.disabled = currentSectionIdx === 0;
+        const isLast = currentSectionIdx === SECTIONS.length - 1;
+        nextBtn.disabled = isLast;
+        nextBtn.classList.toggle("opacity-60", isLast);
+        nextLabel.textContent = isLast
+          ? "—"
+          : SECTIONS[currentSectionIdx + 1].label;
+      }
+
+      // sidebar click (event delegation)
+      sidebarSteps.addEventListener("click", (e) => {
+        const row = e.target.closest("[data-index]");
+        if (!row) return;
+        currentSectionIdx = Number(row.dataset.index);
+        setSidebarActive(currentSectionIdx);
+        updateHeaderNav();
+        renderContent();
+      });
+
+      // Top tabs — event delegation so it survives re-renders
+      function applyTabState() {
+        const overviewBtn = document.getElementById("tab-overview");
+        const apptBtn = document.getElementById("tab-appointments");
+        const overviewSection = document.getElementById("overview-section");
+        const appointmentSection = document.getElementById(
+          "appointment-section"
+        );
+
+        if (!overviewBtn || !apptBtn || !overviewSection || !appointmentSection)
+          return;
+
+        // Button visual states
+        const setBtnState = (btn, active) => {
+          if (!btn) return;
+          btn.style.borderBottomWidth = "2px";
+          if (active) {
+            btn.classList.add("border-blue-600", "text-blue-700");
+            btn.classList.remove("text-gray-600", "border-transparent");
+          } else {
+            btn.classList.remove("border-blue-600", "text-blue-700");
+            btn.classList.add("text-gray-600", "border-transparent");
+          }
+        };
+
+        setBtnState(overviewBtn, currentTab === "overview");
+        setBtnState(apptBtn, currentTab === "appointments");
+
+        // Section visibility
+        if (currentTab === "overview") {
+          overviewSection.classList.remove("hidden");
+          appointmentSection.classList.add("hidden");
+        } else {
+          overviewSection.classList.add("hidden");
+          appointmentSection.classList.remove("hidden");
+        }
+      }
+
+      // Delegate click from a stable parent
+      content.addEventListener("click", (e) => {
+        const tabBtn = e.target.closest("[data-tab]");
+        if (!tabBtn) return;
+        // Only handle when we're on Job Information screen
+        const isJobInfo = SECTIONS[currentSectionIdx]?.id === "job-information";
+        if (!isJobInfo) return;
+
+        const newTab = tabBtn.getAttribute("data-tab");
+        if (!newTab || (newTab !== "overview" && newTab !== "appointments"))
+          return;
+        currentTab = newTab;
+        applyTabState();
+      });
+
+      backBtn.addEventListener("click", () => {
+        if (currentSectionIdx === 0) return;
+        currentSectionIdx -= 1;
+        setSidebarActive(currentSectionIdx);
+        updateHeaderNav();
+        renderContent();
+      });
+
+      nextBtn.addEventListener("click", () => {
+        if (currentSectionIdx >= SECTIONS.length - 1) return;
+        currentSectionIdx += 1;
+        setSidebarActive(currentSectionIdx);
+        updateHeaderNav();
+        renderContent();
+      });
+
+      (function init() {
+        renderSidebar();
+        const fromHash = location.hash.replace("#", "");
+        const idxFromHash = SECTIONS.findIndex((s) => s.id === fromHash);
+        if (idxFromHash >= 0) currentSectionIdx = idxFromHash;
+        setSidebarActive(currentSectionIdx);
+        updateHeaderNav();
+        renderContent();
+        // Ensure correct tab state on first render of Job Information
+        if (SECTIONS[currentSectionIdx]?.id === "job-information") {
+          applyTabState();
+        }
+      })();
+
+      // After each content render, ensure tab state is applied if relevant
+      const originalRenderContent = renderContent;
+      renderContent = function () {
+        const s = SECTIONS[currentSectionIdx];
+        const html = renderOverview(s);
+        content.innerHTML = html;
+        if (s.id === "job-information") applyTabState();
+      };
+    </script>
+  </body>
+</html>
