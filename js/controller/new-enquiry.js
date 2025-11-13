@@ -504,13 +504,13 @@ export class NewEnquiryController {
       let result = this.model.createNewInquiry(dealsObj);
 
       if (!result.isCancelling) {
-        this.customModalHeader.innerText = "Successful";
-        this.customModalBody.innerText = "New deal created successfully.";
-        this.toggleModal("statusModal");
+        this.view.customModalHeader.innerText = "Successful";
+        this.view.customModalBody.innerText = "New deal created successfully.";
+        this.view.toggleModal("statusModal");
       } else {
-        this.customModalHeader.innerText = "Failed";
-        this.customModalBody.innerText = "New deal creation failed.";
-        this.toggleModal("statusModal");
+        this.view.customModalHeader.innerText = "Failed";
+        this.view.customModalBody.innerText = "New deal creation failed.";
+        this.view.toggleModal("statusModal");
       }
       return;
     });
