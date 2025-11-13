@@ -1603,7 +1603,7 @@ export class NewEnquiryView {
           affiliation.property_id = this.propertyId;
           affiliation.primary_owner_contact = isPrimaryContact.checked;
           let affiliationResult = await this.model.updateExistingAffiliation(
-            contact,
+            affiliation,
             this.affiliationId
           );
 
