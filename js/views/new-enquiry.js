@@ -1904,15 +1904,14 @@ export class NewEnquiryView {
             e.preventDefault();
             // Store the chosen property id similar to contacts
             this.propertyId = p.id;
-            let propertyDetail = await this.model.fetchPropertiesById(
-              this.propertyId
+            const propertyFields = document.querySelectorAll(
+              "[data-section-id='property'] input:not([data-search-input]), [data-section-id='property'] select"
             );
-            this.populatePropertyFields(
-              document.querySelectorAll(
-                "[data-section-id='property'] input:not([data-search-input]), [data-section-id='property'] select"
-              ),
-              propertyDetail.resp
-            );
+            this.model.fetchPropertiesById(this.propertyId, (records) => {
+              if (!Array.isArray(records) || !records.length) return;
+              this.populatePropertyFields(propertyFields, records);
+            });
+
             input.value = `${p.property_name || p.id} — ${
               p.address_1 || ""
             }`.trim();
