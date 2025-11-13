@@ -511,3 +511,10 @@ const CREATE_AFFILIATION_MUTATION = `mutation createAffiliation(
   }
 }
 `;
+
+const DELETE_AFFILIATION_QUERY =`mutation deleteAffiliation($id: PeterpmAffiliationID!) {
+  deleteAffiliation(query: [{ where: { id: $id } }]) {
+    id
+  }
+}`
+;

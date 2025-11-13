@@ -1265,7 +1265,7 @@
                   >
                     <!-- card -->
                     <div
-                      class="w-full sm:w-60 bg-white rounded border border-gray-300 flex flex-col"
+                      class="w-full bg-white rounded border border-gray-300 flex flex-col"
                     >
                       <div class="px-3 pt-3 pb-2 flex flex-col gap-2">
                         <div class="flex items-center gap-1.5">
@@ -1363,6 +1363,8 @@
                         </button>
                         <button
                           class="px-4 py-2 w-full !flex items-center justify-center"
+                          @click="window.dispatchEvent(new CustomEvent('affiliation:delete:open', { detail: { id: [ID] } }));
+"
                         >
                           <svg
                             width="16"
@@ -1640,6 +1642,7 @@
                       class="inline-flex items-center gap-1 text-blue-700 text-xs"
                     >
                       <a
+                        class="text-blue-700 text-xs font-normal font-['Inter']"
                         href="https://www.google.com/maps/search/?api=1&query=[Property_Property_Name]"
                         target="_blank"
                         rel="noopener"
@@ -2748,7 +2751,9 @@
                 <div class="flex items-start justify-between gap-3">
                   <div>
                     <span class="text-slate-500">Service Provider:</span>
-                    <span class="font-semibold">[Contact_First_Name] [Contact_Last_Name]</span>
+                    <span class="font-semibold"
+                      >[Contact_First_Name] [Contact_Last_Name]</span
+                    >
                   </div>
                   <span
                     class="inline-flex items-center rounded-full bg-sky-100 text-sky-800 px-2 py-0.5 text-xs font-semibold"
@@ -5526,6 +5531,94 @@
         </div>
       </div>
       <!-- Add Property Contact Modal -->
+
+      <!-- Delete Property Contact Modal -->
+      <div x-data="deleteAffiliationModal" x-cloak>
+        <!-- Backdrop -->
+        <div
+          x-show="open"
+          x-transition.opacity
+          class="fixed inset-0 bg-black/40 z-40"
+          @click="handleClose()"
+        ></div>
+
+        <!-- Dialog -->
+        <div
+          x-show="open"
+          x-transition.opacity
+          class="fixed inset-0 z-50 grid place-items-center p-4"
+          @keydown.escape.window="handleClose()"
+          x-trap.noscroll="open"
+        >
+          <div class="w-full max-w-lg rounded-xl bg-white shadow-xl">
+            <!-- Header -->
+            <div class="flex items-center justify-between px-5 py-4 border-b">
+              <h3 class="text-lg font-semibold">Delete Contact</h3>
+              <button
+                class="text-slate-500 hover:text-slate-700"
+                @click="handleClose()"
+                aria-label="Close"
+              >
+                &times;
+              </button>
+            </div>
+
+            <!-- Body -->
+            <div class="px-5 py-4 space-y-4 text-[14px] text-slate-800">
+              <p>
+                This contact will be permanently removed from the property
+                record.
+              </p>
+              <p>Do you want to continue?</p>
+              <template x-if="error">
+                <p class="text-sm text-red-600" x-text="error"></p>
+              </template>
+            </div>
+
+            <!-- Footer -->
+            <div class="flex items-center justify-end gap-3 px-5 py-4 border-t">
+              <button
+                type="button"
+                class="text-slate-600 hover:text-slate-800"
+                @click="handleClose()"
+                :disabled="isSubmitting"
+              >
+                Keep Contact
+              </button>
+
+              <button
+                type="button"
+                class="inline-flex items-center gap-2 rounded-md bg-red-600 text-white px-4 py-2 hover:bg-red-700 disabled:opacity-60"
+                @click="handleDelete()"
+                :disabled="isSubmitting"
+              >
+                <svg
+                  x-show="isSubmitting"
+                  class="h-4 w-4 animate-spin"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke-width="4"
+                  ></circle>
+                  <path
+                    class="opacity-75"
+                    stroke-width="4"
+                    d="M4 12a8 8 0 0 1 8-8"
+                  ></path>
+                </svg>
+                <span>Delete</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Delete Property Contact Modal -->
     </div>
     <!-- Modals -->
 

@@ -3240,14 +3240,17 @@ document.addEventListener("alpine:init", () => {
 
         if (!contactId) {
           throw new Error("Failed to create contact (no id returned)");
-        } else if(contactId){
-          const propertyRes = await graphqlRequest(CREATE_AFFILIATION_MUTATION, {
-            payload : {
-              contact_id: contactId,
-              property_id: this.propertyId,
-              role: this.form.role,
+        } else if (contactId) {
+          const propertyRes = await graphqlRequest(
+            CREATE_AFFILIATION_MUTATION,
+            {
+              payload: {
+                contact_id: contactId,
+                property_id: this.propertyId,
+                role: this.form.role,
+              },
             }
-          }); 
+          );
         }
 
         this.toast("success", "Property contact saved.");
@@ -3261,6 +3264,59 @@ document.addEventListener("alpine:init", () => {
       } catch (e) {
         console.error(e);
         this.error = e?.message || "Failed to save contact.";
+        this.toast("error", this.error);
+      } finally {
+        this.isSubmitting = false;
+      }
+    },
+
+    handleClose() {
+      this.open = false;
+    },
+
+    toast(type, message) {
+      window.dispatchEvent(
+        new CustomEvent("toast:show", { detail: { type, message } })
+      );
+    },
+  }));
+
+  Alpine.data("deleteAffiliationModal", () => ({
+    open: false,
+    isSubmitting: false,
+    error: "",
+    affiliationId: null,
+
+    init() {
+      // Open with: window.dispatchEvent(new CustomEvent('affiliation:delete:open', { detail: { id } }))
+      window.addEventListener("affiliation:delete:open", (e) => {
+        this.error = "";
+        this.isSubmitting = false;
+        this.affiliationId = e?.detail?.id ?? null;
+        this.open = true;
+      });
+    },
+
+    async handleDelete() {
+      if (this.isSubmitting) return;
+      if (!this.affiliationId) {
+        this.error = "Missing affiliation ID.";
+        return;
+      }
+
+      this.isSubmitting = true;
+      this.error = "";
+      try {
+        await graphqlRequest(DELETE_AFFILIATION_QUERY, {
+          id: this.affiliationId,
+        });
+        // notify lists/badges to refresh
+        window.dispatchEvent(new CustomEvent("affiliations:changed"));
+        this.toast("success", "Contact deleted.");
+        this.handleClose();
+      } catch (e) {
+        console.error(e);
+        this.error = e?.message || "Failed to delete contact.";
         this.toast("error", this.error);
       } finally {
         this.isSubmitting = false;
