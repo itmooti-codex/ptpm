@@ -512,6 +512,19 @@ const CREATE_AFFILIATION_MUTATION = `mutation createAffiliation(
 }
 `;
 
+const UPDATE_AFFILIATION_MUTATION = `mutation updateAffiliation(
+  $id: PeterpmAffiliationID!,
+  $payload: AffiliationUpdateInput = null
+) {
+  updateAffiliation(query: [{ where: { id: $id } }], payload: $payload) {
+    id
+    role
+    contact_id
+    property_id
+  }
+}
+`;
+
 const DELETE_AFFILIATION_QUERY =`mutation deleteAffiliation($id: PeterpmAffiliationID!) {
   deleteAffiliation(query: [{ where: { id: $id } }]) {
     id

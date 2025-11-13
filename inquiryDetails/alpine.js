@@ -1615,33 +1615,39 @@ document.addEventListener("alpine:init", () => {
     activities: [
       {
         id: "a-1",
-        task: "Possum Proofing",
-        service: "Pigeon Removal",
-        price: "$1,250.00",
-        note: "Inspect roofline, seal active entry points, and install mesh guards across the eaves.",
-        technician: "Alan Smith",
-        updated: "10/11/2025",
-        status: "Scheduled",
+        task: "Task 1",
+        option: "1",
+        service: "Possum",
+        price: "$129.99",
+        note: "Lorem ipsum dolor sit amet consectetur. Neque libero enim aliquam a vestibulum lobortis.",
+        status: "Quoted",
       },
       {
         id: "a-2",
-        task: "Roof Clean & Sanitize",
-        service: "Roof Restoration",
-        price: "$860.00",
-        note: "High-pressure clean and apply sanitation treatment to remove nesting debris.",
-        technician: "Mikaela Jones",
-        updated: "08/11/2025",
-        status: "Completed",
+        task: "Task 1",
+        option: "2",
+        service: "Possum",
+        price: "$119.99",
+        note: "Lorem ipsum dolor sit amet consectetur. Neque libero enim aliquam a vestibulum lobortis.",
+        status: "To Be Scheduled",
       },
       {
         id: "a-3",
-        task: "Gutter Guard Install",
-        service: "Add-On Service",
-        price: "$420.00",
-        note: "Fit aluminium gutter guards to western elevation to prevent re-entry.",
-        technician: "Team Bravo",
-        updated: "05/11/2025",
+        task: "Task 2",
+        option: "1",
+        service: "Rat removal",
+        price: "$89.99",
+        note: "Lorem ipsum dolor sit amet consectetur. Neque libero enim aliquam a vestibulum lobortis.",
         status: "Scheduled",
+      },
+      {
+        id: "a-4",
+        task: "Task 2",
+        option: "2",
+        service: "Rat removal",
+        price: "$109.99",
+        note: "Lorem ipsum dolor sit amet consectetur. Neque libero enim aliquam a vestibulum lobortis.",
+        status: "Completed",
       },
     ],
     boundListener: null,
@@ -1657,8 +1663,164 @@ document.addEventListener("alpine:init", () => {
         this.boundListener = null;
       }
     },
+    statusBadgeClass(status) {
+      const palette = {
+        Quoted: "bg-violet-100 text-violet-700",
+        "To Be Scheduled": "bg-amber-100 text-amber-800",
+        Scheduled: "bg-blue-100 text-blue-700",
+        Completed: "bg-emerald-100 text-emerald-700",
+      };
+      return palette[status] || "bg-slate-100 text-slate-600";
+    },
     close() {
       this.open = false;
+    },
+  }));
+
+  Alpine.data("billingSummaryModal", () => ({
+    open: false,
+    confirm: false,
+    summary: {
+      businessName: "The Business Pty Ltd",
+      jobId: "#1231543",
+      jobLink: "#",
+      completedOn: "3 Dec 2024, 7:00 pm",
+      billStatusLabel: "Create Bill Line Item",
+      billXeroId: "f649a1be-7d4f-4194-966c-f26c3457db8c",
+      from: {
+        accountName: "Dipesh Adhikari",
+        accountNumber: "123456",
+        bsb: "001-123",
+        jobRate: "50%",
+        abn: "56 1234 1233",
+        gstRegistered: "Yes",
+      },
+      to: {
+        businessName: "Awesomate",
+        clientName: "Nick Jonas",
+        abn: "1234567890",
+        address: "13 Parakeet Pl",
+      },
+      invoiceTotal: "$900.00",
+      materialsTotal: "$900.00",
+      batch: {
+        id: "51",
+        billDate: "12 Dec 2024, 12:00 pm",
+        billDueDate: "12 Dec 2024, 12:00 pm",
+      },
+      totals: {
+        commissionRate: "50%",
+        billTotal: "$343.00",
+        billGst: "$240.00",
+        grandTotal: "$1000.00",
+      },
+    },
+    boundListener: null,
+    init() {
+      this.boundListener = (event) => {
+        this.mergeSummary(event?.detail || {});
+        this.confirm = false;
+        this.open = true;
+      };
+      window.addEventListener("billingSummary:open", this.boundListener);
+    },
+    destroy() {
+      if (this.boundListener) {
+        window.removeEventListener("billingSummary:open", this.boundListener);
+        this.boundListener = null;
+      }
+    },
+    mergeSummary(detail = {}) {
+      if (!detail || typeof detail !== "object") return;
+      const mergeSection = (target = {}, source = {}) => ({
+        ...target,
+        ...(typeof source === "object" && source ? source : {}),
+      });
+      this.summary = {
+        ...this.summary,
+        ...detail,
+        from: mergeSection(this.summary.from, detail.from),
+        to: mergeSection(this.summary.to, detail.to),
+        batch: mergeSection(this.summary.batch, detail.batch),
+        totals: mergeSection(this.summary.totals, detail.totals),
+      };
+    },
+    get statusPillClass() {
+      return "bg-emerald-100 text-emerald-700";
+    },
+    notify(message, variant = "info") {
+      if (!message) return;
+      window.dispatchEvent(
+        new CustomEvent("toast:show", { detail: { message, variant } })
+      );
+    },
+    handleEdit() {
+      this.notify("Edit billing flow coming soon.");
+    },
+    handleDownload() {
+      this.notify("Preparing download…");
+    },
+    handlePrint() {
+      if (!this.confirm) {
+        this.notify("Please confirm the bill details before printing.", "error");
+        return;
+      }
+      if (typeof window?.print === "function") {
+        window.print();
+      }
+    },
+    close() {
+      this.open = false;
+      this.confirm = false;
+    },
+  }));
+
+  Alpine.data("followUpCommentModal", () => ({
+    open: false,
+    comment: "",
+    isSubmitting: false,
+    boundListener: null,
+    init() {
+      this.boundListener = (event) => {
+        const nextComment = event?.detail?.comment ?? "";
+        this.comment = typeof nextComment === "string" ? nextComment : "";
+        this.open = true;
+      };
+      window.addEventListener("followUpComment:open", this.boundListener);
+    },
+    destroy() {
+      if (this.boundListener) {
+        window.removeEventListener(
+          "followUpComment:open",
+          this.boundListener
+        );
+        this.boundListener = null;
+      }
+    },
+    async handleSave() {
+      if (this.isSubmitting) return;
+      this.isSubmitting = true;
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        this.emitToast("Follow up comment saved.");
+        const target = document.querySelector("[data-follow-up-comment]");
+        if (target) target.textContent = this.comment || "";
+        this.close();
+      } catch (error) {
+        console.error(error);
+        this.emitToast("Unable to save follow up comment.", "error");
+      } finally {
+        this.isSubmitting = false;
+      }
+    },
+    close() {
+      this.open = false;
+    },
+    emitToast(message, variant = "success") {
+      if (!message) return;
+      window.dispatchEvent(
+        new CustomEvent("toast:show", { detail: { message, variant } })
+      );
     },
   }));
 
@@ -3123,6 +3285,7 @@ document.addEventListener("alpine:init", () => {
     isSubmitting: false,
     error: "",
     propertyId: null,
+    isEdit: false,
 
     // live search (mocked suggestions list)
     suggestions: [],
@@ -3137,6 +3300,8 @@ document.addEventListener("alpine:init", () => {
       isPrimary: false,
       // if picked from suggestions:
       existingContactId: null,
+      contactId: null,
+      affiliationId: null,
     },
 
     init() {
@@ -3145,8 +3310,15 @@ document.addEventListener("alpine:init", () => {
         const d = e?.detail || {};
         this.reset();
         this.propertyId = d.propertyId ?? null;
-        // optional prefill
-        if (d.prefill) Object.assign(this.form, d.prefill);
+        const prefill = { ...(d.prefill || {}) };
+        if (d.contactId && !prefill.contactId) prefill.contactId = d.contactId;
+        if (d.affiliationId && !prefill.affiliationId)
+          prefill.affiliationId = d.affiliationId;
+        const mode = typeof d.mode === "string" ? d.mode.toLowerCase() : "";
+        this.isEdit =
+          mode === "edit" ||
+          Boolean(prefill.contactId || prefill.affiliationId);
+        if (Object.keys(prefill).length) Object.assign(this.form, prefill);
         this.open = true;
       });
     },
@@ -3155,6 +3327,7 @@ document.addEventListener("alpine:init", () => {
       this.error = "";
       this.isSubmitting = false;
       this.suggestions = [];
+      this.isEdit = false;
       this.form = {
         search: "",
         role: "",
@@ -3164,6 +3337,8 @@ document.addEventListener("alpine:init", () => {
         sms: "",
         isPrimary: false,
         existingContactId: null,
+        contactId: null,
+        affiliationId: null,
       };
     },
 
@@ -3224,7 +3399,6 @@ document.addEventListener("alpine:init", () => {
       this.error = "";
 
       try {
-        // build payload expected by your API
         const payload = {
           first_name: this.form.firstName.trim(),
           last_name: this.form.lastName.trim() || null,
@@ -3232,28 +3406,48 @@ document.addEventListener("alpine:init", () => {
           sms_number: this.form.sms.trim() || null,
         };
 
-        const contactRes = await graphqlRequest(CREATE_CONTACT_MUTAION, {
-          payload,
-        });
-        const contactId = contactRes?.createContact?.id;
-        console.log("Created contact ID:", contactId);
+        let contactId = this.form.contactId || null;
 
-        if (!contactId) {
-          throw new Error("Failed to create contact (no id returned)");
-        } else if (contactId) {
-          const propertyRes = await graphqlRequest(
-            CREATE_AFFILIATION_MUTATION,
-            {
-              payload: {
-                contact_id: contactId,
-                property_id: this.propertyId,
-                role: this.form.role,
-              },
-            }
-          );
+        if (contactId) {
+          await graphqlRequest(UPDATE_CONTACT_MUTATION, {
+            id: contactId,
+            payload,
+          });
+        } else {
+          const contactRes = await graphqlRequest(CREATE_CONTACT_MUTAION, {
+            payload,
+          });
+          contactId = contactRes?.createContact?.id;
+          if (!contactId) {
+            throw new Error("Failed to create contact (no id returned)");
+          }
         }
 
-        this.toast("success", "Property contact saved.");
+        const normalizedRole = (this.form.role || "").trim() || null;
+
+        if (this.form.affiliationId) {
+          await graphqlRequest(UPDATE_AFFILIATION_MUTATION, {
+            id: this.form.affiliationId,
+            payload: {
+              role: normalizedRole,
+            },
+          });
+        } else {
+          await graphqlRequest(CREATE_AFFILIATION_MUTATION, {
+            payload: {
+              contact_id: contactId,
+              property_id: this.propertyId,
+              role: normalizedRole,
+            },
+          });
+        }
+
+        const successMessage =
+          this.form.affiliationId || this.form.contactId
+            ? "Property contact updated."
+            : "Property contact saved.";
+
+        this.toast("success", successMessage);
         // let the list refresh
         window.dispatchEvent(
           new CustomEvent("propertyContacts:changed", {

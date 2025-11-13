@@ -1346,7 +1346,38 @@
                       </div>
                       <div class="grid grid-cols-2 border-t border-gray-300">
                         <button
+                          type="button"
                           class="px-4 py-2 w-full !flex items-center justify-center"
+                          data-affiliation-id="[ID]"
+                          data-contact-id="[Contact_ID]"
+                          data-property-id="[Property_ID]"
+                          data-first-name="[Contact_First_Name]"
+                          data-last-name="[Contact_Last_Name]"
+                          data-email="[ContactEmail]"
+                          data-sms="[Contact_SMS_Number]"
+                          data-role="[Role]"
+                          @click="
+                            const data = $event.currentTarget.dataset;
+                            window.dispatchEvent(
+                              new CustomEvent('propertyContact:add:open', {
+                                detail: {
+                                  propertyId: data.propertyId || PROPERTY_ID,
+                                  mode: 'edit',
+                                  contactId: data.contactId || null,
+                                  affiliationId: data.affiliationId || null,
+                                  prefill: {
+                                    role: data.role || '',
+                                    firstName: data.firstName || '',
+                                    lastName: data.lastName || '',
+                                    email: data.email || '',
+                                    sms: data.sms || '',
+                                    contactId: data.contactId || null,
+                                    affiliationId: data.affiliationId || null,
+                                  },
+                                },
+                              })
+                            );
+                          "
                         >
                           <svg
                             width="16"
@@ -2689,6 +2720,7 @@
                 <a
                   href="#"
                   class="py-3 hover:bg-slate-50 border-r border-slate-200"
+                  @click.prevent="$dispatch('quote:edit', { allowDateEditing: false })"
                   >Job Documents</a
                 >
                 <a
@@ -2847,17 +2879,12 @@
                   </a>
                 </div>
 
-                <!-- Follow Up Comment -->
-                <!-- <div class="space-y-1">
-                  <a href="#" class="text-sky-700 font-medium hover:underline"
-                    >Follow Up Comment</a
-                  >
-                  <p class="text-slate-700">
-                    Client prefers communication via email rather than phone
-                    calls. Confirm before scheduling a visit. Previous service
-                    completed 3 months ago.
+                <div class="space-y-1">
+                  <span class="text-sky-700 font-medium">Follow Up Comment</span>
+                  <p class="text-slate-700 text-sm" data-follow-up-comment>
+                    [Follow_Up_Comment]
                   </p>
-                </div> -->
+                </div>
               </div>
 
               <!-- Footer actions -->
@@ -2867,6 +2894,7 @@
                 <a
                   href="#"
                   class="py-3 hover:bg-slate-50 border-r border-slate-200 inline-flex items-center justify-center gap-2"
+                  @click.prevent="window.dispatchEvent(new CustomEvent('billingSummary:open'))"
                 >
                   Billing Summary
                   <svg
@@ -2882,6 +2910,7 @@
                 <a
                   href="#"
                   class="py-3 hover:bg-slate-50 inline-flex items-center justify-center gap-2"
+                  @click.prevent="window.dispatchEvent(new CustomEvent('followUpComment:open', { detail: { comment: (document.querySelector('[data-follow-up-comment]')?.textContent || '').trim() } }))"
                 >
                   Edit Comment
                   <svg
@@ -3288,18 +3317,162 @@
 
       <div x-data="viewActivitiesModal()" x-cloak>
         <div
-          class="fixed inset-0 z-40 flex min-h-screen items-center justify-center bg-slate-900/60 px-4 py-10 text-slate-800"
+          class="fixed inset-0 z-40 flex items-center justify-center bg-slate-900/60 px-4 py-10 text-slate-800"
           x-show="open"
           x-transition.opacity
           @keydown.escape.window="close"
         >
-          <div class="w-full max-w-3xl rounded-2xl bg-white shadow-2xl">
+          <div
+            class="w-full max-w-5xl overflow-hidden rounded-sm bg-white shadow-2xl"
+          >
             <div
-              class="flex items-center justify-between border-b border-slate-200 px-6 py-4"
+              class="flex items-center justify-between bg-[#003882] px-6 py-4 text-white"
             >
-              <h3 class="text-lg font-semibold text-slate-900">
-                All Activities
-              </h3>
+              <h3 class="text-lg font-semibold">Activity List</h3>
+              <button
+                class="text-white/80 transition hover:text-white"
+                @click="close"
+              >
+                <span class="sr-only">Close</span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.5"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            <div class="bg-white px-4 pb-4 pt-3">
+              <div
+                class="overflow-x-auto rounded-sm border border-slate-200"
+                data-dynamic-list="rr3P1BMGRVVFDRr5aVY3s"
+                data-entity="peterpm"
+                data-var-jobid="375"
+                data-op="subscribe"
+                data-entity-key="1rBR-jpR3yE3HE1VhFD0j"
+                data-table="true"
+              ></div>
+            </div>
+
+            <div class="flex justify-end border-t border-slate-200 px-6 py-4">
+              <button
+                class="rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                @click="close"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div x-data="billingSummaryModal()" x-cloak>
+        <div
+          class="fixed inset-0 z-40 flex items-center justify-center bg-slate-900/60 px-4 py-10 text-slate-800"
+          x-show="open"
+          x-transition.opacity
+          @keydown.escape.window="close"
+        >
+          <div
+            class="relative w-full max-w-4xl overflow-hidden rounded-2xl bg-white shadow-2xl"
+          >
+            <div
+              class="absolute right-6 top-4 flex items-center gap-2"
+              aria-label="Billing actions"
+            >
+              <button
+                type="button"
+                class="rounded-full border border-slate-200 bg-white p-2 text-slate-500 shadow-sm transition hover:border-slate-300 hover:text-slate-700"
+                title="Edit Bill"
+                @click="handleEdit"
+              >
+                <svg
+                  class="h-4 w-4"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M2.5 13.75V17.5H6.25L16.5125 7.2375L12.7625 3.4875L2.5 13.75ZM18.5375 5.2125C18.9125 4.8375 18.9125 4.2375 18.5375 3.8625L16.1375 1.4625C15.7625 1.0875 15.1625 1.0875 14.7875 1.4625L13.0125 3.2375L16.7625 6.9875L18.5375 5.2125Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </button>
+              <button
+                type="button"
+                class="rounded-full border border-slate-200 bg-white p-2 text-slate-500 shadow-sm transition hover:border-slate-300 hover:text-slate-700"
+                title="Download PDF"
+                @click="handleDownload"
+              >
+                <svg
+                  class="h-4 w-4"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M10 12.9166L6.45837 9.37498L7.58337 8.24998L9.16671 9.83331V3.33331H10.8334V9.83331L12.4167 8.24998L13.5417 9.37498L10 12.9166ZM4.16671 15.8333V12.5H5.83337V14.1666H14.1667V12.5H15.8334V15.8333C15.8334 16.2916 15.625 16.7291 15.2542 17.05C14.8834 17.3708 14.3792 17.5 13.875 17.5H6.12504C5.66671 17.5 5.20837 17.3291 4.83754 17.05C4.46671 16.7708 4.16671 16.2916 4.16671 15.8333Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </button>
+              <button
+                type="button"
+                class="rounded-full border border-slate-200 bg-white p-2 text-slate-500 shadow-sm transition hover:border-slate-300 hover:text-slate-700"
+                title="Print"
+                @click="handlePrint"
+              >
+                <svg
+                  class="h-4 w-4"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M15.8334 7.49998H4.16671C3.70837 7.49998 3.33337 7.87498 3.33337 8.33331V13.3333H5.00004V16.6666H15V13.3333H16.6667V8.33331C16.6667 7.87498 16.2917 7.49998 15.8334 7.49998ZM13.3334 15H6.66671V11.6666H13.3334V15ZM15.8334 3.33331H4.16671V6.66665H15.8334V3.33331Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </button>
+              <button
+                type="button"
+                class="rounded-full border border-slate-200 bg-white p-2 text-slate-500 shadow-sm transition hover:border-slate-300 hover:text-slate-700"
+                title="Close"
+                @click="close"
+              >
+                <svg
+                  class="h-4 w-4"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M5.83337 5.83331L14.1667 14.1666M14.1667 5.83331L5.83337 14.1666"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            <div class="flex items-center justify-between px-6 py-4 border-b">
+            <div>
+              <p class="text-lg font-semibold text-slate-900">
+                Billing Summary
+              </p>
+                <p class="text-sm text-slate-600" x-text="summary.businessName"></p>
+              </div>
               <button
                 class="text-slate-400 transition hover:text-slate-600"
                 @click="close"
@@ -3321,61 +3494,256 @@
                 </svg>
               </button>
             </div>
-            <div class="max-h-[70vh] divide-y divide-slate-100 overflow-y-auto">
-              <template x-for="activity in activities" :key="activity.id">
-                <div class="px-6 py-4">
-                  <div
-                    class="flex flex-wrap items-center justify-between gap-2"
-                  >
-                    <div>
-                      <p
-                        class="text-sm font-semibold text-slate-900"
-                        x-text="activity.task"
-                      ></p>
-                      <p
-                        class="text-xs uppercase tracking-wide text-slate-500"
-                        x-text="activity.service"
-                      ></p>
-                    </div>
-                    <div class="text-right">
-                      <p
-                        class="text-base font-semibold text-slate-900"
-                        x-text="activity.price"
-                      ></p>
-                      <span
-                        class="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-semibold"
-                        :class="activity.status === 'Scheduled' ? 'border-amber-200 bg-amber-50 text-amber-800' : 'border-emerald-200 bg-emerald-50 text-emerald-700'"
-                        x-text="activity.status"
-                      ></span>
-                    </div>
+
+            <div class="px-6 py-6 space-y-6">
+              <div class="flex flex-wrap items-center justify-between gap-3 text-sm text-slate-600">
+                <div>
+                  <span class="text-slate-500">Job ID:</span>
+                  <a
+                    :href="summary.jobLink"
+                    class="font-semibold text-sky-700 hover:underline"
+                    x-text="summary.jobId"
+                  ></a>
+                </div>
+                <div>
+                  <span class="text-slate-500">Job Completed on:</span>
+                  <span class="font-semibold text-slate-900" x-text="summary.completedOn"></span>
+                </div>
+              </div>
+
+              <div class="flex flex-wrap items-center justify-between gap-3 text-sm text-slate-600">
+                <div class="flex items-center gap-2">
+                  <span class="text-slate-500">Xero Bill Status:</span>
+                  <span
+                    class="inline-flex items-center rounded-full px-3 py-0.5 text-xs font-semibold"
+                    :class="statusPillClass"
+                    x-text="summary.billStatusLabel"
+                  ></span>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="text-slate-500">Bill Xero ID:</span>
+                  <span class="font-mono text-slate-900" x-text="summary.billXeroId"></span>
+                </div>
+              </div>
+
+              <div class="grid gap-4 text-sm text-slate-700 md:grid-cols-2">
+                <div class="rounded-xl border border-slate-200 p-4">
+                  <div class="flex items-center justify-between">
+                    <p class="text-xs uppercase tracking-wide text-slate-500">
+                      Bill From
+                    </p>
                   </div>
-                  <p
-                    class="mt-3 text-sm text-slate-600"
-                    x-text="activity.note"
-                  ></p>
-                  <div class="mt-2 flex flex-wrap gap-4 text-xs text-slate-500">
-                    <span>
-                      <span class="font-semibold text-slate-700"
-                        >Technician:</span
-                      >
-                      <span x-text="activity.technician"></span>
-                    </span>
-                    <span>
-                      <span class="font-semibold text-slate-700"
-                        >Last Updated:</span
-                      >
-                      <span x-text="activity.updated"></span>
-                    </span>
+                  <div class="mt-3 space-y-2">
+                    <div class="flex items-center justify-between text-sm">
+                      <span class="text-slate-500">Account Name</span>
+                      <span class="font-semibold" x-text="summary.from.accountName"></span>
+                    </div>
+                    <div class="grid gap-3 text-sm md:grid-cols-2">
+                      <span>
+                        <span class="text-slate-500">Account #</span>
+                        <p class="font-semibold" x-text="summary.from.accountNumber"></p>
+                      </span>
+                      <span>
+                        <span class="text-slate-500">BSB</span>
+                        <p class="font-semibold" x-text="summary.from.bsb"></p>
+                      </span>
+                      <span>
+                        <span class="text-slate-500">Job Rate</span>
+                        <p class="font-semibold" x-text="summary.from.jobRate"></p>
+                      </span>
+                      <span>
+                        <span class="text-slate-500">ABN</span>
+                        <p class="font-semibold" x-text="summary.from.abn"></p>
+                      </span>
+                    </div>
+                    <div class="flex items-center justify-between text-sm">
+                      <span class="text-slate-500">GST Registered</span>
+                      <span class="font-semibold" x-text="summary.from.gstRegistered"></span>
+                    </div>
                   </div>
                 </div>
-              </template>
+
+                <div class="rounded-xl border border-slate-200 p-4">
+                  <p class="text-xs uppercase tracking-wide text-slate-500">
+                    Bill To
+                  </p>
+                  <div class="mt-3 space-y-2 text-sm">
+                    <div class="flex items-center justify-between">
+                      <span class="text-slate-500">Business Name</span>
+                      <span class="font-semibold" x-text="summary.to.businessName"></span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                      <span class="text-slate-500">Client Name</span>
+                      <span class="font-semibold" x-text="summary.to.clientName"></span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                      <span class="text-slate-500">ABN</span>
+                      <span class="font-semibold" x-text="summary.to.abn"></span>
+                    </div>
+                    <div>
+                      <span class="text-slate-500">Address</span>
+                      <p class="font-semibold" x-text="summary.to.address"></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="space-y-3">
+                <div
+                  class="flex items-center justify-between rounded-xl border border-slate-200 px-4 py-3 text-sm"
+                >
+                  <div>
+                    <p class="font-semibold text-slate-900">Client Invoice</p>
+                    <p class="text-slate-500">Invoice items and fees</p>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-slate-500">Total:</span>
+                    <span class="text-base font-semibold text-emerald-600" x-text="summary.invoiceTotal"></span>
+                  </div>
+                </div>
+                <div
+                  class="flex items-center justify-between rounded-xl border border-slate-200 px-4 py-3 text-sm"
+                >
+                  <div>
+                    <p class="font-semibold text-slate-900">Materials</p>
+                    <p class="text-slate-500">Materials & supplies</p>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-slate-500">Total:</span>
+                    <span class="text-base font-semibold text-emerald-600" x-text="summary.materialsTotal"></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="rounded-xl border border-slate-200 p-4 text-sm text-slate-700">
+                <div class="flex flex-wrap items-center gap-4">
+                  <div>
+                    <span class="text-slate-500">Batch ID</span>
+                    <p class="font-semibold" x-text="summary.batch.id"></p>
+                  </div>
+                  <div>
+                    <span class="text-slate-500">Bill Date</span>
+                    <p class="font-semibold" x-text="summary.batch.billDate"></p>
+                  </div>
+                  <div>
+                    <span class="text-slate-500">Bill Due Date</span>
+                    <p class="font-semibold" x-text="summary.batch.billDueDate"></p>
+                  </div>
+                </div>
+                <div class="mt-4 space-y-2">
+                  <div class="flex items-center justify-between">
+                    <span class="text-slate-500">Commission Rate</span>
+                    <span class="font-semibold" x-text="summary.totals.commissionRate"></span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-slate-500">Bill Total</span>
+                    <span class="font-semibold" x-text="summary.totals.billTotal"></span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-slate-500">Bill GST</span>
+                    <span class="font-semibold" x-text="summary.totals.billGst"></span>
+                  </div>
+                  <div class="flex items-center justify-between border-t border-slate-200 pt-3 text-base font-semibold text-emerald-600">
+                    <span>Grand Total (Including GST)</span>
+                    <span x-text="summary.totals.grandTotal"></span>
+                  </div>
+                </div>
+              </div>
+
+              <label class="flex items-start gap-2 text-sm text-slate-700">
+                <input
+                  type="checkbox"
+                  class="mt-1 h-4 w-4 rounded border-slate-300 text-sky-700 focus:ring-sky-500"
+                  x-model="confirm"
+                />
+                <span>I confirm and accept the details of this bill.</span>
+              </label>
             </div>
-            <div class="flex justify-end border-t border-slate-200 px-6 py-4">
+
+            <div class="flex items-center justify-end gap-3 border-t border-slate-200 px-6 py-4">
               <button
                 class="rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
                 @click="close"
               >
                 Close
+              </button>
+              <button
+                type="button"
+                class="rounded-md bg-sky-800 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-900 disabled:opacity-60"
+                :disabled="!confirm"
+                @click="handlePrint"
+              >
+                Print
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div x-data="followUpCommentModal()" x-cloak>
+        <div
+          class="fixed inset-0 z-40 flex min-h-screen items-center justify-center bg-slate-900/50 px-4 py-10 text-slate-800"
+          x-show="open"
+          x-transition.opacity
+          @keydown.escape.window="close"
+        >
+          <div class="w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-2xl">
+            <div class="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+              <h3 class="text-lg font-semibold text-slate-900">Edit Follow Up Comment</h3>
+              <button
+                class="text-slate-400 transition hover:text-slate-600"
+                @click="close"
+              >
+                <span class="sr-only">Close</span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.5"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            <div class="space-y-2 px-5 py-4">
+              <label class="text-sm font-medium text-slate-700" for="follow-up-comment-textarea"
+                >Follow Up Comment</label
+              >
+              <textarea
+                id="follow-up-comment-textarea"
+                class="h-32 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-800 shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                x-model="comment"
+                placeholder="Enter follow up comment..."
+              ></textarea>
+            </div>
+
+            <div class="flex items-center justify-end gap-4 border-t border-slate-200 px-5 py-4 text-sm">
+              <button class="text-slate-500 hover:text-slate-700" @click="close">
+                Cancel
+              </button>
+              <button
+                class="rounded bg-sky-800 px-4 py-2 font-semibold text-white shadow-sm transition hover:bg-sky-900 disabled:opacity-60"
+                @click="handleSave"
+                :disabled="isSubmitting"
+              >
+                <svg
+                  x-show="isSubmitting"
+                  class="-ml-1 mr-2 inline h-4 w-4 animate-spin"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke-width="4"></circle>
+                  <path class="opacity-75" stroke-width="4" d="M4 12a8 8 0 0 1 8-8"></path>
+                </svg>
+                <span>Save</span>
               </button>
             </div>
           </div>
@@ -5347,7 +5715,10 @@
           <div class="w-full max-w-lg rounded-lg bg-white shadow-xl">
             <!-- Header -->
             <div class="flex items-center justify-between px-5 py-4 border-b">
-              <h3 class="text-lg font-semibold">Add Property Contact</h3>
+              <h3
+                class="text-lg font-semibold"
+                x-text="isEdit ? 'Edit Property Contact' : 'Add Property Contact'"
+              ></h3>
               <button
                 class="text-slate-500 hover:text-slate-700"
                 @click="handleClose()"
@@ -5524,7 +5895,7 @@
                     d="M4 12a8 8 0 0 1 8-8"
                   ></path>
                 </svg>
-                <span>Save Contact</span>
+                <span x-text="isEdit ? 'Save Changes' : 'Save Contact'"></span>
               </button>
             </div>
           </div>
