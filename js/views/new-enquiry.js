@@ -1907,10 +1907,8 @@ export class NewEnquiryView {
             const propertyFields = document.querySelectorAll(
               "[data-section-id='property'] input:not([data-search-input]), [data-section-id='property'] select"
             );
-            this.model.fetchPropertiesById(this.propertyId, (records) => {
-              if (!Array.isArray(records) || !records.length) return;
-              this.populatePropertyFields(propertyFields, records);
-            });
+            let result = await this.model.fetchPropertiesById(this.propertyId);
+            this.populatePropertyFields(propertyFields, result.resp);
 
             input.value = `${p.property_name || p.id} — ${
               p.address_1 || ""
