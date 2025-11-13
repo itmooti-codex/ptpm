@@ -1273,7 +1273,6 @@ export class NewEnquiryView {
                 id="adSameAsAbove"
                 name="adSameAsAbove"
                 type="checkbox"
-                value="1"
                 class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 accent-blue-600"
               />
               <label for="adSameAsAbove" class="text-sm text-gray-700 select-none cursor-pointer">
@@ -1514,10 +1513,10 @@ export class NewEnquiryView {
           </div>
   
           <!-- Primary -->
-          <label class="inline-flex text-gray-700 font-medium items-center gap-2 text-sm">
-            <input id="pcPrimary" type="checkbox" class="h-4 w-4 accent-[#003882] rounded border-gray-300 text-blue-600 focus:ring-blue-500"/>
-            <span>Is Primary Contact</span>
-          </label>
+          <div class="inline-flex text-gray-700 font-medium items-center gap-2 text-sm">
+            <input id="pcPrimary" name="pcPrimary" type="checkbox" class="h-4 w-4 accent-[#003882] rounded border-gray-300 text-blue-600 focus:ring-blue-500"/>
+            <label for="pcPrimary" class="text-sm text-gray-700">Is Primary Contact</label>
+          </div>
         </div>
   
         <!-- Footer -->
@@ -1703,7 +1702,7 @@ export class NewEnquiryView {
           const { name, sub } = formatParts(c);
           const li = document.createElement("div");
           li.className =
-            "px-4 py-2 cursor-pointer border-b last:border-b-0 hover:bg-slate-50";
+            "flex flex-col gap-3 px-4 pt-4 pb-2 cursor-pointer border-b last:border-b-0 hover:bg-slate-50";
           li.innerHTML = `
             <div class="text-[15px] font-medium text-slate-800">${this.#escapeHtml(
               name
