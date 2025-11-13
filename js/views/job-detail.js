@@ -108,7 +108,7 @@ export class JobDetailView {
             </div>
           </div>
 
-          <div class="flex flex-col gap-1">
+          <div class="hidden flex flex-col gap-1">
             <label class="text-neutral-700 text-sm font-medium">Options</label>
             <div class="relative">
               <select data-field="option" data-activity-select="option" class="appearance-none w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10"></select>
@@ -215,7 +215,9 @@ export class JobDetailView {
       </div>
     `;
 
-    document.getElementById("replaceable-section").appendChild(wrapper);
+    const replaceable = document.getElementById("replaceable-section");
+    if (!replaceable) return;
+    replaceable.appendChild(wrapper);
     const addbutton = document.getElementById("add-activities");
     if (addbutton) {
       addbutton.addEventListener("click", async () => {
@@ -253,7 +255,7 @@ export class JobDetailView {
       placeholderOption.value = "";
       placeholderOption.textContent = placeholder;
       selectEl.appendChild(placeholderOption);
-      values.forEach((val) => {
+      values?.forEach((val) => {
         const opt = document.createElement("option");
         opt.value = val;
         opt.textContent = val;
@@ -360,7 +362,7 @@ export class JobDetailView {
       secondarySelect.innerHTML = `<option value="" disabled selected hidden>Select</option>`;
 
       if (currentSecondaryList.length > 0) {
-        currentSecondaryList.forEach((item) => {
+        currentSecondaryList?.forEach((item) => {
           const opt = document.createElement("option");
           opt.value = item.Service_Name;
           opt.id = item.ID;
@@ -647,7 +649,7 @@ export class JobDetailView {
       placeholderOption.value = "";
       placeholderOption.textContent = placeholder;
       selectEl.appendChild(placeholderOption);
-      values.forEach((val) => {
+      values?.forEach((val) => {
         const opt = document.createElement("option");
         opt.value = val;
         opt.textContent = val;
@@ -959,7 +961,7 @@ export class JobDetailView {
           '[field-section="invoice-input"] input'
         );
         invoiceDataObj.jobId = jobId;
-        invoiceDataObj.xero_invoice_status = "create invoice";
+        invoiceDataObj.xero_invoice_status = "Create Invoice";
         let invoiceData = await this.model.createInvoiceForJob(invoiceDataObj);
         return;
       });
@@ -1357,7 +1359,7 @@ export class JobDetailView {
     uploadBtn.onclick = () => fileInput.click();
     fileInput.onchange = (e) => {
       const files = Array.from(e.target.files || []);
-      files.forEach((f) => {
+      files?.forEach((f) => {
         const row = document.createElement("div");
         row.className =
           "flex items-center justify-between bg-gray-100 rounded-md px-4 py-3";
@@ -1839,7 +1841,7 @@ export class JobDetailView {
     this.setupJobInformationTabs();
 
     const sidebarItems = document.querySelectorAll("[data-section-target]");
-    sidebarItems.forEach((item) => {
+    sidebarItems?.forEach((item) => {
       item.style.pointerEvents = "none";
       item.setAttribute("aria-disabled", "true");
       item.classList.add("cursor-default", "select-none");
@@ -1868,7 +1870,7 @@ export class JobDetailView {
     const cancelBtns = document.querySelectorAll(
       '[data-nav-action="cancel"], #cancel-btn'
     );
-    cancelBtns.forEach((btn) => {
+    cancelBtns?.forEach((btn) => {
       if (btn.dataset.boundCancelModal) return;
       btn.dataset.boundCancelModal = "true";
       btn.addEventListener("click", (e) => {
@@ -1885,7 +1887,7 @@ export class JobDetailView {
     const resetBtns = document.querySelectorAll(
       '[data-nav-action="reset"], #reset-btn'
     );
-    resetBtns.forEach((btn) => {
+    resetBtns?.forEach((btn) => {
       if (btn.dataset.boundResetModal) return;
       btn.dataset.boundResetModal = "true";
       btn.addEventListener("click", (e) => {
@@ -2006,7 +2008,7 @@ export class JobDetailView {
       const disableSection = (section, disabled) => {
         section
           ?.querySelectorAll("input, select, textarea")
-          .forEach((el) => (el.disabled = disabled));
+          ?.forEach((el) => (el.disabled = disabled));
       };
       disableSection(individualSection, !isIndividual);
       disableSection(entitySection, isIndividual);
@@ -2030,7 +2032,7 @@ export class JobDetailView {
       document.getElementById("company-name-section"),
     ];
 
-    sections.forEach((section) => {
+    sections?.forEach((section) => {
       if (!section) return;
       section.classList.toggle("hidden", !show);
     });
@@ -2111,7 +2113,7 @@ export class JobDetailView {
       results.classList.remove("hidden");
       empty?.classList.add("hidden");
 
-      filtered.forEach((item, idx) => {
+      filtered?.forEach((item, idx) => {
         const li = document.createElement("li");
         const btn = document.createElement("button");
         btn.type = "button";
@@ -2195,7 +2197,7 @@ export class JobDetailView {
     if (!sectionId) return;
     this.currentSection = sectionId;
 
-    this.sectionOrder.forEach((id) => {
+    this.sectionOrder?.forEach((id) => {
       const el = document.querySelector(`[data-section="${id}"]`);
       if (!el) return;
       if (id === sectionId) {
@@ -2212,7 +2214,7 @@ export class JobDetailView {
   updateSidebarState(sectionId) {
     const items = document.querySelectorAll("[data-section-target]");
     const currentIndex = this.sectionOrder.indexOf(sectionId);
-    items.forEach((item) => {
+    items?.forEach((item) => {
       const target = item.getAttribute("data-section-target");
       const idx = this.sectionOrder.indexOf(target);
       const icon = item.querySelector("[data-section-icon]");
@@ -2335,7 +2337,7 @@ export class JobDetailView {
 
   updateSidebarLabels(collapsed = this.sidebarCollapsed) {
     const labels = document.querySelectorAll("[data-section-label]");
-    labels.forEach((label) => label.classList.toggle("hidden", collapsed));
+    labels?.forEach((label) => label.classList.toggle("hidden", collapsed));
   }
 
   applySidebarCollapsedState(collapsed) {
@@ -2518,7 +2520,7 @@ export class JobDetailView {
       results.classList.remove("hidden");
       empty?.classList.add("hidden");
 
-      filtered.forEach((item, idx) => {
+      filtered?.forEach((item, idx) => {
         const li = document.createElement("li");
         const btn = document.createElement("button");
         btn.type = "button";
@@ -2619,7 +2621,7 @@ export class JobDetailView {
       }
     });
 
-    ["jobAddClientModal", "jobAddPropertyModal"].forEach((id) => {
+    ["jobAddClientModal", "jobAddPropertyModal"]?.forEach((id) => {
       const modal = document.getElementById(id);
       if (!modal) return;
       modal.addEventListener("click", (e) => {
@@ -2842,7 +2844,7 @@ export class JobDetailView {
         return;
       }
 
-      filtered.forEach((item) => {
+      filtered?.forEach((item) => {
         const option = document.createElement("div");
         option.className =
           "flex items-center gap-3 p-3 hover:bg-slate-50 cursor-pointer";
@@ -2906,7 +2908,7 @@ export class JobDetailView {
   getFieldValues(selector) {
     let jobObj = {};
     let elements = document.querySelectorAll(selector);
-    elements.forEach((item) => {
+    elements?.forEach((item) => {
       if (item.disabled || item.classList.contains("hidden")) return;
       let key = item?.getAttribute("data-field")?.toLowerCase();
       let value;
@@ -2977,7 +2979,7 @@ export class JobDetailView {
       results.classList.remove("hidden");
       empty?.classList.add("hidden");
 
-      filtered.forEach((item, idx) => {
+      filtered?.forEach((item, idx) => {
         const li = document.createElement("li");
         const btn = document.createElement("button");
         btn.type = "button";
@@ -3062,7 +3064,7 @@ export class JobDetailView {
   }
 
   createOptionsForSelectBox(selectEl, options) {
-    options.forEach((item) => {
+    options?.forEach((item) => {
       let element = document.createElement("option");
       element.innerText = item.name;
       element.value = item.id;
@@ -3075,7 +3077,7 @@ export class JobDetailView {
       '[data-job-section="job-section-appointment"] input, [data-job-section="job-section-appointment"] select, [data-job-section="job-section-appointment"] textarea'
     );
     let dataObj = {};
-    section.forEach((item) => {
+    section?.forEach((item) => {
       let key = item?.getAttribute("data-field");
       let value;
       if (key == "start_time" || key == "end_time") {
@@ -3110,7 +3112,7 @@ export class JobDetailView {
 
   clearPropertyFieldValues(selector) {
     const fields = document.querySelectorAll(selector);
-    fields.forEach((field) => {
+    fields?.forEach((field) => {
       if (field.type === "checkbox" || field.type === "radio") {
         field.checked = false;
         return;
@@ -3169,7 +3171,7 @@ export class JobDetailView {
         "",
     };
 
-    Object.entries(values).forEach(([key, value]) => {
+    Object.entries(values)?.forEach(([key, value]) => {
       const field = modal.querySelector(`[data-contact-field="${key}"]`);
       if (field) field.value = value || "";
     });
@@ -3214,12 +3216,12 @@ export class JobDetailView {
     sameAsAboveBtn.addEventListener("change", () => {
       const isChecked = sameAsAboveBtn.checked;
       if (isChecked) {
-        botInputs.forEach((input, idx) => {
+        botInputs?.forEach((input, idx) => {
           input.value = topInputs[idx].value;
           input.disabled = true;
         });
       } else {
-        botInputs.forEach((input) => {
+        botInputs?.forEach((input) => {
           input.disabled = false;
           if (input.id === "adBotCountry") return;
           input.value = "";
@@ -3272,14 +3274,14 @@ export class JobDetailView {
   renderDropdownOptionsForStates(states) {
     let elements = document.querySelectorAll("#adTopState, #adBotState");
     if (!elements) return;
-    elements.forEach((el) => {
+    elements?.forEach((el) => {
       const placeholderOption = document.createElement("option");
       placeholderOption.text = "Select";
       placeholderOption.value = "";
       placeholderOption.disabled = true;
       placeholderOption.selected = true;
       el.add(placeholderOption);
-      states.forEach((state) => {
+      states?.forEach((state) => {
         let option = document.createElement("option");
         option.value = state.value;
         option.text = state.displayValue;
@@ -3349,7 +3351,7 @@ export class JobDetailView {
   async getEntityValuesFromContactDetailModal(elements) {
     const formElements = Array.from(elements);
     const entityDetailObj = {};
-    formElements.forEach((item) => {
+    formElements?.forEach((item) => {
       const key = item.getAttribute("data-contact-id");
       const value = item.value;
       if (key) entityDetailObj[key] = value;
@@ -3403,7 +3405,7 @@ export class JobDetailView {
             primaryContactId: primaryContactPersonId,
             name: entityDetailObj.company_name,
           });
-          formElements.forEach((item) => {
+          formElements?.forEach((item) => {
             item.value = "";
           });
         } else if (!contactResult?.isCancelling) {
@@ -3444,7 +3446,7 @@ export class JobDetailView {
               primaryContactId: contactId || "",
               name: entityDetailObj.company_name,
             });
-            formElements.forEach((item) => {
+            formElements?.forEach((item) => {
               item.value = "";
             });
             this.customModalHeader.innerText = "Successful";
@@ -3505,7 +3507,7 @@ export class JobDetailView {
   buildContactData(elements) {
     const data = {};
 
-    elements.forEach((item) => {
+    elements?.forEach((item) => {
       const key = item.getAttribute("data-contact-id");
       if (key) data[key] = item.value;
     });
@@ -3520,7 +3522,7 @@ export class JobDetailView {
   }
 
   clearForm(elements) {
-    elements.forEach((item) => (item.value = ""));
+    elements?.forEach((item) => (item.value = ""));
   }
 
   startLoading(message = "Processing...") {
@@ -3616,12 +3618,12 @@ export class JobDetailView {
     const list = document.getElementById("property-building-list");
     if (!btn || !card || !list) return;
 
-    Array.from(list.querySelectorAll("[data-dynamic='true']")).forEach((el) =>
+    Array.from(list.querySelectorAll("[data-dynamic='true']"))?.forEach((el) =>
       el.remove()
     );
 
     const frag = document.createDocumentFragment();
-    options.forEach((opt) => {
+    options?.forEach((opt) => {
       const text = opt.text || opt.value || "";
       const value = opt.value || opt.text || "";
       const slug = String(text)
@@ -3669,7 +3671,7 @@ export class JobDetailView {
       updateLabel();
     };
 
-    itemBoxes.forEach((box) => {
+    itemBoxes?.forEach((box) => {
       box.addEventListener("change", syncAllCheckbox);
     });
 
@@ -3677,7 +3679,7 @@ export class JobDetailView {
       allToggle.dataset.bound = "true";
       allToggle.addEventListener("change", () => {
         const next = !!allToggle.checked;
-        itemBoxes.forEach((c) => (c.checked = next));
+        itemBoxes?.forEach((c) => (c.checked = next));
         updateLabel();
       });
     }
@@ -3712,7 +3714,7 @@ export class JobDetailView {
       "#property-information [data-property-id]"
     );
     const data = {};
-    fields.forEach((field) => {
+    fields?.forEach((field) => {
       const key = field.dataset.propertyId;
       if (!key) return;
       const tag = field.tagName.toLowerCase();
@@ -3774,7 +3776,8 @@ export class JobDetailView {
   }
 
   setGoogleSearchAddress(data) {
-    Object.keys(data).forEach((key) => {
+    if (!data || typeof data !== "object") return;
+    Object.keys(data)?.forEach((key) => {
       const field = document.querySelector(`[data-property-id="${key}"]`);
       if (field) {
         field.value = data[key];
@@ -3797,7 +3800,7 @@ export class JobDetailView {
     await this.model.fetchActivities(jobId, (activities) => {
       this.activityRecordsById = new Map();
       const safeActivities = Array.isArray(activities) ? activities : [];
-      safeActivities.forEach((item) => {
+      safeActivities?.forEach((item) => {
         const id = String(item.ID || item.id || "");
         if (id) this.activityRecordsById.set(id, item);
       });
@@ -3840,6 +3843,7 @@ export class JobDetailView {
     thead.className = "bg-slate-100";
     const headerRow = document.createElement("tr");
     const headers = [
+      "Tasks",
       "Services",
       "Status",
       "Price",
@@ -3848,7 +3852,7 @@ export class JobDetailView {
       // "Option",
       "Actions",
     ];
-    headers.forEach((text, idx) => {
+    headers?.forEach((text, idx) => {
       const th = document.createElement("th");
       th.className = "px-7 py-3 text-left font-normal text-slate-700 leading-6";
       th.textContent = text;
@@ -3858,7 +3862,8 @@ export class JobDetailView {
 
     const tbody = document.createElement("tbody");
     const baseTdClass = "px-7 py-3 align-middle leading-6";
-    rows.forEach((item, idx) => {
+    let count = 0;
+    rows?.forEach((item, idx) => {
       const tr = document.createElement("tr");
       tr.className = idx % 2 === 0 ? "bg-white" : "bg-slate-50";
       tr.id = item.Id;
@@ -3875,6 +3880,7 @@ export class JobDetailView {
       const badgeClass = statusStyles[status] || "bg-slate-100 text-slate-600";
 
       const cells = [
+        { value: count++, className: "text-slate-800" },
         { value: item.Services, className: "text-slate-800" },
         {
           value: "",
@@ -3925,7 +3931,7 @@ export class JobDetailView {
         },
       ];
 
-      cells.forEach((cell) => {
+      cells?.forEach((cell) => {
         const td = document.createElement("td");
         td.className = baseTdClass;
         if (typeof cell.render === "function") {
@@ -3958,7 +3964,7 @@ export class JobDetailView {
   bindRowActions(containerId, recordsMap, { onEdit, onDelete } = {}) {
     const container = document.getElementById(containerId);
     if (!container) return;
-    container.querySelectorAll(".edit-btn").forEach((btn) => {
+    container.querySelectorAll(".edit-btn")?.forEach((btn) => {
       if (btn.dataset.bound) return;
       btn.dataset.bound = "true";
       btn.addEventListener("click", (e) => {
@@ -3972,7 +3978,7 @@ export class JobDetailView {
       });
     });
 
-    container.querySelectorAll(".delete-btn").forEach((btn) => {
+    container.querySelectorAll(".delete-btn")?.forEach((btn) => {
       if (btn.dataset.bound) return;
       btn.dataset.bound = "true";
       btn.addEventListener("click", async (e) => {
@@ -4098,7 +4104,7 @@ export class JobDetailView {
       if (!target) return;
 
       this.materialRecordsById = new Map();
-      materials.forEach((item) => {
+      materials?.forEach((item) => {
         const id = String(item.ID || item.id || "");
         if (id) this.materialRecordsById.set(id, item);
       });
@@ -4160,7 +4166,7 @@ export class JobDetailView {
       "Service Provider",
       "Actions",
     ];
-    headers.forEach((text) => {
+    headers?.forEach((text) => {
       const th = document.createElement("th");
       th.className = "px-7 py-3 text-left font-normal text-slate-700 leading-6";
       th.textContent = text;
@@ -4170,7 +4176,7 @@ export class JobDetailView {
 
     const tbody = document.createElement("tbody");
     const baseTdClass = "px-7 py-3 align-middle leading-6";
-    rows.forEach((item, idx) => {
+    rows?.forEach((item, idx) => {
       const tr = document.createElement("tr");
       tr.className = idx % 2 === 0 ? "bg-white" : "bg-slate-50";
       tr.id = item.Id;
@@ -4230,7 +4236,7 @@ export class JobDetailView {
         },
       ];
 
-      cells.forEach((cell) => {
+      cells?.forEach((cell) => {
         const td = document.createElement("td");
         td.className = baseTdClass;
         if (typeof cell.render === "function") {
@@ -4344,8 +4350,9 @@ export class JobDetailView {
     check.setAttribute("height", "14");
     check.setAttribute("viewBox", "0 0 24 24");
     check.classList.add(isChecked ? "text-white" : "text-slate-500");
-    check.innerHTML =
-      '<path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>';
+    check.innerHTML = isChecked
+      ? '<path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>'
+      : "";
     if (!isChecked) check.classList.add("opacity-80");
 
     box.appendChild(check);
@@ -4397,7 +4404,7 @@ export class JobDetailView {
     const fields = document.querySelectorAll(
       '[data-section="add-activities"] input, [data-section="add-activities"] select, [data-section="add-activities"] textarea'
     );
-    fields.forEach((el) => {
+    fields?.forEach((el) => {
       if (el.type === "checkbox") {
         el.checked = false;
       } else {
@@ -4530,7 +4537,7 @@ export class JobDetailView {
     const fields = document.querySelectorAll(
       '[data-section="add-materials"] input, [data-section="add-materials"] select, [data-section="add-materials"] textarea'
     );
-    fields.forEach((el) => {
+    fields?.forEach((el) => {
       if (el.type === "checkbox") {
         el.checked = false;
       } else {

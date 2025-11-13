@@ -732,9 +732,10 @@ export function buildUploadCard(
 ) {
   const isPdf = (type || "").toLowerCase().includes("pdf");
   const isImage = (type || "").startsWith("image/");
-  const icon = isImage && url
-    ? `<img src="${url}" class="w-10 h-10 object-cover rounded-md" />`
-    : `<div class="w-10 h-10 rounded-md bg-slate-200 flex items-center justify-center text-slate-600 text-xs font-semibold">
+  const icon =
+    isImage && url
+      ? `<img src="${url}" class="w-10 h-10 object-cover rounded-md" />`
+      : `<div class="w-10 h-10 rounded-md bg-slate-200 flex items-center justify-center text-slate-600 text-xs font-semibold">
         ${isPdf ? "PDF" : "FILE"}
       </div>`;
 

@@ -73,8 +73,9 @@ export class JobDetailController {
   async setupSearches() {
     try {
       await this.model.fetchContacts((data) => {
-        this.view.setupClientSearch(data);
-        this.contacts = data;
+        const list = Array.isArray(data) ? data : [];
+        this.view.setupClientSearch(list);
+        this.contacts = list;
         this.setupOptions("contact");
       });
     } catch (err) {
@@ -83,8 +84,9 @@ export class JobDetailController {
 
     try {
       await this.model.fetchServiceProviders((data) => {
-        this.serviceProvider = data;
-        this.view.setupServiceProviderSearch(data);
+        const list = Array.isArray(data) ? data : [];
+        this.serviceProvider = list;
+        this.view.setupServiceProviderSearch(list);
         this.setupOptions("serviceProvider");
       });
     } catch (err) {
@@ -93,12 +95,13 @@ export class JobDetailController {
 
     try {
       await this.model.fetchProperty((data) => {
-        this.properties = data;
+        const list = Array.isArray(data) ? data : [];
+        this.properties = list;
         if (!this._propertySearchInit) {
-          this.view.setupPropertySearch(data);
+          this.view.setupPropertySearch(list);
           this._propertySearchInit = true;
         } else if (typeof this.view.updatePropertySearch === "function") {
-          this.view.updatePropertySearch(data);
+          this.view.updatePropertySearch(list);
         }
         this.setupOptions("properties");
       });
@@ -108,7 +111,8 @@ export class JobDetailController {
 
     try {
       await this.model.fetchInquiries((data) => {
-        this.inquiries = data;
+        const list = Array.isArray(data) ? data : [];
+        this.inquiries = list;
         this.setupOptions("inquiry");
       });
     } catch (err) {
@@ -117,7 +121,8 @@ export class JobDetailController {
 
     try {
       await this.model.fetchJobs((data) => {
-        this.jobs = data;
+        const list = Array.isArray(data) ? data : [];
+        this.jobs = list;
         this.setupOptions("job");
       });
     } catch (err) {
@@ -127,9 +132,11 @@ export class JobDetailController {
 
   onDealInfoButtonClicked() {
     let dealInfoBtn = document.getElementById("deal-info-btn");
-    dealInfoBtn.addEventListener("click", (event) => {
-      this.view.toggleDealInformation();
-    });
+    if (dealInfoBtn) {
+      dealInfoBtn.addEventListener("click", () => {
+        this.view.toggleDealInformation();
+      });
+    }
   }
 
   onEditBtnClicked() {
@@ -281,6 +288,7 @@ export class JobDetailController {
 
   handlePropertySearch() {
     let element = document.querySelector('[data-field="properties"]');
+    if (!element) return;
     element.addEventListener("input", () => {
       let value = element.value;
       this.model.fetchProperties(value);
@@ -505,6 +513,7 @@ export class JobDetailController {
     const element = document.querySelector(
       "[data-contact-id='add-new-contact']"
     );
+    if (!element) return;
 
     element.addEventListener("click", () => {
       this.view.clearPropertyFieldValues(

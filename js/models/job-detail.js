@@ -69,9 +69,13 @@ export class JobDetailModal {
     let contact = await this.contactQuery.fetchDirect().toPromise();
     this.contactCallback = callback;
     this.subscribeToContactChanges();
+    const contactData = Array.isArray(contact?.resp)
+      ? contact.resp
+      : contact?.resp || [];
     if (this.contactCallback) {
-      this.contactCallback(contact.resp);
+      this.contactCallback(contactData);
     }
+    return contactData;
   }
 
   subscribeToContactChanges() {
@@ -128,9 +132,13 @@ export class JobDetailModal {
     let serviceman = await this.serviceProviderQuery.fetchDirect().toPromise();
     this.serviceProviderCallback = callback;
     this.subscribeToServiceProviderChanges();
+    const serviceProviders = Array.isArray(serviceman?.resp)
+      ? serviceman.resp
+      : serviceman?.resp || [];
     if (callback) {
-      this.serviceProviderCallback(serviceman.resp);
+      this.serviceProviderCallback(serviceProviders);
     }
+    return serviceProviders;
   }
 
   #getAutocompleteService() {
@@ -399,10 +407,11 @@ export class JobDetailModal {
     let result = await this.propertyQuery.fetchDirect().toPromise();
     this.propertyCallback = callback;
     this.subscribeToPropertyChanges();
+    const resp = Array.isArray(result?.resp) ? result.resp : result?.resp || [];
     if (this.propertyCallback) {
-      this.propertyCallback(result.resp);
+      this.propertyCallback(resp);
     }
-    return result.resp;
+    return resp;
   }
 
   async fetchMaterials(jobId, callback) {
@@ -433,10 +442,11 @@ export class JobDetailModal {
     this.materialQuery.getOrInitQueryCalc?.();
     const result = await this.materialQuery.fetchDirect().toPromise();
     this.materialCallback = callback;
-    this.materials = Array.isArray(result?.resp) ? result.resp : [];
+    const resp = Array.isArray(result?.resp) ? result.resp : result?.resp || [];
+    this.materials = resp;
     this.subscribeToMaterialChanges();
-    if (this.materialCallback) this.materialCallback(result.resp);
-    return result.resp;
+    if (this.materialCallback) this.materialCallback(resp);
+    return resp;
   }
 
   async fetchUploads(jobId, callback) {
@@ -497,9 +507,11 @@ export class JobDetailModal {
     const result = await this.inquiryQuery.fetchDirect().toPromise();
     this.inquiryCallback = callback;
     this.subscribeToInquiryChanges();
+    const resp = Array.isArray(result?.resp) ? result.resp : result?.resp || [];
     if (this.inquiryCallback) {
-      this.inquiryCallback(result.resp);
+      this.inquiryCallback(resp);
     }
+    return resp;
   }
 
   async fetchJobs(callback) {
@@ -513,9 +525,11 @@ export class JobDetailModal {
     const result = await this.jobQuery.fetchDirect().toPromise();
     this.jobCallback = callback;
     this.subscribeToJobChanges();
+    const resp = Array.isArray(result?.resp) ? result.resp : result?.resp || [];
     if (this.jobCallback) {
-      this.jobCallback(result.resp);
+      this.jobCallback(resp);
     }
+    return resp;
   }
 
   async fetchJobDetail(jobId, callback) {
@@ -740,12 +754,13 @@ export class JobDetailModal {
     this.activityQuery.getOrInitQueryCalc?.();
     let result = await this.activityQuery.fetchDirect().toPromise();
     this.activityCallback = callback;
-    this.activities = Array.isArray(result?.resp) ? result.resp : [];
+    const resp = Array.isArray(result?.resp) ? result.resp : result?.resp || [];
+    this.activities = resp;
     this.subscribeToActivityChanges();
     if (this.activityCallback) {
-      this.activityCallback(result.resp);
+      this.activityCallback(resp);
     }
-    return result.resp;
+    return resp;
   }
 
   subscribeToActivityChanges() {
