@@ -2054,9 +2054,15 @@ export class NewEnquiryView {
   }
 
   async onViewDetailLinkClicked(id) {
-    let contactDetail = await this.model.fetchcontactDetailsById(id);
-    this.populateAddressDetails(contactDetail.resp[0]);
-    this.toggleModal("addressDetailsModalWrapper");
+    let modalOpened = false;
+    await this.model.fetchcontactDetailsById(id, (records) => {
+      if (!Array.isArray(records) || !records.length) return;
+      this.populateAddressDetails(records[0]);
+      if (!modalOpened) {
+        modalOpened = true;
+        this.toggleModal("addressDetailsModalWrapper");
+      }
+    });
   }
 
   populateAddressDetails(data) {
