@@ -18,6 +18,12 @@ export class NewEnquiryModel {
     };
     this.relatedData = null;
     this.affiliationQuery = null;
+    this.contactQuery = null;
+    this.propertyQuery = null;
+    this.contactCallback = null;
+    this.propertyCallback = null;
+    this.contactSubscription = null;
+    this.propertySubscription = null;
     this.contactModel = plugin.switchTo("PeterpmContact");
     this.affiliationCallback = null;
   }
@@ -1245,6 +1251,68 @@ export class NewEnquiryModel {
     }
   }
 
+  subscribeToContactChanges() {
+    this.contactSubscription?.unsubscribe?.();
+    if (!this.contactQuery) return;
+
+    let liveObs = null;
+    try {
+      if (typeof this.contactQuery.subscribe === "function") {
+        liveObs = this.contactQuery.subscribe();
+      }
+    } catch (_) {}
+
+    if (!liveObs && typeof this.contactQuery.localSubscribe === "function") {
+      try {
+        liveObs = this.contactQuery.localSubscribe();
+      } catch (_) {}
+    }
+
+    if (liveObs) {
+      this.contactSubscription = liveObs
+        .pipe(window.toMainInstance?.(true) ?? ((x) => x))
+        .subscribe({
+          next: (payload) => {
+            if (this.contactCallback) {
+              this.contactCallback(this.#extractCalcRecords(payload));
+            }
+          },
+          error: () => {},
+        });
+    }
+  }
+
+  subscribeToPropertyChanges() {
+    this.propertySubscription?.unsubscribe?.();
+    if (!this.propertyQuery) return;
+
+    let liveObs = null;
+    try {
+      if (typeof this.propertyQuery.subscribe === "function") {
+        liveObs = this.propertyQuery.subscribe();
+      }
+    } catch (_) {}
+
+    if (!liveObs && typeof this.propertyQuery.localSubscribe === "function") {
+      try {
+        liveObs = this.propertyQuery.localSubscribe();
+      } catch (_) {}
+    }
+
+    if (liveObs) {
+      this.propertySubscription = liveObs
+        .pipe(window.toMainInstance?.(true) ?? ((x) => x))
+        .subscribe({
+          next: (payload) => {
+            if (this.propertyCallback) {
+              this.propertyCallback(this.#extractCalcRecords(payload));
+            }
+          },
+          error: () => {},
+        });
+    }
+  }
+
   async createNewContact(contactObj) {
     let query = await this.contactModel.mutation();
     query.createOne(contactObj);
@@ -1311,34 +1379,45 @@ export class NewEnquiryModel {
     return result;
   }
 
-  async fetchcontactDetailsById(id) {
-    let query = this.contactModel.query();
-    query = query
-      .where("id", id)
-      .deSelectAll()
-      .select([
-        "first_name",
-        "last_name",
-        "email",
-        "sms_number",
-        "office_phone",
-        "address",
-        "address_2",
-        "city",
-        "state",
-        "zip_code",
-        "country",
-        "postal_address",
-        "postal_address_2",
-        "postal_city",
-        "postal_code",
-        "postal_country",
-        "postal_state",
-      ])
-      .noDestroy();
-    query.getOrInitQueryCalc();
-    let result = await query.fetchDirect().toPromise();
-    return result;
+  async fetchcontactDetailsById(id, callback) {
+    if (!this.contactModel) return null;
+    try {
+      this.contactCallback = callback;
+      this.contactQuery = this.contactModel
+        .query()
+        .where("id", id)
+        .deSelectAll()
+        .select([
+          "first_name",
+          "last_name",
+          "email",
+          "sms_number",
+          "office_phone",
+          "address",
+          "address_2",
+          "city",
+          "state",
+          "zip_code",
+          "country",
+          "postal_address",
+          "postal_address_2",
+          "postal_city",
+          "postal_code",
+          "postal_country",
+          "postal_state",
+        ])
+        .noDestroy();
+      this.contactQuery.getOrInitQueryCalc?.();
+      const payload = await this.contactQuery.fetchDirect().toPromise();
+      this.subscribeToContactChanges();
+      if (this.contactCallback) {
+        this.contactCallback(this.#extractCalcRecords(payload));
+      }
+      return payload;
+    } catch (error) {
+      console.warn("[NewEnquiry] fetchcontactDetailsById failed", error);
+      return null;
+    }
   }
 
   async deleteAffiliationById(affiliationId) {
@@ -1348,38 +1427,50 @@ export class NewEnquiryModel {
     return result;
   }
 
-  async fetchPropertiesById(propertyId) {
-    let query = this.propertyModel.query();
-    query = await query
-      .where("id", propertyId)
-      .deSelectAll()
-      .select([
-        "id",
-        "unique_id",
-        "property_name",
-        "address",
-        "address_1",
-        "address_2",
-        "suburb_town",
-        "city",
-        "state",
-        "postal_code",
-        "postcode",
-        "map_url",
-        "owner_name",
-        "status",
-        "property_status",
-        "lot_number",
-        "unit_number",
-        "property_type",
-        "building_type",
-        "foundation_type",
-        "stories",
-        "bedrooms",
-        "manhole",
-      ])
-      .noDestroy();
-    let result = await query.fetchDirect().toPromise();
-    return result;
+  async fetchPropertiesById(propertyId, callback) {
+    if (!this.propertyModel) return null;
+    try {
+      this.propertyCallback = callback;
+      this.propertyQuery = this.propertyModel
+        .query()
+        .where("id", propertyId)
+        .deSelectAll()
+        .select([
+          "id",
+          "unique_id",
+          "property_name",
+          "address",
+          "address_1",
+          "address_2",
+          "suburb_town",
+          "city",
+          "state",
+          "postal_code",
+          "postcode",
+          "map_url",
+          "owner_name",
+          "status",
+          "property_status",
+          "lot_number",
+          "unit_number",
+          "property_type",
+          "building_type",
+          "foundation_type",
+          "stories",
+          "bedrooms",
+          "manhole",
+        ])
+        .noDestroy();
+      this.propertyQuery.getOrInitQueryCalc?.();
+      const payload = await this.propertyQuery.fetchDirect().toPromise();
+      this.subscribeToPropertyChanges();
+      if (this.propertyCallback) {
+        this.propertyCallback(this.#extractCalcRecords(payload));
+      }
+      return payload;
+    } catch (error) {
+      console.warn("[NewEnquiry] fetchPropertiesById failed", error);
+      return null;
+    }
   }
 }
