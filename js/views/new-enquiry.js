@@ -1143,7 +1143,7 @@ export class NewEnquiryView {
           tr.getAttribute("data-affiliation-id")
         );
         if (!result.isCancelling) {
-          this.customModalHeader.innerText = "Successfult";
+          this.customModalHeader.innerText = "Successful";
           this.customModalBody.innerText = "Affiliation deleted successfully.";
           this.toggleModal("statusModal");
         }
@@ -1273,7 +1273,6 @@ export class NewEnquiryView {
                 id="adSameAsAbove"
                 name="adSameAsAbove"
                 type="checkbox"
-                value="1"
                 class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 accent-blue-600"
               />
               <label for="adSameAsAbove" class="text-sm text-gray-700 select-none cursor-pointer">
@@ -1514,10 +1513,10 @@ export class NewEnquiryView {
           </div>
   
           <!-- Primary -->
-          <label class="inline-flex text-gray-700 font-medium items-center gap-2 text-sm">
-            <input id="pcPrimary" type="checkbox" class="h-4 w-4 accent-[#003882] rounded border-gray-300 text-blue-600 focus:ring-blue-500"/>
-            <span>Is Primary Contact</span>
-          </label>
+          <div class="inline-flex text-gray-700 font-medium items-center gap-2 text-sm">
+            <input id="pcPrimary" name="pcPrimary" type="checkbox" class="h-4 w-4 accent-[#003882] rounded border-gray-300 text-blue-600 focus:ring-blue-500"/>
+            <label for="pcPrimary" class="text-sm text-gray-700">Is Primary Contact</label>
+          </div>
         </div>
   
         <!-- Footer -->
@@ -1587,7 +1586,7 @@ export class NewEnquiryView {
           contact.isPrimary = isPrimaryContact.checked;
           let result = await this.model.createNewAffiliation(contact);
           if (!result.isCancelling) {
-            this.customModalHeader.innerText = "Successfult";
+            this.customModalHeader.innerText = "Successful";
             this.customModalBody.innerText =
               "Affiliation deleted successfully.";
             this.toggleModal("statusModal");
@@ -1614,7 +1613,7 @@ export class NewEnquiryView {
           );
 
           if (!affiliationResult.isCancelling) {
-            this.customModalHeader.innerText = "Successfult";
+            this.customModalHeader.innerText = "Successful";
             this.customModalBody.innerText =
               "Affiliation updated successfully.";
             this.toggleModal("statusModal");
@@ -1629,7 +1628,7 @@ export class NewEnquiryView {
           );
 
           if (!affiliationResult.isCancelling) {
-            this.customModalHeader.innerText = "Successfult";
+            this.customModalHeader.innerText = "Successful";
             this.customModalBody.innerText =
               "Affiliation creation successfully.";
             this.toggleModal("statusModal");
@@ -1703,7 +1702,7 @@ export class NewEnquiryView {
           const { name, sub } = formatParts(c);
           const li = document.createElement("div");
           li.className =
-            "px-4 py-2 cursor-pointer border-b last:border-b-0 hover:bg-slate-50";
+            "flex flex-col gap-1 text-sm px-4 pt-4 pb-2 cursor-pointer border-b last:border-b-0 hover:bg-slate-50";
           li.innerHTML = `
             <div class="text-[15px] font-medium text-slate-800">${this.#escapeHtml(
               name
@@ -1816,7 +1815,7 @@ export class NewEnquiryView {
       let result = await this.model.updateContact(contactId, contactDetailObj);
       if (result) {
         if (!result.isCancelling) {
-          this.customModalHeader.innerText = "Successfult";
+          this.customModalHeader.innerText = "Successful";
           this.customModalBody.innerText = "Contact updated successfully.";
           this.toggleModal("statusModal");
         }
@@ -1837,7 +1836,7 @@ export class NewEnquiryView {
           item.value = "";
         });
         if (!result.isCancelling) {
-          this.customModalHeader.innerText = "Successfult";
+          this.customModalHeader.innerText = "Successful";
           this.customModalBody.innerText = "New contact created successfully.";
 
           document
@@ -1905,15 +1904,12 @@ export class NewEnquiryView {
             e.preventDefault();
             // Store the chosen property id similar to contacts
             this.propertyId = p.id;
-            let propertyDetail = await this.model.fetchPropertiesById(
-              this.propertyId
+            const propertyFields = document.querySelectorAll(
+              "[data-section-id='property'] input:not([data-search-input]), [data-section-id='property'] select"
             );
-            this.populatePropertyFields(
-              document.querySelectorAll(
-                "[data-section-id='property'] input:not([data-search-input]), [data-section-id='property'] select"
-              ),
-              propertyDetail.resp
-            );
+            let result = await this.model.fetchPropertiesById(this.propertyId);
+            this.populatePropertyFields(propertyFields, result.resp);
+
             input.value = `${p.property_name || p.id} — ${
               p.address_1 || ""
             }`.trim();
@@ -1941,7 +1937,9 @@ export class NewEnquiryView {
         "flex w-full items-center gap-2 border-t border-slate-200 px-4 py-3 text-sm font-medium text-sky-900 hover:bg-slate-50";
       addBtn.addEventListener("click", (e) => {
         e.preventDefault();
-        this.clearPropertyFieldValues("#property-information input");
+        this.clearPropertyFieldValues(
+          "#property-information input, #property-information select"
+        );
         let addPropertyBtn = document.getElementById("add-property-btn");
         addPropertyBtn.classList.remove("hidden");
         addPropertyBtn.addEventListener("click", async () => {
@@ -1954,16 +1952,16 @@ export class NewEnquiryView {
           ).value;
           let result = await this.model.createNewProperties(details, contactId);
           if (!result.isCancelling) {
-            this.customModalHeader.innerText = "Successfult";
+            this.customModalHeader.innerText = "Successful";
             this.customModalBody.innerText =
               "New Property created successfully.";
 
             this.clearPropertyFieldValues(
-              "[#property-information input, #property-information select"
+              "#property-information input, #property-information select"
             );
             this.toggleModal("statusModal");
           } else {
-            this.customModalHeader.innerText = "Successfult";
+            this.customModalHeader.innerText = "Successful";
             this.customModalBody.innerText = "Properties create failed.";
             this.toggleModal("statusModal");
           }
