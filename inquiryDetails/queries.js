@@ -487,6 +487,49 @@ const CREATE_PROPERTY_CONTACT_MUTATION = `
     }
   `;
 
+const CALC_CONTACTS_QUERY = `
+  query calcContacts(
+    $limit: IntScalar
+    $offset: IntScalar
+    $searchExpression: String!
+  ) {
+    calcContacts(
+      query: [
+        {
+          where: {
+            first_name: null
+            _OPERATOR_: like
+            _VALUE_EXPRESSION_: $searchExpression
+          }
+        }
+        {
+          orWhere: {
+            last_name: null
+            _OPERATOR_: like
+            _VALUE_EXPRESSION_: $searchExpression
+          }
+        }
+        {
+          orWhere: {
+            email: null
+            _OPERATOR_: like
+            _VALUE_EXPRESSION_: $searchExpression
+          }
+        }
+      ]
+      limit: $limit
+      offset: $offset
+      orderBy: [{ path: ["first_name"], type: asc }]
+    ) {
+      Contact_ID: field(arg: ["id"])
+      First_Name: field(arg: ["first_name"])
+      Last_Name: field(arg: ["last_name"])
+      Email: field(arg: ["email"])
+      SMS_Number: field(arg: ["sms_number"])
+    }
+  }
+`;
+
 const CREATE_CONTACT_MUTAION = `
   mutation createContact(
     $payload: ContactCreateInput = null

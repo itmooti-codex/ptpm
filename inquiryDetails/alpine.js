@@ -1773,6 +1773,467 @@ document.addEventListener("alpine:init", () => {
       this.open = false;
       this.confirm = false;
     },
+    formatBoolean(value) {
+      const bool = this.normalizeBoolean(value);
+      if (bool === null) return "—";
+      return bool ? "Yes" : "No";
+    },
+    normalizeBoolean(value = "") {
+      if (value === null || value === undefined) return null;
+      const raw = value.toString().trim();
+      if (!raw || /^\[[^\]]+\]$/.test(raw)) return null;
+      const normalized = raw.toLowerCase();
+      if (["yes", "true", "1", "y", "t"].includes(normalized)) return true;
+      if (["no", "false", "0", "n", "f"].includes(normalized)) return false;
+      return null;
+    },
+  }));
+
+  Alpine.data("clientJobInvoiceCard", () => ({
+    jobStatus: "",
+    jobNotes: "",
+    datasetObserver: null,
+    recipientObserver: null,
+    recipients: [],
+    selectedRecipientEmails: [],
+    dropdownOpen: false,
+    invoiceSent: false,
+    invoiceSentRecipients: [],
+    boundStatusUpdated: null,
+    boundContactsChanged: null,
+    boundInvoiceSent: null,
+    init() {
+      this.syncFromDataset();
+      this.setupDatasetObserver();
+      this.collectRecipients();
+      this.setupRecipientObserver();
+      this.boundStatusUpdated = (event) => {
+        const next = event?.detail?.status;
+        if (next) this.jobStatus = this.normalize(next);
+      };
+      this.boundContactsChanged = () => this.collectRecipients();
+      window.addEventListener("job-status:updated", this.boundStatusUpdated);
+      window.addEventListener(
+        "propertyContacts:changed",
+        this.boundContactsChanged
+      );
+      this.boundInvoiceSent = (event) => {
+        const list = Array.isArray(event?.detail?.recipients)
+          ? event.detail.recipients
+          : [];
+        if (list.length) {
+          this.invoiceSent = true;
+          this.invoiceSentRecipients = list;
+          this.selectedRecipientEmails = list
+            .map((item) => item.email)
+            .filter(Boolean);
+        } else {
+          this.invoiceSent = true;
+        }
+      };
+      window.addEventListener("invoice:sent", this.boundInvoiceSent);
+    },
+    destroy() {
+      if (this.datasetObserver) {
+        this.datasetObserver.disconnect();
+        this.datasetObserver = null;
+      }
+      if (this.recipientObserver) {
+        this.recipientObserver.disconnect();
+        this.recipientObserver = null;
+      }
+      if (this.boundStatusUpdated) {
+        window.removeEventListener("job-status:updated", this.boundStatusUpdated);
+        this.boundStatusUpdated = null;
+      }
+      if (this.boundContactsChanged) {
+        window.removeEventListener(
+          "propertyContacts:changed",
+          this.boundContactsChanged
+        );
+        this.boundContactsChanged = null;
+      }
+      if (this.boundInvoiceSent) {
+        window.removeEventListener("invoice:sent", this.boundInvoiceSent);
+        this.boundInvoiceSent = null;
+      }
+    },
+    setupDatasetObserver() {
+      if (this.datasetObserver || !this.$el) return;
+      this.datasetObserver = new MutationObserver(() => this.syncFromDataset());
+      this.datasetObserver.observe(this.$el, {
+        childList: true,
+        subtree: true,
+      });
+    },
+    setupRecipientObserver() {
+      if (this.recipientObserver) return;
+      const host = document.querySelector("[data-recipient-source]");
+      if (!host) return;
+      this.recipientObserver = new MutationObserver(() => this.collectRecipients());
+      this.recipientObserver.observe(host, { childList: true, subtree: true });
+    },
+    syncFromDataset() {
+      if (!this.$el) return;
+      const data = this.$el.dataset || {};
+      let status = data.jobStatus || "";
+      let notes = data.jobNotes || "";
+      if (!status || this.looksLikePlaceholder(status)) {
+        status =
+          this.$el
+            .querySelector("[data-job-status-source]")
+            ?.textContent?.trim() || "";
+      }
+      if (!notes || this.looksLikePlaceholder(notes)) {
+        notes =
+          this.$el
+            .querySelector("[data-job-notes-source]")
+            ?.textContent?.trim() || "";
+      }
+      this.setJobDetails({ status, notes });
+    },
+    collectRecipients() {
+      const nodes = document.querySelectorAll("[data-recipient-option]");
+      const next = [];
+      nodes.forEach((node) => {
+        const email = (node.dataset.recipientEmail || "").trim();
+        if (!email) return;
+        const name = (node.dataset.recipientName || "").trim();
+        const role = (node.dataset.recipientRole || "").trim();
+        const phone = (node.dataset.recipientPhone || "").trim();
+        next.push({
+          email,
+          name,
+          role,
+          phone,
+          label: name
+            ? `${name}${role ? ` (${role})` : ""}`
+            : email,
+        });
+      });
+      this.recipients = next;
+      const existing = this.selectedRecipientEmails.filter((email) =>
+        next.some((option) => option.email === email)
+      );
+      if (!existing.length && next.length) {
+        this.selectedRecipientEmails = [next[0].email];
+      } else {
+        this.selectedRecipientEmails = existing;
+      }
+    },
+    setJobDetails({ status = "", notes = "" } = {}) {
+      this.jobStatus = this.normalize(status);
+      this.jobNotes = this.normalize(notes);
+      if ((this.jobStatus || "").toLowerCase() === "completed") {
+        this.invoiceSent = true;
+      }
+      this.broadcastStatus();
+    },
+    normalize(value = "") {
+      const text = (value ?? "").toString().trim();
+      if (this.looksLikePlaceholder(text)) return "";
+      return text;
+    },
+    looksLikePlaceholder(value = "") {
+      return /^\[[^\]]+\]$/.test((value || "").trim());
+    },
+    get isWaitingForPayment() {
+      return (this.jobStatus || "").toLowerCase() === "waiting for payment";
+    },
+    get jobStatusLabel() {
+      return this.isWaitingForPayment
+        ? "Awaiting Payment"
+        : this.jobStatus || "—";
+    },
+    get invoiceAlreadySent() {
+      return (
+        this.invoiceSent || (this.jobStatus || "").toLowerCase() === "completed"
+      );
+    },
+    get shouldShowRecipientPicker() {
+      return this.isWaitingForPayment && !this.invoiceAlreadySent;
+    },
+    get shouldShowSendButton() {
+      return this.isWaitingForPayment && !this.invoiceAlreadySent;
+    },
+    get paymentStatusLabel() {
+      if (this.invoiceAlreadySent) return "Invoice Sent";
+      if (this.isWaitingForPayment) return "Invoice Required";
+      return "";
+    },
+    get sentToSummary() {
+      const list = this.invoiceSentRecipients.length
+        ? this.invoiceSentRecipients
+        : this.selectedRecipients;
+      if (!list.length) return "Not specified";
+      if (list.length === 1) {
+        return list[0].label || list[0].email;
+      }
+      const first = list[0].label || list[0].email;
+      return `${first} (+${list.length - 1} others)`;
+    },
+    toggleRecipientDropdown() {
+      if (!this.recipients.length) this.collectRecipients();
+      this.dropdownOpen = !this.dropdownOpen;
+    },
+    closeRecipientDropdown() {
+      this.dropdownOpen = false;
+    },
+    toggleRecipient(email) {
+      if (!email) return;
+      if (this.isRecipientSelected(email)) {
+        this.selectedRecipientEmails = this.selectedRecipientEmails.filter(
+          (value) => value !== email
+        );
+      } else {
+        this.selectedRecipientEmails = [...this.selectedRecipientEmails, email];
+      }
+    },
+    isRecipientSelected(email) {
+      return this.selectedRecipientEmails.includes(email);
+    },
+    get selectedRecipients() {
+      return this.recipients.filter((recipient) =>
+        this.selectedRecipientEmails.includes(recipient.email)
+      );
+    },
+    get selectedSummary() {
+      const list = this.selectedRecipients;
+      if (!list.length) return "Select recipients";
+      if (list.length === 1) return list[0].label;
+      return `${list[0].label} (+${list.length - 1})`;
+    },
+    openSendInvoiceModal() {
+      if (!this.selectedRecipientEmails.length) {
+        this.toast("Select at least one contact before sending.", "error");
+        return;
+      }
+      this.closeRecipientDropdown();
+      window.dispatchEvent(
+        new CustomEvent("invoice:send:confirm", {
+          detail: { recipients: this.selectedRecipients },
+        })
+      );
+    },
+    handleAddContact() {
+      window.dispatchEvent(
+        new CustomEvent("propertyContact:add:open", {
+          detail: { propertyId: PROPERTY_ID },
+        })
+      );
+    },
+    toast(message, variant = "error") {
+      if (!message) return;
+      window.dispatchEvent(
+        new CustomEvent("toast:show", { detail: { message, variant } })
+      );
+    },
+    broadcastStatus() {
+      window.dispatchEvent(
+        new CustomEvent("job-status:updated", {
+          detail: { status: this.jobStatus },
+        })
+      );
+    },
+  }));
+
+  Alpine.data("sendInvoiceModal", () => ({
+    open: false,
+    recipients: [],
+    isSubmitting: false,
+    boundListener: null,
+    init() {
+      this.boundListener = (event) => {
+        const list = Array.isArray(event?.detail?.recipients)
+          ? event.detail.recipients
+          : [];
+        if (!list.length) {
+          this.emitToast("Select at least one contact before sending.", "error");
+          return;
+        }
+        this.recipients = list;
+        this.open = true;
+      };
+      window.addEventListener("invoice:send:confirm", this.boundListener);
+    },
+    destroy() {
+      if (this.boundListener) {
+        window.removeEventListener("invoice:send:confirm", this.boundListener);
+        this.boundListener = null;
+      }
+    },
+    get jobId() {
+      return (
+        JOB_ID ||
+        document.body?.dataset?.jobId ||
+        this.$el?.dataset?.jobId ||
+        ""
+      );
+    },
+    async handleSend() {
+      if (this.isSubmitting) return;
+      const jobId = this.jobId;
+      if (!jobId) {
+        this.emitToast("Missing job id.", "error");
+        return;
+      }
+      this.isSubmitting = true;
+      try {
+        await graphqlRequest(UPDATE_JOB_MUTATION, {
+          id: jobId,
+          payload: { job_status: "Completed" },
+        });
+        this.emitToast("Invoice sent.");
+        this.open = false;
+        window.dispatchEvent(
+          new CustomEvent("job-status:updated", {
+            detail: { status: "Completed" },
+          })
+        );
+        window.dispatchEvent(
+          new CustomEvent("invoice:sent", {
+            detail: { recipients: this.recipients },
+          })
+        );
+      } catch (error) {
+        console.error(error);
+        this.emitToast(
+          error?.message || "Failed to send invoice right now.",
+          "error"
+        );
+      } finally {
+        this.isSubmitting = false;
+      }
+    },
+    close() {
+      if (this.isSubmitting) return;
+      this.open = false;
+    },
+    emitToast(message, variant = "success") {
+      if (!message) return;
+      window.dispatchEvent(
+        new CustomEvent("toast:show", { detail: { message, variant } })
+      );
+    },
+  }));
+
+  Alpine.data("serviceProviderPaymentCard", () => ({
+    invoiceSent: false,
+    jobStatus: "",
+    jobUniqueId: JOB_UNIQUE_ID,
+    prestartDone: null,
+    pcaDone: null,
+    boundStatus: null,
+    boundInvoice: null,
+    fieldObserver: null,
+    init() {
+      this.syncJobStatus();
+      this.setupFieldObserver();
+      this.boundStatus = (event) => {
+        const next = event?.detail?.status;
+        if (next) this.jobStatus = next.toLowerCase();
+      };
+      this.boundInvoice = () => {
+        this.invoiceSent = true;
+      };
+      window.addEventListener("job-status:updated", this.boundStatus);
+      window.addEventListener("invoice:sent", this.boundInvoice);
+    },
+    destroy() {
+      if (this.boundStatus) {
+        window.removeEventListener("job-status:updated", this.boundStatus);
+        this.boundStatus = null;
+      }
+      if (this.boundInvoice) {
+        window.removeEventListener("invoice:sent", this.boundInvoice);
+        this.boundInvoice = null;
+      }
+      if (this.fieldObserver) {
+        this.fieldObserver.disconnect();
+        this.fieldObserver = null;
+      }
+    },
+    syncJobStatus() {
+      const statusText =
+        document
+          .querySelector("[data-job-status-source]")
+          ?.textContent?.trim()
+          ?.toLowerCase() || "";
+      this.jobStatus = statusText;
+      this.jobUniqueId = this.readJobUniqueId();
+      this.syncBooleanFields();
+    },
+    syncBooleanFields() {
+      this.prestartDone = this.extractBooleanValue("[data-prestart-value]");
+      this.pcaDone = this.extractBooleanValue("[data-pca-value]");
+    },
+    setupFieldObserver() {
+      if (this.fieldObserver || !this.$el) return;
+      this.fieldObserver = new MutationObserver(() => this.syncBooleanFields());
+      this.fieldObserver.observe(this.$el, {
+        childList: true,
+        subtree: true,
+      });
+    },
+    readJobUniqueId() {
+      const raw =
+        document
+          .querySelector("[data-job-unique-source]")
+          ?.textContent?.trim() || "";
+      return this.cleanPlaceholder(raw);
+    },
+    cleanPlaceholder(value = "") {
+      const text = (value || "").trim();
+      return /^\[[^\]]+\]$/.test(text) ? "" : text;
+    },
+    get canShowDetails() {
+      return this.invoiceSent || this.jobStatus === "completed";
+    },
+    get baseFormUrl() {
+      return "https://my.awesomate.pro";
+    },
+    get pcaLink() {
+      return this.jobUniqueId
+        ? `${this.baseFormUrl}/${this.jobUniqueId}/forms/pest-control-advice`
+        : "";
+    },
+    get prestartLink() {
+      return this.jobUniqueId
+        ? `${this.baseFormUrl}/${this.jobUniqueId}/forms/prestart`
+        : "";
+    },
+    openPca() {
+      if (!this.pcaLink) return this.toast("PCA link not available yet.");
+      window.open(this.pcaLink, "_blank", "noopener");
+    },
+    openPrestart() {
+      if (!this.prestartLink)
+        return this.toast("Prestart link not available yet.");
+      window.open(this.prestartLink, "_blank", "noopener");
+    },
+    formatBoolean(value) {
+      if (value === null || value === undefined) return "—";
+      return value ? "Yes" : "No";
+    },
+    extractBooleanValue(selector) {
+      const text =
+        this.$el?.querySelector(selector)?.textContent?.trim() || "";
+      return this.toBoolean(text);
+    },
+    toBoolean(value = "") {
+      const raw = (value || "").toString().trim();
+      if (!raw || /^\[[^\]]+\]$/.test(raw)) return null;
+      const normalized = raw.toLowerCase();
+      if (["yes", "true", "1", "y", "t"].includes(normalized)) return true;
+      if (["no", "false", "0", "n", "f"].includes(normalized)) return false;
+      return null;
+    },
+    toast(message, variant = "info") {
+      if (!message) return;
+      window.dispatchEvent(
+        new CustomEvent("toast:show", { detail: { message, variant } })
+      );
+    },
   }));
 
   Alpine.data("followUpCommentModal", () => ({
@@ -1782,8 +2243,14 @@ document.addEventListener("alpine:init", () => {
     boundListener: null,
     init() {
       this.boundListener = (event) => {
-        const nextComment = event?.detail?.comment ?? "";
-        this.comment = typeof nextComment === "string" ? nextComment : "";
+        const detail = event?.detail || {};
+        const provided =
+          typeof detail.comment === "string" ? detail.comment : "";
+        const fallback =
+          document
+            .querySelector("[data-follow-up-comment-source]")
+            ?.textContent?.trim() || "";
+        this.comment = provided.trim() ? provided : fallback;
         this.open = true;
       };
       window.addEventListener("followUpComment:open", this.boundListener);
@@ -1799,16 +2266,40 @@ document.addEventListener("alpine:init", () => {
     },
     async handleSave() {
       if (this.isSubmitting) return;
+      const jobId =
+        JOB_ID ||
+        document.body?.dataset?.jobId ||
+        document
+          .querySelector("[data-follow-up-comment]")
+          ?.closest("[data-var-jobid]")
+          ?.dataset?.varJobid ||
+        "";
+      if (!jobId) {
+        this.emitToast("Missing job id.", "error");
+        return;
+      }
       this.isSubmitting = true;
       try {
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        this.emitToast("Follow up comment saved.");
-        const target = document.querySelector("[data-follow-up-comment]");
-        if (target) target.textContent = this.comment || "";
-        this.close();
+        await graphqlRequest(UPDATE_JOB_MUTATION, {
+          id: jobId,
+          payload: {
+            follow_up_comment: this.comment?.trim() || null,
+          },
+        });
+        this.emitToast("Follow up comment updated.");
+        const source = document.querySelector("[data-follow-up-comment-source]");
+        if (source) source.textContent = this.comment || "";
+        else {
+          const target = document.querySelector("[data-follow-up-comment]");
+          if (target) target.textContent = this.comment || "";
+        }
+        this.open = false;
       } catch (error) {
         console.error(error);
-        this.emitToast("Unable to save follow up comment.", "error");
+        this.emitToast(
+          error?.message || "Unable to save follow up comment.",
+          "error"
+        );
       } finally {
         this.isSubmitting = false;
       }
@@ -2919,6 +3410,63 @@ document.addEventListener("alpine:init", () => {
     },
   }));
 
+  Alpine.data("clientJobTasksModal", () => ({
+    open: false,
+    tasks: [
+      {
+        id: "t1",
+        title: "Brush Turkeys Removal",
+        description:
+          "Lorem ipsum dolor sit amet consectetur. Mi sed ac diam ac orci nec iaculis aliquet.",
+        status: "Completed",
+      },
+      {
+        id: "t2",
+        title: "Brush Turkeys Removal",
+        description:
+          "Lorem ipsum dolor sit amet consectetur. Mi sed ac diam ac orci nec iaculis aliquet.",
+        status: "Completed",
+      },
+      {
+        id: "t3",
+        title: "Brush Turkeys Removal",
+        description:
+          "Lorem ipsum dolor sit amet consectetur. Mi sed ac diam ac orci nec iaculis aliquet.",
+        status: "Completed",
+      },
+      {
+        id: "t4",
+        title: "Brush Turkeys Removal",
+        description:
+          "Lorem ipsum dolor sit amet consectetur. Mi sed ac diam ac orci nec iaculis aliquet.",
+        status: "Completed",
+      },
+      {
+        id: "t5",
+        title: "Brush Turkeys Removal",
+        description:
+          "Lorem ipsum dolor sit amet consectetur. Mi sed ac diam ac orci nec iaculis aliquet.",
+        status: "Completed",
+      },
+    ],
+    boundListener: null,
+    init() {
+      this.boundListener = () => {
+        this.open = true;
+      };
+      window.addEventListener("clientJobTasks:open", this.boundListener);
+    },
+    destroy() {
+      if (this.boundListener) {
+        window.removeEventListener("clientJobTasks:open", this.boundListener);
+        this.boundListener = null;
+      }
+    },
+    close() {
+      this.open = false;
+    },
+  }));
+
   Alpine.data("addTaskModal", () => ({
     open: false,
     isSubmitting: false,
@@ -3287,8 +3835,16 @@ document.addEventListener("alpine:init", () => {
     propertyId: null,
     isEdit: false,
 
-    // live search (mocked suggestions list)
+    // live search dropdown state
     suggestions: [],
+    searchDropdownOpen: false,
+    searchLoading: false,
+    searchError: "",
+    searchTerm: "",
+    searchDebounceId: null,
+    hasSearched: false,
+    searchLimit: 10,
+    latestSearchTerm: "",
 
     form: {
       search: "",
@@ -3319,6 +3875,13 @@ document.addEventListener("alpine:init", () => {
           mode === "edit" ||
           Boolean(prefill.contactId || prefill.affiliationId);
         if (Object.keys(prefill).length) Object.assign(this.form, prefill);
+        if (!this.form.search) {
+          const derivedName = [this.form.firstName, this.form.lastName]
+            .filter(Boolean)
+            .join(" ")
+            .trim();
+          this.form.search = derivedName || this.form.email || "";
+        }
         this.open = true;
       });
     },
@@ -3327,6 +3890,16 @@ document.addEventListener("alpine:init", () => {
       this.error = "";
       this.isSubmitting = false;
       this.suggestions = [];
+      this.searchDropdownOpen = false;
+      this.searchLoading = false;
+      this.searchError = "";
+      this.searchTerm = "";
+      this.hasSearched = false;
+      this.latestSearchTerm = "";
+      if (this.searchDebounceId) {
+        clearTimeout(this.searchDebounceId);
+        this.searchDebounceId = null;
+      }
       this.isEdit = false;
       this.form = {
         search: "",
@@ -3342,34 +3915,137 @@ document.addEventListener("alpine:init", () => {
       };
     },
 
+    toggleSearchDropdown() {
+      this.searchDropdownOpen = !this.searchDropdownOpen;
+      if (this.searchDropdownOpen) {
+        this.prepareSearchDropdown();
+      }
+    },
+
+    prepareSearchDropdown() {
+      this.hasSearched = false;
+      this.searchError = "";
+      this.suggestions = [];
+      this.searchTerm = this.form.search || "";
+      this.$nextTick(() => {
+        this.$refs?.contactSearchInput?.focus?.();
+      });
+    },
+
+    closeSearchDropdown() {
+      this.searchDropdownOpen = false;
+      this.suggestions = [];
+      this.searchLoading = false;
+      this.searchError = "";
+      this.hasSearched = false;
+      this.latestSearchTerm = "";
+      this.searchTerm = "";
+      if (this.searchDebounceId) {
+        clearTimeout(this.searchDebounceId);
+        this.searchDebounceId = null;
+      }
+    },
+
     onSearchChange() {
-      // TODO: wire to your contact search endpoint.
-      // For now, clear suggestions if short.
-      const q = this.form.search.trim();
+      const q = (this.searchTerm || "").trim();
+      this.form.search = this.searchTerm || "";
+      this.form.contactId = null;
+      this.form.existingContactId = null;
+      this.searchError = "";
+      this.hasSearched = false;
+      if (this.searchDebounceId) {
+        clearTimeout(this.searchDebounceId);
+        this.searchDebounceId = null;
+      }
       if (q.length < 2) {
         this.suggestions = [];
         return;
       }
-      // mock: show a single suggestion echoing the query
-      this.suggestions = [
-        {
-          id: "mock_" + q,
-          name: q,
-          email: `${q.replace(/\s+/g, "").toLowerCase()}@example.com`,
-        },
-      ];
+      this.searchDebounceId = setTimeout(() => {
+        this.fetchContactSuggestions(q);
+      }, 200);
     },
 
-    pickSuggestion(s) {
-      this.form.search = `${s.name}${s.email ? " · " + s.email : ""}`;
-      this.form.existingContactId = s.id;
-      if (s.name) {
-        const parts = s.name.split(" ");
-        this.form.firstName = parts[0] || "";
-        this.form.lastName = parts.slice(1).join(" ");
+    async fetchContactSuggestions(term) {
+      const normalized = (term || "").trim();
+      if (!normalized) {
+        this.suggestions = [];
+        return;
       }
-      if (s.email) this.form.email = s.email;
+      this.searchLoading = true;
+      this.latestSearchTerm = normalized;
+      try {
+        const data = await graphqlRequest(CALC_CONTACTS_QUERY, {
+          limit: this.searchLimit,
+          offset: 0,
+          searchExpression: this.buildSearchExpression(normalized),
+        });
+        if (this.latestSearchTerm !== normalized) return;
+        const rows = Array.isArray(data?.calcContacts)
+          ? data.calcContacts
+          : [];
+        this.suggestions = rows.map((row) => this.normalizeContact(row));
+        this.hasSearched = true;
+        this.searchError = "";
+      } catch (error) {
+        console.error(error);
+        if (this.latestSearchTerm === normalized) {
+          this.suggestions = [];
+          this.searchError =
+            error?.message || "Failed to search contacts.";
+          this.hasSearched = false;
+        }
+      } finally {
+        if (this.latestSearchTerm === normalized) {
+          this.searchLoading = false;
+        }
+      }
+    },
+
+    buildSearchExpression(term = "") {
+      const sanitized = term.replace(/[%_]/g, (ch) => `\\${ch}`);
+      return `%${sanitized}%`;
+    },
+
+    normalizeContact(row) {
+      const firstName = (row?.First_Name || "").trim();
+      const lastName = (row?.Last_Name || "").trim();
+      const email = (row?.Email || "").trim();
+      const sms = (row?.SMS_Number || "").trim();
+      const displayName = [firstName, lastName].filter(Boolean).join(" ");
+      const labelBase = displayName || email || "Unnamed Contact";
+      const label =
+        displayName && email ? `${displayName} · ${email}` : labelBase;
+      return {
+        id: row?.Contact_ID || null,
+        firstName,
+        lastName,
+        email,
+        sms,
+        displayLabel: label,
+      };
+    },
+
+    pickSuggestion(contact) {
+      if (!contact) return;
+      this.form.search = contact.displayLabel;
+      this.form.existingContactId = contact.id || null;
+      this.form.contactId = contact.id || null;
+      this.form.firstName = contact.firstName || "";
+      this.form.lastName = contact.lastName || "";
+      this.form.email = contact.email || "";
+      this.form.sms = contact.sms || "";
+      this.closeSearchDropdown();
+    },
+
+    clearSelectedContact() {
+      this.form.search = "";
+      this.form.contactId = null;
+      this.form.existingContactId = null;
+      this.searchTerm = "";
+      this.hasSearched = false;
       this.suggestions = [];
+      this.searchError = "";
     },
 
     validate() {
@@ -3465,6 +4141,7 @@ document.addEventListener("alpine:init", () => {
     },
 
     handleClose() {
+      this.closeSearchDropdown();
       this.open = false;
     },
 
@@ -3527,4 +4204,5 @@ document.addEventListener("alpine:init", () => {
       );
     },
   }));
+
 });
