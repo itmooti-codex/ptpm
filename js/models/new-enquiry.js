@@ -4,6 +4,7 @@ export class NewEnquiryModel {
     this.affiliationModel = plugin.switchTo("PeterpmAffiliation");
     this.propertyModel = plugin.switchTo("PeterpmProperty");
     this.dealModel = plugin.switchTo("PeterpmDeal");
+    this.companyModel = plugin.switchTo("PeterpmCompany");
     this.plugin = plugin;
     this.maxRecords = maxRecords;
     this.contactModel = null;
@@ -1335,6 +1336,7 @@ export class NewEnquiryModel {
         "postal_country",
         "postal_state",
       ])
+      .include("Affiliations", (q) => q.deSelectAll().select(["role"]))
       .noDestroy();
     query.getOrInitQueryCalc();
     let result = await query.fetchDirect().toPromise();
@@ -1379,6 +1381,44 @@ export class NewEnquiryModel {
         "manhole",
       ])
       .noDestroy();
+    let result = await query.fetchDirect().toPromise();
+    return result;
+  }
+
+  async fetchCompany(id) {
+    let query = this.companyModel.query();
+    if (id) {
+      query = query.where("id", id);
+    }
+
+    query = await query
+      .deSelectAll()
+      .select(["id", "account_type", "name"])
+      .include("Primary_Person", (q) =>
+        q
+          .deSelectAll()
+          .select([
+            "id",
+            "first_name",
+            "last_name",
+            "email",
+            "sms_number",
+            "office_phone",
+            "address",
+            "address_2",
+            "city",
+            "state",
+            "country",
+            "zip_code",
+            "postal_address",
+            "postal_address_2",
+            "postal_code",
+            "postal_city",
+            "postal_country",
+          ])
+      )
+      .noDestroy();
+    query.getOrInitQueryCalc?.();
     let result = await query.fetchDirect().toPromise();
     return result;
   }

@@ -140,6 +140,7 @@ export class NewEnquiryController {
     this.onAddContactSaveButtonClicked();
     this.onSubmitButtonClicked();
     this.onViewDetailLinkClicked();
+    this.onEntityAddButtonClick();
   }
 
   init() {
@@ -429,7 +430,22 @@ export class NewEnquiryController {
         "[modal-name='contact-detail-modal'] input, [modal-name='contact-detail-modal'] select"
       );
       document.querySelector("[data-search-panel]").classList.toggle("hidden");
+
+      document.querySelector('[data-contact-id="contact-id"]').value = "";
       this.view.toggleModal("addressDetailsModalWrapper");
+      document
+        .querySelector(
+          '#addressDetailsModalWrapper [data-contact-field="affiliationsrole"]'
+        )
+        .closest(".hidden")
+        ?.classList.remove("hidden");
+
+      document
+        .querySelector(
+          '#addressDetailsModalWrapper [data-contact-field="entity-type"]'
+        )
+        .closest("div")
+        .classList.add("hidden");
     });
   }
 
@@ -486,8 +502,27 @@ export class NewEnquiryController {
       let elements = document.querySelectorAll(
         "#addressDetailsModalWrapper [data-contact-id]"
       );
-      this.view.getValuesFromContactDetailModal(elements);
+
+      if (this.getActiveTabs() === "individual") {
+        this.view.getValuesFromContactDetailModal(elements);
+      } else {
+        this.view.getEntityValuesFromContactDetailModal(elements);
+      }
     });
+  }
+
+  getActiveTabs() {
+    let individual = document
+      .getElementById("individual")
+      .hasAttribute("data-active-tab");
+    let entity = document
+      .getElementById("entity")
+      .hasAttribute("data-active-tab");
+    if (individual) {
+      return "individual";
+    } else {
+      return "entity";
+    }
   }
 
   onSubmitButtonClicked() {
@@ -525,7 +560,16 @@ export class NewEnquiryController {
       let contactId = document.querySelector(
         "[data-contact-field='contact_id']"
       ).value;
-      this.view.onViewDetailLinkClicked(contactId);
+
+      let entityContactId = document.querySelector(
+        "[data-contact-field='entity-id']"
+      ).value;
+
+      if (contactId) {
+        this.view.onViewDetailLinkClicked(contactId);
+      } else if (entityContactId) {
+        this.view.onViewDetailLinkClicked(entityContactId);
+      }
     });
   }
 
@@ -539,5 +583,32 @@ export class NewEnquiryController {
         this.view.onSameAsContactCheckboxClicked(address);
       }
     });
+  }
+
+  onEntityAddButtonClick() {
+    let addEntityBtn = document.querySelector(
+      '[data-entity-id="add-new-entity"]'
+    );
+    if (addEntityBtn) {
+      addEntityBtn.addEventListener("click", () => {
+        this.view.clearPropertyFieldValues(
+          "[modal-name='contact-detail-modal'] input, [modal-name='contact-detail-modal'] select"
+        );
+        document.querySelector('[data-contact-id="entity-id"]').value = "";
+        this.view.toggleModal("addressDetailsModalWrapper");
+        document
+          .querySelector(
+            '#addressDetailsModalWrapper [data-contact-field="affiliationsrole"]'
+          )
+          .closest("div")
+          .classList.add("hidden");
+        document
+          .querySelector(
+            '#addressDetailsModalWrapper [data-contact-field="entity-type"]'
+          )
+          .closest("div")
+          .classList.remove("hidden");
+      });
+    }
   }
 }
