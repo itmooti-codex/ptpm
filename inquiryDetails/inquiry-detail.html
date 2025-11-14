@@ -1014,6 +1014,7 @@
                           class="text-[#0052CC] text-[16px]f-inter font-normal text-nowrap"
                           >#[Unique_ID]</span
                         >
+                        <span class="hidden" data-job-unique-source>[Unique_ID]</span>
                       </div>
                       <div class="flex items-center gap-2">
                         <span
@@ -2312,6 +2313,7 @@
                   <div
                     class="hidden"
                     x-ref="recipientSource"
+                    data-recipient-source
                     aria-hidden="true"
                   >
                     <div
@@ -2576,14 +2578,6 @@
                       </div>
                     </div>
                   </div>
-                  <div
-                    class="border-t border-slate-200 bg-white px-5 py-4 text-sm text-slate-600"
-                    x-show="isQuoteAccepted"
-                    x-cloak
-                  >
-                    Activities are locked for accepted quotes. Use the "View All
-                    Activities" button above to review the final list.
-                  </div>
                 </div>
               </div>
             </div>
@@ -2634,31 +2628,141 @@
 
         <!-- Client and payment section -->
         <div
-          class="space-y-5 relative text-slate-700 flex flex-col rounded-sm w-full"
+          class="relative text-slate-700 flex flex-col rounded-sm w-full"
+          x-data="{
+            get quoteAccepted() {
+              return Alpine.store('quoteState').accepted;
+            }
+          }"
         >
-          <!-- Card: Client Job Invoice -->
-          <div class="rounded-sm border border-slate-200 bg-white shadow-sm">
-            <!-- Header -->
-            <div
-              class="flex items-center gap-2 rounded-sm bg-sky-100 px-4 py-3"
-            >
-              <!-- briefcase -->
+          <!-- Client Job Invoice: placeholder until quote accepted -->
+          <div
+            class="rounded-sm border border-slate-200 bg-white shadow-sm"
+            x-show="!quoteAccepted"
+            x-cloak
+          >
+            <div class="flex items-center gap-2 rounded-sm bg-sky-50 px-4 py-3">
               <svg
-                class="h-5 w-5 text-sky-700"
+                width="20"
+                height="20"
                 viewBox="0 0 24 24"
                 fill="currentColor"
-                aria-hidden="true"
+                class="text-sky-700"
               >
                 <path
-                  d="M9 6V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1h3a2 2 0 0 1 2 2v3H4V8a2 2 0 0 1 2-2h3Zm2-1h2v1h-2V5Z"
-                />
-                <path
-                  d="M4 12h16v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-6Zm6 2h4a1 1 0 1 1 0 2h-4a1 1 0 1 1 0-2Z"
+                  d="M7 3a2 2 0 0 0-2 2v1H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-1V5a2 2 0 0 0-2-2H7Zm10 3H7V5h10v1Z"
                 />
               </svg>
               <span class="font-semibold text-slate-800"
                 >Client Job Invoice</span
               >
+            </div>
+            <div
+              class="flex flex-col items-center gap-4 px-6 py-10 text-center"
+            >
+              <svg
+                class="h-32 w-48 text-slate-300"
+                viewBox="0 0 200 120"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <rect
+                  x="10"
+                  y="20"
+                  width="180"
+                  height="80"
+                  rx="10"
+                  fill="#E3ECFF"
+                />
+                <rect
+                  x="25"
+                  y="35"
+                  width="50"
+                  height="12"
+                  rx="6"
+                  fill="#C3D4FF"
+                />
+                <rect
+                  x="25"
+                  y="55"
+                  width="40"
+                  height="8"
+                  rx="4"
+                  fill="#C3D4FF"
+                />
+                <rect
+                  x="85"
+                  y="35"
+                  width="50"
+                  height="12"
+                  rx="6"
+                  fill="#C3D4FF"
+                />
+                <rect
+                  x="85"
+                  y="55"
+                  width="40"
+                  height="8"
+                  rx="4"
+                  fill="#C3D4FF"
+                />
+                <rect
+                  x="145"
+                  y="35"
+                  width="30"
+                  height="12"
+                  rx="6"
+                  fill="#BCCEF8"
+                />
+              </svg>
+              <p class="text-base font-medium text-slate-600">
+                No job scheduled yet.
+              </p>
+            </div>
+          </div>
+
+          <!-- Card: Client Job Invoice -->
+          <div
+            class="rounded-sm border border-slate-200 bg-white shadow-sm"
+            x-show="quoteAccepted"
+            x-cloak
+            x-data="clientJobInvoiceCard()"
+          >
+            <!-- Header -->
+            <div
+              class="flex flex-wrap items-center justify-between gap-3 rounded-sm px-4 py-3"
+              :class="isWaitingForPayment ? 'bg-amber-50' : 'bg-sky-100'"
+            >
+              <div class="flex items-center gap-2">
+                <svg
+                  class="h-5 w-5"
+                  :class="isWaitingForPayment ? 'text-amber-600' : 'text-sky-700'"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M9 6V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1h3a2 2 0 0 1 2 2v3H4V8a2 2 0 0 1 2-2h3Zm2-1h2v1h-2V5Z"
+                  />
+                  <path
+                    d="M4 12h16v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-6Zm6 2h4a1 1 0 1 1 0 2h-4a1 1 0 1 1 0-2Z"
+                  />
+                </svg>
+                <span
+                  class="font-semibold"
+                  :class="isWaitingForPayment ? 'text-amber-900' : 'text-slate-800'"
+                  >Client Job Invoice</span
+                >
+              </div>
+              <button
+                x-show="isWaitingForPayment"
+                x-cloak
+                type="button"
+                class="rounded-md bg-sky-800 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-900"
+                @click="openSendInvoiceModal"
+              >
+                Send Invoice
+              </button>
             </div>
 
             <!-- Body -->
@@ -2669,17 +2773,154 @@
               data-entity="peterpm"
               data-entity-key="1rBR-jpR3yE3HE1VhFD0j"
               data-var-jobid="375"
+              data-job-status="[Job_Status]"
+              data-job-notes="[Job_Notes]"
             >
+              <span class="hidden" aria-hidden="true" data-job-status-source>
+                [Job_Status]
+              </span>
+              <span class="hidden" aria-hidden="true" data-job-notes-source>
+                [Job_Notes]
+              </span>
               <!-- Body -->
               <div class="p-4 space-y-3 text-[14px] text-slate-800">
+                <template x-if="shouldShowRecipientPicker">
+                  <div class="space-y-2">
+                    <label
+                      class="text-xs font-semibold uppercase text-slate-500"
+                      >Send Invoice To:<span class="text-rose-600"
+                        >*</span
+                      ></label
+                    >
+                    <div class="relative">
+                      <button
+                        type="button"
+                        class="flex w-full items-center justify-between rounded-lg border border-slate-300 bg-white px-3 py-2 text-left text-sm text-slate-800 shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                        @click="toggleRecipientDropdown"
+                      >
+                        <span class="truncate" x-text="selectedSummary"></span>
+                        <svg
+                          class="h-4 w-4 text-slate-500"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            d="M5.23 7.21a.75.75 0 011.06.02L10 11.175l3.71-3.944a.75.75 0 111.08 1.04l-4.25 4.518a.75.75 0 01-1.08 0L5.25 8.27a.75.75 0 01-.02-1.06z"
+                            clip-rule="evenodd"
+                          />
+                        </svg>
+                      </button>
+                      <div
+                        class="absolute z-20 mt-1 w-full rounded-xl border border-slate-200 bg-white shadow-2xl"
+                        x-show="dropdownOpen"
+                        x-transition
+                        @click.outside="closeRecipientDropdown"
+                      >
+                        <div
+                          class="max-h-60 overflow-y-auto divide-y divide-slate-100"
+                        >
+                          <template x-if="recipients.length">
+                            <template
+                              x-for="option in recipients"
+                              :key="option.email"
+                            >
+                              <button
+                                type="button"
+                                class="w-full px-3 py-3 text-left hover:bg-slate-50"
+                                @click.prevent="toggleRecipient(option.email)"
+                              >
+                                <div class="flex items-start gap-3">
+                                  <input
+                                    type="checkbox"
+                                    class="mt-1 h-4 w-4 rounded border-slate-300 text-sky-700 focus:ring-sky-500"
+                                    :checked="isRecipientSelected(option.email)"
+                                    @click.stop
+                                  />
+                                  <div class="flex-1">
+                                    <div
+                                      class="flex flex-wrap items-center gap-2 text-sm font-semibold text-slate-900"
+                                    >
+                                      <span
+                                        x-text="option.name || option.email"
+                                      ></span>
+                                      <span
+                                        class="text-xs font-medium text-slate-500"
+                                        x-text="option.role ? '(' + option.role + ')' : ''"
+                                      ></span>
+                                    </div>
+                                    <div
+                                      class="text-xs text-slate-500"
+                                      x-text="option.email"
+                                    ></div>
+                                    <div
+                                      class="text-xs text-slate-500"
+                                      x-text="option.phone || ''"
+                                    ></div>
+                                  </div>
+                                </div>
+                              </button>
+                            </template>
+                          </template>
+                          <div
+                            class="p-3 text-sm text-slate-500"
+                            x-show="!recipients.length"
+                          >
+                            Contact list is loading…
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          class="flex w-full items-center justify-center gap-1 border-t border-slate-100 px-4 py-2 text-sm font-medium text-sky-700 hover:bg-slate-50"
+                          @click.prevent="handleAddContact"
+                        >
+                          <svg
+                            width="14"
+                            height="14"
+                            viewBox="0 0 14 14"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M7.89744 2.06406C7.89744 1.56767 7.4964 1.16663 7 1.16663C6.50361 1.16663 6.10257 1.56767 6.10257 2.06406V6.10252H2.06411C1.56771 6.10252 1.16667 6.50356 1.16667 6.99996C1.16667 7.49635 1.56771 7.89739 2.06411 7.89739H6.10257V11.9359C6.10257 12.4323 6.50361 12.8333 7 12.8333C7.4964 12.8333 7.89744 12.4323 7.89744 11.9359V7.89739H11.9359C12.4323 7.89739 12.8333 7.49635 12.8333 6.99996C12.8333 6.50356 12.4323 6.10252 11.9359 6.10252H7.89744V2.06406Z"
+                              fill="currentColor"
+                            />
+                          </svg>
+                          <span>Add New Contact</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </template>
                 <div class="flex items-center gap-2">
                   <span class="text-slate-500">Job Status:</span>
                   <span
-                    class="inline-flex items-center rounded-full bg-sky-100 text-sky-800 px-2 py-0.5 text-xs font-semibold"
+                    class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold"
+                    :class="isWaitingForPayment ? 'bg-amber-100 text-amber-800' : 'bg-sky-100 text-sky-800'"
                   >
-                    [Job_Status]
+                    <span x-text="jobStatusLabel"></span>
                   </span>
                 </div>
+
+                <template x-if="paymentStatusLabel">
+                  <div class="flex items-center gap-2">
+                    <span class="text-slate-500">Payment Status:</span>
+                    <span
+                      class="inline-flex items-center rounded-full bg-violet-100 px-2 py-0.5 text-xs font-semibold text-violet-700"
+                      x-text="paymentStatusLabel"
+                    ></span>
+                  </div>
+                </template>
+
+                <template x-if="invoiceSent">
+                  <div class="flex flex-wrap items-center gap-2 text-sm">
+                    <span class="text-slate-500">Sent To:</span>
+                    <span
+                      class="font-semibold text-slate-900"
+                      x-text="sentToSummary"
+                    ></span>
+                  </div>
+                </template>
 
                 <div class="flex items-baseline gap-2">
                   <span class="text-slate-500">Invoice Price:</span>
@@ -2693,10 +2934,10 @@
                   >
                 </div>
 
-                <!-- <div>
-                    <div class="text-slate-500">Job Notes:</div>
-                    <div class="text-slate-700">….</div>
-                  </div> -->
+                <div class="flex items-baseline gap-2">
+                  <span class="text-slate-500">Job Notes:</span>
+                  <span class="font-medium" x-text="jobNotes || '—'"></span>
+                </div>
 
                 <div class="flex items-baseline gap-2">
                   <span class="text-slate-500">Invoice No.:</span>
@@ -2716,6 +2957,7 @@
               <!-- Actions -->
               <div
                 class="grid grid-cols-3 text-center text-sky-700 text-sm border-t border-slate-200"
+                :class="{ 'text-amber-800': isWaitingForPayment }"
               >
                 <a
                   href="#"
@@ -2726,6 +2968,7 @@
                 <a
                   href="#"
                   class="py-3 hover:bg-slate-50 border-r border-slate-200 inline-flex items-center justify-center gap-2"
+                  @click.prevent="window.dispatchEvent(new CustomEvent('clientJobTasks:open', { detail: { jobId: JOB_ID } }))"
                 >
                   <span>View Tasks</span>
                   <!-- tiny icon -->
@@ -2748,29 +2991,97 @@
           </div>
 
           <!-- Card: Service Provider Payment -->
-          <div class="rounded-sm border border-slate-200 bg-white shadow-sm">
-            <!-- Header -->
+          <div
+            class="rounded-sm border border-slate-200 bg-white shadow-sm"
+            x-data="serviceProviderPaymentCard()"
+          >
             <div
-              class="flex items-center gap-2 rounded-sm bg-sky-100 px-4 py-3"
+              class="flex flex-col items-center gap-4 px-6 py-10 text-center"
+              x-show="!canShowDetails"
+              x-cloak
             >
-              <!-- card icon -->
-              <svg
-                class="h-5 w-5 text-sky-700"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                aria-hidden="true"
+              <div
+                class="flex items-center gap-2 rounded-sm bg-sky-50 px-4 py-3 w-full"
               >
-                <path d="M3 6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2H3V6Z" />
-                <path
-                  d="M3 10h20v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8Zm4 5h6a1 1 0 1 1 0 2H7a1 1 0 1 1 0-2Z"
+                <svg
+                  class="h-5 w-5 text-sky-700"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path d="M3 6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2H3V6Z" />
+                  <path d="M3 10h20v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8Z" />
+                </svg>
+                <span class="font-semibold text-slate-800"
+                  >Service Provider Payment</span
+                >
+              </div>
+              <svg
+                class="h-32 w-48 text-slate-300"
+                viewBox="0 0 200 120"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <rect
+                  x="15"
+                  y="25"
+                  width="170"
+                  height="70"
+                  rx="12"
+                  fill="#E3ECFF"
+                />
+                <rect
+                  x="30"
+                  y="40"
+                  width="70"
+                  height="12"
+                  rx="6"
+                  fill="#C3D4FF"
+                />
+                <rect
+                  x="30"
+                  y="60"
+                  width="50"
+                  height="10"
+                  rx="5"
+                  fill="#C3D4FF"
+                />
+                <rect
+                  x="110"
+                  y="40"
+                  width="55"
+                  height="12"
+                  rx="6"
+                  fill="#BCCEF8"
                 />
               </svg>
-              <span class="font-semibold text-slate-800"
-                >Service Provider Payment</span
-              >
+              <p class="text-base font-medium text-slate-600">
+                No payment recorded yet.
+              </p>
             </div>
 
-            <!-- Body -->
+            <div x-show="canShowDetails" x-cloak>
+              <!-- Header -->
+              <div
+                class="flex items-center gap-2 rounded-sm bg-sky-100 px-4 py-3"
+              >
+                <!-- card icon -->
+                <svg
+                  class="h-5 w-5 text-sky-700"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path d="M3 6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2H3V6Z" />
+                  <path
+                    d="M3 10h20v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8Zm4 5h6a1 1 0 1 1 0 2H7a1 1 0 1 1 0-2Z"
+                  />
+                </svg>
+                <span class="font-semibold text-slate-800"
+                  >Service Provider Payment</span
+                >
+              </div>
+
+              <!-- Body -->
             <div
               class="w-full rounded-lg border border-slate-200 bg-white"
               data-dynamic-list="d2SsoIyQ4KSc2hbnHQexI"
@@ -2778,32 +3089,32 @@
               data-entity-key="1rBR-jpR3yE3HE1VhFD0j"
               data-var-jobid="375"
             >
-              <div class="p-4 space-y-3 text-[14px] text-slate-800">
-                <!-- Service Provider + status pill -->
-                <div class="flex items-start justify-between gap-3">
-                  <div>
-                    <span class="text-slate-500">Service Provider:</span>
-                    <span class="font-semibold"
-                      >[Contact_First_Name] [Contact_Last_Name]</span
+                <div class="p-4 space-y-3 text-[14px] text-slate-800">
+                  <!-- Service Provider + status pill -->
+                  <div class="flex items-start justify-between gap-3">
+                    <div>
+                      <span class="text-slate-500">Service Provider:</span>
+                      <span class="font-semibold"
+                        >[Contact_First_Name] [Contact_Last_Name]</span
+                      >
+                    </div>
+                    <span
+                      class="inline-flex items-center rounded-full bg-sky-100 text-sky-800 px-2 py-0.5 text-xs font-semibold"
+                    >
+                      [Xero_Invoice_Status]
+                    </span>
+                  </div>
+
+                  <!-- Bill Batch ID -->
+                  <div class="flex items-baseline gap-2">
+                    <span class="text-slate-500">Bill Batch ID:</span>
+                    <a href="#" class="text-sky-700 hover:underline font-medium"
+                      >[Bill_Batch_ID]</a
                     >
                   </div>
-                  <span
-                    class="inline-flex items-center rounded-full bg-sky-100 text-sky-800 px-2 py-0.5 text-xs font-semibold"
-                  >
-                    [Xero_Invoice_Status]
-                  </span>
-                </div>
 
-                <!-- Bill Batch ID -->
-                <div class="flex items-baseline gap-2">
-                  <span class="text-slate-500">Bill Batch ID:</span>
-                  <a href="#" class="text-sky-700 hover:underline font-medium"
-                    >[Bill_Batch_ID]</a
-                  >
-                </div>
-
-                <!-- Bill Approved by SP -->
-                <!-- <div class="flex items-center justify-between">
+                  <!-- Bill Approved by SP -->
+                  <!-- <div class="flex items-center justify-between">
                   <div class="flex items-center gap-2">
                     <span class="text-slate-500"
                       >Bill Approved by Service Provider</span
@@ -2827,46 +3138,82 @@
                   >
                 </div> -->
 
-                <!-- Prestart Done -->
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-2">
-                    <span class="text-slate-500">Prestart Done:</span>
-                    <span
-                      class="inline-flex items-center rounded-full bg-emerald-100 text-emerald-700 px-2 py-0.5 text-xs font-semibold"
-                      >[Prestart_Done]</span
+                  <!-- Prestart Done -->
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                      <span class="text-slate-500">Prestart Done:</span>
+                      <span
+                        class="inline-flex items-center rounded-full bg-emerald-100 text-emerald-700 px-2 py-0.5 text-xs font-semibold"
+                        x-text="formatBoolean(prestartDone)"
+                      ></span>
+                      <span class="hidden" data-prestart-value>[Prestart_Done]</span>
+                    </div>
+                    <a
+                      href="#"
+                      class="text-sky-700 hover:underline text-sm flex items-center gap-1"
+                      @click.prevent="openPrestart"
                     >
-                  </div>
-                  <a
-                    href="#"
-                    class="text-sky-700 hover:underline text-sm flex items-center gap-1"
-                  >
                     View Prestart
                     <svg
                       class="h-3.5 w-3.5"
                       viewBox="0 0 20 20"
                       fill="currentColor"
-                    >
-                      <path
-                        d="M12.293 2.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414L8.414 17H4v-4.414L12.293 2.293z"
-                      />
-                    </svg>
-                  </a>
-                </div>
-
-                <!-- PCA Done -->
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-2">
-                    <span class="text-slate-500">PCA Done:</span>
-                    <span
-                      class="inline-flex items-center rounded-full bg-rose-100 text-rose-700 px-2 py-0.5 text-xs font-semibold"
-                      >[PCA_Done]</span
-                    >
+                      >
+                        <path
+                          d="M12.293 2.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414L8.414 17H4v-4.414L12.293 2.293z"
+                        />
+                      </svg>
+                    </a>
                   </div>
-                  <a
-                    href="#"
-                    class="text-sky-700 hover:underline text-sm flex items-center gap-1"
+
+                  <!-- PCA Done -->
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                      <span class="text-slate-500">PCA Done:</span>
+                      <span
+                        class="inline-flex items-center rounded-full bg-rose-100 text-rose-700 px-2 py-0.5 text-xs font-semibold"
+                        x-text="formatBoolean(pcaDone)"
+                      ></span>
+                      <span class="hidden" data-pca-value>[PCA_Done]</span>
+                    </div>
+                    <a
+                      href="#"
+                      class="text-sky-700 hover:underline text-sm flex items-center gap-1"
+                    @click.prevent="openPca"
                   >
                     View PCA
+                    <svg
+                      class="h-3.5 w-3.5"
+                      viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          d="M12.293 2.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414L8.414 17H4v-4.414L12.293 2.293z"
+                        />
+                      </svg>
+                    </a>
+                  </div>
+
+                  <div class="space-y-1">
+                <span class="text-sky-700 font-medium"
+                  >Follow Up Comment</span
+                >
+                <p class="text-slate-700 text-sm" data-follow-up-comment>
+                  <span data-follow-up-comment-source>[Follow_Up_Comment]</span>
+                </p>
+              </div>
+                </div>
+
+                <!-- Footer actions -->
+                <div
+                  class="grid grid-cols-2 text-center text-sky-700 text-sm border-t border-slate-200"
+                >
+                  <a
+                    href="#"
+                    class="py-3 hover:bg-slate-50 border-r border-slate-200 inline-flex items-center justify-center gap-2"
+                    @click.prevent="window.dispatchEvent(new CustomEvent('billingSummary:open'))"
+                  >
+                    Billing Summary
                     <svg
                       class="h-3.5 w-3.5"
                       viewBox="0 0 20 20"
@@ -2877,52 +3224,23 @@
                       />
                     </svg>
                   </a>
-                </div>
-
-                <div class="space-y-1">
-                  <span class="text-sky-700 font-medium">Follow Up Comment</span>
-                  <p class="text-slate-700 text-sm" data-follow-up-comment>
-                    [Follow_Up_Comment]
-                  </p>
-                </div>
-              </div>
-
-              <!-- Footer actions -->
-              <div
-                class="grid grid-cols-2 text-center text-sky-700 text-sm border-t border-slate-200"
-              >
-                <a
-                  href="#"
-                  class="py-3 hover:bg-slate-50 border-r border-slate-200 inline-flex items-center justify-center gap-2"
-                  @click.prevent="window.dispatchEvent(new CustomEvent('billingSummary:open'))"
-                >
-                  Billing Summary
-                  <svg
-                    class="h-3.5 w-3.5"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
+                  <a
+                    href="#"
+                    class="py-3 hover:bg-slate-50 inline-flex items-center justify-center gap-2"
+                    @click.prevent="window.dispatchEvent(new CustomEvent('followUpComment:open', { detail: { comment: (document.querySelector('[data-follow-up-comment]')?.textContent || '').trim() } }))"
                   >
-                    <path
-                      d="M12.293 2.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414L8.414 17H4v-4.414L12.293 2.293z"
-                    />
-                  </svg>
-                </a>
-                <a
-                  href="#"
-                  class="py-3 hover:bg-slate-50 inline-flex items-center justify-center gap-2"
-                  @click.prevent="window.dispatchEvent(new CustomEvent('followUpComment:open', { detail: { comment: (document.querySelector('[data-follow-up-comment]')?.textContent || '').trim() } }))"
-                >
-                  Edit Comment
-                  <svg
-                    class="h-3.5 w-3.5"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      d="M17.414 2.586a2 2 0 010 2.828l-9.9 9.9A2 2 0 016.1 16H3v-3.1a2 2 0 01.586-1.414l9.9-9.9a2 2 0 012.828 0z"
-                    />
-                  </svg>
-                </a>
+                    Edit Comment
+                    <svg
+                      class="h-3.5 w-3.5"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        d="M17.414 2.586a2 2 0 010 2.828l-9.9 9.9A2 2 0 016.1 16H3v-3.1a2 2 0 01.586-1.414l9.9-9.9a2 2 0 012.828 0z"
+                      />
+                    </svg>
+                  </a>
+                </div>
               </div>
             </div>
           </div>
@@ -3384,6 +3702,10 @@
         >
           <div
             class="relative w-full max-w-4xl overflow-hidden rounded-2xl bg-white shadow-2xl"
+            data-dynamic-list="Cb4DAkWPDzXZATnSGiq-M"
+            data-var-jobid="375"
+            data-entity="peterpm"
+            data-entity-key="1rBR-jpR3yE3HE1VhFD0j"
           >
             <div
               class="absolute right-6 top-4 flex items-center gap-2"
@@ -3467,11 +3789,14 @@
             </div>
 
             <div class="flex items-center justify-between px-6 py-4 border-b">
-            <div>
-              <p class="text-lg font-semibold text-slate-900">
-                Billing Summary
-              </p>
-                <p class="text-sm text-slate-600" x-text="summary.businessName"></p>
+              <div>
+                <p class="text-lg font-semibold text-slate-900">
+                  Billing Summary
+                </p>
+                <p
+                  class="text-sm text-slate-600"
+                  x-text="summary.businessName"
+                ></p>
               </div>
               <button
                 class="text-slate-400 transition hover:text-slate-600"
@@ -3496,33 +3821,39 @@
             </div>
 
             <div class="px-6 py-6 space-y-6">
-              <div class="flex flex-wrap items-center justify-between gap-3 text-sm text-slate-600">
+              <div
+                class="flex flex-wrap items-center justify-between gap-3 text-sm text-slate-600"
+              >
                 <div>
                   <span class="text-slate-500">Job ID:</span>
                   <a
-                    :href="summary.jobLink"
                     class="font-semibold text-sky-700 hover:underline"
-                    x-text="summary.jobId"
-                  ></a>
+                  >#[Unique_ID]
+                </a>
                 </div>
                 <div>
                   <span class="text-slate-500">Job Completed on:</span>
-                  <span class="font-semibold text-slate-900" x-text="summary.completedOn"></span>
+                  <span
+                    class="font-semibold text-slate-900"
+                  >[Date_Completed]</span>
                 </div>
               </div>
 
-              <div class="flex flex-wrap items-center justify-between gap-3 text-sm text-slate-600">
+              <div
+                class="flex flex-wrap items-center justify-between gap-3 text-sm text-slate-600"
+              >
                 <div class="flex items-center gap-2">
                   <span class="text-slate-500">Xero Bill Status:</span>
                   <span
                     class="inline-flex items-center rounded-full px-3 py-0.5 text-xs font-semibold"
                     :class="statusPillClass"
-                    x-text="summary.billStatusLabel"
-                  ></span>
+                  >[Xero_Bill_Status]</span>
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
                   <span class="text-slate-500">Bill Xero ID:</span>
-                  <span class="font-mono text-slate-900" x-text="summary.billXeroId"></span>
+                  <span
+                    class="font-mono text-slate-900"
+                  >[Bill_Xero_ID]</span>
                 </div>
               </div>
 
@@ -3536,31 +3867,40 @@
                   <div class="mt-3 space-y-2">
                     <div class="flex items-center justify-between text-sm">
                       <span class="text-slate-500">Account Name</span>
-                      <span class="font-semibold" x-text="summary.from.accountName"></span>
+                      <span
+                        class="font-semibold"
+                      >[Primary_Service_Provider_Account_Name]</span>
                     </div>
                     <div class="grid gap-3 text-sm md:grid-cols-2">
                       <span>
                         <span class="text-slate-500">Account #</span>
-                        <p class="font-semibold" x-text="summary.from.accountNumber"></p>
+                        <p
+                          class="font-semibold"
+                        >[Primary_Service_Provider_Account_Number]</p>
                       </span>
                       <span>
                         <span class="text-slate-500">BSB</span>
-                        <p class="font-semibold" x-text="summary.from.bsb"></p>
+                        <p class="font-semibold">[Primary_Service_Provider_BSB]</p>
                       </span>
                       <span>
                         <span class="text-slate-500">Job Rate</span>
-                        <p class="font-semibold" x-text="summary.from.jobRate"></p>
+                        <p
+                          class="font-semibold"
+                        >[Primary_Service_Provider_Job_Rate_Percentage]%</p>
                       </span>
                       <span>
                         <span class="text-slate-500">ABN</span>
-                        <p class="font-semibold" x-text="summary.from.abn"></p>
+                        <p class="font-semibold">[Primary_Service_Provider_ABN]</p>
                       </span>
                     </div>
                     <div class="flex items-center justify-between text-sm">
-                      <span class="text-slate-500">GST Registered</span>
-                      <span class="font-semibold" x-text="summary.from.gstRegistered"></span>
-                    </div>
+                    <span class="text-slate-500">GST Registered</span>
+                    <span
+                      class="font-semibold"
+                      x-text="formatBoolean(summary.from.gstRegistered)"
+                    ></span>
                   </div>
+                </div>
                 </div>
 
                 <div class="rounded-xl border border-slate-200 p-4">
@@ -3570,15 +3910,24 @@
                   <div class="mt-3 space-y-2 text-sm">
                     <div class="flex items-center justify-between">
                       <span class="text-slate-500">Business Name</span>
-                      <span class="font-semibold" x-text="summary.to.businessName"></span>
+                      <span
+                        class="font-semibold"
+                        x-text="summary.to.businessName"
+                      ></span>
                     </div>
                     <div class="flex items-center justify-between">
                       <span class="text-slate-500">Client Name</span>
-                      <span class="font-semibold" x-text="summary.to.clientName"></span>
+                      <span
+                        class="font-semibold"
+                        x-text="summary.to.clientName"
+                      ></span>
                     </div>
                     <div class="flex items-center justify-between">
                       <span class="text-slate-500">ABN</span>
-                      <span class="font-semibold" x-text="summary.to.abn"></span>
+                      <span
+                        class="font-semibold"
+                        x-text="summary.to.abn"
+                      ></span>
                     </div>
                     <div>
                       <span class="text-slate-500">Address</span>
@@ -3598,7 +3947,9 @@
                   </div>
                   <div class="flex items-center gap-2">
                     <span class="text-slate-500">Total:</span>
-                    <span class="text-base font-semibold text-emerald-600" x-text="summary.invoiceTotal"></span>
+                    <span
+                      class="text-base font-semibold text-emerald-600"
+                    >$[Invoice_Total]</span>
                   </div>
                 </div>
                 <div
@@ -3610,42 +3961,58 @@
                   </div>
                   <div class="flex items-center gap-2">
                     <span class="text-slate-500">Total:</span>
-                    <span class="text-base font-semibold text-emerald-600" x-text="summary.materialsTotal"></span>
+                    <span
+                      class="text-base font-semibold text-emerald-600"
+                    >$[Materials_Total]</span>
                   </div>
                 </div>
               </div>
 
-              <div class="rounded-xl border border-slate-200 p-4 text-sm text-slate-700">
+              <div
+                class="rounded-xl border border-slate-200 p-4 text-sm text-slate-700"
+              >
                 <div class="flex flex-wrap items-center gap-4">
                   <div>
                     <span class="text-slate-500">Batch ID</span>
-                    <p class="font-semibold" x-text="summary.batch.id"></p>
+                    <p class="font-semibold">[Bill_Batch_ID]</p>
                   </div>
                   <div>
                     <span class="text-slate-500">Bill Date</span>
-                    <p class="font-semibold" x-text="summary.batch.billDate"></p>
+                    <p
+                      class="font-semibold"
+                    >[Bill_Date]</p>
                   </div>
                   <div>
                     <span class="text-slate-500">Bill Due Date</span>
-                    <p class="font-semibold" x-text="summary.batch.billDueDate"></p>
+                    <p
+                      class="font-semibold"
+                    >[Bill_Due_Date]</p>
                   </div>
                 </div>
                 <div class="mt-4 space-y-2">
                   <div class="flex items-center justify-between">
                     <span class="text-slate-500">Commission Rate</span>
-                    <span class="font-semibold" x-text="summary.totals.commissionRate"></span>
+                    <span
+                      class="font-semibold"
+                    >[Primary_Service_Provider_Job_Rate_Percentage]%</span>
                   </div>
                   <div class="flex items-center justify-between">
                     <span class="text-slate-500">Bill Total</span>
-                    <span class="font-semibold" x-text="summary.totals.billTotal"></span>
+                    <span
+                      class="font-semibold"
+                    >$[Bill_Total]</span>
                   </div>
                   <div class="flex items-center justify-between">
                     <span class="text-slate-500">Bill GST</span>
-                    <span class="font-semibold" x-text="summary.totals.billGst"></span>
+                    <span
+                      class="font-semibold"
+                    >$[Bill_GST]</span>
                   </div>
-                  <div class="flex items-center justify-between border-t border-slate-200 pt-3 text-base font-semibold text-emerald-600">
+                  <div
+                    class="flex items-center justify-between border-t border-slate-200 pt-3 text-base font-semibold text-emerald-600"
+                  >
                     <span>Grand Total (Including GST)</span>
-                    <span x-text="summary.totals.grandTotal"></span>
+                    <span>$[Bill_Total]</span>
                   </div>
                 </div>
               </div>
@@ -3660,7 +4027,9 @@
               </label>
             </div>
 
-            <div class="flex items-center justify-end gap-3 border-t border-slate-200 px-6 py-4">
+            <div
+              class="flex items-center justify-end gap-3 border-t border-slate-200 px-6 py-4"
+            >
               <button
                 class="rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
                 @click="close"
@@ -3687,9 +4056,15 @@
           x-transition.opacity
           @keydown.escape.window="close"
         >
-          <div class="w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-2xl">
-            <div class="flex items-center justify-between border-b border-slate-200 px-5 py-4">
-              <h3 class="text-lg font-semibold text-slate-900">Edit Follow Up Comment</h3>
+          <div
+            class="w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-2xl"
+          >
+            <div
+              class="flex items-center justify-between border-b border-slate-200 px-5 py-4"
+            >
+              <h3 class="text-lg font-semibold text-slate-900">
+                Edit Follow Up Comment
+              </h3>
               <button
                 class="text-slate-400 transition hover:text-slate-600"
                 @click="close"
@@ -3713,7 +4088,9 @@
             </div>
 
             <div class="space-y-2 px-5 py-4">
-              <label class="text-sm font-medium text-slate-700" for="follow-up-comment-textarea"
+              <label
+                class="text-sm font-medium text-slate-700"
+                for="follow-up-comment-textarea"
                 >Follow Up Comment</label
               >
               <textarea
@@ -3724,8 +4101,13 @@
               ></textarea>
             </div>
 
-            <div class="flex items-center justify-end gap-4 border-t border-slate-200 px-5 py-4 text-sm">
-              <button class="text-slate-500 hover:text-slate-700" @click="close">
+            <div
+              class="flex items-center justify-end gap-4 border-t border-slate-200 px-5 py-4 text-sm"
+            >
+              <button
+                class="text-slate-500 hover:text-slate-700"
+                @click="close"
+              >
                 Cancel
               </button>
               <button
@@ -3740,11 +4122,209 @@
                   fill="none"
                   stroke="currentColor"
                 >
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke-width="4"></circle>
-                  <path class="opacity-75" stroke-width="4" d="M4 12a8 8 0 0 1 8-8"></path>
+                  <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke-width="4"
+                  ></circle>
+                  <path
+                    class="opacity-75"
+                    stroke-width="4"
+                    d="M4 12a8 8 0 0 1 8-8"
+                  ></path>
                 </svg>
                 <span>Save</span>
               </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div x-data="sendInvoiceModal()" x-cloak>
+        <div
+          class="fixed inset-0 z-40 flex min-h-screen items-center justify-center bg-slate-900/50 px-4 py-10 text-slate-800"
+          x-show="open"
+          x-transition.opacity
+          @keydown.escape.window="close"
+        >
+          <div
+            class="w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-2xl"
+          >
+            <div
+              class="flex items-center justify-between border-b border-slate-200 px-5 py-4"
+            >
+              <h3 class="text-lg font-semibold text-slate-900">
+                Send Invoice To:
+              </h3>
+              <button
+                class="text-slate-400 transition hover:text-slate-600"
+                @click="close"
+              >
+                <span class="sr-only">Close</span>
+                <svg
+                  class="h-5 w-5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.5"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+            <div class="px-5 py-4">
+              <p class="text-sm text-slate-600">Invoice will be sent to:</p>
+              <ul class="mt-4 divide-y divide-slate-100">
+                <template
+                  x-for="recipient in recipients"
+                  :key="recipient.email"
+                >
+                  <li class="flex items-center justify-between gap-3 py-3">
+                    <div>
+                      <div
+                        class="flex items-center gap-2 text-sm font-semibold text-slate-900"
+                      >
+                        <span x-text="recipient.name || recipient.email"></span>
+                        <span
+                          class="text-xs font-medium text-slate-500"
+                          x-text="recipient.role"
+                        ></span>
+                      </div>
+                      <div
+                        class="text-xs text-slate-500"
+                        x-text="recipient.email"
+                      ></div>
+                      <div
+                        class="text-xs text-slate-500"
+                        x-text="recipient.phone || ''"
+                      ></div>
+                    </div>
+                  </li>
+                </template>
+              </ul>
+            </div>
+            <div
+              class="flex items-center justify-end gap-3 border-t border-slate-200 px-5 py-4"
+            >
+              <button
+                class="text-sm text-slate-500 hover:text-slate-700"
+                @click="close"
+              >
+                Cancel
+              </button>
+              <button
+                class="inline-flex items-center gap-2 rounded-md bg-sky-800 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-sky-900 disabled:opacity-60"
+                @click="handleSend"
+                :disabled="isSubmitting"
+              >
+                <svg
+                  x-show="isSubmitting"
+                  class="-ml-1 mr-2 h-4 w-4 animate-spin"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke-width="4"
+                  ></circle>
+                  <path
+                    class="opacity-75"
+                    stroke-width="4"
+                    d="M4 12a8 8 0 0 1 8-8"
+                  ></path>
+                </svg>
+                <span>Send Invoice</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div x-data="clientJobTasksModal()" x-cloak>
+        <div
+          class="fixed inset-0 z-40 flex items-center justify-center bg-slate-900/40 px-4 py-10 text-slate-800"
+          x-show="open"
+          x-transition.opacity
+          @keydown.escape.window="close"
+        >
+          <div
+            class="w-full max-w-3xl overflow-hidden rounded-2xl bg-white shadow-2xl"
+          >
+            <div
+              class="flex items-center justify-between bg-[#003882] px-6 py-4 text-white"
+            >
+              <h3 class="text-lg font-semibold">Tasks</h3>
+              <button class="text-white/80 hover:text-white" @click="close">
+                <span class="sr-only">Close</span>
+                <svg
+                  class="h-5 w-5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.5"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+            <div class="max-h-[70vh] overflow-y-auto divide-y divide-slate-100">
+              <template x-for="task in tasks" :key="task.id">
+                <div class="flex items-center justify-between gap-3 px-6 py-4">
+                  <div class="flex items-center gap-3">
+                    <div
+                      class="rounded-full bg-emerald-50 p-1.5 text-emerald-600"
+                    >
+                      <svg
+                        class="h-5 w-5"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="1.8"
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                    </div>
+                    <div>
+                      <p
+                        class="text-sm font-semibold text-slate-900"
+                        x-text="task.title"
+                      ></p>
+                      <p
+                        class="text-sm text-slate-600"
+                        x-text="task.description"
+                      ></p>
+                    </div>
+                  </div>
+                  <span
+                    class="inline-flex items-center rounded-full bg-emerald-100 px-3 py-0.5 text-xs font-semibold text-emerald-700"
+                    x-text="task.status"
+                  ></span>
+                </div>
+              </template>
+              <div
+                class="px-6 py-10 text-center text-sm text-slate-500"
+                x-show="!tasks.length"
+              >
+                No tasks to display.
+              </div>
             </div>
           </div>
         </div>
@@ -5739,53 +6319,163 @@
                 <span class="text-xs font-semibold uppercase text-slate-500"
                   >Contact</span
                 >
-                <div class="relative mt-1">
-                  <input
-                    type="text"
-                    autocomplete="off"
-                    placeholder="Search by name, email, phone"
-                    class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 pr-10 text-sm shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500"
-                    x-model="form.search"
-                    @input.debounce.250ms="onSearchChange"
-                  />
-                  <span
-                    class="pointer-events-none absolute inset-y-0 right-3 inline-flex items-center"
-                  >
-                    <!-- search icon -->
-                    <svg
-                      class="h-4 w-4 text-slate-400"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="1.5"
-                        d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15z"
-                      />
-                    </svg>
-                  </span>
-                </div>
-                <!-- (optional) suggestion list -->
                 <div
-                  x-show="suggestions.length"
-                  class="mt-1 border rounded-lg border-slate-200 overflow-hidden"
+                  class="relative mt-1"
+                  @keydown.escape.stop.prevent="closeSearchDropdown"
                 >
-                  <template x-for="s in suggestions" :key="s.id">
+                  <button
+                    type="button"
+                    class="flex w-full items-center justify-between rounded-lg border border-slate-300 bg-white px-3 py-2 text-left text-sm text-slate-800 shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                    @click="toggleSearchDropdown"
+                    :aria-expanded="searchDropdownOpen"
+                  >
+                    <span
+                      class="truncate"
+                      x-text="form.search || 'Search existing contacts or add a new one'"
+                    ></span>
+                    <span class="flex items-center gap-2">
+                      <span
+                        x-show="form.contactId"
+                        class="text-slate-400 hover:text-slate-600"
+                        role="button"
+                        tabindex="0"
+                        @click.stop="clearSelectedContact"
+                        @keydown.enter.prevent.stop="clearSelectedContact"
+                      >
+                        <svg
+                          class="h-4 w-4"
+                          viewBox="0 0 14 14"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M3.5 3.5L10.5 10.5M10.5 3.5L3.5 10.5"
+                            stroke="currentColor"
+                            stroke-width="1.4"
+                            stroke-linecap="round"
+                          />
+                        </svg>
+                      </span>
+                      <svg
+                        class="h-4 w-4 text-slate-500 transition"
+                        :class="searchDropdownOpen ? 'rotate-180' : ''"
+                        viewBox="0 0 14 14"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M3.5 5.25L7 8.75L10.5 5.25"
+                          stroke="currentColor"
+                          stroke-width="1.2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                      </svg>
+                    </span>
+                  </button>
+
+                  <div
+                    x-show="searchDropdownOpen"
+                    x-transition
+                    x-cloak
+                    @click.outside="closeSearchDropdown"
+                    class="absolute z-20 mt-1 w-full rounded-xl border border-slate-200 bg-white shadow-2xl"
+                  >
+                    <div class="border-b border-slate-100 px-3 py-2">
+                      <input
+                        x-ref="contactSearchInput"
+                        type="text"
+                        autocomplete="off"
+                        placeholder="Type a name, email, or phone number"
+                        class="w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                        x-model="searchTerm"
+                        @input.debounce.250ms="onSearchChange"
+                      />
+                    </div>
+                    <div class="max-h-60 overflow-y-auto divide-y divide-slate-100">
+                      <template x-if="searchLoading">
+                        <div class="px-3 py-4 text-sm text-slate-500 flex items-center gap-2">
+                          <svg
+                            class="h-4 w-4 animate-spin text-slate-400"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                          >
+                            <circle
+                              class="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke-width="4"
+                            ></circle>
+                            <path
+                              class="opacity-75"
+                              stroke-width="4"
+                              d="M4 12a8 8 0 0 1 8-8"
+                            ></path>
+                          </svg>
+                          <span>Searching contacts...</span>
+                        </div>
+                      </template>
+                      <template x-if="!searchLoading && suggestions.length">
+                        <div>
+                          <template
+                            x-for="contact in suggestions"
+                            :key="contact.id || contact.email"
+                          >
+                            <button
+                              type="button"
+                              class="w-full px-3 py-3 text-left hover:bg-slate-50"
+                              @click="pickSuggestion(contact)"
+                            >
+                              <div class="flex flex-col gap-0.5">
+                                <span
+                                  class="text-sm font-semibold text-slate-900"
+                                  x-text="contact.displayLabel"
+                                ></span>
+                                <span
+                                  class="text-xs text-slate-500"
+                                  x-text="contact.email"
+                                ></span>
+                                <span
+                                  class="text-xs text-slate-500"
+                                  x-show="contact.sms"
+                                  x-text="contact.sms"
+                                ></span>
+                              </div>
+                            </button>
+                          </template>
+                        </div>
+                      </template>
+                      <template
+                        x-if="!searchLoading && hasSearched && !suggestions.length && !searchError"
+                      >
+                        <p class="px-3 py-4 text-sm text-slate-500">
+                          No contacts found.
+                        </p>
+                      </template>
+                      <template
+                        x-if="!searchLoading && !hasSearched && !searchError"
+                      >
+                        <p class="px-3 py-4 text-sm text-slate-500">
+                          Start typing to search existing contacts.
+                        </p>
+                      </template>
+                      <template x-if="searchError">
+                        <p
+                          class="px-3 py-4 text-sm text-rose-600"
+                          x-text="searchError"
+                        ></p>
+                      </template>
+                    </div>
                     <button
                       type="button"
-                      class="w-full text-left px-3 py-2 text-sm hover:bg-slate-50"
-                      @click="pickSuggestion(s)"
+                      class="w-full border-t border-slate-100 px-3 py-2 text-left text-sm font-medium text-sky-700 hover:bg-slate-50"
+                      @click="clearSelectedContact"
                     >
-                      <span class="font-medium" x-text="s.name"></span>
-                      <span
-                        class="text-slate-500"
-                        x-text="s.email ? ' · ' + s.email : ''"
-                      ></span>
+                      Clear selection
                     </button>
-                  </template>
+                  </div>
                 </div>
               </label>
 
