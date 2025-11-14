@@ -94,6 +94,11 @@ export class NewEnquiryView {
     this.customModalHeader = document.getElementById("statusTitle");
     this.customModalBody = document.getElementById("statusMessage");
     this.statusModel = document.getElementById("statusModal");
+
+    this.loaderCount = 0;
+    this.loaderElement = this.#initOperationLoader();
+    this.loaderMessageEl =
+      this.loaderElement?.querySelector("[data-loader-message]") || null;
   }
 
   isActive() {
@@ -1134,18 +1139,26 @@ export class NewEnquiryView {
         if (smsInput) smsInput.value = tr.dataset.sms || "";
       })
     );
-    tbody.querySelectorAll(".delete-btn").forEach((btn, i) =>
+    tbody.querySelectorAll(".delete-btn").forEach((btn) =>
       btn.addEventListener("click", async (e) => {
         const tr = e.target.closest("tr");
         if (!tr) return;
-        debugger;
-        let result = await this.model.deleteAffiliationById(
-          tr.getAttribute("data-affiliation-id")
-        );
-        if (!result.isCancelling) {
-          this.customModalHeader.innerText = "Successful";
-          this.customModalBody.innerText = "Affiliation deleted successfully.";
-          this.toggleModal("statusModal");
+        this.showLoader("Deleting affiliation...");
+        try {
+          const result = await this.model.deleteAffiliationById(
+            tr.getAttribute("data-affiliation-id")
+          );
+          if (!result.isCancelling) {
+            this.customModalHeader.innerText = "Successful";
+            this.customModalBody.innerText =
+              "Affiliation deleted successfully.";
+            this.toggleModal("statusModal");
+          }
+        } catch (error) {
+          console.error("[NewEnquiry] Failed to delete affiliation", error);
+          this.showFeedback("Unable to delete affiliation right now.");
+        } finally {
+          this.hideLoader();
         }
       })
     );
@@ -1565,75 +1578,83 @@ export class NewEnquiryView {
     });
 
     saveBtn.addEventListener("click", async () => {
-      const contact = {
-        first_name: firstNameInput.value,
-        last_name: lastNameInput.value,
-        email: emailInput.value,
-        sms_number: smsInput.value,
-      };
+      this.showLoader("Saving contact...");
+      try {
+        const contact = {
+          first_name: firstNameInput.value,
+          last_name: lastNameInput.value,
+          email: emailInput.value,
+          sms_number: smsInput.value,
+        };
 
-      if (this.contactId == null) {
-        let contactResult = await this.model.createNewContact(contact);
-        let contactId = Object.keys(
-          contactResult.mutations.PeterpmContact.managedData
-        )[0];
+        if (this.contactId == null) {
+          let contactResult = await this.model.createNewContact(contact);
+          let contactId = Object.keys(
+            contactResult.mutations.PeterpmContact.managedData
+          )[0];
 
-        if (contactId) {
-          this.contactId = contactId;
-          contact.contact_id = contactId;
-          contact.role = role.value;
-          contact.property_id = this.propertyId;
-          contact.isPrimary = isPrimaryContact.checked;
-          let result = await this.model.createNewAffiliation(contact);
-          if (!result.isCancelling) {
-            this.customModalHeader.innerText = "Successful";
-            this.customModalBody.innerText =
-              "Affiliation deleted successfully.";
-            this.toggleModal("statusModal");
-          }
-        }
-      } else {
-        let isAffiliationExisting =
-          await this.model.fetchAffiliationByContactId(
-            this.contactId.toString()
-          );
-        if (isAffiliationExisting && isAffiliationExisting.length != 0) {
-          let affiliation = {};
-          affiliation.role = role.value;
-          affiliation.property_id = this.propertyId;
-          affiliation.primary_owner_contact = isPrimaryContact.checked;
-          let affiliationResult = await this.model.updateExistingAffiliation(
-            contact,
-            this.affiliationId
-          );
-
-          let contactResult = await this.model.updateContact(
-            this.contactId,
-            contact
-          );
-
-          if (!affiliationResult.isCancelling) {
-            this.customModalHeader.innerText = "Successful";
-            this.customModalBody.innerText =
-              "Affiliation updated successfully.";
-            this.toggleModal("statusModal");
+          if (contactId) {
+            this.contactId = contactId;
+            contact.contact_id = contactId;
+            contact.role = role.value;
+            contact.property_id = this.propertyId;
+            contact.isPrimary = isPrimaryContact.checked;
+            let result = await this.model.createNewAffiliation(contact);
+            if (!result.isCancelling) {
+              this.customModalHeader.innerText = "Successful";
+              this.customModalBody.innerText =
+                "Affiliation deleted successfully.";
+              this.toggleModal("statusModal");
+            }
           }
         } else {
-          contact.contact_id = this.contactId;
-          contact.role = role.value;
-          contact.property_id = this.propertyId;
-          contact.isPrimary = isPrimaryContact.checked;
-          let affiliationResult = await this.model.createNewAffiliation(
-            contact
-          );
+          let isAffiliationExisting =
+            await this.model.fetchAffiliationByContactId(
+              this.contactId.toString()
+            );
+          if (isAffiliationExisting && isAffiliationExisting.length != 0) {
+            let affiliation = {};
+            affiliation.role = role.value;
+            affiliation.property_id = this.propertyId;
+            affiliation.primary_owner_contact = isPrimaryContact.checked;
+            let affiliationResult = await this.model.updateExistingAffiliation(
+              affiliation,
+              this.affiliationId
+            );
 
-          if (!affiliationResult.isCancelling) {
-            this.customModalHeader.innerText = "Successful";
-            this.customModalBody.innerText =
-              "Affiliation creation successfully.";
-            this.toggleModal("statusModal");
+            let contactResult = await this.model.updateContact(
+              this.contactId,
+              contact
+            );
+
+            if (!affiliationResult.isCancelling) {
+              this.customModalHeader.innerText = "Successful";
+              this.customModalBody.innerText =
+                "Affiliation updated successfully.";
+              this.toggleModal("statusModal");
+            }
+          } else {
+            contact.contact_id = this.contactId;
+            contact.role = role.value;
+            contact.property_id = this.propertyId;
+            contact.isPrimary = isPrimaryContact.checked;
+            let affiliationResult = await this.model.createNewAffiliation(
+              contact
+            );
+
+            if (!affiliationResult.isCancelling) {
+              this.customModalHeader.innerText = "Successful";
+              this.customModalBody.innerText =
+                "Affiliation creation successfully.";
+              this.toggleModal("statusModal");
+            }
           }
         }
+      } catch (error) {
+        console.error("[NewEnquiry] Failed to save affiliation", error);
+        this.showFeedback("Unable to save contact right now.");
+      } finally {
+        this.hideLoader();
       }
     });
 
@@ -1782,73 +1803,93 @@ export class NewEnquiryView {
   }
 
   onAddNewContactButtonClick() {
-    let button = document.getElementById("pcSearchFooter");
-    button.addEventListener("click", () => {
-      let firstname = document.getElementById("pcFirstName").value;
-      let lastName = document.getElementById("pcLastName").value;
-      let email = document.getElementById("pcEmail").value;
-      let smsNumber = document.getElementById("pcSms").value;
+    const button = document.getElementById("pcSearchFooter");
+    if (!button) return;
+    button.addEventListener("click", async () => {
+      this.showLoader("Creating contact...");
+      try {
+        const firstname = document.getElementById("pcFirstName").value;
+        const lastName = document.getElementById("pcLastName").value;
+        const email = document.getElementById("pcEmail").value;
+        const smsNumber = document.getElementById("pcSms").value;
 
-      let contactObj = {
-        first_name: firstname,
-        last_name: lastName,
-        email: email,
-        sms_number: smsNumber,
-      };
-      this.model.createNewContact(contactObj);
+        const contactObj = {
+          first_name: firstname,
+          last_name: lastName,
+          email: email,
+          sms_number: smsNumber,
+        };
+        await this.model.createNewContact(contactObj);
+      } catch (error) {
+        console.error("[NewEnquiry] Failed to create quick contact", error);
+        this.showFeedback("Unable to create contact right now.");
+      } finally {
+        this.hideLoader();
+      }
     });
   }
 
   async getValuesFromContactDetailModal(elements) {
-    let element = Array.from(elements);
-    let contactDetailObj = {};
-    element.map((item) => {
-      let key = item.getAttribute("Data-contact-id");
-      let value = item.value;
-      contactDetailObj[key] = value;
+    const element = Array.from(elements);
+    const contactDetailObj = {};
+    element.forEach((item) => {
+      const key = item.getAttribute("Data-contact-id");
+      const value = item.value;
+      if (key) contactDetailObj[key] = value;
     });
 
-    let contactId = document.querySelector(
+    const contactField = document.querySelector(
       "[data-contact-field='contact_id']"
-    ).value;
-    if (contactId) {
-      let result = await this.model.updateContact(contactId, contactDetailObj);
-      if (result) {
-        if (!result.isCancelling) {
-          this.customModalHeader.innerText = "Successful";
-          this.customModalBody.innerText = "Contact updated successfully.";
-          this.toggleModal("statusModal");
-        }
-        element.map((item) => {
-          item.value = "";
-        });
-      } else {
-        if (!result.isCancelling) {
+    );
+    const contactId = contactField?.value || "";
+    this.showLoader(contactId ? "Updating contact..." : "Creating contact...");
+    try {
+      if (contactId) {
+        const result = await this.model.updateContact(
+          contactId,
+          contactDetailObj
+        );
+        if (result) {
+          if (!result.isCancelling) {
+            this.customModalHeader.innerText = "Successful";
+            this.customModalBody.innerText = "Contact updated successfully.";
+            this.toggleModal("statusModal");
+          }
+          element.forEach((item) => {
+            item.value = "";
+          });
+        } else if (!result?.isCancelling) {
           this.customModalHeader.innerText = "Failed";
           this.customModalBody.innerText = "contact update Failed.";
           this.toggleModal("statusModal");
         }
-      }
-    } else {
-      let result = await this.model.createNewContact(contactDetailObj);
-      if (result) {
-        element.map((item) => {
-          item.value = "";
-        });
-        if (!result.isCancelling) {
-          this.customModalHeader.innerText = "Successful";
-          this.customModalBody.innerText = "New contact created successfully.";
+      } else {
+        const result = await this.model.createNewContact(contactDetailObj);
+        if (result) {
+          element.forEach((item) => {
+            item.value = "";
+          });
+          if (!result.isCancelling) {
+            this.customModalHeader.innerText = "Successful";
+            this.customModalBody.innerText =
+              "New contact created successfully.";
 
-          document
-            .getElementById("addressDetailsModalWrapper")
-            .classList.add("hidden");
-          this.toggleModal("statusModal");
-        } else {
-          this.customModalHeader.innerText = "Failed";
-          this.customModalBody.innerText = "Contact create Failed.";
-          this.toggleModal("statusModal");
+            document
+              .getElementById("addressDetailsModalWrapper")
+              .classList.add("hidden");
+            this.toggleModal("statusModal");
+          } else {
+            this.customModalHeader.innerText = "Failed";
+            this.customModalBody.innerText = "Contact create Failed.";
+            this.toggleModal("statusModal");
+          }
         }
       }
+    } catch (error) {
+      console.error("[NewEnquiry] Contact modal save failed", error);
+      this.showFeedback("Unable to save contact right now.");
+    } finally {
+      this.hideLoader();
     }
   }
 
@@ -1940,30 +1981,43 @@ export class NewEnquiryView {
         this.clearPropertyFieldValues(
           "#property-information input, #property-information select"
         );
-        let addPropertyBtn = document.getElementById("add-property-btn");
+        const addPropertyBtn = document.getElementById("add-property-btn");
+        if (!addPropertyBtn) return;
         addPropertyBtn.classList.remove("hidden");
         addPropertyBtn.addEventListener("click", async () => {
-          let details = this.getValuesFromFields(
-            "[data-property-id]",
-            "data-property-id"
-          );
-          let contactId = document.querySelector(
-            "[data-contact-field='contact_id']"
-          ).value;
-          let result = await this.model.createNewProperties(details, contactId);
-          if (!result.isCancelling) {
-            this.customModalHeader.innerText = "Successful";
-            this.customModalBody.innerText =
-              "New Property created successfully.";
-
-            this.clearPropertyFieldValues(
-              "#property-information input, #property-information select"
+          this.showLoader("Saving property...");
+          try {
+            const details = this.getValuesFromFields(
+              "[data-property-id]",
+              "data-property-id"
             );
-            this.toggleModal("statusModal");
-          } else {
-            this.customModalHeader.innerText = "Successful";
-            this.customModalBody.innerText = "Properties create failed.";
-            this.toggleModal("statusModal");
+            const contactField = document.querySelector(
+              "[data-contact-field='contact_id']"
+            );
+            const contactId = contactField?.value || "";
+            const result = await this.model.createNewProperties(
+              details,
+              contactId
+            );
+            if (!result.isCancelling) {
+              this.customModalHeader.innerText = "Successful";
+              this.customModalBody.innerText =
+                "New Property created successfully.";
+
+              this.clearPropertyFieldValues(
+                "#property-information input, #property-information select"
+              );
+              this.toggleModal("statusModal");
+            } else {
+              this.customModalHeader.innerText = "Successful";
+              this.customModalBody.innerText = "Properties create failed.";
+              this.toggleModal("statusModal");
+            }
+          } catch (error) {
+            console.error("[NewEnquiry] Failed to create property", error);
+            this.showFeedback("Unable to create property right now.");
+          } finally {
+            this.hideLoader();
           }
         });
       });
@@ -2054,9 +2108,18 @@ export class NewEnquiryView {
   }
 
   async onViewDetailLinkClicked(id) {
-    let contactDetail = await this.model.fetchcontactDetailsById(id);
-    this.populateAddressDetails(contactDetail.resp[0]);
-    this.toggleModal("addressDetailsModalWrapper");
+    let modalOpened = false;
+    try {
+      const records = await this.model.fetchcontactDetailsById(id);
+      this.populateAddressDetails(records.resp[0]);
+      if (!modalOpened) {
+        modalOpened = true;
+        this.toggleModal("addressDetailsModalWrapper");
+      }
+    } catch (error) {
+      console.error("[NewEnquiry] Unable to load contact details", error);
+      this.showFeedback("Unable to load contact details right now.");
+    }
   }
 
   populateAddressDetails(data) {
@@ -2122,6 +2185,43 @@ export class NewEnquiryView {
     });
 
     document.body.appendChild(modal);
+  }
+
+  showLoader(message = "Working...") {
+    if (!this.loaderElement) return;
+    this.loaderCount += 1;
+    if (this.loaderMessageEl) this.loaderMessageEl.textContent = message;
+    this.loaderElement.classList.remove("hidden");
+  }
+
+  hideLoader(force = false) {
+    if (!this.loaderElement) return;
+    if (force) {
+      this.loaderCount = 0;
+    } else if (this.loaderCount > 0) {
+      this.loaderCount -= 1;
+    }
+    if (this.loaderCount <= 0) {
+      this.loaderElement.classList.add("hidden");
+      this.loaderCount = 0;
+    }
+  }
+
+  #initOperationLoader() {
+    const existing = document.getElementById("ptpm-operation-loader");
+    if (existing) return existing;
+    const loader = document.createElement("div");
+    loader.id = "ptpm-operation-loader";
+    loader.className =
+      "fixed inset-0 z-[9999] hidden flex items-center justify-center bg-black/40 backdrop-blur-sm";
+    loader.innerHTML = `
+      <div class="flex flex-col items-center gap-3 rounded-2xl bg-white/95 px-6 py-5 shadow-lg ring-1 ring-slate-200">
+        <div class="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-[#003882]"></div>
+        <p class="text-sm font-semibold text-slate-800" data-loader-message>Working...</p>
+      </div>
+    `;
+    document.body.appendChild(loader);
+    return loader;
   }
 
   populatePropertyFields(fields, data) {

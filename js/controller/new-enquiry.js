@@ -213,6 +213,7 @@ export class NewEnquiryController {
     }
 
     try {
+      this.view.showLoader("Saving contact...");
       this.view.setSaving(true);
       const contact = await this.model.createContact(normalized);
       if (!contact) {
@@ -233,6 +234,7 @@ export class NewEnquiryController {
       );
     } finally {
       this.view.setSaving(false);
+      this.view.hideLoader();
     }
   }
 
@@ -449,6 +451,7 @@ export class NewEnquiryController {
         this.view.affiliationId = null;
       }
       const saveBtn = document.getElementById("pcSaveBtn");
+      saveBtn.classList = "hover:[#003882]";
       if (saveBtn) saveBtn.textContent = "Save Contact";
       this.view.toggleModal("propertyContactModalWrapper");
       const contacts = this.model.getContacts();
@@ -490,7 +493,7 @@ export class NewEnquiryController {
   onSubmitButtonClicked() {
     let submitBtn = document.getElementById("submit-btn");
     let dealsObj = {};
-    submitBtn.addEventListener("click", () => {
+    submitBtn.addEventListener("click", async () => {
       let inquiryValues = this.view.getValuesFromFields(
         "[data-inquiry-id]",
         "data-inquiry-id"
@@ -501,7 +504,7 @@ export class NewEnquiryController {
       );
 
       Object.assign(dealsObj, inquiryValues, feedbackValues);
-      let result = this.model.createNewInquiry(dealsObj);
+      let result = await this.model.createNewInquiry(dealsObj);
 
       if (!result.isCancelling) {
         this.view.customModalHeader.innerText = "Successful";
