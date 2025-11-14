@@ -2120,7 +2120,7 @@ document.addEventListener("alpine:init", () => {
   Alpine.data("serviceProviderPaymentCard", () => ({
     invoiceSent: false,
     jobStatus: "",
-    jobUniqueId: "",
+    jobUniqueId: JOB_UNIQUE_ID,
     prestartDone: null,
     pcaDone: null,
     boundStatus: null,
