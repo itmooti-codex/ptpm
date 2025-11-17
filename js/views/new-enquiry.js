@@ -99,6 +99,9 @@ export class NewEnquiryView {
     this.loaderElement = this.#initOperationLoader();
     this.loaderMessageEl =
       this.loaderElement?.querySelector("[data-loader-message]") || null;
+    this.createSwithcAccountTypeModal();
+    this.companyId = null;
+    this.entityContactId = null;
   }
 
   isActive() {
@@ -383,7 +386,7 @@ export class NewEnquiryView {
 
     entity.addEventListener("click", (event) => {
       event.preventDefault();
-      this.#switchSection("entity");
+      this.toggleModal("switchAccountTypeModalWrapper");
     });
 
     this.#switchSection("individual");
@@ -486,7 +489,13 @@ export class NewEnquiryView {
 
     Object.entries(this.sections).forEach(([key, section]) => {
       if (!section) return;
-      section.classList.toggle("hidden", key !== targetKey);
+      const active = key === targetKey;
+      section.classList.toggle("hidden", !active);
+      if (active) {
+        section.setAttribute("data-active-section", "true");
+      } else {
+        section.removeAttribute("data-active-section");
+      }
     });
 
     Object.entries(this.tabs).forEach(([key, button]) => {
@@ -496,7 +505,16 @@ export class NewEnquiryView {
       button.classList.toggle("text-white", active);
       button.classList.toggle("shadow-sm", active);
       button.classList.toggle("text-slate-500", !active);
+      if (active) {
+        button.setAttribute("data-active-tab", "true");
+      } else {
+        button.removeAttribute("data-active-tab");
+      }
     });
+
+    if (document?.body) {
+      document.body.dataset.activeContactTab = targetKey;
+    }
 
     if (isIndividual && this.sections.individual) {
       this.section = this.sections.individual;
@@ -1205,8 +1223,36 @@ export class NewEnquiryView {
             </svg>
           </button>
         </div>
+
+        
+
+        
  
         <div class="px-5 py-5 space-y-6">
+        <div class="hidden">
+                <label class="block text-sm font-medium text-slate-600">Entity Type</label>
+                <select id="entity-type" data-contact-field="entity-type" class="!block w-full appearance-none rounded-lg border border-slate-200 bg-white my-2 px-4 py-3 text-sm text-slate-600 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100">
+                  <option clas="font-medium text-slate-600" value="Body Corp">Body Corp</option>
+                  <option clas="font-medium text-slate-600" value="Body Corp Company">Body Corp Company</option>
+                  <option clas="font-medium text-slate-600" value="Business &amp; Gov">Business &amp; Gov</option>
+                  <option clas="font-medium text-slate-600" value="Closed Real Estate">Closed Real Estate</option>
+                  <option clas="font-medium text-slate-600" value="School/Childcare">School/Childcare</option>
+                  <option clas="font-medium text-slate-600" value="Real Estate Agent">Real Estate Agent</option>
+                  <option clas="font-medium text-slate-600" value="Tenant to Pay">Tenant to Pay</option>
+                  <option clas="font-medium text-slate-600" value="Wildlife Rescue">Wildlife Rescue</option>
+                </select>
+              </div>
+        <div class="hidden">
+                <label class="block text-sm font-medium text-slate-600"
+                  >Role</label
+                >
+                <input
+                  type="text"
+                  data-contact-field="affiliationsrole"
+                  placeholder="Resident, Owner, Property Manager..."
+                  class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100"
+                />
+              </div>
           <div class="space-y-3">
            <div class="flex gap-4">
                 <div class="flex-1 min-w-[150px]">
@@ -1838,6 +1884,12 @@ export class NewEnquiryView {
       if (key) contactDetailObj[key] = value;
     });
 
+    contactDetailObj["Affiliations"] = {
+      role: document.querySelector(
+        "#addressDetailsModalWrapper [data-contact-field='role']"
+      ).value,
+    };
+
     const contactField = document.querySelector(
       "[data-contact-field='contact_id']"
     );
@@ -2252,5 +2304,264 @@ export class NewEnquiryView {
       let field = document.querySelector(`[data-property-id=${key}]`);
       field.value = address[key];
     }
+  }
+
+  createSwithcAccountTypeModal() {
+    let modalWrapper = document.createElement("div");
+    modalWrapper.id = "switchAccountTypeModalWrapper";
+    modalWrapper.classList =
+      "flex fixed inset-0 z-[999] hidden items-center justify-center bg-black/50";
+
+    modalWrapper.innerHTML = `
+      <div class="bg-white w-full max-w-md rounded-lg shadow-lg">
+        <div class=" flex w-full justify-between px-6 py-4 border-b border-gray-300 items-center">
+          <div class="flex-1 justify-start text-neutral-700 text-lg font-semibold  leading-5">Switch Account Type</div>
+          <div id="switchAccountTypeCloseBtn" class="w-6 h-6 relative overflow-hidden">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M18.75 6.81984L17.1802 5.25L12 10.4302L6.81984 5.25L5.25 6.81984L10.4302 12L5.25 17.1802L6.81984 18.75L12 13.5698L17.1802 18.75L18.75 17.1802L13.5698 12L18.75 6.81984Z" fill="#21272A"/>
+              </svg>
+
+          </div>
+         </div>
+  
+        <div class="px-5 py-6 text-gray-700">
+          Switching to the Company will reset all filled data.
+          Do you want to continue?
+        </div>
+  
+        <div class="flex justify-end gap-3 px-5 py-4 border-t">
+          <button
+            id="switchAccountTypeCancelBtn"
+            class="text-gray-600 hover:text-gray-800"
+          >
+            Cancel
+          </button>
+  
+          <button
+            id="switchAccountTypeContinueBtn"
+            class="bg-[#003882] text-white px-4 py-2 rounded-md hover:bg-[#003882]"
+          >
+            Continue
+          </button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modalWrapper);
+
+    const show = () => {
+      modalWrapper.classList.remove("hidden");
+    };
+
+    const hide = () => {
+      modalWrapper.classList.add("hidden");
+    };
+
+    modalWrapper
+      .querySelector("#switchAccountTypeCloseBtn")
+      .addEventListener("click", hide);
+
+    modalWrapper
+      .querySelector("#switchAccountTypeCancelBtn")
+      .addEventListener("click", hide);
+
+    modalWrapper
+      .querySelector("#switchAccountTypeContinueBtn")
+      .addEventListener("click", async () => {
+        this.#switchSection("entity");
+        this.toggleModal("switchAccountTypeModalWrapper");
+        let propertiesList = await this.model.fetchCompany();
+        this.createEntityList(propertiesList.resp);
+      });
+
+    modalWrapper.addEventListener("click", (e) => {
+      if (e.target === modalWrapper) hide();
+    });
+
+    return { show, hide };
+  }
+
+  async createEntityList(entities) {
+    // Root elements (reuse contact search structure conventions)
+    const root = document.querySelector('[data-search-root="contact-entity"]');
+    const input = root?.querySelector("[data-search-input]");
+    const panel = root?.querySelector("[data-search-panel]");
+    const results = root?.querySelector("[data-search-results]");
+    const footer = root?.querySelector("[data-search-footer]");
+
+    if (!root || !input || !panel || !results) return;
+
+    const filter = (q = "") => {
+      const term = q.trim().toLowerCase();
+      if (!term) return entities;
+      return entities.filter((p) => {
+        const hay = [p.property_name].filter(Boolean).join(" ").toLowerCase();
+        return hay.includes(term);
+      });
+    };
+
+    const render = (q = "") => {
+      const list = filter(q);
+      results.innerHTML = "";
+
+      if (!list.length) {
+        const empty = document.createElement("div");
+        empty.className =
+          "px-4 py-6 text-sm text-slate-500 text-center select-none";
+        empty.textContent = "No matching properties. Add a new property.";
+        results.appendChild(empty);
+      } else {
+        list.forEach((p, idx) => {
+          const li = document.createElement("li");
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.dataset.optionIndex = String(idx);
+
+          btn.className =
+            "w-full px-4 py-3 text-left hover:bg-slate-50 focus:bg-slate-50 focus:outline-none";
+          btn.innerHTML = `
+            <div data-company-id= ${p.ID} data-contact-id= ${
+            p.Primary_Person_Contact_ID
+          } class="flex items-start justify-between gap-3">
+              <div>
+                <p class="text-sm font-medium text-slate-700">${this.#escapeHtml(
+                  p.Name
+                )}</p>
+              </div>
+            </div>`;
+          btn.addEventListener("mousedown", async (e) => {
+            e.preventDefault();
+            // Store the chosen property id similar to contacts
+            let element = e.target.closest("button");
+            this.companyId = element
+              .querySelector("[data-company-id]")
+              .getAttribute("data-company-id");
+            this.entityContactId = element
+              .querySelector("[data-contact-id]")
+              .getAttribute("data-contact-id");
+            let selectedCompany = entities.filter(
+              (item) => item.ID == this.companyId
+            );
+            document.querySelector('[data-contact-id="entity-id"]').value =
+              this.entityContactId;
+            const mappedFieldsName = selectedCompany.map((item) => {
+              return {
+                contact_id: item.Primary_Person_Contact_ID,
+                email: item.Primary_Person_Email,
+                first_name: item.Primary_Person_First_Name,
+                last_name: item.Primary_Person_Last_Name,
+                sms_number: item.Primary_Person_SMS_Number,
+                office_phone: item.Primary_Person_Contact_ID,
+                entity_type: item.Account_Type,
+              };
+            });
+            document
+              .getElementById("view-contact-detail")
+              .classList.remove("hidden");
+            this.populateEntityData(mappedFieldsName);
+          });
+          li.appendChild(btn);
+          results.appendChild(li);
+        });
+      }
+
+      // Fixed footer with Add New Property
+      if (footer) footer.innerHTML = "";
+      const addBtn = document.createElement("button");
+      addBtn.type = "button";
+      addBtn.innerHTML = `
+                    <span class="inline-flex h-5 w-5 items-center justify-center rounded-full border border-sky-900 text-sky-900">
+                        +
+                      </span>
+
+                    <span class="text-sky-900 hover:bg-slate-50">Add New Property</span>
+                   `;
+      addBtn.className =
+        "flex w-full items-center gap-2 border-t border-slate-200 px-4 py-3 text-sm font-medium text-sky-900 hover:bg-slate-50";
+      addBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        this.clearPropertyFieldValues(
+          "#property-information input, #property-information select"
+        );
+        const addPropertyBtn = document.getElementById("add-property-btn");
+        if (!addPropertyBtn) return;
+        addPropertyBtn.classList.remove("hidden");
+        addPropertyBtn.addEventListener("click", async () => {
+          this.showLoader("Saving property...");
+          try {
+            const details = this.getValuesFromFields(
+              "[data-property-id]",
+              "data-property-id"
+            );
+            const contactField = document.querySelector(
+              "[data-contact-field='contact_id']"
+            );
+            const contactId = contactField?.value || "";
+            const result = await this.model.createNewProperties(
+              details,
+              contactId
+            );
+            if (!result.isCancelling) {
+              this.customModalHeader.innerText = "Successful";
+              this.customModalBody.innerText =
+                "New Property created successfully.";
+
+              this.clearPropertyFieldValues(
+                "#property-information input, #property-information select"
+              );
+              this.toggleModal("statusModal");
+            } else {
+              this.customModalHeader.innerText = "Successful";
+              this.customModalBody.innerText = "Properties create failed.";
+              this.toggleModal("statusModal");
+            }
+          } catch (error) {
+            console.error("[NewEnquiry] Failed to create property", error);
+            this.showFeedback("Unable to create property right now.");
+          } finally {
+            this.hideLoader();
+          }
+        });
+      });
+      if (footer) footer.appendChild(addBtn);
+
+      panel.classList.remove("hidden");
+    };
+
+    input.addEventListener("input", (e) => render(e.target.value || ""));
+    input.addEventListener("focus", () => render(input.value || ""));
+    document.addEventListener("click", (e) => {
+      if (!root.contains(e.target)) panel.classList.add("hidden");
+    });
+  }
+
+  populateEntityData(data) {
+    data.forEach((item) => {
+      const firstNameField = document.querySelector(
+        "[data-contact-section='entity'] [data-contact-field='first_name']"
+      );
+      const lastNameField = document.querySelector(
+        "[data-contact-section='entity'] [data-contact-field='last_name']"
+      );
+      const emailField = document.querySelector(
+        "[data-contact-section='entity'] [data-contact-field='email']"
+      );
+      const smsField = document.querySelector(
+        "[data-contact-section='entity'] [data-contact-field='sms_number']"
+      );
+      const phoneNumber = document.querySelector(
+        "[data-contact-section='entity'] [data-contact-field='office_phone']"
+      );
+      const entityTypeField = document.querySelector(
+        "[data-contact-section='entity'] [data-contact-field='entity-type']"
+      );
+
+      if (firstNameField) firstNameField.value = item.first_name || "";
+      if (lastNameField) lastNameField.value = item.last_name || "";
+      if (emailField) emailField.value = item.email || "";
+      if (smsField) smsField.value = item.sms_number || "";
+      if (phoneNumber) phoneNumber.value = item.office_phone || "";
+      if (entityTypeField) entityTypeField.value = item.entity_type || "";
+    });
   }
 }

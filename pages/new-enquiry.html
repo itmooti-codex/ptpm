@@ -167,7 +167,7 @@
                   <input
                     type="text"
                     placeholder="Search by name, email, phone"
-                    class="w-full rounded-lg border border-slate-200 bg-white px-11 py-3 text-sm text-slate-700 placeholder:text-slate-400 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100"
+                    class="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 placeholder:text-slate-400 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100"
                     data-search-input
                     data-contact-id="search-input"
                     autocomplete="off"
@@ -232,7 +232,7 @@
                 >
                 <input
                   type="text"
-                  data-contact-field="role"
+                  data-contact-field="affiliationsrole"
                   placeholder="Resident, Owner, Property Manager..."
                   class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100"
                 />
@@ -244,7 +244,207 @@
                 data-contact-id="contact-id"
               />
 
+              <input
+                type="hidden"
+                data-contact-field="entity-id"
+                data-contact-id="entity-id"
+              />
+
+
               <div class="flex gap-4">
+                <div class="flex-1 min-w-[150px]">
+                  <label class="text-sm font-medium text-slate-600"
+                    >First Name <span class="text-rose-500">*</span></label
+                  >
+                  <input
+                    type="text"
+                    data-contact-field="first_name"
+                    data-contact-id="first_name"
+                    class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100"
+                  />
+                </div>
+                <div class="flex-1 min-w-[150px]">
+                  <label class="text-sm font-medium text-slate-600"
+                    >Last Name</label
+                  >
+                  <input
+                    type="text"
+                    data-contact-field="last_name"
+                    data-contact-id="last_name"
+                    class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100"
+                  />
+                </div>
+              </div>
+
+              <div class="flex gap-4">
+                <div class="flex-1 min-w-[150px]">
+                  <label class="text-sm font-medium text-slate-600"
+                    >Email <span class="text-rose-500">*</span></label
+                  >
+                  <input
+                    type="email"
+                    data-contact-field="email"
+                    data-contact-id="email"
+                    class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100"
+                  />
+                </div>
+                <div class="flex-1 min-w-[150px]">
+                  <label class="text-sm font-medium text-slate-600"
+                    >SMS Number</label
+                  >
+                  <input
+                    type="tel"
+                    data-contact-field="sms_number"
+                    data-contact-id="sms_number"
+                    class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label class="text-sm font-medium text-slate-600"
+                  >Office Number</label
+                >
+                <input
+                  type="tel"
+                  data-contact-field="office_phone"
+                  data-contact-id="office_phone"
+                  class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100"
+                />
+              </div>
+
+              <label
+                class="inline-flex items-center gap-2 text-sm text-slate-600"
+              >
+                <input
+                  type="checkbox"
+                  class="h-4 w-4 rounded border-slate-300 text-sky-600 focus:ring-sky-200 accent-[#003882]"
+                  data-same-as-contact
+                  data-contact-id="same-as-contact"
+                />
+                Same as contact
+              </label>
+
+              <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div>
+                  <label class="text-sm font-medium text-slate-600"
+                    >Work Requested By</label
+                  >
+                  <input
+                    type="text"
+                    data-contact-field="work_requested_by"
+                    data-contact-id="work-requested-by"
+                    class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100"
+                  />
+                </div>
+                <div>
+                  <label class="text-sm font-medium text-slate-600"
+                    >Work Order Number</label
+                  >
+                  <input
+                    type="text"
+                    data-contact-id="work-order-number"
+                    class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100"
+                  />
+                </div>
+              </div>
+
+            </div>
+            <div class="flex flex-col gap-3" data-contact-section="entity">
+              <div>
+                <label class="block text-sm font-medium text-slate-600"
+                  >Entity</label
+                >
+                <div
+                  class="relative mt-1"
+                  data-search-root="contact-entity"
+                >
+                  <input
+                    type="text"
+                    placeholder="Search entity"
+                    class="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 placeholder:text-slate-400 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100"
+                    data-search-input
+                    data-contact-id="search-input"
+                    autocomplete="off"
+                  />
+                  <button
+                    type="button"
+                    class="absolute inset-y-0 right-3 inline-flex items-center rounded-md px-2 text-slate-400 hover:text-sky-500"
+                    aria-label="Search entity"
+                    data-search-trigger
+                    data-contact-id="search-trigger"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M12.9 14.32a8 8 0 111.414-1.414l3.387 3.386a1 1 0 01-1.414 1.415l-3.387-3.387zM14 8a6 6 0 11-12 0 6 6 0 0112 0z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </button>
+
+                  <div
+                    class="absolute left-0 right-0 top-full z-[999] mt-2 hidden overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg"
+                    data-search-panel
+                  >
+                    <ul
+                      class="max-h-48 overflow-y-auto py-2"
+                      data-search-results
+                      data-entity-id="search-results"
+                    ></ul>
+                    <p
+                      class="px-4 py-3 text-sm text-slate-500 hidden"
+                      data-search-empty
+                      data-entity-id="search-empty"
+                    >
+                      No results found
+                    </p>
+                    <button
+                      type="button"
+                      class="flex w-full items-center gap-2 border-t border-slate-200 px-4 py-3 text-sm font-medium text-sky-900 hover:bg-slate-50"
+                      data-search-add
+                      data-entity-id="add-new-entity"
+                    >
+                      <span
+                        class="inline-flex h-5 w-5 items-center justify-center rounded-full border border-sky-900 text-sky-900"
+                      >
+                        +
+                      </span>
+                      <span>Add New Entity</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-slate-600"
+                  >Entity Type</label
+                >
+                <select id="entity-type" data-contact-field="entity-type" class="!block w-full appearance-none rounded-lg border border-slate-200 bg-white my-2 px-4 py-3 text-sm text-slate-600 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100">
+                  <option clas= "font-medium text-slate-600" value="Body Corp">Body Corp</option>
+                  <option clas= "font-medium text-slate-600" value="Body Corp Company">Body Corp Company</option>
+                  <option clas= "font-medium text-slate-600" value="Business & Gov">Business & Gov</option>
+                  <option clas= "font-medium text-slate-600" value="Closed Real Estate">Closed Real Estate</option>
+                  <option clas= "font-medium text-slate-600" value="School/Childcare">School/Childcare</option>
+                  <option clas= "font-medium text-slate-600" value="Real Estate Agent">Real Estate Agent</option>
+                  <option clas= "font-medium text-slate-600" value="Tenant to Pay">Tenant to Pay</option>
+                  <option clas= "font-medium text-slate-600" value="Wildlife Rescue">Wildlife Rescue</option>
+                </select>
+              </div>
+
+              <input
+                type="hidden"
+                data-entity-field="entity-id"
+                data-entity-id="entity-id"
+              />
+              <label class="text-md text-slate-600 font-medium mt-2">Primary Contact</label>
+              <div class="flex  gap-4">
+                
                 <div class="flex-1 min-w-[150px]">
                   <label class="text-sm font-medium text-slate-600"
                     >First Name <span class="text-rose-500">*</span></label
@@ -443,7 +643,7 @@
                   <input
                     type="text"
                     placeholder="Search properties"
-                    class="mt-2 w-full rounded-lg border border-slate-200 bg-white px-11 py-3 text-sm text-slate-700 placeholder:text-slate-400 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                    class="mt-2 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 placeholder:text-slate-400 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
                     data-search-input
                   />
                   <div
