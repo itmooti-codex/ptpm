@@ -80,7 +80,7 @@ document.addEventListener("alpine:init", () => {
     feedbackVariant: "success",
     placeholderText: DEFAULT_PROVIDER_PLACEHOLDER,
     pendingPrefillId: null,
-    inquiryId: document.body?.dataset?.inquiryId || "",
+    inquiryId: INQUIRY_RECORD_ID,
     toastVisible: false,
     toastMessage: "",
     toastVariant: "success",
