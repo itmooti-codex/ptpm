@@ -241,6 +241,9 @@ export class NewEnquiryController {
 
   #handleSelection(contact) {
     if (!contact) return;
+    this.view.clearPropertyFieldValues(
+      "#property-information input, #property-information select"
+    );
     this.view.populateContact(contact);
     this.view.showRelatedLoading();
     this.#loadRelated(contact.fields?.email).catch(() => {});
@@ -442,7 +445,7 @@ export class NewEnquiryController {
 
       document
         .querySelector(
-          '#addressDetailsModalWrapper [data-contact-field="entity-type"]'
+          '#addressDetailsModalWrapper [data-contact-field="account_type"]'
         )
         .closest("div")
         .classList.add("hidden");
@@ -503,26 +506,12 @@ export class NewEnquiryController {
         "#addressDetailsModalWrapper [data-contact-id]"
       );
 
-      if (this.getActiveTabs() === "individual") {
+      if (this.view.getActiveTabs() === "individual") {
         this.view.getValuesFromContactDetailModal(elements);
       } else {
         this.view.getEntityValuesFromContactDetailModal(elements);
       }
     });
-  }
-
-  getActiveTabs() {
-    let individual = document
-      .getElementById("individual")
-      .hasAttribute("data-active-tab");
-    let entity = document
-      .getElementById("entity")
-      .hasAttribute("data-active-tab");
-    if (individual) {
-      return "individual";
-    } else {
-      return "entity";
-    }
   }
 
   onSubmitButtonClicked() {
@@ -565,10 +554,28 @@ export class NewEnquiryController {
         "[data-contact-field='entity-id']"
       ).value;
 
-      if (contactId) {
-        this.view.onViewDetailLinkClicked(contactId);
-      } else if (entityContactId) {
-        this.view.onViewDetailLinkClicked(entityContactId);
+      let activeTab = this.view.getActiveTabs();
+      if (activeTab == "individual") {
+        this.view.onViewDetailLinkClicked(contactId, "individual");
+        document
+          .getElementById("affiliations-role-section")
+          .classList.remove("hidden");
+        document
+          .getElementById("account-type-section")
+          .closest("div")
+          .classList.add("hidden");
+      } else {
+        document
+          .getElementById("affiliations-role-section")
+          .classList.add("hidden");
+        document
+          .getElementById("account-type-section")
+          .closest("div")
+          .classList.remove("hidden");
+        this.view.onViewDetailLinkClicked(entityContactId, "entity");
+        document
+          .getElementById("company-name-section")
+          .classList.remove("hidden");
       }
     });
   }
@@ -595,6 +602,10 @@ export class NewEnquiryController {
           "[modal-name='contact-detail-modal'] input, [modal-name='contact-detail-modal'] select"
         );
         document.querySelector('[data-contact-id="entity-id"]').value = "";
+        const primaryContactID = document.querySelector(
+          "[data-contact-field='contact_id']"
+        );
+        if (primaryContactID) primaryContactID.value = "";
         this.view.toggleModal("addressDetailsModalWrapper");
         document
           .querySelector(
@@ -604,7 +615,7 @@ export class NewEnquiryController {
           .classList.add("hidden");
         document
           .querySelector(
-            '#addressDetailsModalWrapper [data-contact-field="entity-type"]'
+            '#addressDetailsModalWrapper [data-contact-field="account_type"]'
           )
           .closest("div")
           .classList.remove("hidden");
