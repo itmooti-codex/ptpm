@@ -486,6 +486,9 @@ export class NewEnquiryController {
     );
 
     element.addEventListener("click", () => {
+      if (this.view.getActiveTabs() === "individual") {
+        document.querySelector("[data-contact-field='contact_id']").value = "";
+      }
       this.view.toggleModal("addressDetailsModalWrapper");
     });
   }

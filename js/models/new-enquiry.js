@@ -442,6 +442,7 @@ export class NewEnquiryModel {
         ],
         ["status", "status"],
         ["property_status", "property_status"],
+        ["building_age", "building_age"][("bedrooms", "bedrooms")],
       ];
       fields.forEach(([name, alias]) => {
         try {
@@ -473,6 +474,7 @@ export class NewEnquiryModel {
           "foundation_type",
           "stories",
           "bedrooms",
+          "building_age",
           "manhole",
         ]);
       } catch (_) {}
@@ -1384,6 +1386,7 @@ export class NewEnquiryModel {
         "stories",
         "bedrooms",
         "manhole",
+        "building_age",
       ])
       .noDestroy();
     let result = await query.fetchDirect().toPromise();
