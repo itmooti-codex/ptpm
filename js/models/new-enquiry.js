@@ -1295,9 +1295,13 @@ export class NewEnquiryModel {
     }
   }
 
-  async createNewProperties(propertyDetails, contactId) {
+  async createNewProperties(propertyDetails, contactId, propertyId = "") {
     let query = await this.propertyModel.mutation();
-    propertyDetails["individual_owner_id"] = contactId;
+    if (contactId) {
+      propertyDetails["individual_owner_id"] = contactId;
+    } else if (propertyId) {
+      propertyDetails["owner_company_id"] = propertyId;
+    }
     query.createOne(propertyDetails);
     let result = await query.execute(true).toPromise();
     return result;
@@ -1522,6 +1526,13 @@ export class NewEnquiryModel {
   async createNewCompany(companyObj) {
     let query = await this.companyModel.mutation();
     query.createOne(companyObj);
+    let result = await query.execute(true).toPromise();
+    return result;
+  }
+
+  async updateExistingCompany(companyId, companyObj) {
+    let query = await this.companyModel.mutation();
+    query.update((q) => q.where("id", companyId).set(companyObj));
     let result = await query.execute(true).toPromise();
     return result;
   }

@@ -999,7 +999,7 @@ export class NewEnquiryView {
         case "building-age":
           mappedValues[key] = data.buildingAge || "";
           break;
-        case "has-manhole":
+        case "manhole":
           mappedValues[key] = data.manhole || "";
           break;
         case "building-features":
@@ -2015,22 +2015,35 @@ export class NewEnquiryView {
         entityDetailObj["Companies"] = {
           account_type: document.getElementById("account-type").value,
         };
-        const result = await this.model.updateContact(
+        const contactResult = await this.model.updateContact(
           primaryContactPersonId,
           entityDetailObj
         );
-        if (result) {
-          if (!result.isCancelling) {
+
+        let companyId = document.querySelector(
+          '[data-contact-field="entity-id"]'
+        ).value;
+        let companyObj = {
+          account_type: entityDetailObj["account-type"],
+          name: entityDetailObj.company_name,
+        };
+
+        const updateCompanyData = await this.model.updateExistingCompany(
+          companyId,
+          companyObj
+        );
+        if (contactResult && updateCompanyData) {
+          if (!contactResult.isCancelling && !updateCompanyData.isCancelling) {
             this.customModalHeader.innerText = "Successful";
-            this.customModalBody.innerText = "Contact updated successfully.";
+            this.customModalBody.innerText = "Company updated successfully.";
             this.toggleModal("statusModal");
           }
           element.forEach((item) => {
             item.value = "";
           });
-        } else if (!result?.isCancelling) {
+        } else if (!contactResult?.isCancelling) {
           this.customModalHeader.innerText = "Failed";
-          this.customModalBody.innerText = "contact update Failed.";
+          this.customModalBody.innerText = "Company update Failed.";
           this.toggleModal("statusModal");
         }
       } else {
@@ -2169,14 +2182,6 @@ export class NewEnquiryView {
         "flex w-full items-center gap-2 border-t border-slate-200 px-4 py-3 text-sm font-medium text-sky-900 hover:bg-slate-50";
       addBtn.addEventListener("click", (e) => {
         e.preventDefault();
-        const primaryContactID = document.querySelector(
-          '[data-contact-field="contact_id"]'
-        );
-        if (primaryContactID) primaryContactID.value = "";
-        const entityContactID = document.querySelector(
-          '[data-contact-field="entity-id"]'
-        );
-        if (entityContactID) entityContactID.value = "";
         this.clearPropertyFieldValues(
           "#property-information input, #property-information select"
         );
@@ -2193,11 +2198,27 @@ export class NewEnquiryView {
             const contactField = document.querySelector(
               "[data-contact-field='contact_id']"
             );
-            const contactId = contactField?.value || "";
-            const result = await this.model.createNewProperties(
-              details,
-              contactId
+            const entityField = document.querySelector(
+              "[data-contact-field='entity-id']"
             );
+            const contactId = contactField?.value || "";
+            const entityId = entityField?.value || "";
+
+            const activeTab = this.getActiveTabs();
+            let result = "";
+            if (activeTab == "individual") {
+              result = await this.model.createNewProperties(
+                details,
+                contactId,
+                ""
+              );
+            } else {
+              result = await this.model.createNewProperties(
+                details,
+                "",
+                entityId
+              );
+            }
             if (!result.isCancelling) {
               this.customModalHeader.innerText = "Successful";
               this.customModalBody.innerText =
@@ -2208,7 +2229,7 @@ export class NewEnquiryView {
               );
               this.toggleModal("statusModal");
             } else {
-              this.customModalHeader.innerText = "Successful";
+              this.customModalHeader.innerText = "Failed";
               this.customModalBody.innerText = "Properties create failed.";
               this.toggleModal("statusModal");
             }
@@ -2300,9 +2321,8 @@ export class NewEnquiryView {
         }
       } else {
         if (key === "date_job_required_by") {
-          value = el.value
-            ? Math.floor(new Date(el.value).getTime() / 1000)
-            : "";
+          const [d, m, y] = el.value.split("/");
+          value = Math.floor(new Date(y, m - 1, d).getTime() / 1000) ?? "";
         } else {
           value = el.value?.trim() || "";
         }
@@ -2331,8 +2351,13 @@ export class NewEnquiryView {
       }
 
       if (!records?.resp?.length) return;
+      if (this.getActiveTabs() == "individual") {
+        this.populateAddressDetails(records.resp[0]);
+      } else {
+        let result = this.extractPrimaryPerson(records.resp[0]);
+        this.populateAddressDetails(result);
+      }
 
-      this.populateAddressDetails(records.resp[0]);
       if (!modalOpened) {
         modalOpened = true;
         this.toggleModal("addressDetailsModalWrapper");
@@ -2341,6 +2366,21 @@ export class NewEnquiryView {
       console.error("[NewEnquiry] Unable to load contact details", error);
       this.showFeedback("Unable to load contact details right now.");
     }
+  }
+
+  extractPrimaryPerson(apiData) {
+    const result = {};
+
+    Object.keys(apiData).forEach((key) => {
+      if (key.startsWith("Primary_Person_")) {
+        const cleanKey = key.replace("Primary_Person_", "");
+        result[cleanKey] = apiData[key];
+      } else {
+        result[key] = apiData[key];
+      }
+    });
+
+    return result;
   }
 
   populateAddressDetails(data) {
@@ -2573,7 +2613,7 @@ export class NewEnquiryView {
       const list = filter(q);
       results.innerHTML = "";
 
-      if (!list.length) {
+      if (list == null || !list?.length) {
         const empty = document.createElement("div");
         empty.className =
           "px-4 py-6 text-sm text-slate-500 text-center select-none";
@@ -2687,7 +2727,7 @@ export class NewEnquiryView {
               );
               this.toggleModal("statusModal");
             } else {
-              this.customModalHeader.innerText = "Successful";
+              this.customModalHeader.innerText = "Failed";
               this.customModalBody.innerText = "Properties create failed.";
               this.toggleModal("statusModal");
             }
