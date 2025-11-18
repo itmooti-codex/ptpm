@@ -1,6 +1,7 @@
 // const DEFAULT_PROVIDER_PLACEHOLDER = "Allocate To Service Provider";
 // const DEFAULT_RECIPIENT_PLACEHOLDER = "Select recipients or type to search...";
 // const GRAPHQL_ENDPOINT = "https://peterpm.vitalstats.app/api/v1/graphql";
+// const GRAPHQL_WS_ENDPOINT = "wss://peterpm.vitalstats.app/api/v1/graphql";
 // const GRAPHQL_API_KEY = "1rBR-jpR3yE3HE1VhFD0j";
 // const INQUIRY_RECORD_ID = "312"; 
 // const CONTACT_ID = "168"; //Primary Contact of inquiry

@@ -25,8 +25,34 @@
         display: none !important;
       }
 
+      body {
+        font-family: "Inter", sans-serif;
+      }
+
       .f-inter {
         font-family: "Inter", sans-serif;
+      }
+
+      .hide-scrollbar::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Edge */
+      }
+
+      .thin-scrollbar {
+        scrollbar-width: thin;
+        scrollbar-color: #94a3b8 transparent; /* Firefox */
+      }
+
+      .thin-scrollbar::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .thin-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      .thin-scrollbar::-webkit-scrollbar-thumb {
+        background-color: #94a3b8;
+        border-radius: 9999px;
       }
     </style>
   </head>
@@ -3255,28 +3281,492 @@
     </div>
     <!-- Main Job Sheet -->
 
-    <!-- Floating Action Button with notification -->
-    <button
-      class="fixed bottom-2 right-2 h-24 w-24 rounded-full bg-sky-800 text-white shadow-lg hidden place-items-center"
+    <!-- Floating Memos Button + Modal -->
+    <div
+      x-data="memosModal()"
+      x-cloak
+      @memo-send-reply.window="handleSendReply($event.detail)"
+      @memo-delete-comment.window="handleDeleteComment($event.detail)"
+      @memo-delete-post.window="requestDeletePost($event.detail?.id || $event.detail)"
     >
-      <!-- document/edit icon -->
-      <svg
-        width="40"
-        height="40"
-        viewBox="0 0 40 40"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
+      <!-- Floating Action Button with notification -->
+      <button
+        class="fixed bottom-6 right-6 z-40 h-16 w-16 rounded-full bg-[#003882] text-white shadow-2xl flex items-center justify-center hover:bg-[#022d62] transition"
+       @click="open = true"
+        aria-label="Open memos"
       >
-        <path
-          d="M35 35V24.045L38.325 21.585C39.1245 20.9934 39.6562 20.1084 39.8031 19.1248C39.9501 18.1412 39.7003 17.1395 39.1087 16.34L37.2375 13.8125C36.6923 13.0761 35.8964 12.5647 35 12.375V11.25C34.9999 10.9185 34.8682 10.6006 34.6338 10.3663L25.8838 1.61625C25.6494 1.38181 25.3315 1.25007 25 1.25H8.75C7.75544 1.25 6.80161 1.64509 6.09835 2.34835C5.39509 3.05161 5 4.00544 5 5V35C5 35.9946 5.39509 36.9484 6.09835 37.6516C6.80161 38.3549 7.75544 38.75 8.75 38.75H31.25C32.2446 38.75 33.1984 38.3549 33.9017 37.6516C34.6049 36.9484 35 35.9946 35 35ZM7.5 35V5C7.5 4.66848 7.6317 4.35054 7.86612 4.11612C8.10054 3.8817 8.41848 3.75 8.75 3.75H23.75V10.6337C23.75 11.665 24.5863 12.5 25.6162 12.5H32.5V12.7125C32.325 12.8025 32.1558 12.9079 31.9925 13.0288L28.7238 15.4475C28.6855 15.3183 28.6065 15.205 28.4986 15.1244C28.3908 15.0437 28.2597 15.0001 28.125 15H11.875C11.7092 15 11.5503 15.0658 11.4331 15.1831C11.3158 15.3003 11.25 15.4592 11.25 15.625C11.25 15.7908 11.3158 15.9497 11.4331 16.0669C11.5503 16.1842 11.7092 16.25 11.875 16.25H27.6388L24.26 18.75H11.875C11.7092 18.75 11.5503 18.8158 11.4331 18.9331C11.3158 19.0503 11.25 19.2092 11.25 19.375C11.25 19.5408 11.3158 19.6997 11.4331 19.8169C11.5503 19.9342 11.7092 20 11.875 20H22.5712L19.1925 22.5H11.875C11.7092 22.5 11.5503 22.5658 11.4331 22.6831C11.3158 22.8003 11.25 22.9592 11.25 23.125C11.25 23.2908 11.3158 23.4497 11.4331 23.5669C11.5503 23.6842 11.7092 23.75 11.875 23.75H17.5037L14.195 26.1975L14.13 26.25H11.875C11.7092 26.25 11.5503 26.3158 11.4331 26.4331C11.3158 26.5503 11.25 26.7092 11.25 26.875C11.25 27.0408 11.3158 27.1997 11.4331 27.3169C11.5503 27.4342 11.7092 27.5 11.875 27.5H13.5413L11.7475 33.38C11.6905 33.5668 11.678 33.7644 11.7111 33.9569C11.7442 34.1494 11.822 34.3315 11.9382 34.4885C12.0544 34.6455 12.2057 34.7731 12.3802 34.8611C12.5546 34.9491 12.7472 34.9949 12.9425 34.995L19.7825 35C20.0507 35.0004 20.3119 34.9145 20.5275 34.755L32.5 25.895V35C32.5 35.3315 32.3683 35.6495 32.1339 35.8839C31.8995 36.1183 31.5815 36.25 31.25 36.25H8.75C8.41848 36.25 8.10054 36.1183 7.86612 35.8839C7.6317 35.6495 7.5 35.3315 7.5 35ZM25.6162 11.25C25.5353 11.25 25.4552 11.2341 25.3804 11.2031C25.3057 11.1721 25.2377 11.1267 25.1805 11.0695C25.1233 11.0123 25.0779 10.9443 25.0469 10.8696C25.0159 10.7948 25 10.7147 25 10.6337V4.2675L31.9825 11.25H25.6162ZM32.795 22.5675L29.4438 18.025L30.9062 16.9425L34.2637 21.48L32.795 22.5675ZM16.965 27.2587L28.4387 18.7688L31.7887 23.3113L20.4363 31.7113L16.965 27.2587ZM15.99 28.04L19.43 32.4562L19.3713 32.5L16.1038 32.4975L15.0612 31.0875L15.99 28.04Z"
-          fill="white"
-        />
-      </svg>
+        <!-- document/edit icon -->
+        <svg
+          width="40"
+          height="40"
+          viewBox="0 0 40 40"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M35 35V24.045L38.325 21.585C39.1245 20.9934 39.6562 20.1084 39.8031 19.1248C39.9501 18.1412 39.7003 17.1395 39.1087 16.34L37.2375 13.8125C36.6923 13.0761 35.8964 12.5647 35 12.375V11.25C34.9999 10.9185 34.8682 10.6006 34.6338 10.3663L25.8838 1.61625C25.6494 1.38181 25.3315 1.25007 25 1.25H8.75C7.75544 1.25 6.80161 1.64509 6.09835 2.34835C5.39509 3.05161 5 4.00544 5 5V35C5 35.9946 5.39509 36.9484 6.09835 37.6516C6.80161 38.3549 7.75544 38.75 8.75 38.75H31.25C32.2446 38.75 33.1984 38.3549 33.9017 37.6516C34.6049 36.9484 35 35.9946 35 35ZM7.5 35V5C7.5 4.66848 7.6317 4.35054 7.86612 4.11612C8.10054 3.8817 8.41848 3.75 8.75 3.75H23.75V10.6337C23.75 11.665 24.5863 12.5 25.6162 12.5H32.5V12.7125C32.325 12.8025 32.1558 12.9079 31.9925 13.0288L28.7238 15.4475C28.6855 15.3183 28.6065 15.205 28.4986 15.1244C28.3908 15.0437 28.2597 15.0001 28.125 15H11.875C11.7092 15 11.5503 15.0658 11.4331 15.1831C11.3158 15.3003 11.25 15.4592 11.25 15.625C11.25 15.7908 11.3158 15.9497 11.4331 16.0669C11.5503 16.1842 11.7092 16.25 11.875 16.25H27.6388L24.26 18.75H11.875C11.7092 18.75 11.5503 18.8158 11.4331 18.9331C11.3158 19.0503 11.25 19.2092 11.25 19.375C11.25 19.5408 11.3158 19.6997 11.4331 19.8169C11.5503 19.9342 11.7092 20 11.875 20H22.5712L19.1925 22.5H11.875C11.7092 22.5 11.5503 22.5658 11.4331 22.6831C11.3158 22.8003 11.25 22.9592 11.25 23.125C11.25 23.2908 11.3158 23.4497 11.4331 23.5669C11.5503 23.6842 11.7092 23.75 11.875 23.75H17.5037L14.195 26.1975L14.13 26.25H11.875C11.7092 26.25 11.5503 26.3158 11.4331 26.4331C11.3158 26.5503 11.25 26.7092 11.25 26.875C11.25 27.0408 11.3158 27.1997 11.4331 27.3169C11.5503 27.4342 11.7092 27.5 11.875 27.5H13.5413L11.7475 33.38C11.6905 33.5668 11.678 33.7644 11.7111 33.9569C11.7442 34.1494 11.822 34.3315 11.9382 34.4885C12.0544 34.6455 12.2057 34.7731 12.3802 34.8611C12.5546 34.9491 12.7472 34.9949 12.9425 34.995L19.7825 35C20.0507 35.0004 20.3119 34.9145 20.5275 34.755L32.5 25.895V35C32.5 35.3315 32.3683 35.6495 32.1339 35.8839C31.8995 36.1183 31.5815 36.25 31.25 36.25H8.75C8.41848 36.25 8.10054 36.1183 7.86612 35.8839C7.6317 35.6495 7.5 35.3315 7.5 35ZM25.6162 11.25C25.5353 11.25 25.4552 11.2341 25.3804 11.2031C25.3057 11.1721 25.2377 11.1267 25.1805 11.0695C25.1233 11.0123 25.0779 10.9443 25.0469 10.8696C25.0159 10.7948 25 10.7147 25 10.6337V4.2675L31.9825 11.25H25.6162ZM32.795 22.5675L29.4438 18.025L30.9062 16.9425L34.2637 21.48L32.795 22.5675ZM16.965 27.2587L28.4387 18.7688L31.7887 23.3113L20.4363 31.7113L16.965 27.2587ZM15.99 28.04L19.43 32.4562L19.3713 32.5L16.1038 32.4975L15.0612 31.0875L15.99 28.04Z"
+            fill="white"
+          />
+        </svg>
 
-      <span
-        class="absolute top-1 right-2 h-4 w-4 rounded-full bg-red-500 ring-2 ring-white"
-      ></span>
-    </button>
+        <span
+          class="absolute -top-1 -right-1 h-5 min-w-[20px] rounded-full bg-red-500 px-1 text-[11px] font-semibold leading-none text-white ring-2 ring-white flex items-center justify-center"
+          x-text="newMessages"
+        ></span>
+      </button>
+   
+
+      <div
+        class="fixed inset-0 w-screen h-screen z-500 flex items-start justify-center bg-slate-900/50 px-4 pt-6 pb-10"
+        x-show="open"
+        x-transition
+        @click.self="handleClose"
+        @keydown.escape.window="handleClose"
+        x-trap.noscroll="open"
+      >
+        <div
+          class="mt-4 w-full max-w-[500px] h-[80vh] rounded-xl bg-white flex flex-col overflow-hidden ml-auto mr-2 relative"
+          x-transition
+        >
+          <header
+            class="bg-[#003882] text-white px-6 py-4 flex items-center justify-between gap-4"
+          >
+            <div class="text-[20px] font-medium">
+              Memos <span x-text="`(${memos.length})`"></span>
+            </div>
+            <button
+              type="button"
+              class="p-2 rounded hover:bg-white/10 transition"
+              @click="handleClose"
+              aria-label="Close memos modal"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="h-5 w-5"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M6 18 18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </header>
+
+          <div class="p-4 mb-10">
+            <div
+              class="relative border border-slate-200 rounded-xl bg-white p-4"
+            >
+              <template x-if="newMessages > 0">
+                <div
+                  class="absolute -top-3 left-1/2 -translate-x-1/2 bg-sky-100 text-[#003882] text-sm rounded-full px-4 py-1.5 shadow flex items-center gap-2"
+                  x-transition
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="h-4 w-4"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M12 19V5m0 0 5 5m-5-5-5 5"
+                    />
+                  </svg>
+                  <span x-text="`${newMessages} new messages`"></span>
+                  <button
+                    type="button"
+                    class="ml-1 text-[#003882] hover:text-[#022d62]"
+                    @click.stop="newMessages = 0; lastSeenCount = memos.length"
+                    aria-label="Dismiss new messages"
+                  >
+                    ×
+                  </button>
+                </div>
+              </template>
+
+              <div
+                class="flex flex-col gap-4 max-h-[55vh] overflow-y-auto overflow-x-hidden thin-scrollbar pb-40"
+              >
+                <template x-if="memos.length === 0">
+                  <div class="text-center text-sm text-slate-500 py-6">
+                    No memos yet.
+                  </div>
+                </template>
+
+                <template x-for="memo in memos" :key="memo.id">
+                  <div
+                    class="flex gap-2 pr-4"
+                    x-data="{ repliesOpen: true, replying: false, draft: '' }"
+                    :class="{ 'opacity-50 pointer-events-none': deletingPostId === memo.id }"
+                  >
+                    <!-- Author Image -->
+                    <img
+                      :src="memo.author.avatar"
+                      alt=""
+                      class="h-8 w-8 rounded-full object-cover"
+                    />
+                    <!-- Author Image -->
+
+                    <div class="flex flex-col gap-2 w-full">
+                      <!-- Author Details/Time Ago and Delete Menu -->
+                      <div class="flex items-start justify-between">
+                        <div class="flex items-center gap-2">
+                          <div
+                            class="text-[14px] font-medium text-[#414042]"
+                            x-text="memo.author.name"
+                          ></div>
+                          <div
+                            class="text-[12px] font-normal text-[#636D88]"
+                            x-text="memo.timeAgo"
+                          ></div>
+                        </div>
+                        <div class="relative" x-data="{ menuOpen: false }">
+                          <button
+                            class="text-slate-400 hover:text-slate-600 p-1 -mr-1 rounded"
+                            type="button"
+                            @click="menuOpen = !menuOpen"
+                          >
+                            <svg
+                              width="2"
+                              height="14"
+                              viewBox="0 0 2 14"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M2 6.66667C2 6.86445 1.94135 7.05779 1.83147 7.22224C1.72159 7.38669 1.56541 7.51486 1.38268 7.59055C1.19996 7.66623 0.998891 7.68604 0.80491 7.64745C0.610929 7.60887 0.432746 7.51363 0.292894 7.37377C0.153041 7.23392 0.0578004 7.05574 0.0192152 6.86176C-0.01937 6.66778 0.000433286 6.46671 0.0761209 6.28398C0.151809 6.10126 0.279981 5.94508 0.44443 5.8352C0.60888 5.72532 0.802219 5.66667 1 5.66667C1.26522 5.66667 1.51957 5.77202 1.70711 5.95956C1.89464 6.1471 2 6.40145 2 6.66667ZM1 2C1.19778 2 1.39112 1.94135 1.55557 1.83147C1.72002 1.72159 1.84819 1.56541 1.92388 1.38268C1.99957 1.19996 2.01937 0.998891 1.98079 0.80491C1.9422 0.610929 1.84696 0.432746 1.70711 0.292894C1.56725 0.153041 1.38907 0.0578004 1.19509 0.0192152C1.00111 -0.01937 0.800043 0.000433286 0.617317 0.0761209C0.434591 0.151809 0.278412 0.279981 0.168531 0.44443C0.0586493 0.608879 5.39447e-07 0.802219 5.39447e-07 1C5.39447e-07 1.26522 0.105357 1.51957 0.292894 1.70711C0.48043 1.89464 0.734784 2 1 2ZM1 11.3333C0.802219 11.3333 0.60888 11.392 0.44443 11.5019C0.279981 11.6117 0.151809 11.7679 0.0761209 11.9506C0.000433286 12.1334 -0.01937 12.3344 0.0192152 12.5284C0.0578004 12.7224 0.153041 12.9006 0.292894 13.0404C0.432746 13.1803 0.610929 13.2755 0.80491 13.3141C0.998891 13.3527 1.19996 13.3329 1.38268 13.2572C1.56541 13.1815 1.72159 13.0534 1.83147 12.8889C1.94135 12.7245 2 12.5311 2 12.3333C2 12.0681 1.89464 11.8138 1.70711 11.6262C1.51957 11.4387 1.26522 11.3333 1 11.3333Z"
+                                fill="#636D88"
+                              />
+                            </svg>
+                          </button>
+                          <div
+                            x-show="menuOpen"
+                            x-transition
+                            @click.outside="menuOpen = false"
+                            class="absolute right-0 mt-1 w-28 rounded-md border border-slate-200 bg-white shadow-md text-sm"
+                          >
+                            <template x-if="memo.isMine">
+                              <button
+                                type="button"
+                                class="w-full px-3 py-2 text-left text-red-600 hover:bg-red-50"
+                                @click="menuOpen = false; $dispatch('memo-delete-post', { id: memo.id })"
+                              >
+                                Delete
+                              </button>
+                            </template>
+                          </div>
+                        </div>
+                      </div>
+                      <!-- Author Details/Time Ago and Delete Menu -->
+
+                      <!-- Memo Content and Reply Button -->
+                      <p
+                        class="font-normal text-[14px] text-[#636D88]"
+                        x-text="memo.text"
+                      ></p>
+                      <template x-if="memo.file">
+                        <a
+                          :href="memo.file"
+                          target="_blank"
+                          rel="noopener"
+                          class="inline-flex w-max items-center gap-2 px-3 py-2 rounded-md bg-[#003882] text-white text-[12px] font-medium shadow-sm hover:bg-[#022d62] focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-[#003882] break-all"
+                        >
+                          View attachment
+                        </a>
+                      </template>
+                      <button
+                        class="w-max text-[12px] font-normal text-[#003882] hover:underline"
+                        type="button"
+                        @click="replying = true; $nextTick(() => $refs?.replyBox?.focus())"
+                      >
+                        Reply
+                      </button>
+                      <!-- Memo Content and Reply Button -->
+
+                      <template x-if="memo.replies && memo.replies.length">
+                        <div class="">
+                          <div class="flex items-center gap-4">
+                            <div class="h-px flex-1 bg-slate-200"></div>
+                            <button
+                              type="button"
+                              class="flex items-center gap-1 font-medium text-slate-600"
+                              @click="repliesOpen = !repliesOpen"
+                            >
+                              <span
+                                class="text-[12px] text-[#003882] font-normal"
+                                x-text="`${memo.replies.length} ${memo.replies.length === 1 ? 'Reply' : 'Replies'}`"
+                              ></span>
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke-width="1.5"
+                                stroke="currentColor"
+                                class="h-4 w-4 transition-transform duration-200"
+                                :class="{ 'rotate-180': repliesOpen }"
+                              >
+                                <path
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  d="m6 15 6-6 6 6"
+                                />
+                              </svg>
+                            </button>
+                            <div class="h-px flex-1 bg-slate-200"></div>
+                          </div>
+
+                          <div
+                            class="space-y-4"
+                            x-show="repliesOpen"
+                            x-transition
+                          >
+                            <template
+                              x-for="reply in memo.replies"
+                              :key="reply.id"
+                            >
+                              <div
+                                class="flex gap-3"
+                                :class="{ 'opacity-50 pointer-events-none': deletingCommentId === reply.id }"
+                              >
+                                <img
+                                  :src="reply.author.avatar"
+                                  alt=""
+                                  class="h-7 w-7 rounded-full object-cover"
+                                />
+                                <div class="flex-1">
+                                  <div
+                                    class="flex items-start justify-between gap-3"
+                                  >
+                                    <div class="flex items-center gap-2">
+                                      <div
+                                        class="text-[14px] font-medium text-[#414042]"
+                                        x-text="reply.author.name"
+                                      ></div>
+                                      <div
+                                        class="text-[12px] font-normal text-[#636D88]"
+                                        x-text="reply.timeAgo"
+                                      ></div>
+                                    </div>
+                                    <div
+                                      class="relative"
+                                      x-data="{ menuOpen: false }"
+                                      x-show="reply.isMine"
+                                    >
+                                      <button
+                                        class="text-slate-400 hover:text-slate-600 p-1 -mr-1 rounded"
+                                        type="button"
+                                        @click="menuOpen = !menuOpen"
+                                      >
+                                        <svg
+                                          width="2"
+                                          height="14"
+                                          viewBox="0 0 2 14"
+                                          fill="none"
+                                          xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                          <path
+                                            d="M2 6.66667C2 6.86445 1.94135 7.05779 1.83147 7.22224C1.72159 7.38669 1.56541 7.51486 1.38268 7.59055C1.19996 7.66623 0.998891 7.68604 0.80491 7.64745C0.610929 7.60887 0.432746 7.51363 0.292894 7.37377C0.153041 7.23392 0.0578004 7.05574 0.0192152 6.86176C-0.01937 6.66778 0.000433286 6.46671 0.0761209 6.28398C0.151809 6.10126 0.279981 5.94508 0.44443 5.8352C0.60888 5.72532 0.802219 5.66667 1 5.66667C1.26522 5.66667 1.51957 5.77202 1.70711 5.95956C1.89464 6.1471 2 6.40145 2 6.66667ZM1 2C1.19778 2 1.39112 1.94135 1.55557 1.83147C1.72002 1.72159 1.84819 1.56541 1.92388 1.38268C1.99957 1.19996 2.01937 0.998891 1.98079 0.80491C1.9422 0.610929 1.84696 0.432746 1.70711 0.292894C1.56725 0.153041 1.38907 0.0578004 1.19509 0.0192152C1.00111 -0.01937 0.800043 0.000433286 0.617317 0.0761209C0.434591 0.151809 0.278412 0.279981 0.168531 0.44443C0.0586493 0.608879 5.39447e-07 0.802219 5.39447e-07 1C5.39447e-07 1.26522 0.105357 1.51957 0.292894 1.70711C0.48043 1.89464 0.734784 2 1 2ZM1 11.3333C0.802219 11.3333 0.60888 11.392 0.44443 11.5019C0.279981 11.6117 0.151809 11.7679 0.0761209 11.9506C0.000433286 12.1334 -0.01937 12.3344 0.0192152 12.5284C0.0578004 12.7224 0.153041 12.9006 0.292894 13.0404C0.432746 13.1803 0.610929 13.2755 0.80491 13.3141C0.998891 13.3527 1.19996 13.3329 1.38268 13.2572C1.56541 13.1815 1.72159 13.0534 1.83147 12.8889C1.94135 12.7245 2 12.5311 2 12.3333C2 12.0681 1.89464 11.8138 1.70711 11.6262C1.51957 11.4387 1.26522 11.3333 1 11.3333Z"
+                                            fill="#636D88"
+                                          />
+                                        </svg>
+                                      </button>
+                                      <div
+                                        x-show="menuOpen"
+                                        x-transition
+                                        @click.outside="menuOpen = false"
+                                        class="absolute right-0 mt-1 w-28 rounded-md border border-slate-200 bg-white shadow-md text-sm"
+                                      >
+                                        <button
+                                          type="button"
+                                          class="w-full px-3 py-2 text-left text-red-600 hover:bg-red-50"
+                                          @click="menuOpen = false; $dispatch('memo-delete-comment', { postId: memo.id, commentId: reply.id })"
+                                        >
+                                          Delete
+                                        </button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <p
+                                    class="mt-1 text-sm leading-relaxed text-slate-700"
+                                    x-text="reply.text"
+                                  ></p>
+                                </div>
+                              </div>
+                            </template>
+                          </div>
+                        </div>
+                      </template>
+
+                      <div
+                        class="mt-4 border border-slate-200 rounded-xl p-4 bg-slate-50 space-y-3"
+                        x-show="replying"
+                        x-transition
+                      >
+                        <textarea
+                          x-ref="replyBox"
+                          x-model="draft"
+                          rows="3"
+                          class="w-full resize-none text-sm text-slate-700 placeholder:text-slate-500 focus:outline-none bg-white rounded-lg border border-slate-200 p-2"
+                          placeholder="Write a reply...."
+                        ></textarea>
+                        <div class="flex items-center justify-end gap-3 pt-1">
+                          <button
+                            type="button"
+                            class="px-4 py-2 rounded-lg bg-[#003882] text-white text-sm flex items-center gap-2 hover:bg-[#022d62]"
+                            :class="{ 'opacity-60 cursor-not-allowed': sendingReplyId === memo.id }"
+                            :disabled="sendingReplyId === memo.id"
+                            @click="$dispatch('memo-send-reply', { id: memo.id, text: draft, onDone: () => { draft = ''; replying = false } })"
+                          >
+                            <span>Send</span>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke-width="1.5"
+                              stroke="currentColor"
+                              class="h-4 w-4"
+                            >
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M5.25 4.5 19.5 12 5.25 19.5 7.5 12z"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="border border-slate-200 rounded-xl p-4 bg-white absolute bottom-4 left-4 right-4"
+          >
+            <textarea
+              x-model="memoText"
+              rows="3"
+              class="w-full resize-none text-sm text-slate-700 placeholder:text-slate-500 focus:outline-none"
+              placeholder="Write a memo...."
+              :disabled="isSending"
+            ></textarea>
+            <input
+              type="file"
+              class="hidden"
+              x-ref="memoFileInput"
+              @change="memoFile = $event.target.files?.[0] || null"
+            />
+            <div class="flex items-center justify-end gap-3 pt-1">
+              <button
+                type="button"
+                class="px-3 py-2 border border-[#003882] text-[#003882] rounded-lg text-sm flex items-center gap-2 hover:bg-sky-50"
+                :class="{ 'opacity-60 cursor-not-allowed': isSending }"
+                @click="!isSending && $refs.memoFileInput?.click()"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="h-4 w-4"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="m9 12.75 3 3 7.5-7.5M4.5 12.75l3 3 1.5-1.5M4.5 8.25l3 3 1.5-1.5"
+                  />
+                </svg>
+                <span
+                  x-text="memoFile ? memoFile.name : 'Attach a file'"
+                ></span>
+              </button>
+              <button
+                type="button"
+                class="px-4 py-2 rounded-lg bg-[#003882] text-white text-sm flex items-center gap-2 hover:bg-[#022d62]"
+                :class="{ 'opacity-60 cursor-not-allowed': isSending }"
+                :disabled="isSending"
+                @click="sendMemo"
+              >
+                <span>Send</span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="h-4 w-4"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M5.25 4.5 19.5 12 5.25 19.5 7.5 12z"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <template x-if="pendingDelete">
+        <div
+          class="fixed inset-0 z-50 flex min-h-screen items-center justify-center bg-black/40 px-4"
+          x-transition
+        >
+          <div class="w-full max-w-sm rounded-xl bg-white shadow-xl">
+            <div class="flex items-center justify-between px-5 py-4 border-b">
+              <h3 class="text-lg font-semibold">Delete confirmation</h3>
+              <button
+                class="text-slate-500 hover:text-slate-700"
+                @click="cancelDelete()"
+                aria-label="Close"
+              >
+                &times;
+              </button>
+            </div>
+            <div class="px-5 py-4 space-y-3 text-sm text-slate-800">
+              <p
+                x-text="isDeleting ? 'Deleting…' : 'This action cannot be undone.'"
+              ></p>
+              <p
+                x-text="pendingDelete?.type === 'post' ? 'Delete this memo?' : 'Delete this reply?'"
+              ></p>
+            </div>
+            <div class="flex items-center justify-end gap-3 px-5 py-4 border-t">
+              <button
+                type="button"
+                class="text-slate-600 hover:text-slate-800"
+                :class="{ 'opacity-60 cursor-not-allowed': isDeleting }"
+                :disabled="isDeleting"
+                @click="cancelDelete()"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                class="inline-flex items-center gap-2 rounded-md bg-red-600 text-white px-4 py-2 hover:bg-red-700"
+                :class="{ 'opacity-60 cursor-not-allowed': isDeleting }"
+                :disabled="isDeleting"
+                @click="confirmDelete()"
+              >
+                <span x-text="isDeleting ? 'Deleting…' : 'Delete'"></span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </template>
+    </div>
 
     <!-- Modals -->
     <div>
@@ -5896,9 +6386,9 @@
 
             <!-- Body -->
             <div class="px-4 py-4">
-              <template x-if="error"
-                ><p class="text-sm text-red-600 mb-3" x-text="error"></p
-              ></template>
+              <template x-if="error">
+                <p class="text-sm text-red-600 mb-3" x-text="error"></p>
+              </template>
 
               <template x-if="isLoading">
                 <div class="flex items-center gap-3 text-slate-500 p-4">
@@ -6142,9 +6632,9 @@
                     <p class="mt-2 text-slate-700" x-text="task.notes"></p>
 
                     <ul class="mt-3 list-disc pl-5 text-slate-700 space-y-1">
-                      <template x-for="b in task.bullets"
-                        ><li x-text="b"></li
-                      ></template>
+                      <template x-for="b in task.bullets">
+                        <li x-text="b"></li>
+                      </template>
                     </ul>
 
                     <hr class="my-4" />

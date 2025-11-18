@@ -414,7 +414,6 @@ document.addEventListener("alpine:init", () => {
       }, 4000);
     },
   }));
-
   Alpine.data("residentFeedback", (props = {}) => ({
     rawLocations: props.rawLocations ?? "",
     rawNoises: props.rawNoises ?? "",
@@ -4149,6 +4148,423 @@ document.addEventListener("alpine:init", () => {
       window.dispatchEvent(
         new CustomEvent("toast:show", { detail: { type, message } })
       );
+    },
+  }));
+
+  Alpine.data("memosModal", () => ({
+    open: false,
+    memos: [],
+    newMessages: 0,
+    lastSeenCount: 0,
+    memoText: "",
+    memoFile: null,
+    isSending: false,
+    sendingReplyId: null,
+    pendingDelete: null,
+    deletingPostId: null,
+    deletingCommentId: null,
+    socket: null,
+    keepAliveTimer: null,
+    subscriptionId: `memos-${Date.now()}`,
+    init() {
+      this.connect();
+      this.$watch("open", (value) => {
+        if (value) {
+          this.lastSeenCount = this.memos.length;
+          this.newMessages = 0;
+        }
+      });
+    },
+    destroy() {
+      this.cleanupSocket();
+    },
+    connect() {
+      this.cleanupSocket();
+      const url = `${GRAPHQL_WS_ENDPOINT}?apiKey=${GRAPHQL_API_KEY}`;
+      const ws = new WebSocket(url, "vitalstats");
+      ws.onopen = () => {
+        this.socket = ws;
+        this.sendMessage({ type: "CONNECTION_INIT" });
+        this.keepAliveTimer = setInterval(
+          () => this.sendMessage({ type: "KEEP_ALIVE" }),
+          85000
+        );
+      };
+      ws.onmessage = (event) => {
+        let message;
+        try {
+          message = JSON.parse(event.data);
+        } catch (e) {
+          console.error("Failed to parse websocket message", e);
+          return;
+        }
+        if (!message?.type) return;
+        if (message.type === "CONNECTION_ACK") {
+          this.startSubscription();
+        } else if (message.type === "GQL_DATA") {
+          this.handleData(message.payload);
+        }
+      };
+      ws.onclose = () => {
+        this.cleanupSocket();
+      };
+      ws.onerror = (e) => console.error("Websocket error", e);
+    },
+    cleanupSocket() {
+      if (this.keepAliveTimer) {
+        clearInterval(this.keepAliveTimer);
+        this.keepAliveTimer = null;
+      }
+      if (this.socket) {
+        try {
+          this.socket.close();
+        } catch (e) {
+          // ignore
+        }
+        this.socket = null;
+      }
+    },
+    sendMessage(message) {
+      if (this.socket?.readyState === WebSocket.OPEN) {
+        this.socket.send(JSON.stringify(message));
+      }
+    },
+    async uploadFile(file) {
+      if (!file) return null;
+      const signed = await this.requestSignedUpload(file);
+      const uploadResp = await fetch(signed.uploadUrl, {
+        method: "PUT",
+        body: file,
+        headers: {
+          "Content-Type": file.type || "application/octet-stream",
+        },
+      });
+      if (!uploadResp.ok) {
+        throw new Error("Failed to upload file.");
+      }
+      const payload = {
+        link: signed.url,
+        name: file.name || "Attachment",
+        size: file.size ?? null,
+        type: file.type || "",
+        s3_id: signed.key || "",
+      };
+      return JSON.stringify(payload);
+    },
+    async requestSignedUpload(file) {
+      const response = await fetch(UPLOAD_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Api-Key": GRAPHQL_API_KEY,
+        },
+        body: JSON.stringify([
+          {
+            type: file.type || "application/octet-stream",
+            name: file.name || "upload",
+            generateName: true,
+          },
+        ]),
+      });
+      if (!response.ok) {
+        throw new Error("Unable to request upload URL.");
+      }
+      const payload = await response.json();
+      const result = Array.isArray(payload) ? payload[0] : payload;
+      if (result?.statusCode && result.statusCode !== 200) {
+        throw new Error("Upload endpoint rejected the request.");
+      }
+      const data = result?.data || result || {};
+      if (!data?.uploadUrl || !data?.url) {
+        throw new Error("Invalid upload response.");
+      }
+      return data;
+    },
+    startSubscription() {
+      this.sendMessage({
+        id: this.subscriptionId,
+        type: "GQL_START",
+        payload: {
+          query: SUBSCRIBE_FORUM_POSTS,
+          variables: {
+            relatedinquiryid: INQUIRY_RECORD_ID,
+            relatedjobid: JOB_ID,
+            limit: 50,
+            offset: 0,
+          },
+        },
+      });
+    },
+    handleData(payload) {
+      const data = payload?.data ?? payload;
+      const posts = data?.subscribeToForumPosts;
+      if (!Array.isArray(posts)) return;
+      this.setMemos(posts);
+    },
+    handleSendReply(detail = {}) {
+      const { id, text, onDone } = detail;
+      if (!id) return;
+      this.sendReply(id, text, onDone);
+    },
+    handleDeleteComment(detail = {}) {
+      const { postId, commentId } = detail || {};
+      if (!postId || !commentId) return;
+      this.deleteComment(postId, commentId);
+    },
+    setMemos(posts) {
+      const mapped = posts.map((post, idx) => this.mapPost(post, idx));
+      const previousSeen = this.lastSeenCount || 0;
+      this.memos = mapped;
+      if (this.open) {
+        this.lastSeenCount = mapped.length;
+        this.newMessages = 0;
+      } else if (previousSeen === 0 && mapped.length) {
+        this.lastSeenCount = mapped.length;
+        this.newMessages = 0;
+      } else {
+        this.newMessages = Math.max(0, mapped.length - previousSeen);
+      }
+    },
+    mapPost(post = {}, idx = 0) {
+      const author = post.Author || {};
+      const replies = Array.isArray(post.ForumComments)
+        ? post.ForumComments
+        : [];
+      const rawFileValue = post.File || post.file;
+      const fileObj = this.parseFileField(rawFileValue);
+      const fileLink =
+        fileObj?.link || fileObj?.url || fileObj?.path || null;
+      const name =
+        author.display_name ||
+        [author.first_name, author.last_name].filter(Boolean).join(" ").trim() ||
+        "Unknown";
+      return {
+        id: post.ID || post.Unique_ID || `memo-${idx}`,
+        authorId: author.id != null ? String(author.id) : null,
+        isMine: this.isAuthor(author.id),
+        text: post.Post_Copy || "",
+        timeAgo: this.formatRelativeTime(post.Date_Added),
+        file: fileLink || null,
+        author: {
+          name,
+          avatar:
+            author.profile_image || "https://placehold.co/40x40?text=User&font=inter",
+        },
+        replies: replies.map((reply, rIdx) => {
+          const rAuthor = reply.Author || {};
+          const rName =
+            rAuthor.display_name ||
+            [rAuthor.first_name, rAuthor.last_name]
+              .filter(Boolean)
+              .join(" ")
+              .trim() ||
+            "Unknown";
+          return {
+            id: reply.id || `${post.ID || idx}-reply-${rIdx}`,
+            authorId: rAuthor.id != null ? String(rAuthor.id) : null,
+            isMine: this.isAuthor(rAuthor.id),
+            text: reply.comment || "",
+            timeAgo: this.formatRelativeTime(reply.created_at),
+            author: {
+              name: rName,
+              avatar:
+                rAuthor.profile_image ||
+                "https://placehold.co/32x32?text=User&font=inter",
+            },
+          };
+        }),
+      };
+    },
+    isAuthor(id) {
+      if (id == null) return false;
+      return String(id) === String(CONTACT_ID);
+    },
+    parseFileField(value) {
+      if (!value) return null;
+      if (typeof value === "string") {
+        const trimmed = value.trim();
+        if (!trimmed || trimmed === "null" || trimmed === "undefined") return null;
+        try {
+          const parsed = JSON.parse(trimmed);
+          return this.parseFileField(parsed) || null;
+        } catch {
+          const link = this.normalizeFileLink(trimmed);
+          return link ? { link } : null;
+        }
+      }
+      if (typeof value === "object") {
+        const link = this.normalizeFileLink(
+          value.link || value.url || value.path || ""
+        );
+        if (!link) return null;
+        return {
+          link,
+          name: value.name || value.filename || null,
+          size: value.size || value.filesize || null,
+          type: value.type || value.mime || "",
+          s3_id: value.s3_id || value.key || "",
+        };
+      }
+      return null;
+    },
+    normalizeFileLink(raw = "") {
+      if (typeof raw !== "string") return null;
+      const trimmed = raw.trim();
+      if (!trimmed || trimmed === "null" || trimmed === "undefined") return null;
+      if (/^\{.*\}$/.test(trimmed)) return null;
+      return trimmed;
+    },
+    requestDeletePost(id) {
+      if (!id) return;
+      this.pendingDelete = { type: "post", id };
+    },
+    requestDeleteComment(postId, commentId) {
+      if (!postId || !commentId) return;
+      this.pendingDelete = { type: "comment", postId, commentId };
+    },
+    handleDeleteComment(detail = {}) {
+      const { postId, commentId } = detail || {};
+      if (!postId || !commentId) return;
+      this.requestDeleteComment(postId, commentId);
+    },
+    cancelDelete() {
+      this.pendingDelete = null;
+    },
+    async confirmDelete() {
+      const target = this.pendingDelete;
+      if (!target) return;
+      if (target.type === "post") {
+        await this.deletePost(target.id);
+      } else if (target.type === "comment") {
+        await this.deleteComment(target.postId, target.commentId);
+      }
+      this.pendingDelete = null;
+    },
+    formatRelativeTime(value) {
+      if (value == null || value === "") return "";
+      let ms = null;
+      if (typeof value === "number") {
+        // supports unix seconds or ms
+        ms = value > 1e12 ? value : value * 1000;
+      } else {
+        const parsed = new Date(value);
+        ms = parsed.getTime();
+      }
+      if (isNaN(ms)) return "";
+      const diffMs = Date.now() - ms;
+      const diffSec = Math.max(0, Math.floor(diffMs / 1000));
+      const diffMin = Math.floor(diffSec / 60);
+      const diffHr = Math.floor(diffMin / 60);
+      const diffDay = Math.floor(diffHr / 24);
+      if (diffSec < 60) return `${diffSec}s ago`;
+      if (diffMin < 60) return `${diffMin} min ago`;
+      if (diffHr < 24) return `${diffHr} hours ago`;
+      if (diffDay < 7) return `${diffDay} days ago`;
+      return date.toLocaleDateString();
+    },
+    handleClose() {
+      this.open = false;
+      this.lastSeenCount = this.memos.length;
+      this.newMessages = 0;
+    },
+    async deletePost(id) {
+      if (!id) return;
+      this.deletingPostId = id;
+      try {
+        await graphqlRequest(DELETE_FORUM_POST_MUTATION, { id });
+        this.memos = this.memos.filter((m) => m.id !== id);
+        this.lastSeenCount = this.memos.length;
+        this.emitToast("Memo deleted.");
+      } catch (e) {
+        console.error("Failed to delete memo", e);
+      } finally {
+        this.deletingPostId = null;
+      }
+    },
+    async deleteComment(postId, commentId) {
+      if (!postId || !commentId) return;
+      this.deletingCommentId = commentId;
+      try {
+        await graphqlRequest(DELETE_FORUM_COMMENT_MUTATION, { id: commentId });
+        this.memos = this.memos.map((m) =>
+          m.id === postId
+            ? { ...m, replies: (m.replies || []).filter((r) => r.id !== commentId) }
+            : m
+        );
+        this.emitToast("Reply deleted.");
+      } catch (e) {
+        console.error("Failed to delete reply", e);
+      } finally {
+        this.deletingCommentId = null;
+      }
+    },
+    get isDeleting() {
+      return Boolean(this.deletingPostId || this.deletingCommentId);
+    },
+    emitToast(message, variant = "success") {
+      if (!message) return;
+      window.dispatchEvent(
+        new CustomEvent("toast:show", { detail: { message, variant } })
+      );
+    },
+    async sendMemo() {
+      const text = (this.memoText || "").trim();
+      if (!text || this.isSending) return;
+      this.isSending = true;
+      try {
+        let fileData = null;
+        if (this.memoFile) {
+          try {
+            fileData = await this.readFileAsDataUrl(this.memoFile);
+          } catch (e) {
+            console.error("Failed to read file", e);
+          }
+        }
+        let fileUrl = null;
+        if (this.memoFile) {
+          try {
+            fileUrl = await this.uploadFile(this.memoFile);
+          } catch (e) {
+            console.error("Failed to upload file", e);
+          }
+        }
+        await graphqlRequest(CREATE_FORUM_POST_MUTATION, {
+          payload: {
+            author_id: CONTACT_ID,
+            post_copy: text,
+            related_inquiry_id: INQUIRY_RECORD_ID,
+            related_job_id: JOB_ID,
+            created_at: Math.floor(Date.now() / 1000),
+            file: fileUrl,
+          },
+        });
+        this.memoText = "";
+        this.memoFile = null;
+      } catch (e) {
+        console.error("Failed to create memo", e);
+      } finally {
+        this.isSending = false;
+      }
+    },
+    async sendReply(postId, replyText, onSuccess) {
+      const text = (replyText || "").trim();
+      if (!text || this.sendingReplyId) return;
+      this.sendingReplyId = postId;
+      try {
+        await graphqlRequest(CREATE_FORUM_COMMENT_MUTATION, {
+          payload: {
+            forum_post_id: postId,
+            author_id: CONTACT_ID,
+            comment: text,
+            created_at: Math.floor(Date.now() / 1000),
+          },
+        });
+        if (typeof onSuccess === "function") onSuccess();
+      } catch (e) {
+        console.error("Failed to send reply", e);
+      } finally {
+        this.sendingReplyId = null;
+      }
     },
   }));
 
