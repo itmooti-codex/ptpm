@@ -1924,66 +1924,22 @@ export class NewEnquiryView {
   }
 
   async getValuesFromContactDetailModal(elements) {
-    const element = Array.from(elements);
-    const contactDetailObj = {};
-    element.forEach((item) => {
-      const key = item.getAttribute("Data-contact-id");
-      const value = item.value;
-      if (key) contactDetailObj[key] = value;
-    });
+    const formElements = Array.from(elements);
+    const contactData = this.buildContactData(formElements);
+    const contactId = this.getContactId();
 
-    contactDetailObj["Affiliations"] = {
-      role: document.querySelector(
-        "#addressDetailsModalWrapper [data-contact-field='affiliationsrole']"
-      ).value,
-    };
-
-    const contactField = document.querySelector(
-      "[data-contact-field='contact_id']"
-    );
-    const contactId = contactField?.value || "";
     this.showLoader(contactId ? "Updating contact..." : "Creating contact...");
-    try {
-      if (contactId) {
-        const result = await this.model.updateContact(
-          contactId,
-          contactDetailObj
-        );
-        if (result) {
-          if (!result.isCancelling) {
-            this.customModalHeader.innerText = "Successful";
-            this.customModalBody.innerText = "Contact updated successfully.";
-            this.toggleModal("statusModal");
-          }
-          element.forEach((item) => {
-            item.value = "";
-          });
-        } else if (!result?.isCancelling) {
-          this.customModalHeader.innerText = "Failed";
-          this.customModalBody.innerText = "contact update Failed.";
-          this.toggleModal("statusModal");
-        }
-      } else {
-        const result = await this.model.createNewContact(contactDetailObj);
-        if (result) {
-          element.forEach((item) => {
-            item.value = "";
-          });
-          if (!result.isCancelling) {
-            this.customModalHeader.innerText = "Successful";
-            this.customModalBody.innerText =
-              "New contact created successfully.";
 
-            document
-              .getElementById("addressDetailsModalWrapper")
-              .classList.add("hidden");
-            this.toggleModal("statusModal");
-          } else {
-            this.customModalHeader.innerText = "Failed";
-            this.customModalBody.innerText = "Contact create Failed.";
-            this.toggleModal("statusModal");
-          }
-        }
+    try {
+      const result = await this.saveContact(contactId, contactData);
+
+      if (result?.isCancelling) return;
+
+      if (result) {
+        this.handleSuccess(!!contactId);
+        this.clearForm(formElements);
+      } else {
+        this.handleFailure(!!contactId);
       }
     } catch (error) {
       console.error("[NewEnquiry] Contact modal save failed", error);
@@ -1991,6 +1947,57 @@ export class NewEnquiryView {
     } finally {
       this.hideLoader();
     }
+  }
+
+  buildContactData(elements) {
+    const data = {};
+
+    elements.forEach((item) => {
+      const key = item.getAttribute("data-contact-id");
+      if (key) data[key] = item.value;
+    });
+    return data;
+  }
+
+  getContactId() {
+    return (
+      document.querySelector("[data-contact-field='contact_id']")?.value || ""
+    );
+  }
+
+  async saveContact(contactId, contactData) {
+    if (contactId) {
+      return await this.model.updateContact(contactId, contactData);
+    }
+    return await this.model.createNewContact(contactData);
+  }
+
+  clearForm(elements) {
+    elements.forEach((item) => (item.value = ""));
+  }
+
+  handleSuccess(isUpdate) {
+    this.customModalHeader.innerText = "Successful";
+    this.customModalBody.innerText = isUpdate
+      ? "Contact updated successfully."
+      : "New contact created successfully.";
+
+    if (!isUpdate) {
+      document
+        .getElementById("addressDetailsModalWrapper")
+        .classList.add("hidden");
+    }
+
+    this.toggleModal("statusModal");
+  }
+
+  handleFailure(isUpdate) {
+    this.customModalHeader.innerText = "Failed";
+    this.customModalBody.innerText = isUpdate
+      ? "Contact update failed."
+      : "Contact create failed.";
+
+    this.toggleModal("statusModal");
   }
 
   async getEntityValuesFromContactDetailModal(elements) {
