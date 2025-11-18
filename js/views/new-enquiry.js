@@ -102,6 +102,9 @@ export class NewEnquiryView {
     this.createSwithcAccountTypeModal();
     this.companyId = null;
     this.entityContactId = null;
+    this.entityRelatedRequestId = 0;
+
+    this.entityRelatedData = { properties: [], jobs: [], inquiries: [] };
   }
 
   isActive() {
@@ -292,6 +295,27 @@ export class NewEnquiryView {
       inquiries: Array.isArray(related.inquiries) ? [...related.inquiries] : [],
     };
     this.#setActiveRelatedTab(this.activeRelatedTab);
+  }
+
+  async #loadEntityRelated(entityId) {
+    const normalized = entityId ? String(entityId).trim() : "";
+    if (!normalized) {
+      this.clearRelated();
+      return;
+    }
+
+    const requestId = ++this.entityRelatedRequestId;
+    this.showRelatedLoading();
+    try {
+      const related = await this.model.fetchRelatedForEntity(normalized);
+      if (this.entityRelatedRequestId !== requestId) return;
+      this.createPropertyList(related.properties || []);
+      this.renderRelated(related);
+    } catch (error) {
+      console.error("[NewEnquiry] Failed to load entity related data", error);
+      if (this.entityRelatedRequestId !== requestId) return;
+      this.renderRelated();
+    }
   }
 
   #bindContactListDropdown() {
@@ -514,6 +538,25 @@ export class NewEnquiryView {
 
     if (document?.body) {
       document.body.dataset.activeContactTab = targetKey;
+    }
+
+    // Clear the opposite tab's selected contact/entity id when switching
+    const individualIdInput = document.querySelector(
+      "[data-contact-field='contact_id']"
+    );
+    const entityIdInput = document.querySelector(
+      "[data-contact-field='entity-id']"
+    );
+    if (isIndividual) {
+      if (entityIdInput) entityIdInput.value = "";
+      this.entityContactId = null;
+    } else {
+      if (individualIdInput) individualIdInput.value = "";
+      this.contactId = null;
+    }
+    const companySection = document.getElementById("company-name-section");
+    if (companySection) {
+      companySection.classList.toggle("hidden", isIndividual);
     }
 
     if (isIndividual && this.sections.individual) {
@@ -956,7 +999,7 @@ export class NewEnquiryView {
         case "building-age":
           mappedValues[key] = data.buildingAge || "";
           break;
-        case "has-manhole":
+        case "manhole":
           mappedValues[key] = data.manhole || "";
           break;
         case "building-features":
@@ -1229,9 +1272,9 @@ export class NewEnquiryView {
         
  
         <div class="px-5 py-5 space-y-6">
-        <div class="hidden">
+        <div class="hidden" id="account-type-section">
                 <label class="block text-sm font-medium text-slate-600">Entity Type</label>
-                <select id="entity-type" data-contact-field="entity-type" class="!block w-full appearance-none rounded-lg border border-slate-200 bg-white my-2 px-4 py-3 text-sm text-slate-600 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100">
+                <select id="account-type" data-contact-id="account-type" data-contact-field="account_type" class="!block w-full appearance-none rounded-lg border border-slate-200 bg-white my-2 px-4 py-3 text-sm text-slate-600 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100">
                   <option clas="font-medium text-slate-600" value="Body Corp">Body Corp</option>
                   <option clas="font-medium text-slate-600" value="Body Corp Company">Body Corp Company</option>
                   <option clas="font-medium text-slate-600" value="Business &amp; Gov">Business &amp; Gov</option>
@@ -1242,12 +1285,17 @@ export class NewEnquiryView {
                   <option clas="font-medium text-slate-600" value="Wildlife Rescue">Wildlife Rescue</option>
                 </select>
               </div>
-        <div class="hidden">
+              <div id="company-name-section" class="hidden">
+                <label class="text-sm font-medium text-slate-600">Company Name</label>
+                <input type="tel" data-contact-field="company_name" data-contact-id="company_name" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100">
+              </div>
+        <div class="hidden" id="affiliations-role-section">
                 <label class="block text-sm font-medium text-slate-600"
                   >Role</label
                 >
                 <input
                   type="text"
+                  data-contact-id="affiliationsrole"
                   data-contact-field="affiliationsrole"
                   placeholder="Resident, Owner, Property Manager..."
                   class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100"
@@ -1278,6 +1326,8 @@ export class NewEnquiryView {
               <div  class="hidden">
               <input id="contact-address" type="text"/>
               </div>
+              
+
               <div>
                 <label class="text-sm font-medium text-slate-600">Office Number</label>
                 <input type="tel" data-contact-field="office_phone" data-contact-id="office_phone" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100">
@@ -1548,7 +1598,7 @@ export class NewEnquiryView {
           </div>
   
           <!-- Names -->
-          <div class="flex gap-3">
+          <div class="flex gap-3" id>
             <div class="flex-1">
               <label class="block text-sm font-medium text-gray-700 mb-1">First Name*</label>
               <input id="pcFirstName" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"/>
@@ -1635,9 +1685,7 @@ export class NewEnquiryView {
 
         if (this.contactId == null) {
           let contactResult = await this.model.createNewContact(contact);
-          let contactId = Object.keys(
-            contactResult.mutations.PeterpmContact.managedData
-          )[0];
+          let contactId = contactResult?.createdContact?.id;
 
           if (contactId) {
             this.contactId = contactId;
@@ -1886,7 +1934,7 @@ export class NewEnquiryView {
 
     contactDetailObj["Affiliations"] = {
       role: document.querySelector(
-        "#addressDetailsModalWrapper [data-contact-field='role']"
+        "#addressDetailsModalWrapper [data-contact-field='affiliationsrole']"
       ).value,
     };
 
@@ -1922,6 +1970,110 @@ export class NewEnquiryView {
             item.value = "";
           });
           if (!result.isCancelling) {
+            this.customModalHeader.innerText = "Successful";
+            this.customModalBody.innerText =
+              "New contact created successfully.";
+
+            document
+              .getElementById("addressDetailsModalWrapper")
+              .classList.add("hidden");
+            this.toggleModal("statusModal");
+          } else {
+            this.customModalHeader.innerText = "Failed";
+            this.customModalBody.innerText = "Contact create Failed.";
+            this.toggleModal("statusModal");
+          }
+        }
+      }
+    } catch (error) {
+      console.error("[NewEnquiry] Contact modal save failed", error);
+      this.showFeedback("Unable to save contact right now.");
+    } finally {
+      this.hideLoader();
+    }
+  }
+
+  async getEntityValuesFromContactDetailModal(elements) {
+    const element = Array.from(elements);
+    const entityDetailObj = {};
+    element.forEach((item) => {
+      const key = item.getAttribute("Data-contact-id");
+      const value = item.value;
+      if (key) entityDetailObj[key] = value;
+      0;
+    });
+
+    let primaryContactPersonId = document.querySelector(
+      "[data-contact-field='contact_id']"
+    ).value;
+
+    this.showLoader(
+      primaryContactPersonId ? "Updating contact..." : "Creating contact..."
+    );
+    try {
+      if (primaryContactPersonId) {
+        entityDetailObj["Companies"] = {
+          account_type: document.getElementById("account-type").value,
+        };
+        const contactResult = await this.model.updateContact(
+          primaryContactPersonId,
+          entityDetailObj
+        );
+
+        let companyId = document.querySelector(
+          '[data-contact-field="entity-id"]'
+        ).value;
+        let companyObj = {
+          account_type: entityDetailObj["account-type"],
+          name: entityDetailObj.company_name,
+        };
+
+        const updateCompanyData = await this.model.updateExistingCompany(
+          companyId,
+          companyObj
+        );
+        if (contactResult && updateCompanyData) {
+          if (!contactResult.isCancelling && !updateCompanyData.isCancelling) {
+            this.customModalHeader.innerText = "Successful";
+            this.customModalBody.innerText = "Company updated successfully.";
+            this.toggleModal("statusModal");
+          }
+          element.forEach((item) => {
+            item.value = "";
+          });
+        } else if (!contactResult?.isCancelling) {
+          this.customModalHeader.innerText = "Failed";
+          this.customModalBody.innerText = "Company update Failed.";
+          this.toggleModal("statusModal");
+        }
+      } else {
+        let result = "";
+        const isContactCreated = await this.model.createNewContact(
+          entityDetailObj
+        );
+        if (isContactCreated) {
+          let contactId = Object.keys(
+            isContactCreated.mutations.PeterpmContact.managedData
+          )[0];
+          if (contactId) {
+            const companyData = {
+              account_type: document.getElementById("account-type").value,
+              name: entityDetailObj.company_name,
+              phone: entityDetailObj.office_phone,
+              address: entityDetailObj.address,
+              city: entityDetailObj.city,
+              state: entityDetailObj.state,
+              postal_code: entityDetailObj.postal_code,
+              Primary_Person: {
+                id: contactId,
+              },
+            };
+            result = await this.model.createNewCompany(companyData);
+          }
+          if (!result.isCancelling) {
+            element.forEach((item) => {
+              item.value = "";
+            });
             this.customModalHeader.innerText = "Successful";
             this.customModalBody.innerText =
               "New contact created successfully.";
@@ -2046,11 +2198,27 @@ export class NewEnquiryView {
             const contactField = document.querySelector(
               "[data-contact-field='contact_id']"
             );
-            const contactId = contactField?.value || "";
-            const result = await this.model.createNewProperties(
-              details,
-              contactId
+            const entityField = document.querySelector(
+              "[data-contact-field='entity-id']"
             );
+            const contactId = contactField?.value || "";
+            const entityId = entityField?.value || "";
+
+            const activeTab = this.getActiveTabs();
+            let result = "";
+            if (activeTab == "individual") {
+              result = await this.model.createNewProperties(
+                details,
+                contactId,
+                ""
+              );
+            } else {
+              result = await this.model.createNewProperties(
+                details,
+                "",
+                entityId
+              );
+            }
             if (!result.isCancelling) {
               this.customModalHeader.innerText = "Successful";
               this.customModalBody.innerText =
@@ -2061,7 +2229,7 @@ export class NewEnquiryView {
               );
               this.toggleModal("statusModal");
             } else {
-              this.customModalHeader.innerText = "Successful";
+              this.customModalHeader.innerText = "Failed";
               this.customModalBody.innerText = "Properties create failed.";
               this.toggleModal("statusModal");
             }
@@ -2090,6 +2258,20 @@ export class NewEnquiryView {
     fields.forEach((item) => {
       item.value = "";
     });
+  }
+
+  getActiveTabs() {
+    let individual = document
+      .getElementById("individual")
+      .hasAttribute("data-active-tab");
+    let entity = document
+      .getElementById("entity")
+      .hasAttribute("data-active-tab");
+    if (individual) {
+      return "individual";
+    } else {
+      return "entity";
+    }
   }
 
   getValuesFromFields(section, attribute) {
@@ -2139,9 +2321,8 @@ export class NewEnquiryView {
         }
       } else {
         if (key === "date_job_required_by") {
-          value = el.value
-            ? Math.floor(new Date(el.value).getTime() / 1000)
-            : "";
+          const [d, m, y] = el.value.split("/");
+          value = Math.floor(new Date(y, m - 1, d).getTime() / 1000) ?? "";
         } else {
           value = el.value?.trim() || "";
         }
@@ -2159,11 +2340,24 @@ export class NewEnquiryView {
     return obj;
   }
 
-  async onViewDetailLinkClicked(id) {
+  async onViewDetailLinkClicked(id, tab) {
     let modalOpened = false;
     try {
-      const records = await this.model.fetchcontactDetailsById(id);
-      this.populateAddressDetails(records.resp[0]);
+      let records;
+      if (tab == "individual") {
+        records = await this.model.fetchcontactDetailsById(id);
+      } else {
+        records = await this.model.fetchCompany(id);
+      }
+
+      if (!records?.resp?.length) return;
+      if (this.getActiveTabs() == "individual") {
+        this.populateAddressDetails(records.resp[0]);
+      } else {
+        let result = this.extractPrimaryPerson(records.resp[0]);
+        this.populateAddressDetails(result);
+      }
+
       if (!modalOpened) {
         modalOpened = true;
         this.toggleModal("addressDetailsModalWrapper");
@@ -2172,6 +2366,21 @@ export class NewEnquiryView {
       console.error("[NewEnquiry] Unable to load contact details", error);
       this.showFeedback("Unable to load contact details right now.");
     }
+  }
+
+  extractPrimaryPerson(apiData) {
+    const result = {};
+
+    Object.keys(apiData).forEach((key) => {
+      if (key.startsWith("Primary_Person_")) {
+        const cleanKey = key.replace("Primary_Person_", "");
+        result[cleanKey] = apiData[key];
+      } else {
+        result[key] = apiData[key];
+      }
+    });
+
+    return result;
   }
 
   populateAddressDetails(data) {
@@ -2404,7 +2613,7 @@ export class NewEnquiryView {
       const list = filter(q);
       results.innerHTML = "";
 
-      if (!list.length) {
+      if (list == null || !list?.length) {
         const empty = document.createElement("div");
         empty.className =
           "px-4 py-6 text-sm text-slate-500 text-center select-none";
@@ -2442,8 +2651,10 @@ export class NewEnquiryView {
             let selectedCompany = entities.filter(
               (item) => item.ID == this.companyId
             );
+            document.querySelector('[placeholder="Search entity"]').value =
+              selectedCompany[0].Name;
             document.querySelector('[data-contact-id="entity-id"]').value =
-              this.entityContactId;
+              this.companyId;
             const mappedFieldsName = selectedCompany.map((item) => {
               return {
                 contact_id: item.Primary_Person_Contact_ID,
@@ -2453,12 +2664,17 @@ export class NewEnquiryView {
                 sms_number: item.Primary_Person_SMS_Number,
                 office_phone: item.Primary_Person_Contact_ID,
                 entity_type: item.Account_Type,
+                company_name: item.Name,
               };
             });
             document
               .getElementById("view-contact-detail")
               .classList.remove("hidden");
+            this.clearPropertyFieldValues(
+              "#property-information input, #property-information select"
+            );
             this.populateEntityData(mappedFieldsName);
+            await this.#loadEntityRelated(this.companyId);
           });
           li.appendChild(btn);
           results.appendChild(li);
@@ -2511,7 +2727,7 @@ export class NewEnquiryView {
               );
               this.toggleModal("statusModal");
             } else {
-              this.customModalHeader.innerText = "Successful";
+              this.customModalHeader.innerText = "Failed";
               this.customModalBody.innerText = "Properties create failed.";
               this.toggleModal("statusModal");
             }
@@ -2553,9 +2769,14 @@ export class NewEnquiryView {
         "[data-contact-section='entity'] [data-contact-field='office_phone']"
       );
       const entityTypeField = document.querySelector(
-        "[data-contact-section='entity'] [data-contact-field='entity-type']"
+        "[data-contact-section='entity'] [data-contact-field='account-type']"
       );
 
+      const primaryContactID = document.querySelector(
+        '[data-contact-field="contact_id"]'
+      );
+
+      if (primaryContactID) primaryContactID.value = item.contact_id || "";
       if (firstNameField) firstNameField.value = item.first_name || "";
       if (lastNameField) lastNameField.value = item.last_name || "";
       if (emailField) emailField.value = item.email || "";

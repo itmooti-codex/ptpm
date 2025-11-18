@@ -5,6 +5,7 @@ export class NewEnquiryModel {
     this.propertyModel = plugin.switchTo("PeterpmProperty");
     this.dealModel = plugin.switchTo("PeterpmDeal");
     this.companyModel = plugin.switchTo("PeterpmCompany");
+    this.jobModel = plugin.switchTo("PeterpmJob");
     this.plugin = plugin;
     this.maxRecords = maxRecords;
     this.contactModel = null;
@@ -1294,9 +1295,13 @@ export class NewEnquiryModel {
     }
   }
 
-  async createNewProperties(propertyDetails, contactId) {
+  async createNewProperties(propertyDetails, contactId, propertyId = "") {
     let query = await this.propertyModel.mutation();
-    propertyDetails["individual_owner_id"] = contactId;
+    if (contactId) {
+      propertyDetails["individual_owner_id"] = contactId;
+    } else if (propertyId) {
+      propertyDetails["owner_company_id"] = propertyId;
+    }
     query.createOne(propertyDetails);
     let result = await query.execute(true).toPromise();
     return result;
@@ -1420,6 +1425,115 @@ export class NewEnquiryModel {
       .noDestroy();
     query.getOrInitQueryCalc?.();
     let result = await query.fetchDirect().toPromise();
+    return result;
+  }
+
+  async fetchRelatedProperties(entityId) {
+    let query = this.propertyModel.query();
+    if (entityId) {
+      query = query.where("Owner_Company", (q) => {
+        if (typeof q?.where === "function") {
+          return q.where("id", entityId);
+        }
+        return q;
+      });
+    }
+
+    query
+      .deSelectAll()
+      .select([
+        "id",
+        "address_1",
+        "address_2",
+        "lot_number",
+        "unit_number",
+        "suburb_town",
+        "postal_code",
+        "state",
+        "foundation_type",
+        "building_type",
+        "manhole",
+        "property_type",
+        "stories",
+        "bedrooms",
+        "building_age",
+      ])
+      .noDestroy();
+    query.getOrInitQueryCalc?.();
+    return query.fetchDirect().toPromise();
+  }
+
+  async fetchRelatedJobs(entityId) {
+    let query = this.jobModel.query();
+    if (entityId) {
+      query = query.where("Client_Entity", (q) => {
+        if (typeof q?.where === "function") {
+          return q.where("id", entityId);
+        }
+        return q;
+      });
+    }
+
+    query
+      .deSelectAll()
+      .select(["id", "unique_id", "job_status", "created_at", "date_completed"])
+      .noDestroy();
+    query.getOrInitQueryCalc?.();
+    return query.fetchDirect().toPromise();
+  }
+
+  async fetchRelatedInquiries(entityId) {
+    let query = this.dealModel.query();
+    if (entityId) {
+      query = query.where("company_id", entityId);
+    }
+
+    query
+      .deSelectAll()
+      .select([
+        "created_at",
+        "inquiry_source",
+        "type",
+        "inquiry_status",
+        "how_did_you_hear",
+        "admin_notes",
+      ])
+      .noDestroy();
+    query.getOrInitQueryCalc?.();
+    return query.fetchDirect().toPromise();
+  }
+
+  async fetchRelatedForEntity(entityId) {
+    const [propertiesResp, jobsResp, inquiriesResp] = await Promise.all([
+      this.fetchRelatedProperties(entityId),
+      this.fetchRelatedJobs(entityId),
+      this.fetchRelatedInquiries(entityId),
+    ]);
+
+    const properties = this.mapProperties(
+      this.#extractCalcRecords(propertiesResp)
+    );
+    const jobs = this.#mapJobs(this.#extractCalcRecords(jobsResp));
+    const inquiries = this.#mapInquiries(
+      this.#extractCalcRecords(inquiriesResp)
+    );
+
+    const related = { properties, jobs, inquiries };
+    this.relatedData = related;
+    return this.#cloneRelated(related);
+  }
+
+  async createNewCompany(companyObj) {
+    let query = await this.companyModel.mutation();
+    query.createOne(companyObj);
+    let result = await query.execute(true).toPromise();
+    return result;
+  }
+
+  async updateExistingCompany(companyId, companyObj) {
+    let query = await this.companyModel.mutation();
+    query.update((q) => q.where("id", companyId).set(companyObj));
+    let result = await query.execute(true).toPromise();
     return result;
   }
 }
