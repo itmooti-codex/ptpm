@@ -574,3 +574,87 @@ const DELETE_AFFILIATION_QUERY =`mutation deleteAffiliation($id: PeterpmAffiliat
   }
 }`
 ;
+
+const SUBSCRIBE_FORUM_POSTS = `
+  subscription subscribeToForumPosts(
+    $relatedinquiryid: PeterpmDealID!
+    $relatedjobid: PeterpmJobID!
+    $limit: IntScalar
+    $offset: IntScalar
+  ) {
+    subscribeToForumPosts(
+      query: [
+        { where: { related_inquiry_id: $relatedinquiryid } }
+        { orWhere: { related_job_id: $relatedjobid } }
+      ]
+      limit: $limit
+      offset: $offset
+      orderBy: [{ path: ["created_at"], type: asc }]
+    ) {
+      Author_ID: author_id
+      Date_Added: created_at
+      File: file
+      ID: id
+      Post_Copy: post_copy
+      Post_Image: post_image
+      Post_Status: post_status
+      Unique_ID: unique_id
+      Author {
+        id
+        first_name
+        last_name
+        display_name
+        profile_image
+      }
+      ForumComments {
+        created_at
+        comment
+        comment_status
+        Author {
+          id
+          first_name
+          last_name
+          display_name
+          profile_image
+        }
+      }
+    }
+  }
+`;
+
+const CREATE_FORUM_POST_MUTATION = `
+  mutation createForumPost($payload: ForumPostCreateInput = null) {
+    createForumPost(payload: $payload) {
+      Author_ID: author_id
+      File: file
+      Post_Copy: post_copy
+      Post_Image: post_image
+    }
+  }
+`;
+
+const CREATE_FORUM_COMMENT_MUTATION = `
+  mutation createForumComment($payload: ForumCommentCreateInput = null) {
+    createForumComment(payload: $payload) {
+      forum_post_id
+      comment
+      author_id
+    }
+  }
+`;
+
+const DELETE_FORUM_COMMENT_MUTATION = `
+  mutation deleteForumComment($id: PeterpmForumCommentID!) {
+    deleteForumComment(query: [{ where: { id: $id } }]) {
+      id
+    }
+  }
+`;
+
+const DELETE_FORUM_POST_MUTATION = `
+  mutation deleteForumPost($id: PeterpmForumPostID!) {
+    deleteForumPost(query: [{ where: { id: $id } }]) {
+      id
+    }
+  }
+`;
