@@ -90,6 +90,10 @@ export class NewEnquiryView {
     this.onAddNewContactButtonClick();
     this.contactId = null;
     this.propertyId = null;
+    this.selectedPropertyInput = document.getElementById(
+      "selected-property-id"
+    );
+    this.selectedPropertyCard = null;
     this.createStatusModal();
     this.customModalHeader = document.getElementById("statusTitle");
     this.customModalBody = document.getElementById("statusMessage");
@@ -274,6 +278,7 @@ export class NewEnquiryView {
     this.relatedHasContact = false;
     this.relatedLoading = false;
     this.relatedData = this.#emptyRelated();
+    this.#setSelectedProperty("");
     this.#setActiveRelatedTab("properties");
   }
 
@@ -281,6 +286,7 @@ export class NewEnquiryView {
     this.relatedHasContact = true;
     this.relatedLoading = true;
     this.relatedData = this.#emptyRelated();
+    this.#setSelectedProperty("");
     this.#setActiveRelatedTab(this.activeRelatedTab);
   }
 
@@ -360,6 +366,7 @@ export class NewEnquiryView {
       event.preventDefault();
       const index = Number(button.dataset.optionIndex);
       const contact = this.filteredContacts?.[index];
+      document.querySelector("[data-contact-id]").value = contact.id;
       if (contact) {
         this.#closePanel();
         if (this.selectHandler) this.selectHandler(contact);
@@ -727,26 +734,22 @@ export class NewEnquiryView {
             }
           </div>
         </div>
-        <div class="flex flex-col items-end gap-2">
-          ${
-            hasStatus
-              ? `<span class="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">${status}</span>`
-              : ""
-          }
-          ${
-            mapUrl
-              ? `<a class="inline-flex items-center gap-1 text-xs font-semibold text-sky-700 hover:text-sky-900" href="${this.#escapeHtml(
-                  mapUrl
-                )}" target="_blank" rel="noopener noreferrer">
-                   <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                     <path d="M12.5 3H17v4.5" />
-                     <path d="M7 17 17 7" />
-                     <path d="M7 3H3v14h14v-4" />
-                   </svg>
-                   View on Map
-                 </a>`
-              : ""
-          }
+        <div class="flex flex-col items-end">
+          <a 
+            class="items-center gap-1 text-xs hover:text-sky-900 mb-[-10px]"
+            href="${this.#escapeHtml(mapUrl)}"
+            target="_blank"
+            rel="noopener noreferrer"
+            
+          >
+            <svg width="74" height="31" viewBox="0 0 74 31" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M32.9165 2.33341C32.7618 2.33341 32.6134 2.39487 32.504 2.50427C32.3946 2.61367 32.3332 2.76204 32.3332 2.91675V11.0834C32.3332 11.2381 32.3946 11.3865 32.504 11.4959C32.6134 11.6053 32.7618 11.6667 32.9165 11.6667H41.0832C41.2379 11.6667 41.3863 11.6053 41.4956 11.4959C41.605 11.3865 41.6665 11.2381 41.6665 11.0834V8.16675C41.6665 7.84458 41.9277 7.58341 42.2498 7.58341C42.572 7.58341 42.8332 7.84458 42.8332 8.16675V11.0834C42.8332 11.5475 42.6488 11.9927 42.3206 12.3209C41.9924 12.649 41.5473 12.8334 41.0832 12.8334H32.9165C32.4524 12.8334 32.0073 12.649 31.6791 12.3209C31.3509 11.9927 31.1665 11.5475 31.1665 11.0834V2.91675C31.1665 2.45262 31.3509 2.0075 31.6791 1.67931C32.0073 1.35112 32.4524 1.16675 32.9165 1.16675H35.8332C36.1553 1.16675 36.4165 1.42792 36.4165 1.75008C36.4165 2.07225 36.1553 2.33341 35.8332 2.33341H32.9165ZM39.3332 2.33341C39.011 2.33341 38.7498 2.07225 38.7498 1.75008C38.7498 1.42792 39.011 1.16675 39.3332 1.16675H42.2498C42.572 1.16675 42.8332 1.42792 42.8332 1.75008V4.66675C42.8332 4.98891 42.572 5.25008 42.2498 5.25008C41.9277 5.25008 41.6665 4.98891 41.6665 4.66675V3.15837L38.2873 6.53756C38.0595 6.76537 37.6902 6.76537 37.4624 6.53756C37.2346 6.30975 37.2346 5.94041 37.4624 5.7126L40.8415 2.33341H39.3332Z"
+                fill="#0052CC"
+              />
+            </svg>
+          </a>
+          <div class="justify-start text-blue-700 text-xs font-normal leading-3">View on Map</div>
         </div>
       </article>
     `;
@@ -926,7 +929,18 @@ export class NewEnquiryView {
         if (article) {
           document.getElementById("add-contact-btn").classList.remove("hidden");
 
-          this.propertyId = article.id;
+          const propertyId = article.id || "";
+          // Toggle selection if the same property is clicked again
+          if (
+            this.propertyId &&
+            String(this.propertyId) === String(propertyId)
+          ) {
+            this.#setSelectedProperty("");
+            return;
+          }
+
+          this.#setSelectedProperty(propertyId, article);
+
           let propertyData = this.relatedData.properties.filter(
             (item) => item.id == this.propertyId
           )[0];
@@ -952,6 +966,44 @@ export class NewEnquiryView {
           }
         }
       });
+    }
+  }
+
+  #getSelectedPropertyInput() {
+    if (!this.selectedPropertyInput) {
+      this.selectedPropertyInput = document.getElementById(
+        "selected-property-id"
+      );
+    }
+    return this.selectedPropertyInput;
+  }
+
+  #clearSelectedPropertyHighlight() {
+    if (!this.selectedPropertyCard) return;
+    this.selectedPropertyCard.classList.remove("bg-blue-50");
+    this.selectedPropertyCard.classList.add("bg-white");
+    this.selectedPropertyCard = null;
+  }
+
+  #setSelectedProperty(propertyId, sourceCard = null) {
+    const normalized = propertyId ? String(propertyId) : "";
+    this.propertyId = normalized || null;
+
+    const input = this.#getSelectedPropertyInput();
+    if (input) input.value = normalized;
+
+    if (this.selectedPropertyCard && this.selectedPropertyCard !== sourceCard) {
+      this.#clearSelectedPropertyHighlight();
+    }
+
+    if (sourceCard && normalized) {
+      this.selectedPropertyCard = sourceCard;
+      sourceCard.classList.add("bg-blue-50");
+      sourceCard.classList.remove("bg-white");
+    } else if (!normalized) {
+      this.#clearSelectedPropertyHighlight();
+    } else if (!sourceCard) {
+      this.selectedPropertyCard = null;
     }
   }
 
@@ -1180,7 +1232,7 @@ export class NewEnquiryView {
         if (!tr) return;
         this.affiliationId = tr.id;
         this.contactId = tr.dataset.contactId || "";
-        this.propertyId = tr.dataset.propertyId || "";
+        this.#setSelectedProperty(tr.dataset.propertyId || "");
 
         document.getElementById("pcSaveBtn").textContent = "Update Contact";
         this.toggleModal("propertyContactModalWrapper");
@@ -2127,52 +2179,52 @@ export class NewEnquiryView {
       const list = filter(q);
       results.innerHTML = "";
 
-      if (!list.length) {
-        const empty = document.createElement("div");
-        empty.className =
-          "px-4 py-6 text-sm text-slate-500 text-center select-none";
-        empty.textContent = "No matching properties. Add a new property.";
-        results.appendChild(empty);
-      } else {
-        list.forEach((p, idx) => {
-          const li = document.createElement("li");
-          const btn = document.createElement("button");
-          btn.type = "button";
-          btn.dataset.optionIndex = String(idx);
+      // if (!list.length) {
+      //   const empty = document.createElement("div");
+      //   empty.className =
+      //     "px-4 py-6 text-sm text-slate-500 text-center select-none";
+      //   empty.textContent = "No matching properties. Add a new property.";
+      //   results.appendChild(empty);
+      // } else {
+      //   list.forEach((p, idx) => {
+      //     const li = document.createElement("li");
+      //     const btn = document.createElement("button");
+      //     btn.type = "button";
+      //     btn.dataset.optionIndex = String(idx);
 
-          btn.className =
-            "w-full px-4 py-3 text-left hover:bg-slate-50 focus:bg-slate-50 focus:outline-none";
-          btn.innerHTML = `
-            <div data-property-id= ${
-              p.id
-            } class="flex items-start justify-between gap-3">
-              <div>
-                <p class="text-sm font-medium text-slate-700">${this.#escapeHtml(
-                  p.property_name || p.id
-                )}</p>
-              </div>
-            </div>`;
-          btn.addEventListener("mousedown", async (e) => {
-            e.preventDefault();
-            // Store the chosen property id similar to contacts
-            this.propertyId = p.id;
-            const propertyFields = document.querySelectorAll(
-              "[data-section-id='property'] input:not([data-search-input]), [data-section-id='property'] select"
-            );
-            let result = await this.model.fetchPropertiesById(this.propertyId);
-            this.populatePropertyFields(propertyFields, result.resp);
+      //     btn.className =
+      //       "w-full px-4 py-3 text-left hover:bg-slate-50 focus:bg-slate-50 focus:outline-none";
+      //     btn.innerHTML = `
+      //       <div data-property-id= ${
+      //         p.id
+      //       } class="flex items-start justify-between gap-3">
+      //         <div>
+      //           <p class="text-sm font-medium text-slate-700">${this.#escapeHtml(
+      //             p.property_name || p.id
+      //           )}</p>
+      //         </div>
+      //     </div>`;
+      //     btn.addEventListener("mousedown", async (e) => {
+      //       e.preventDefault();
+      //       // Store the chosen property id similar to contacts
+      //       this.#setSelectedProperty(p.id);
+      //       const propertyFields = document.querySelectorAll(
+      //         "[data-section-id='property'] input:not([data-search-input]), [data-section-id='property'] select"
+      //       );
+      //       let result = await this.model.fetchPropertiesById(this.propertyId);
+      //       this.populatePropertyFields(propertyFields, result.resp);
 
-            input.value = `${p.property_name || p.id} — ${
-              p.address_1 || ""
-            }`.trim();
-            input.dispatchEvent(new Event("input", { bubbles: true }));
-            input.dispatchEvent(new Event("change", { bubbles: true }));
-            panel.classList.add("hidden");
-          });
-          li.appendChild(btn);
-          results.appendChild(li);
-        });
-      }
+      //       input.value = `${p.property_name || p.id} — ${
+      //         p.address_1 || ""
+      //       }`.trim();
+      //       input.dispatchEvent(new Event("input", { bubbles: true }));
+      //       input.dispatchEvent(new Event("change", { bubbles: true }));
+      //       panel.classList.add("hidden");
+      //     });
+      //     li.appendChild(btn);
+      //     results.appendChild(li);
+      //   });
+      // }
 
       // Fixed footer with Add New Property
       if (footer) footer.innerHTML = "";

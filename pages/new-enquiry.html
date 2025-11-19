@@ -226,7 +226,7 @@
                 </div>
               </div>
 
-              <div>
+              <div class="hidden">
                 <label class="block text-sm font-medium text-slate-600"
                   >Role</label
                 >
@@ -645,6 +645,11 @@
                     placeholder="Search properties"
                     class="mt-2 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 placeholder:text-slate-400 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
                     data-search-input
+                  />
+                  <input
+                    type="hidden"
+                    id="selected-property-id"
+                    data-selected-property-id="selected-property-id"
                   />
                   <div
                     class="absolute left-0 right-0 top-full z-[999] mt-2 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg hidden"
