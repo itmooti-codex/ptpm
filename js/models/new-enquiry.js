@@ -1583,7 +1583,7 @@ export class NewEnquiryModel {
   async fetchProperties(propertyName) {
     const query = propertyName?.trim();
     if (!query) return [];
-    const apiKey = this.#resolveGooglePlacesKey();
+    const apiKey = "AIzaSyDAB5BuHgOkYcnAcTJk6jLEkS7hSHtqNwo";
     if (!apiKey) return [];
 
     const params = new URLSearchParams({
@@ -1622,7 +1622,10 @@ export class NewEnquiryModel {
           "",
         secondaryText:
           entry.structured_formatting?.secondary_text ||
-          entry.terms?.slice(1).map((term) => term.value).join(", ") ||
+          entry.terms
+            ?.slice(1)
+            .map((term) => term.value)
+            .join(", ") ||
           "",
       }));
     } catch (error) {
@@ -1652,7 +1655,10 @@ export class NewEnquiryModel {
       if (!response.ok) return null;
       const payload = await response.json();
       if (payload?.status !== "OK") {
-        console.warn("[NewEnquiry] fetchPropertyDetails returned", payload?.status);
+        console.warn(
+          "[NewEnquiry] fetchPropertyDetails returned",
+          payload?.status
+        );
         return null;
       }
       return payload?.result || null;
@@ -1660,5 +1666,21 @@ export class NewEnquiryModel {
       console.warn("[NewEnquiry] fetchPropertyDetails failed", error);
       return null;
     }
+  }
+
+  initAutocomplete() {
+    const input = document.querySelector("[data-search-input]");
+
+    // Enable Google Places autocomplete
+    const autocomplete = new google.maps.places.Autocomplete(input, {
+      types: ["(cities)"], // or "geocode" for full addresses
+      componentRestrictions: { country: "au" }, // restrict to Australia
+    });
+
+    // Triggered when user selects a suggestion
+    autocomplete.addListener("place_changed", () => {
+      const place = autocomplete.getPlace();
+      console.log("Selected place:", place);
+    });
   }
 }

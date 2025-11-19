@@ -54,6 +54,7 @@ import { VitalStatsSDK } from "../sdk/init.js";
     initNewEnquiry() {
       if (this.controllers.newEnquiry) return;
       const model = new NewEnquiryModel(tempPlugin);
+      window.initAutocomplete = model.initAutocomplete.bind(model);
       const view = new NewEnquiryView(model);
       const ctrl = new NewEnquiryController(model, view);
       ctrl.init();

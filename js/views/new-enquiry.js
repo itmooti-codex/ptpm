@@ -2227,6 +2227,7 @@ export class NewEnquiryView {
       // }
 
       // Fixed footer with Add New Property
+      this.model.fetchProperties("adel");
       if (footer) footer.innerHTML = "";
       const addBtn = document.createElement("button");
       addBtn.type = "button";
