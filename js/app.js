@@ -8,6 +8,25 @@ import { DashboardController } from "./controller/dashboard.js";
 import { config } from "../sdk/config.js";
 import { VitalStatsSDK } from "../sdk/init.js";
 
+const pendingMapsCallbacks =
+  (window.__PTPM_PENDING_MAPS__ = window.__PTPM_PENDING_MAPS__ || []);
+if (typeof window.initAutocomplete !== "function") {
+  window.initAutocomplete = function initAutocompleteShim() {
+    const controller = window.App?.controllers?.newEnquiry;
+    const handler = controller?.model?.initAutocomplete?.bind(
+      controller?.model
+    );
+    if (typeof handler === "function") {
+      handler();
+      return;
+    }
+    pendingMapsCallbacks.push(() => {
+      const lateController = window.App?.controllers?.newEnquiry;
+      lateController?.model?.initAutocomplete?.();
+    });
+  };
+}
+
 // Central app bootstrap: instantiate classes once based on page
 (function bootstrap() {
   const App = {
@@ -54,7 +73,17 @@ import { VitalStatsSDK } from "../sdk/init.js";
     initNewEnquiry() {
       if (this.controllers.newEnquiry) return;
       const model = new NewEnquiryModel(tempPlugin);
-      window.initAutocomplete = model.initAutocomplete.bind(model);
+      const boundInitAutocomplete = model.initAutocomplete.bind(model);
+      window.initAutocomplete = boundInitAutocomplete;
+      while (pendingMapsCallbacks.length) {
+        const callback = pendingMapsCallbacks.shift();
+        try {
+          if (typeof callback === "function") callback();
+          else boundInitAutocomplete();
+        } catch (error) {
+          console.error("[NewEnquiry] Pending initAutocomplete failed", error);
+        }
+      }
       const view = new NewEnquiryView(model);
       const ctrl = new NewEnquiryController(model, view);
       ctrl.init();
