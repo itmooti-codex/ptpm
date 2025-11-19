@@ -14,6 +14,11 @@ document.addEventListener("alpine:init", () => {
     return map;
   };
 
+  const ACCOUNT_TYPE =
+    typeof accountType === "string" ? accountType.trim() : "";
+  const DEFAULT_POPUP_COMMENT_TARGET =
+    ACCOUNT_TYPE.toLowerCase() === "company" ? "company" : "contact";
+
   const locationOptions = createOptionMap([
     { value: 735, text: "Upper Ceiling" },
     { value: 734, text: "Between floors" },
@@ -144,7 +149,7 @@ document.addEventListener("alpine:init", () => {
         if (popupComment) {
           window.dispatchEvent(
             new CustomEvent("popup-comment:show", {
-              detail: { comment: popupComment },
+              detail: { comment: popupComment, target: "contact" },
             })
           );
         }
@@ -2314,20 +2319,90 @@ document.addEventListener("alpine:init", () => {
     },
   }));
 
+  Alpine.data("popupCommentCard", () => ({
+    defaultTarget: DEFAULT_POPUP_COMMENT_TARGET,
+    observer: null,
+    hasAnyComment: false,
+    showContact: false,
+    showCompany: false,
+    activeComment: "",
+    init() {
+      this.refreshState();
+      this.initObserver();
+    },
+    destroy() {
+      if (this.observer) {
+        this.observer.disconnect();
+        this.observer = null;
+      }
+    },
+    initObserver() {
+      if (this.observer) {
+        this.observer.disconnect();
+        this.observer = null;
+      }
+      const target = this.$root;
+      if (!target) return;
+      this.observer = new MutationObserver(() => this.refreshState());
+      this.observer.observe(target, {
+        characterData: true,
+        childList: true,
+        subtree: true,
+      });
+    },
+    sanitize(text = "") {
+      const value = (text || "").trim();
+      if (!value) return "";
+      return /^\[[^\]]+\]$/.test(value) ? "" : value;
+    },
+    getCommentValue(type) {
+      return this.sanitize(
+        this.$root?.querySelector(`[data-popup-comment="${type}"]`)?.textContent ||
+          ""
+      );
+    },
+    refreshState() {
+      const contactText = this.getCommentValue("contact");
+      const companyText = this.getCommentValue("company");
+      const isCompany = this.defaultTarget === "company";
+      const activeText = isCompany ? companyText : contactText;
+      this.activeComment = activeText;
+      this.showContact = !isCompany && Boolean(contactText);
+      this.showCompany = isCompany && Boolean(companyText);
+      this.hasAnyComment = Boolean(activeText);
+    },
+    handleClick() {
+      if (!this.hasAnyComment) return;
+      window.dispatchEvent(
+        new CustomEvent("popup-comment:show", {
+          detail: {
+            comment: this.activeComment,
+            force: true,
+            target: this.defaultTarget,
+          },
+        })
+      );
+    },
+  }));
+
   Alpine.data("popupCommentModal", () => ({
     open: false,
     comment: "",
     inquiryId: document.body?.dataset?.inquiryId || "",
     contactId: document.body?.dataset?.contactId || "",
+    targetType: DEFAULT_POPUP_COMMENT_TARGET,
+    defaultTargetType: DEFAULT_POPUP_COMMENT_TARGET,
     isSubmitting: false,
     boundShowListener: null,
     init() {
       this.boundShowListener = (event) => {
         const detail = event?.detail || {};
         const text = typeof detail.comment === "string" ? detail.comment : "";
+        const providedTarget = this.normalizeTarget(detail.target);
         const shouldOpen = detail.force || text.trim().length > 0;
         if (shouldOpen) {
           this.comment = text;
+          this.targetType = providedTarget || this.defaultTargetType;
           this.open = true;
         }
       };
@@ -2345,24 +2420,38 @@ document.addEventListener("alpine:init", () => {
     handleClose() {
       if (this.isSubmitting) return;
       this.open = false;
+      this.targetType = this.defaultTargetType;
     },
     async handleUpdate() {
       if (this.isSubmitting) return;
-      const targetContactId = CONTACT_ID;
-      if (!targetContactId) {
-        this.emitToast("Missing contact id.", "error");
+      const target =
+        this.normalizeTarget(this.targetType) || this.defaultTargetType;
+      const mutation =
+        target === "company"
+          ? UPDATE_COMPANY_MUTATION
+          : UPDATE_CONTACT_MUTATION;
+      const targetId = target === "company" ? COMPANY_ID : CONTACT_ID;
+      if (!targetId) {
+        this.emitToast("Missing target id.", "error");
         return;
       }
       this.isSubmitting = true;
       try {
-        await graphqlRequest(UPDATE_CONTACT_MUTATION, {
-          id: targetContactId,
+        await graphqlRequest(mutation, {
+          id: targetId,
           payload: {
             popup_comment: this.comment,
           },
         });
         this.emitToast("Popup note updated.");
+        const targetNode = document.querySelector(
+          `[data-popup-comment="${target}"]`
+        );
+        if (targetNode) {
+          targetNode.textContent = this.comment || "";
+        }
         this.open = false;
+        this.targetType = this.defaultTargetType;
       } catch (error) {
         console.error("Failed to update popup comment", error);
         this.emitToast(
@@ -2372,6 +2461,13 @@ document.addEventListener("alpine:init", () => {
       } finally {
         this.isSubmitting = false;
       }
+    },
+    normalizeTarget(value) {
+      if (typeof value !== "string") return null;
+      const normalized = value.toLowerCase();
+      if (normalized === "company") return "company";
+      if (normalized === "contact") return "contact";
+      return null;
     },
     emitToast(message, variant = "success") {
       if (!message) return;

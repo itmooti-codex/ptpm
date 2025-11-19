@@ -34,6 +34,20 @@ const UPDATE_CONTACT_MUTATION = `
           }
         `;
 
+const UPDATE_COMPANY_MUTATION = `
+          mutation updateCompany(
+            $id: PeterpmCompanyID!
+            $payload: CompanyUpdateInput = null
+          ) {
+            updateCompany(
+              query: [{ where: { id: $id } }]
+              payload: $payload
+            ) {
+              popup_comment
+            }
+          }
+        `;
+
 const UPDATE_JOB_MUTATION = `
           mutation updateJob($id: PeterpmJobID!, $payload: JobUpdateInput = null) {
             updateJob(query: [{ where: { id: $id } }], payload: $payload) {

@@ -1623,7 +1623,11 @@
                   data-entity-key="1rBR-jpR3yE3HE1VhFD0j"
                   data-var-inquiryid="312"
                   data-op="subscribe"
-                  onclick="window.dispatchEvent(new CustomEvent('popup-comment:show',{detail:{comment:(document.querySelector('[data-popup-comment-source]')?.textContent||'').trim(),force:true}}))"
+                  x-data="popupCommentCard()"
+                  x-cloak
+                  x-show="hasAnyComment"
+                  @click="handleClick"
+                  data-popup-comment-card
                 >
                   <div class="flex items-center justify-between">
                     <div class="inline-flex items-center gap-2">
@@ -1662,9 +1666,24 @@
                       </svg>
                     </button>
                   </div>
-                  <p class="text-zinc-800 text-sm" data-popup-comment-source>
-                    [Primary_Contact_Popup_Comment]
-                  </p>
+                  <div x-show="hasAnyComment" class="flex flex-col gap-1">
+                    <p
+                      x-ref="contact"
+                      x-show="showContact"
+                      class="text-zinc-800 text-sm popup-comment-contact"
+                      data-popup-comment="contact"
+                    >
+                      [Primary_Contact_Popup_Comment]
+                    </p>
+                    <p
+                      x-ref="company"
+                      x-show="showCompany"
+                      class="text-zinc-800 text-sm popup-comment-company"
+                      data-popup-comment="company"
+                    >
+                      [Company_Popup_Comment]
+                    </p>
+                  </div>
                 </div>
 
                 <div data-uploads-payload="[]"></div>
