@@ -22,6 +22,12 @@ export class NewEnquiryModel {
     this.affiliationQuery = null;
     this.contactModel = plugin.switchTo("PeterpmContact");
     this.affiliationCallback = null;
+    this.googlePlacesSessionToken = null;
+    this.googlePlacesKey = null;
+    this.googlePlacesEndpoint =
+      "https://maps.googleapis.com/maps/api/place/autocomplete/json";
+    this.googlePlaceDetailsEndpoint =
+      "https://maps.googleapis.com/maps/api/place/details/json";
   }
 
   async loadContacts() {
@@ -442,6 +448,7 @@ export class NewEnquiryModel {
         ],
         ["status", "status"],
         ["property_status", "property_status"],
+        ["building_age", "building_age"][("bedrooms", "bedrooms")],
       ];
       fields.forEach(([name, alias]) => {
         try {
@@ -473,6 +480,7 @@ export class NewEnquiryModel {
           "foundation_type",
           "stories",
           "bedrooms",
+          "building_age",
           "manhole",
         ]);
       } catch (_) {}
@@ -1384,6 +1392,7 @@ export class NewEnquiryModel {
         "stories",
         "bedrooms",
         "manhole",
+        "building_age",
       ])
       .noDestroy();
     let result = await query.fetchDirect().toPromise();
@@ -1535,5 +1544,121 @@ export class NewEnquiryModel {
     query.update((q) => q.where("id", companyId).set(companyObj));
     let result = await query.execute(true).toPromise();
     return result;
+  }
+
+  resetGooglePlacesSession() {
+    this.googlePlacesSessionToken = null;
+  }
+
+  #resolveGooglePlacesKey() {
+    if (typeof this.googlePlacesKey === "string") return this.googlePlacesKey;
+    const meta =
+      document?.querySelector('meta[name="google-places-api-key"]') ||
+      document?.querySelector('meta[name="google-maps-api-key"]');
+    const fromMeta = meta?.content?.trim() || "";
+    const fromDataset = document?.body?.dataset?.googlePlacesKey?.trim() || "";
+    const fromWindow =
+      window?.GOOGLE_PLACES_API_KEY ||
+      window?.GOOGLE_MAPS_API_KEY ||
+      window?.PTPM_GOOGLE_API_KEY ||
+      window?.PTPM_GOOGLE_MAPS_KEY ||
+      "";
+    this.googlePlacesKey = fromDataset || fromMeta || fromWindow || "";
+    return this.googlePlacesKey;
+  }
+
+  #ensureGooglePlacesSessionToken(forceNew = false) {
+    if (!this.googlePlacesSessionToken || forceNew) {
+      if (typeof crypto?.randomUUID === "function") {
+        this.googlePlacesSessionToken = crypto.randomUUID();
+      } else {
+        this.googlePlacesSessionToken = `${Date.now()}-${Math.random()
+          .toString(36)
+          .slice(2, 10)}`;
+      }
+    }
+    return this.googlePlacesSessionToken;
+  }
+
+  async fetchProperties(propertyName) {
+    const query = propertyName?.trim();
+    if (!query) return [];
+    const apiKey = this.#resolveGooglePlacesKey();
+    if (!apiKey) return [];
+
+    const params = new URLSearchParams({
+      input: query,
+      key: apiKey,
+      types: "geocode",
+      components: "country:au",
+    });
+    const token = this.#ensureGooglePlacesSessionToken();
+    if (token) params.set("sessiontoken", token);
+
+    try {
+      const response = await fetch(
+        `${this.googlePlacesEndpoint}?${params.toString()}`
+      );
+      if (!response.ok) return [];
+      const payload = await response.json();
+      if (
+        payload?.status &&
+        payload.status !== "OK" &&
+        payload.status !== "ZERO_RESULTS"
+      ) {
+        console.warn("[NewEnquiry] fetchProperties returned", payload.status);
+        return [];
+      }
+      const predictions = Array.isArray(payload?.predictions)
+        ? payload.predictions
+        : [];
+      return predictions.map((entry) => ({
+        id: entry.place_id,
+        description: entry.description || "",
+        mainText:
+          entry.structured_formatting?.main_text ||
+          entry.terms?.[0]?.value ||
+          entry.description ||
+          "",
+        secondaryText:
+          entry.structured_formatting?.secondary_text ||
+          entry.terms?.slice(1).map((term) => term.value).join(", ") ||
+          "",
+      }));
+    } catch (error) {
+      console.warn("[NewEnquiry] fetchProperties failed", error);
+      return [];
+    }
+  }
+
+  async fetchPropertyDetails(placeId) {
+    const id = placeId?.trim();
+    if (!id) return null;
+    const apiKey = this.#resolveGooglePlacesKey();
+    if (!apiKey) return null;
+
+    const params = new URLSearchParams({
+      place_id: id,
+      key: apiKey,
+      fields: "address_component,formatted_address",
+    });
+    const token = this.#ensureGooglePlacesSessionToken();
+    if (token) params.set("sessiontoken", token);
+
+    try {
+      const response = await fetch(
+        `${this.googlePlaceDetailsEndpoint}?${params.toString()}`
+      );
+      if (!response.ok) return null;
+      const payload = await response.json();
+      if (payload?.status !== "OK") {
+        console.warn("[NewEnquiry] fetchPropertyDetails returned", payload?.status);
+        return null;
+      }
+      return payload?.result || null;
+    } catch (error) {
+      console.warn("[NewEnquiry] fetchPropertyDetails failed", error);
+      return null;
+    }
   }
 }

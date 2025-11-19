@@ -436,12 +436,12 @@ export class NewEnquiryController {
 
       document.querySelector('[data-contact-id="contact-id"]').value = "";
       this.view.toggleModal("addressDetailsModalWrapper");
-      document
-        .querySelector(
-          '#addressDetailsModalWrapper [data-contact-field="affiliationsrole"]'
-        )
-        .closest(".hidden")
-        ?.classList.remove("hidden");
+      // document
+      //   .querySelector(
+      //     '#addressDetailsModalWrapper [data-contact-field="affiliationsrole"]'
+      //   )
+      //   .closest(".hidden")
+      //   ?.classList.remove("hidden");
 
       document
         .querySelector(
@@ -486,6 +486,9 @@ export class NewEnquiryController {
     );
 
     element.addEventListener("click", () => {
+      if (this.view.getActiveTabs() === "individual") {
+        document.querySelector("[data-contact-field='contact_id']").value = "";
+      }
       this.view.toggleModal("addressDetailsModalWrapper");
     });
   }
@@ -526,17 +529,49 @@ export class NewEnquiryController {
         "[data-feedback-id]",
         "data-feedback-id"
       );
+      let accountType = null;
+      let contactId = "";
+      let companyId = "";
+      let activeTab = this.view.getActiveTabs();
+      if (activeTab === "individual") {
+        accountType = "contact";
+        contactId = document.querySelector(
+          '[data-contact-field="contact_id"]'
+        ).value;
+      } else if (activeTab === "entity") {
+        accountType = "company";
+        companyId = document.querySelector(
+          '[data-contact-field="entity-id"]'
+        ).value;
+      }
 
       Object.assign(dealsObj, inquiryValues, feedbackValues);
+      dealsObj["account_type"] = accountType;
+      const selectedPropertyInput = document.getElementById(
+        "selected-property-id"
+      );
+      const selectedPropertyId = selectedPropertyInput?.value?.trim();
+      if (selectedPropertyId) {
+        dealsObj.property_id = selectedPropertyId;
+      } else {
+        delete dealsObj.property_id;
+      }
+
+      if (contactId) {
+        dealsObj["primary_contact_id"] = contactId;
+      } else {
+        dealsObj["company_id"] = companyId;
+      }
       let result = await this.model.createNewInquiry(dealsObj);
 
       if (!result.isCancelling) {
         this.view.customModalHeader.innerText = "Successful";
-        this.view.customModalBody.innerText = "New deal created successfully.";
+        this.view.customModalBody.innerText =
+          "New inquiry created successfully.";
         this.view.toggleModal("statusModal");
       } else {
         this.view.customModalHeader.innerText = "Failed";
-        this.view.customModalBody.innerText = "New deal creation failed.";
+        this.view.customModalBody.innerText = "New inquiry creation failed.";
         this.view.toggleModal("statusModal");
       }
       return;
@@ -557,17 +592,17 @@ export class NewEnquiryController {
       let activeTab = this.view.getActiveTabs();
       if (activeTab == "individual") {
         this.view.onViewDetailLinkClicked(contactId, "individual");
-        document
-          .getElementById("affiliations-role-section")
-          .classList.remove("hidden");
+        // document
+        //   .getElementById("affiliations-role-section")
+        //   .classList.remove("hidden");
         document
           .getElementById("account-type-section")
           .closest("div")
           .classList.add("hidden");
       } else {
-        document
-          .getElementById("affiliations-role-section")
-          .classList.add("hidden");
+        // document
+        //   .getElementById("affiliations-role-section")
+        //   .classList.add("hidden");
         document
           .getElementById("account-type-section")
           .closest("div")
@@ -607,12 +642,12 @@ export class NewEnquiryController {
         );
         if (primaryContactID) primaryContactID.value = "";
         this.view.toggleModal("addressDetailsModalWrapper");
-        document
-          .querySelector(
-            '#addressDetailsModalWrapper [data-contact-field="affiliationsrole"]'
-          )
-          .closest("div")
-          .classList.add("hidden");
+        document;
+        // .querySelector(
+        //   '#addressDetailsModalWrapper [data-contact-field="affiliationsrole"]'
+        // )
+        // .closest("div")
+        // .classList.add("hidden");
         document
           .querySelector(
             '#addressDetailsModalWrapper [data-contact-field="account_type"]'
