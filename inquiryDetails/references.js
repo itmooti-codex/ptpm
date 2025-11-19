@@ -11,3 +11,4 @@
 // const JOB_UNIQUE_ID = "62GF7PS"; // Unique Job ID linked to inquiry
 // const UPLOAD_ENDPOINT = "https://peterpm.vitalstats.app/api/v1/rest/upload";
 // const accountType = "Company";
+// const SERVICE_PROVIDER_ID = "1";

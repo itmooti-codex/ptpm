@@ -19,6 +19,11 @@ document.addEventListener("alpine:init", () => {
   const DEFAULT_POPUP_COMMENT_TARGET =
     ACCOUNT_TYPE.toLowerCase() === "company" ? "company" : "contact";
 
+  const PRESET_PROVIDER_ID =
+    SERVICE_PROVIDER_ID != null
+      ? String(SERVICE_PROVIDER_ID).trim()
+      : "";
+
   const locationOptions = createOptionMap([
     { value: 735, text: "Upper Ceiling" },
     { value: 734, text: "Between floors" },
@@ -72,12 +77,43 @@ document.addEventListener("alpine:init", () => {
     { value: "736", text: "7.30-10 pm" },
   ]);
 
+  Alpine.data("providerAllocationState", () => ({
+    hasProvider: false,
+    listener: null,
+    init() {
+      this.hasProvider = !!this.normalizeId(SERVICE_PROVIDER_ID);
+      this.listener = (event) => {
+        const providerId =
+          event?.detail?.provider?.id ??
+          event?.detail?.provider?.providerId ??
+          event?.detail?.provider?.provider_id;
+        if (this.normalizeId(providerId)) {
+          this.hasProvider = true;
+        }
+      };
+      window.addEventListener("provider-selected", this.listener);
+    },
+    destroy() {
+      if (this.listener) {
+        window.removeEventListener("provider-selected", this.listener);
+        this.listener = null;
+      }
+    },
+    normalizeId(value) {
+      const raw = (value ?? "").toString().trim();
+      if (!raw || raw === "-" || raw === "—") return "";
+      if (/^\[[^\]]+\]$/.test(raw)) return "";
+      return raw;
+    },
+  }));
+
   Alpine.data("allocateProviderSearch", () => ({
     open: false,
     searchTerm: "",
     filteredCount: 0,
     hasLoaded: false,
     observer: null,
+    presetProviderId: PRESET_PROVIDER_ID,
     selectedProviderId: null,
     selectedProvider: null,
     isSubmitting: false,
@@ -85,7 +121,6 @@ document.addEventListener("alpine:init", () => {
     feedbackVariant: "success",
     placeholderText: DEFAULT_PROVIDER_PLACEHOLDER,
     pendingPrefillId: null,
-    pendingPrefillMarkAllocated: false,
     inquiryId: INQUIRY_RECORD_ID,
     toastVisible: false,
     toastMessage: "",
@@ -94,6 +129,13 @@ document.addEventListener("alpine:init", () => {
     filterScheduled: false,
     toastEventHandler: null,
     init() {
+      const presetId = this.normalizeProviderId(this.presetProviderId);
+      this.pendingPrefillId = presetId || null;
+      if (this.pendingPrefillId) {
+        this.selectProviderById(this.pendingPrefillId, {
+          preserveMessage: true,
+        });
+      }
       this.$watch("searchTerm", () => this.scheduleFilter());
       this.$nextTick(() => {
         this.observeProviders();
@@ -128,6 +170,12 @@ document.addEventListener("alpine:init", () => {
     closeDropdown() {
       this.open = false;
     },
+    normalizeProviderId(value) {
+      const raw = (value ?? "").toString().trim();
+      if (!raw || raw === "-" || raw === "—") return "";
+      if (/^\[[^\]]+\]$/.test(raw)) return "";
+      return raw;
+    },
     async prefillFromServer() {
       if (!this.inquiryId) return;
       try {
@@ -138,13 +186,10 @@ document.addEventListener("alpine:init", () => {
           ? data.calcDeals[0]
           : data?.calcDeals;
         const providerId = record?.Service_Provider_ID ?? null;
-        if (providerId) {
-          this.pendingPrefillId = providerId;
-          this.pendingPrefillMarkAllocated = true;
-          this.selectProviderById(providerId, {
-            preserveMessage: true,
-            markAllocated: true,
-          });
+        const normalizedProviderId = this.normalizeProviderId(providerId);
+        if (!this.pendingPrefillId && normalizedProviderId) {
+          this.pendingPrefillId = normalizedProviderId;
+          this.selectProviderById(providerId, { preserveMessage: true });
         }
         const popupComment =
           (record?.Popup_Comment ?? "").trim?.() ||
@@ -187,12 +232,9 @@ document.addEventListener("alpine:init", () => {
         this.setSelectedProvider(provider);
       }
     },
-    setSelectedProvider(
-      provider,
-      { preserveMessage = false, markAllocated = false } = {}
-    ) {
+    setSelectedProvider(provider, { preserveMessage = false } = {}) {
       if (!provider?.id) return;
-      this.selectedProviderId = provider.id;
+      this.selectedProviderId = this.normalizeProviderId(provider.id);
       this.selectedProvider = provider;
       this.providerDisplayName =
         provider?.name || this.providerDisplayName || "";
@@ -200,22 +242,16 @@ document.addEventListener("alpine:init", () => {
       this.searchTerm = "";
       this.scheduleFilter();
       this.pendingPrefillId = null;
-      this.pendingPrefillMarkAllocated = false;
       if (!preserveMessage) this.feedbackMessage = "";
       this.broadcastSelection(provider);
-      if (markAllocated) {
-        this.emitAllocationChange(provider);
-      }
     },
-    selectProviderById(
-      providerId,
-      { preserveMessage = true, markAllocated = false } = {}
-    ) {
-      if (!providerId) return;
-      const row = this.findRowById(providerId);
+    selectProviderById(providerId, { preserveMessage = true } = {}) {
+      const normalizedId = this.normalizeProviderId(providerId);
+      if (!normalizedId) return;
+      const row = this.findRowById(normalizedId);
       if (row) {
         const provider = this.extractProviderFromRow(row);
-        this.setSelectedProvider(provider, { preserveMessage, markAllocated });
+        this.setSelectedProvider(provider, { preserveMessage });
       }
     },
     findRowById(providerId) {
@@ -288,7 +324,6 @@ document.addEventListener("alpine:init", () => {
       if (this.pendingPrefillId) {
         this.selectProviderById(this.pendingPrefillId, {
           preserveMessage: true,
-          markAllocated: this.pendingPrefillMarkAllocated,
         });
       }
     },
@@ -356,13 +391,6 @@ document.addEventListener("alpine:init", () => {
         new CustomEvent("provider-selected", { detail: { provider } })
       );
     },
-    emitAllocationChange(provider) {
-      window.dispatchEvent(
-        new CustomEvent("provider:allocation-change", {
-          detail: { provider },
-        })
-      );
-    },
     updatePlaceholder(provider) {
       const label = this.getProviderLabel(provider);
       this.placeholderText = label
@@ -413,10 +441,7 @@ document.addEventListener("alpine:init", () => {
         );
         this.feedbackMessage = successMessage;
         this.pendingPrefillId = updatedId;
-        this.selectProviderById(updatedId, {
-          preserveMessage: true,
-          markAllocated: true,
-        });
+        this.selectProviderById(updatedId, { preserveMessage: true });
         this.showToast(successMessage);
       } catch (error) {
         console.error("Failed to update allocation", error);

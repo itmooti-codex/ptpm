@@ -13,28 +13,6 @@ function pageActions() {
     // ...other methods/state
     currentJobId: JOB_ID, // reuse the constant you already set
     isDuplicating: false,
-    hasProviderAllocation: false,
-    providerAllocationHandler: null,
-
-    init() {
-      this.providerAllocationHandler = (event) => {
-        this.hasProviderAllocation = Boolean(event?.detail?.provider);
-      };
-      window.addEventListener(
-        "provider:allocation-change",
-        this.providerAllocationHandler
-      );
-    },
-
-    destroy() {
-      if (this.providerAllocationHandler) {
-        window.removeEventListener(
-          "provider:allocation-change",
-          this.providerAllocationHandler
-        );
-        this.providerAllocationHandler = null;
-      }
-    },
 
     async printJobSheet() {
       const target = document.getElementById("job-sheet") || document.body;
