@@ -85,6 +85,7 @@ document.addEventListener("alpine:init", () => {
     feedbackVariant: "success",
     placeholderText: DEFAULT_PROVIDER_PLACEHOLDER,
     pendingPrefillId: null,
+    pendingPrefillMarkAllocated: false,
     inquiryId: INQUIRY_RECORD_ID,
     toastVisible: false,
     toastMessage: "",
@@ -139,7 +140,11 @@ document.addEventListener("alpine:init", () => {
         const providerId = record?.Service_Provider_ID ?? null;
         if (providerId) {
           this.pendingPrefillId = providerId;
-          this.selectProviderById(providerId, { preserveMessage: true });
+          this.pendingPrefillMarkAllocated = true;
+          this.selectProviderById(providerId, {
+            preserveMessage: true,
+            markAllocated: true,
+          });
         }
         const popupComment =
           (record?.Popup_Comment ?? "").trim?.() ||
@@ -182,7 +187,10 @@ document.addEventListener("alpine:init", () => {
         this.setSelectedProvider(provider);
       }
     },
-    setSelectedProvider(provider, { preserveMessage = false } = {}) {
+    setSelectedProvider(
+      provider,
+      { preserveMessage = false, markAllocated = false } = {}
+    ) {
       if (!provider?.id) return;
       this.selectedProviderId = provider.id;
       this.selectedProvider = provider;
@@ -192,15 +200,22 @@ document.addEventListener("alpine:init", () => {
       this.searchTerm = "";
       this.scheduleFilter();
       this.pendingPrefillId = null;
+      this.pendingPrefillMarkAllocated = false;
       if (!preserveMessage) this.feedbackMessage = "";
       this.broadcastSelection(provider);
+      if (markAllocated) {
+        this.emitAllocationChange(provider);
+      }
     },
-    selectProviderById(providerId, { preserveMessage = true } = {}) {
+    selectProviderById(
+      providerId,
+      { preserveMessage = true, markAllocated = false } = {}
+    ) {
       if (!providerId) return;
       const row = this.findRowById(providerId);
       if (row) {
         const provider = this.extractProviderFromRow(row);
-        this.setSelectedProvider(provider, { preserveMessage });
+        this.setSelectedProvider(provider, { preserveMessage, markAllocated });
       }
     },
     findRowById(providerId) {
@@ -273,6 +288,7 @@ document.addEventListener("alpine:init", () => {
       if (this.pendingPrefillId) {
         this.selectProviderById(this.pendingPrefillId, {
           preserveMessage: true,
+          markAllocated: this.pendingPrefillMarkAllocated,
         });
       }
     },
@@ -340,6 +356,13 @@ document.addEventListener("alpine:init", () => {
         new CustomEvent("provider-selected", { detail: { provider } })
       );
     },
+    emitAllocationChange(provider) {
+      window.dispatchEvent(
+        new CustomEvent("provider:allocation-change", {
+          detail: { provider },
+        })
+      );
+    },
     updatePlaceholder(provider) {
       const label = this.getProviderLabel(provider);
       this.placeholderText = label
@@ -390,7 +413,10 @@ document.addEventListener("alpine:init", () => {
         );
         this.feedbackMessage = successMessage;
         this.pendingPrefillId = updatedId;
-        this.selectProviderById(updatedId, { preserveMessage: true });
+        this.selectProviderById(updatedId, {
+          preserveMessage: true,
+          markAllocated: true,
+        });
         this.showToast(successMessage);
       } catch (error) {
         console.error("Failed to update allocation", error);
@@ -810,9 +836,21 @@ document.addEventListener("alpine:init", () => {
     async checkExistingQuote() {
       if (this.initCheckRan) return;
       this.initCheckRan = true;
+      const inquiryId =
+        this.sanitizeRecipientId(INQUIRY_RECORD_ID) ||
+        this.sanitizeRecipientId(
+          document.body?.dataset?.inquiryId ||
+            document.querySelector("[data-var-inquiryid]")?.dataset
+              ?.varInquiryid ||
+            ""
+        );
+      if (!inquiryId) {
+        this.hasQuote = false;
+        return;
+      }
       try {
         const data = await graphqlRequest(CALC_JOBS_QUERY, {
-          inquiry_record_id: INQUIRY_RECORD_ID,
+          inquiry_record_id: inquiryId,
         });
         const record = this.extractJobRecord(data);
         if (record) {

@@ -539,13 +539,24 @@
               class="px-4 py-3 bg-white rounded outline outline-1 outline-offset-[-1px] outline-white inline-flex justify-center items-center gap-2 relative cursor-pointer"
               x-data="{
                         open: false,
-                        jobId: JOB_ID,
+                        jobId: window.JOB_ID ?? (document.body?.dataset?.jobId || ''),
                         count: 0,
                         isLoading: false,
+                        normalizeJobId(value) {
+                          const raw = (value ?? '').toString().trim();
+                          if (!raw || raw === '0' || raw === '-' || raw === '—') return '';
+                          if (/^\[[^\]]+\]$/.test(raw)) return '';
+                          return raw;
+                        },
                         async fetchCount() {
+                          const resolvedId = this.normalizeJobId(this.jobId);
+                          if (!resolvedId) {
+                            this.count = 0;
+                            return;
+                          }
                           try {
                             this.isLoading = true;
-                            const data = await graphqlRequest(JOB_TASKS_QUERY, { Job_id: this.jobId });
+                            const data = await graphqlRequest(JOB_TASKS_QUERY, { Job_id: resolvedId });
                             const rows = Array.isArray(data?.calcTasks) ? data.calcTasks : [];
                             this.count = rows.length;
                           } catch (e) {
@@ -709,7 +720,8 @@
         <!-- Inquiry Section -->
         <div class="flex flex-col inquiry-section">
           <div
-            class="p-4 bg-violet-100 rounded flex flex-wrap items-center justify-between gap-3"
+            class="p-4 rounded flex flex-wrap items-center justify-between gap-3"
+            :class="hasProviderAllocation ? 'bg-[#FFF5DD]' : 'bg-violet-100'"
           >
             <div class="flex items-center gap-2">
               <svg
@@ -721,7 +733,7 @@
               >
                 <path
                   d="M16.2857 17.2381C16.8571 17.2381 17.2381 17.619 17.2381 18.1905C17.2381 18.7619 16.8571 19.1429 16.2857 19.1429C15.7143 19.1429 15.3333 18.7619 15.3333 18.1905C15.3333 17.619 15.7143 17.2381 16.2857 17.2381ZM8.76191 18.8571L8.47619 18.1905L8.76191 17.5238C10 14.4762 12.9524 12.4762 16.2857 12.4762C18.0952 12.4762 19.7143 13.0476 21.0476 14V7.71429C21.0476 6.66667 20.1905 5.80952 19.1429 5.80952H15.3333V3.90476C15.3333 2.85714 14.4762 2 13.4286 2H9.61905C8.57143 2 7.71429 2.85714 7.71429 3.90476V5.80952H3.90476C2.85714 5.80952 2 6.66667 2 7.71429V18.1905C2 19.2381 2.85714 20.0952 3.90476 20.0952H9.42857C9.14286 19.7143 8.95238 19.3333 8.76191 18.8571ZM9.61905 3.90476H13.4286V5.80952H9.61905V3.90476ZM16.2857 14.381C13.7143 14.381 11.4286 16 10.5714 18.1905C11.4286 20.381 13.7143 22 16.2857 22C18.8571 22 21.1429 20.381 22 18.1905C21.1429 16 18.8571 14.381 16.2857 14.381ZM16.2857 20.5714C14.9524 20.5714 13.9048 19.5238 13.9048 18.1905C13.9048 16.8571 14.9524 15.8095 16.2857 15.8095C17.619 15.8095 18.6667 16.8571 18.6667 18.1905C18.6667 19.5238 17.619 20.5714 16.2857 20.5714Z"
-                  fill="#5B21B6"
+                  :fill="hasProviderAllocation ? '#D7A21E' : '#5B21B6'"
                 />
               </svg>
               <div class="text-neutral-700 text-[18px] font-semibold">
