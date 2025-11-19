@@ -28,6 +28,8 @@ export class NewEnquiryModel {
       "https://maps.googleapis.com/maps/api/place/autocomplete/json";
     this.googlePlaceDetailsEndpoint =
       "https://maps.googleapis.com/maps/api/place/details/json";
+    this.autocompleteService = null;
+    this.placesDetailsService = null;
   }
 
   async loadContacts() {
@@ -1550,26 +1552,18 @@ export class NewEnquiryModel {
     this.googlePlacesSessionToken = null;
   }
 
-  #resolveGooglePlacesKey() {
-    if (typeof this.googlePlacesKey === "string") return this.googlePlacesKey;
-    const meta =
-      document?.querySelector('meta[name="google-places-api-key"]') ||
-      document?.querySelector('meta[name="google-maps-api-key"]');
-    const fromMeta = meta?.content?.trim() || "";
-    const fromDataset = document?.body?.dataset?.googlePlacesKey?.trim() || "";
-    const fromWindow =
-      window?.GOOGLE_PLACES_API_KEY ||
-      window?.GOOGLE_MAPS_API_KEY ||
-      window?.PTPM_GOOGLE_API_KEY ||
-      window?.PTPM_GOOGLE_MAPS_KEY ||
-      "";
-    this.googlePlacesKey = fromDataset || fromMeta || fromWindow || "";
-    return this.googlePlacesKey;
-  }
-
   #ensureGooglePlacesSessionToken(forceNew = false) {
-    if (!this.googlePlacesSessionToken || forceNew) {
-      if (typeof crypto?.randomUUID === "function") {
+    const TokenCtor =
+      window?.google?.maps?.places?.AutocompleteSessionToken || null;
+    const hasTokenCtor = typeof TokenCtor === "function";
+    const isCurrentTokenValid = hasTokenCtor
+      ? this.googlePlacesSessionToken instanceof TokenCtor
+      : typeof this.googlePlacesSessionToken === "string";
+
+    if (forceNew || !this.googlePlacesSessionToken || !isCurrentTokenValid) {
+      if (hasTokenCtor) {
+        this.googlePlacesSessionToken = new TokenCtor();
+      } else if (typeof crypto?.randomUUID === "function") {
         this.googlePlacesSessionToken = crypto.randomUUID();
       } else {
         this.googlePlacesSessionToken = `${Date.now()}-${Math.random()
@@ -1580,100 +1574,133 @@ export class NewEnquiryModel {
     return this.googlePlacesSessionToken;
   }
 
+  #getPlacesLibrary() {
+    return window?.google?.maps?.places || null;
+  }
+
+  #getAutocompleteService() {
+    if (this.autocompleteService) return this.autocompleteService;
+    const places = this.#getPlacesLibrary();
+    if (!places?.AutocompleteService) return null;
+    this.autocompleteService = new places.AutocompleteService();
+    return this.autocompleteService;
+  }
+
+  #getPlacesDetailsService() {
+    if (this.placesDetailsService) return this.placesDetailsService;
+    const places = this.#getPlacesLibrary();
+    if (!places?.PlacesService) return null;
+    const anchor = document.createElement("div");
+    this.placesDetailsService = new places.PlacesService(anchor);
+    return this.placesDetailsService;
+  }
+
+  #getPlacesStatusConstants() {
+    const defaultStatus = {
+      OK: "OK",
+      ZERO_RESULTS: "ZERO_RESULTS",
+    };
+    const places = this.#getPlacesLibrary();
+    return places?.PlacesServiceStatus || defaultStatus;
+  }
+
+  #isPlacesStatusOk(status) {
+    const statuses = this.#getPlacesStatusConstants();
+    return status === statuses.OK || status === statuses.ZERO_RESULTS;
+  }
+
+  #formatPrediction(entry = {}) {
+    const structured = entry.structured_formatting || {};
+    const remainder = Array.isArray(entry.terms)
+      ? entry.terms
+          .slice(1)
+          .map((term) => term.value)
+          .join(", ")
+      : "";
+    return {
+      id: entry.place_id,
+      description: entry.description || "",
+      mainText:
+        structured.main_text ||
+        entry.terms?.[0]?.value ||
+        entry.description ||
+        "",
+      secondaryText: structured.secondary_text || remainder || "",
+    };
+  }
+
   async fetchProperties(propertyName) {
     const query = propertyName?.trim();
     if (!query) return [];
-    const apiKey = "AIzaSyDAB5BuHgOkYcnAcTJk6jLEkS7hSHtqNwo";
-    if (!apiKey) return [];
-
-    const params = new URLSearchParams({
-      input: query,
-      key: apiKey,
-      types: "geocode",
-      components: "country:au",
-    });
-    const token = this.#ensureGooglePlacesSessionToken();
-    if (token) params.set("sessiontoken", token);
-
-    try {
-      const response = await fetch(
-        `${this.googlePlacesEndpoint}?${params.toString()}`
-      );
-      if (!response.ok) return [];
-      const payload = await response.json();
-      if (
-        payload?.status &&
-        payload.status !== "OK" &&
-        payload.status !== "ZERO_RESULTS"
-      ) {
-        console.warn("[NewEnquiry] fetchProperties returned", payload.status);
-        return [];
-      }
-      const predictions = Array.isArray(payload?.predictions)
-        ? payload.predictions
-        : [];
-      return predictions.map((entry) => ({
-        id: entry.place_id,
-        description: entry.description || "",
-        mainText:
-          entry.structured_formatting?.main_text ||
-          entry.terms?.[0]?.value ||
-          entry.description ||
-          "",
-        secondaryText:
-          entry.structured_formatting?.secondary_text ||
-          entry.terms
-            ?.slice(1)
-            .map((term) => term.value)
-            .join(", ") ||
-          "",
-      }));
-    } catch (error) {
-      console.warn("[NewEnquiry] fetchProperties failed", error);
+    const service = this.#getAutocompleteService();
+    if (!service) {
+      console.warn("[NewEnquiry] Google Places library not ready");
       return [];
     }
+
+    const request = {
+      input: query,
+      types: ["address"],
+      componentRestrictions: { country: "au" },
+    };
+    const token = this.#ensureGooglePlacesSessionToken();
+    if (token && typeof token === "object") {
+      request.sessionToken = token;
+    }
+
+    return new Promise((resolve) => {
+      service.getPlacePredictions(request, (predictions = [], status) => {
+        if (!this.#isPlacesStatusOk(status)) {
+          console.warn("[NewEnquiry] fetchProperties returned", status);
+          if (status === this.#getPlacesStatusConstants().INVALID_REQUEST) {
+            this.#ensureGooglePlacesSessionToken(true);
+          }
+          resolve([]);
+          return;
+        }
+        resolve(predictions.map((entry) => this.#formatPrediction(entry)));
+      });
+    });
   }
 
   async fetchPropertyDetails(placeId) {
     const id = placeId?.trim();
     if (!id) return null;
-    const apiKey = this.#resolveGooglePlacesKey();
-    if (!apiKey) return null;
-
-    const params = new URLSearchParams({
-      place_id: id,
-      key: apiKey,
-      fields: "address_component,formatted_address",
-    });
-    const token = this.#ensureGooglePlacesSessionToken();
-    if (token) params.set("sessiontoken", token);
-
-    try {
-      const response = await fetch(
-        `${this.googlePlaceDetailsEndpoint}?${params.toString()}`
-      );
-      if (!response.ok) return null;
-      const payload = await response.json();
-      if (payload?.status !== "OK") {
-        console.warn(
-          "[NewEnquiry] fetchPropertyDetails returned",
-          payload?.status
-        );
-        return null;
-      }
-      return payload?.result || null;
-    } catch (error) {
-      console.warn("[NewEnquiry] fetchPropertyDetails failed", error);
+    const service = this.#getPlacesDetailsService();
+    if (!service) {
+      console.warn("[NewEnquiry] Google Places library not ready");
       return null;
     }
+
+    const request = {
+      placeId: id,
+      fields: ["address_components", "formatted_address"],
+    };
+    const token = this.#ensureGooglePlacesSessionToken();
+    if (token && typeof token === "object") {
+      request.sessionToken = token;
+    }
+
+    const statuses = this.#getPlacesStatusConstants();
+
+    return new Promise((resolve) => {
+      service.getDetails(request, (result, status) => {
+        if (status !== statuses.OK) {
+          console.warn("[NewEnquiry] fetchPropertyDetails returned", status);
+          resolve(null);
+          return;
+        }
+        resolve(result || null);
+      });
+    });
   }
 
   initAutocomplete() {
-    const input = document.querySelector("[data-search-input]");
+    const input = document.querySelector('[placeholder="Search properties"]');
 
     // Enable Google Places autocomplete
     const autocomplete = new google.maps.places.Autocomplete(input, {
-      types: ["(cities)"], // or "geocode" for full addresses
+      types: ["address"], // or "geocode" for full addresses
       componentRestrictions: { country: "au" }, // restrict to Australia
     });
 

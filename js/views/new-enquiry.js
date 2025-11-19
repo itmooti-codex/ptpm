@@ -109,6 +109,13 @@ export class NewEnquiryView {
     this.entityRelatedRequestId = 0;
 
     this.entityRelatedData = { properties: [], jobs: [], inquiries: [] };
+    this.propertySearchData = [];
+    this.propertySearchElements = null;
+    this._propertySearchInitialized = false;
+    this._propertyFooterInitialized = false;
+    this._propertyPredictionRequestId = 0;
+
+    this.createPropertyList([]);
   }
 
   isActive() {
@@ -2175,7 +2182,7 @@ export class NewEnquiryView {
       });
     };
 
-    const render = (q = "") => {
+    const render = async (q = "") => {
       const list = filter(q);
       results.innerHTML = "";
 
@@ -2227,7 +2234,7 @@ export class NewEnquiryView {
       // }
 
       // Fixed footer with Add New Property
-      this.model.fetchProperties("adel");
+      let x = await this.model.fetchProperties(q);
       if (footer) footer.innerHTML = "";
       const addBtn = document.createElement("button");
       addBtn.type = "button";
