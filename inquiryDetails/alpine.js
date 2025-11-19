@@ -836,9 +836,21 @@ document.addEventListener("alpine:init", () => {
     async checkExistingQuote() {
       if (this.initCheckRan) return;
       this.initCheckRan = true;
+      const inquiryId =
+        this.sanitizeRecipientId(INQUIRY_RECORD_ID) ||
+        this.sanitizeRecipientId(
+          document.body?.dataset?.inquiryId ||
+            document.querySelector("[data-var-inquiryid]")?.dataset
+              ?.varInquiryid ||
+            ""
+        );
+      if (!inquiryId) {
+        this.hasQuote = false;
+        return;
+      }
       try {
         const data = await graphqlRequest(CALC_JOBS_QUERY, {
-          inquiry_record_id: INQUIRY_RECORD_ID,
+          inquiry_record_id: inquiryId,
         });
         const record = this.extractJobRecord(data);
         if (record) {

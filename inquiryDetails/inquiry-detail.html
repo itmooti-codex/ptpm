@@ -539,13 +539,24 @@
               class="px-4 py-3 bg-white rounded outline outline-1 outline-offset-[-1px] outline-white inline-flex justify-center items-center gap-2 relative cursor-pointer"
               x-data="{
                         open: false,
-                        jobId: JOB_ID,
+                        jobId: window.JOB_ID ?? (document.body?.dataset?.jobId || ''),
                         count: 0,
                         isLoading: false,
+                        normalizeJobId(value) {
+                          const raw = (value ?? '').toString().trim();
+                          if (!raw || raw === '0' || raw === '-' || raw === '—') return '';
+                          if (/^\[[^\]]+\]$/.test(raw)) return '';
+                          return raw;
+                        },
                         async fetchCount() {
+                          const resolvedId = this.normalizeJobId(this.jobId);
+                          if (!resolvedId) {
+                            this.count = 0;
+                            return;
+                          }
                           try {
                             this.isLoading = true;
-                            const data = await graphqlRequest(JOB_TASKS_QUERY, { Job_id: this.jobId });
+                            const data = await graphqlRequest(JOB_TASKS_QUERY, { Job_id: resolvedId });
                             const rows = Array.isArray(data?.calcTasks) ? data.calcTasks : [];
                             this.count = rows.length;
                           } catch (e) {
