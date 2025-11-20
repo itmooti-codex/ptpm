@@ -20,9 +20,7 @@ document.addEventListener("alpine:init", () => {
     ACCOUNT_TYPE.toLowerCase() === "company" ? "company" : "contact";
 
   const PRESET_PROVIDER_ID =
-    SERVICE_PROVIDER_ID != null
-      ? String(SERVICE_PROVIDER_ID).trim()
-      : "";
+    SERVICE_PROVIDER_ID != null ? String(SERVICE_PROVIDER_ID).trim() : "";
 
   const locationOptions = createOptionMap([
     { value: 735, text: "Upper Ceiling" },
@@ -143,9 +141,68 @@ document.addEventListener("alpine:init", () => {
     suggestions: [],
     error: "",
     selectedContact: null,
+    pendingContact: null,
+    initialId: props.initialId || "",
+    initialLabel: props.initialLabel || "",
+    jobField: props.field || null,
+    isUpdating: false,
+    updateMessage: "",
+    awaitingCreate: false,
+    createdListener: null,
+    jobUpdateListener: null,
     placeholder: props.placeholder || "Select contact",
     minSearchLength: props.minSearchLength || 2,
     limit: props.limit || 10,
+    init() {
+      const initId = this.normalizeId(this.initialId);
+      if (initId) {
+        this.prefillInitialContact(initId);
+      }
+      this.createdListener = (event) => {
+        if (!this.awaitingCreate) return;
+        const detail = event?.detail || {};
+        const cid = this.normalizeId(detail.contactId || detail.id || "");
+        if (cid) {
+          const name = [detail.firstName, detail.lastName]
+            .filter(Boolean)
+            .join(" ")
+            .trim();
+          const displayLabel =
+            detail.displayLabel ||
+            (name && detail.email ? `${name} · ${detail.email}` : "") ||
+            name ||
+            detail.email ||
+            `Contact #${cid}`;
+          this.selectContact({
+            id: cid,
+            displayLabel,
+            email: detail.email || "",
+            firstName: detail.firstName || "",
+            lastName: detail.lastName || "",
+          });
+        }
+        this.awaitingCreate = false;
+      };
+      window.addEventListener("contact:created", this.createdListener);
+      this.jobUpdateListener = (event) => this.handleJobUpdate(event);
+      window.addEventListener(
+        "job-contact:update-status",
+        this.jobUpdateListener
+      );
+    },
+    destroy() {
+      if (this.createdListener) {
+        window.removeEventListener("contact:created", this.createdListener);
+        this.createdListener = null;
+      }
+      if (this.jobUpdateListener) {
+        window.removeEventListener(
+          "job-contact:update-status",
+          this.jobUpdateListener
+        );
+        this.jobUpdateListener = null;
+      }
+    },
     displayLabel() {
       return (
         this.selectedContact?.displayLabel ||
@@ -207,9 +264,7 @@ document.addEventListener("alpine:init", () => {
           offset: 0,
           searchExpression: this.buildSearchExpression(normalized),
         });
-        const rows = Array.isArray(data?.calcContacts)
-          ? data.calcContacts
-          : [];
+        const rows = Array.isArray(data?.calcContacts) ? data.calcContacts : [];
         this.suggestions = rows.map((row) => this.normalizeContact(row));
         this.hasSearched = true;
       } catch (error) {
@@ -245,8 +300,21 @@ document.addEventListener("alpine:init", () => {
     },
     selectContact(contact) {
       if (!contact) return;
-      this.selectedContact = contact;
-      this.closeDropdown();
+      if (this.jobField) {
+        this.pendingContact = contact;
+        this.isUpdating = true;
+        this.updateMessage =
+          contact.displayLabel?.trim() || "Updating contact…";
+        window.dispatchEvent(
+          new CustomEvent("job-contact:set", {
+            detail: { field: this.jobField, contact },
+          })
+        );
+      } else {
+        this.selectedContact = contact;
+        this.closeDropdown();
+      }
+      if (props.onSelect) props.onSelect(contact);
     },
     clearSelection() {
       this.selectedContact = null;
@@ -257,10 +325,12 @@ document.addEventListener("alpine:init", () => {
     },
     openAddContact() {
       this.closeDropdown();
+      this.awaitingCreate = true;
       const propertyId =
         PROPERTY_ID ||
         document.body?.dataset?.propertyId ||
-        document.querySelector("[data-var-propertyid]")?.dataset?.varPropertyid ||
+        document.querySelector("[data-var-propertyid]")?.dataset
+          ?.varPropertyid ||
         null;
       window.dispatchEvent(
         new CustomEvent("propertyContact:add:open", {
@@ -271,6 +341,86 @@ document.addEventListener("alpine:init", () => {
           },
         })
       );
+    },
+    normalizeId(value) {
+      const raw = (value ?? "").toString().trim();
+      if (!raw || raw === "-" || raw === "—") return "";
+      if (/^\[[^\]]+\]$/.test(raw)) return "";
+      return raw;
+    },
+    handleJobUpdate(event = {}) {
+      if (!this.jobField) return;
+      const detail = event.detail || {};
+      if (detail.field !== this.jobField) return;
+      this.isUpdating = false;
+      this.updateMessage = "";
+      this.pendingContact = null;
+      if (detail.success) {
+        this.applyContactId(detail.contactId || detail.contact?.id, detail);
+      } else if (detail.message) {
+        this.emitToast(detail.message, "error");
+      }
+    },
+    emitToast(message, variant = "success") {
+      if (!message) return;
+      window.dispatchEvent(
+        new CustomEvent("toast:show", { detail: { message, variant } })
+      );
+    },
+    async prefillInitialContact(id) {
+      const contactId = this.normalizeId(id);
+      if (!contactId) return;
+      this.isUpdating = true;
+      this.updateMessage = "Loading contact…";
+      await this.applyContactId(contactId, { from: "prefill" });
+      this.isUpdating = false;
+      this.updateMessage = "";
+    },
+    async applyContactId(id, detail = {}) {
+      const contactId = this.normalizeId(id);
+      if (!contactId) return;
+      const incoming = detail.contact || {};
+      let contact = null;
+      if (incoming.displayLabel || incoming.firstName || incoming.email) {
+        contact = {
+          id: contactId,
+          displayLabel:
+            incoming.displayLabel ||
+            [incoming.firstName, incoming.lastName]
+              .filter(Boolean)
+              .join(" ")
+              .trim(),
+          email: incoming.email || "",
+          firstName: incoming.firstName || "",
+          lastName: incoming.lastName || "",
+        };
+      }
+      if (!contact || !contact.displayLabel) {
+        contact = await this.fetchContactById(contactId);
+      }
+      if (contact) {
+        this.selectedContact = contact;
+        this.closeDropdown();
+        if (detail.message) {
+          this.emitToast(detail.message);
+        }
+      }
+    },
+    async fetchContactById(contactId) {
+      if (!contactId) return null;
+      try {
+        const data = await graphqlRequest(CONTACT_BY_ID_QUERY, {
+          id: contactId,
+        });
+        const rows = Array.isArray(data?.calcContacts)
+          ? data.calcContacts
+          : [];
+        const row = rows[0];
+        return row ? this.normalizeContact(row) : null;
+      } catch (error) {
+        console.error("Failed to prefill contact", error);
+        return null;
+      }
     },
   }));
 
@@ -637,6 +787,7 @@ document.addEventListener("alpine:init", () => {
       }, 4000);
     },
   }));
+
   Alpine.data("residentFeedback", (props = {}) => ({
     rawLocations: props.rawLocations ?? "",
     rawNoises: props.rawNoises ?? "",
@@ -690,16 +841,22 @@ document.addEventListener("alpine:init", () => {
     followUpDate: "",
     dateQuoteSent: "",
     dateQuoteAccepted: "",
+    jobId: "",
+    jobEmailContactId: "",
+    accountEmailContactId: "",
     availableRecipients: [],
-    selectedRecipientIds: [],
+    selectedRecipientId: "",
     recipientDropdownOpen: false,
     recipientSearchTerm: "",
+    isRecipientUpdating: false,
+    recipientUpdateMessage: "",
     recipientsLoaded: false,
     recipientLoadPromise: null,
     sendQuoteError: "",
     boundQuoteListener: null,
     boundStatusListener: null,
     boundProviderListener: null,
+    boundJobContactListener: null,
     providerDisplayName: "",
     initCheckRan: false,
     init() {
@@ -714,6 +871,12 @@ document.addEventListener("alpine:init", () => {
         if (providerName) this.providerDisplayName = providerName;
       };
       window.addEventListener("provider-selected", this.boundProviderListener);
+      this.boundJobContactListener = (event) =>
+        this.handleJobContactSet(event?.detail || {});
+      window.addEventListener(
+        "job-contact:set",
+        this.boundJobContactListener
+      );
       this.checkExistingQuote();
       this.$nextTick(() => this.ensureRecipientsLoaded());
     },
@@ -737,6 +900,13 @@ document.addEventListener("alpine:init", () => {
         );
         this.boundProviderListener = null;
       }
+      if (this.boundJobContactListener) {
+        window.removeEventListener(
+          "job-contact:set",
+          this.boundJobContactListener
+        );
+        this.boundJobContactListener = null;
+      }
     },
     handleQuoteCreated(detail = {}) {
       this.hasQuote = true;
@@ -746,6 +916,7 @@ document.addEventListener("alpine:init", () => {
         detail.unique_id ||
         detail.ID ||
         detail.id;
+      this.jobId = detail.jobId || detail.ID || detail.id || this.jobId;
       if (detail.quoteNumber || uniqueId) {
         this.quoteNumber = detail.quoteNumber || uniqueId;
       }
@@ -775,8 +946,42 @@ document.addEventListener("alpine:init", () => {
       if (detail.followUpDate || detail.follow_up_date) {
         this.followUpDate = detail.followUpDate || detail.follow_up_date || "";
       }
+      if (detail.clientIndividualId) {
+        this.jobEmailContactId = detail.clientIndividualId;
+      }
+      if (detail.accountsContactId) {
+        this.accountEmailContactId = detail.accountsContactId;
+      }
       if (detail.recipients) this.quoteRecipients = detail.recipients;
-      this.$nextTick(() => this.ensureRecipientsLoaded());
+      this.$nextTick(() =>
+        this.ensureRecipientsLoaded().then(() =>
+          this.syncRecipientSelectionFromAccount()
+        )
+      );
+      if (this.jobEmailContactId) {
+        window.dispatchEvent(
+          new CustomEvent("job-contact:update-status", {
+            detail: {
+              field: "client_individual_id",
+              success: true,
+              contactId: this.jobEmailContactId,
+              from: "prefill",
+            },
+          })
+        );
+      }
+      if (this.accountEmailContactId) {
+        window.dispatchEvent(
+          new CustomEvent("job-contact:update-status", {
+            detail: {
+              field: "accounts_contact_id",
+              success: true,
+              contactId: this.accountEmailContactId,
+              from: "prefill",
+            },
+          })
+        );
+      }
       this.syncQuoteState();
     },
     handleStatusChange(detail = {}) {
@@ -819,7 +1024,8 @@ document.addEventListener("alpine:init", () => {
       const propertyId =
         PROPERTY_ID ||
         document.body?.dataset?.propertyId ||
-        document.querySelector("[data-var-propertyid]")?.dataset?.varPropertyid ||
+        document.querySelector("[data-var-propertyid]")?.dataset
+          ?.varPropertyid ||
         null;
       window.dispatchEvent(
         new CustomEvent("propertyContact:add:open", {
@@ -835,34 +1041,50 @@ document.addEventListener("alpine:init", () => {
       this.recipientDropdownOpen = false;
       this.recipientSearchTerm = "";
     },
-    toggleRecipient(id) {
+    async toggleRecipient(id) {
+      if (this.isRecipientUpdating) return;
       const key = this.sanitizeRecipientId(id);
       if (!key) return;
       if (this.isRecipientSelected(key)) {
-        this.selectedRecipientIds = this.selectedRecipientIds.filter(
-          (value) => value !== key
-        );
-      } else {
-        this.selectedRecipientIds = [...this.selectedRecipientIds, key];
+        this.selectedRecipientId = "";
+        this.refreshRecipientSummary();
+        return;
       }
-      this.refreshRecipientSummary();
-      if (this.selectedRecipientIds.length) {
+      const match = this.availableRecipients.find(
+        (recipient) => recipient.id === key
+      );
+      this.recipientDropdownOpen = true;
+      this.isRecipientUpdating = true;
+      this.recipientUpdateMessage =
+        (match?.displayName ? `Updating ${match.displayName}...` : "Updating contact...") ||
+        "Updating contact...";
+      const success = await this.setJobContact("accounts_contact_id", match);
+      if (success) {
+        this.selectedRecipientId = key;
+        this.refreshRecipientSummary();
         this.sendQuoteError = "";
+        this.emitToast("Account email updated.", "success");
+        this.recipientDropdownOpen = false;
+      } else {
+        this.emitToast(
+          "Unable to update account email. Please try again.",
+          "error"
+        );
       }
+      this.isRecipientUpdating = false;
+      this.recipientUpdateMessage = "";
     },
     isRecipientSelected(id) {
       const key = this.sanitizeRecipientId(id);
       if (!key) return false;
-      return this.selectedRecipientIds.includes(key);
+      return this.selectedRecipientId === key;
     },
     refreshRecipientSummary() {
-      const names = this.availableRecipients
-        .filter((recipient) => this.selectedRecipientIds.includes(recipient.id))
-        .map((recipient) => recipient.displayName)
-        .filter(Boolean);
-      this.quoteRecipients = names.length
-        ? names.join(", ")
-        : DEFAULT_RECIPIENT_PLACEHOLDER;
+      const match = this.availableRecipients.find(
+        (recipient) => recipient.id === this.selectedRecipientId
+      );
+      this.quoteRecipients =
+        match?.displayName || DEFAULT_RECIPIENT_PLACEHOLDER;
     },
     get recipientSummaryText() {
       const selected = this.getSelectedRecipients();
@@ -875,8 +1097,7 @@ document.addEventListener("alpine:init", () => {
         }
         return "Not specified";
       }
-      if (selected.length === 1) return selected[0].displayName;
-      return `${selected[0].displayName} +${selected.length - 1} others`;
+      return selected[0].displayName;
     },
     get shouldShowRecipientSelector() {
       return !this.isQuoteSent && !this.isQuoteAccepted;
@@ -894,8 +1115,9 @@ document.addEventListener("alpine:init", () => {
       return this.dateQuoteAccepted || "—";
     },
     getSelectedRecipients() {
-      return this.availableRecipients.filter((recipient) =>
-        this.selectedRecipientIds.includes(recipient.id)
+      if (!this.selectedRecipientId) return [];
+      return this.availableRecipients.filter(
+        (recipient) => recipient.id === this.selectedRecipientId
       );
     },
     syncQuoteState() {
@@ -904,14 +1126,17 @@ document.addEventListener("alpine:init", () => {
       store.accepted = this.isQuoteAccepted;
     },
     handleSendQuoteClick() {
-      if (!this.selectedRecipientIds.length) {
+      if (!this.selectedRecipientId) {
         this.sendQuoteError = "Please select at least one contact.";
         return;
       }
       this.sendQuoteError = "";
       window.dispatchEvent(
         new CustomEvent("quote:send-preview", {
-          detail: { recipients: this.getSelectedRecipients() },
+          detail: {
+            recipients: this.getSelectedRecipients(),
+            contactId: this.selectedRecipientId,
+          },
         })
       );
     },
@@ -940,8 +1165,90 @@ document.addEventListener("alpine:init", () => {
         new CustomEvent("toast:show", { detail: { message, variant } })
       );
     },
+    async handleJobContactSet(detail = {}) {
+      const field = detail.field;
+      if (
+        field !== "client_individual_id" &&
+        field !== "accounts_contact_id"
+      ) {
+        return;
+      }
+      await this.setJobContact(field, detail.contact || {});
+    },
+    async setJobContact(field, contact) {
+      const jobId = this.normalizeId(
+        this.jobId ||
+          JOB_ID ||
+          document.body?.dataset?.jobId ||
+          document.querySelector("[data-var-jobid]")?.dataset?.varJobid ||
+          ""
+      );
+      const contactId = this.normalizeId(contact?.id || contact);
+      if (!jobId || !contactId) return false;
+      try {
+        await graphqlRequest(UPDATE_JOB_MUTATION, {
+          id: jobId,
+          payload: { [field]: contactId },
+        });
+        if (field === "client_individual_id") this.jobEmailContactId = contactId;
+        if (field === "accounts_contact_id") {
+          this.accountEmailContactId = contactId;
+          this.syncRecipientSelectionFromAccount();
+        }
+        window.dispatchEvent(
+          new CustomEvent("job-contact:update-status", {
+            detail: {
+              field,
+              success: true,
+              contactId,
+              contact,
+              message:
+                field === "client_individual_id"
+                  ? "Job email updated."
+                  : "Account email updated.",
+            },
+          })
+        );
+        return true;
+      } catch (error) {
+        console.error(`Failed to update ${field}`, error);
+        window.dispatchEvent(
+          new CustomEvent("job-contact:update-status", {
+            detail: {
+              field,
+              success: false,
+              contactId,
+              contact,
+              message:
+                error?.message ||
+                (field === "client_individual_id"
+                  ? "Failed to update job email."
+                  : "Failed to update account email."),
+            },
+          })
+        );
+        return false;
+      }
+    },
+    normalizeId(value) {
+      const raw = (value ?? "").toString().trim();
+      if (!raw || raw === "-" || raw === "—") return "";
+      if (/^\[[^\]]+\]$/.test(raw)) return "";
+      return raw;
+    },
     handleAddContact() {
       this.openAddContact();
+    },
+    syncRecipientSelectionFromAccount() {
+      const target = this.sanitizeRecipientId(this.accountEmailContactId);
+      if (!target) return;
+      const match = this.availableRecipients.find(
+        (recipient) => recipient.id === target
+      );
+      if (match) {
+        this.selectedRecipientId = target;
+        this.refreshRecipientSummary();
+      }
     },
     ensureRecipientsLoaded() {
       if (this.recipientsLoaded) return Promise.resolve();
@@ -969,16 +1276,14 @@ document.addEventListener("alpine:init", () => {
         .map((node) => this.parseRecipientNode(node))
         .filter(Boolean);
       this.recipientsLoaded = this.availableRecipients.length > 0;
-      if (this.recipientsLoaded && !this.selectedRecipientIds.length) {
-        const important = this.availableRecipients.filter(
-          (recipient) => recipient.isImportant
-        );
-        const defaults = (
-          important.length ? important : this.availableRecipients.slice(0, 1)
-        ).map((recipient) => recipient.id);
-        this.selectedRecipientIds = defaults;
-        this.refreshRecipientSummary();
-      } else if (this.recipientsLoaded) {
+      if (this.recipientsLoaded) {
+        const preset = this.sanitizeRecipientId(this.accountEmailContactId);
+        if (preset) {
+          const match = this.availableRecipients.find(
+            (recipient) => recipient.id === preset
+          );
+          if (match) this.selectedRecipientId = preset;
+        }
         this.refreshRecipientSummary();
       }
       return this.recipientsLoaded;
@@ -1048,9 +1353,9 @@ document.addEventListener("alpine:init", () => {
         this.sanitizeRecipientId(INQUIRY_RECORD_ID) ||
         this.sanitizeRecipientId(
           document.body?.dataset?.inquiryId ||
-            document.querySelector("[data-var-inquiryid]")?.dataset
-              ?.varInquiryid ||
-            ""
+          document.querySelector("[data-var-inquiryid]")?.dataset
+            ?.varInquiryid ||
+          ""
         );
       if (!inquiryId) {
         this.hasQuote = false;
@@ -1101,6 +1406,11 @@ document.addEventListener("alpine:init", () => {
           "",
         dateQuoteAccepted:
           record.Date_Quoted_Accepted || record.date_quoted_accepted || "",
+        jobId: record.ID || record.id || "",
+        clientIndividualId:
+          record.Client_Individual_ID || record.client_individual_id || "",
+        accountsContactId:
+          record.Accounts_Contact_ID || record.accounts_contact_id || "",
       };
     },
     normalizeCalcJobs(value) {
@@ -1153,8 +1463,13 @@ document.addEventListener("alpine:init", () => {
     },
     async confirmAction() {
       if (this.isSubmitting) return;
-      if (!INQUIRY_RECORD_ID) return this.dispatchToast("Missing inquiry record id.", "error");
-      if (!this.hasProvider) return this.dispatchToast("Allocate a service provider first.", "error");
+      if (!INQUIRY_RECORD_ID)
+        return this.dispatchToast("Missing inquiry record id.", "error");
+      if (!this.hasProvider)
+        return this.dispatchToast(
+          "Allocate a service provider first.",
+          "error"
+        );
       this.isSubmitting = true;
       try {
         const nowISO = new Date().toISOString();
@@ -1683,6 +1998,7 @@ document.addEventListener("alpine:init", () => {
   Alpine.data("sendQuoteModal", () => ({
     open: false,
     recipients: [],
+    selectedContactId: "",
     isSending: false,
     boundListener: null,
     init() {
@@ -1693,6 +2009,9 @@ document.addEventListener("alpine:init", () => {
           return;
         }
         this.recipients = list;
+        this.selectedContactId = this.normalizeId(
+          event?.detail?.contactId || ""
+        );
         this.open = true;
       };
       window.addEventListener("quote:send-preview", this.boundListener);
@@ -1712,11 +2031,7 @@ document.addEventListener("alpine:init", () => {
       if (!Array.isArray(list)) return [];
       return list
         .map((item) => {
-          const id =
-            item.id ||
-            item.email ||
-            item.phone ||
-            Math.random().toString(36).slice(2);
+          const id = item.id;
           return {
             id,
             displayName:
@@ -1728,6 +2043,12 @@ document.addEventListener("alpine:init", () => {
           };
         })
         .filter(Boolean);
+    },
+    normalizeId(value) {
+      const raw = (value ?? "").toString().trim();
+      if (!raw || raw === "-" || raw === "—") return "";
+      if (/^\[[^\]]+\]$/.test(raw)) return "";
+      return raw;
     },
     async handleSend() {
       if (!this.recipients.length) {
@@ -1743,11 +2064,15 @@ document.addEventListener("alpine:init", () => {
       try {
         const nowTs = Math.floor(Date.now() / 1000);
         const formatted = this.formatDateDDMMYYYY(new Date());
+        const contactId =
+          this.selectedContactId ||
+          this.normalizeId(this.recipients[0]?.id || "");
         await graphqlRequest(UPDATE_JOB_MUTATION, {
           id: JOB_ID,
           payload: {
             quote_status: "Sent",
             date_quote_sent: String(nowTs),
+            accounts_contact_id: contactId || null,
           },
         });
         window.dispatchEvent(
@@ -2037,7 +2362,10 @@ document.addEventListener("alpine:init", () => {
     },
     handlePrint() {
       if (!this.confirm) {
-        this.notify("Please confirm the bill details before printing.", "error");
+        this.notify(
+          "Please confirm the bill details before printing.",
+          "error"
+        );
         return;
       }
       if (typeof window?.print === "function") {
@@ -2118,7 +2446,10 @@ document.addEventListener("alpine:init", () => {
         this.recipientObserver = null;
       }
       if (this.boundStatusUpdated) {
-        window.removeEventListener("job-status:updated", this.boundStatusUpdated);
+        window.removeEventListener(
+          "job-status:updated",
+          this.boundStatusUpdated
+        );
         this.boundStatusUpdated = null;
       }
       if (this.boundContactsChanged) {
@@ -2145,7 +2476,9 @@ document.addEventListener("alpine:init", () => {
       if (this.recipientObserver) return;
       const host = document.querySelector("[data-recipient-source]");
       if (!host) return;
-      this.recipientObserver = new MutationObserver(() => this.collectRecipients());
+      this.recipientObserver = new MutationObserver(() =>
+        this.collectRecipients()
+      );
       this.recipientObserver.observe(host, { childList: true, subtree: true });
     },
     syncFromDataset() {
@@ -2181,9 +2514,7 @@ document.addEventListener("alpine:init", () => {
           name,
           role,
           phone,
-          label: name
-            ? `${name}${role ? ` (${role})` : ""}`
-            : email,
+          label: name ? `${name}${role ? ` (${role})` : ""}` : email,
         });
       });
       this.recipients = next;
@@ -2323,7 +2654,10 @@ document.addEventListener("alpine:init", () => {
           ? event.detail.recipients
           : [];
         if (!list.length) {
-          this.emitToast("Select at least one contact before sending.", "error");
+          this.emitToast(
+            "Select at least one contact before sending.",
+            "error"
+          );
           return;
         }
         this.recipients = list;
@@ -2491,8 +2825,7 @@ document.addEventListener("alpine:init", () => {
       return value ? "Yes" : "No";
     },
     extractBooleanValue(selector) {
-      const text =
-        this.$el?.querySelector(selector)?.textContent?.trim() || "";
+      const text = this.$el?.querySelector(selector)?.textContent?.trim() || "";
       return this.toBoolean(text);
     },
     toBoolean(value = "") {
@@ -2532,10 +2865,7 @@ document.addEventListener("alpine:init", () => {
     },
     destroy() {
       if (this.boundListener) {
-        window.removeEventListener(
-          "followUpComment:open",
-          this.boundListener
-        );
+        window.removeEventListener("followUpComment:open", this.boundListener);
         this.boundListener = null;
       }
     },
@@ -2546,8 +2876,7 @@ document.addEventListener("alpine:init", () => {
         document.body?.dataset?.jobId ||
         document
           .querySelector("[data-follow-up-comment]")
-          ?.closest("[data-var-jobid]")
-          ?.dataset?.varJobid ||
+          ?.closest("[data-var-jobid]")?.dataset?.varJobid ||
         "";
       if (!jobId) {
         this.emitToast("Missing job id.", "error");
@@ -2562,7 +2891,9 @@ document.addEventListener("alpine:init", () => {
           },
         });
         this.emitToast("Follow up comment updated.");
-        const source = document.querySelector("[data-follow-up-comment-source]");
+        const source = document.querySelector(
+          "[data-follow-up-comment-source]"
+        );
         if (source) source.textContent = this.comment || "";
         else {
           const target = document.querySelector("[data-follow-up-comment]");
@@ -2628,8 +2959,8 @@ document.addEventListener("alpine:init", () => {
     },
     getCommentValue(type) {
       return this.sanitize(
-        this.$root?.querySelector(`[data-popup-comment="${type}"]`)?.textContent ||
-          ""
+        this.$root?.querySelector(`[data-popup-comment="${type}"]`)
+          ?.textContent || ""
       );
     },
     refreshState() {
@@ -2899,8 +3230,8 @@ document.addEventListener("alpine:init", () => {
       const sources = [];
       const hostList = target
         ? Array.from(
-            document.querySelectorAll(`[data-upload-source="${target}"]`)
-          )
+          document.querySelectorAll(`[data-upload-source="${target}"]`)
+        )
         : Array.from(document.querySelectorAll("[data-upload-source]"));
       if (!hostList.length) return sources;
 
@@ -4045,8 +4376,8 @@ document.addEventListener("alpine:init", () => {
       const dueDate = this.parseDate(dueRaw);
       const dueISO = dueDate
         ? new Date(
-            dueDate.getTime() - dueDate.getTimezoneOffset() * 60000
-          ).toISOString()
+          dueDate.getTime() - dueDate.getTimezoneOffset() * 60000
+        ).toISOString()
         : "";
       const dueTs = dueDate ? Math.floor(dueDate.getTime() / 1000) : null;
 
@@ -4238,14 +4569,14 @@ document.addEventListener("alpine:init", () => {
           typeof d.showRoleField === "boolean"
             ? d.showRoleField
             : typeof d.hideRoleField === "boolean"
-            ? !d.hideRoleField
-            : true;
+              ? !d.hideRoleField
+              : true;
         this.showPrimaryToggle =
           typeof d.showPrimaryToggle === "boolean"
             ? d.showPrimaryToggle
             : typeof d.hidePrimaryToggle === "boolean"
-            ? !d.hidePrimaryToggle
-            : true;
+              ? !d.hidePrimaryToggle
+              : true;
         const prefill = { ...(d.prefill || {}) };
         if (d.contactId && !prefill.contactId) prefill.contactId = d.contactId;
         if (d.affiliationId && !prefill.affiliationId)
@@ -4365,9 +4696,7 @@ document.addEventListener("alpine:init", () => {
           searchExpression: this.buildSearchExpression(normalized),
         });
         if (this.latestSearchTerm !== normalized) return;
-        const rows = Array.isArray(data?.calcContacts)
-          ? data.calcContacts
-          : [];
+        const rows = Array.isArray(data?.calcContacts) ? data.calcContacts : [];
         this.suggestions = rows.map((row) => this.normalizeContact(row));
         this.hasSearched = true;
         this.searchError = "";
@@ -4375,8 +4704,7 @@ document.addEventListener("alpine:init", () => {
         console.error(error);
         if (this.latestSearchTerm === normalized) {
           this.suggestions = [];
-          this.searchError =
-            error?.message || "Failed to search contacts.";
+          this.searchError = error?.message || "Failed to search contacts.";
           this.hasSearched = false;
         }
       } finally {
@@ -4454,6 +4782,7 @@ document.addEventListener("alpine:init", () => {
         this.toast("error", this.error);
         return;
       }
+      const wasNewContact = !this.form.contactId;
 
       this.isSubmitting = true;
       this.error = "";
@@ -4514,6 +4843,27 @@ document.addEventListener("alpine:init", () => {
             detail: { propertyId: this.propertyId },
           })
         );
+        if (wasNewContact && contactId) {
+          const displayName = [payload.first_name, payload.last_name]
+            .filter(Boolean)
+            .join(" ")
+            .trim();
+          const displayLabel =
+            (displayName && payload.email
+              ? `${displayName} · ${payload.email}`
+              : displayName || payload.email) || `Contact #${contactId}`;
+          window.dispatchEvent(
+            new CustomEvent("contact:created", {
+              detail: {
+                contactId,
+                firstName: payload.first_name,
+                lastName: payload.last_name || "",
+                email: payload.email || "",
+                displayLabel,
+              },
+            })
+          );
+        }
         this.handleClose();
       } catch (e) {
         console.error(e);
@@ -4717,11 +5067,13 @@ document.addEventListener("alpine:init", () => {
         : [];
       const rawFileValue = post.File || post.file;
       const fileObj = this.parseFileField(rawFileValue);
-      const fileLink =
-        fileObj?.link || fileObj?.url || fileObj?.path || null;
+      const fileLink = fileObj?.link || fileObj?.url || fileObj?.path || null;
       const name =
         author.display_name ||
-        [author.first_name, author.last_name].filter(Boolean).join(" ").trim() ||
+        [author.first_name, author.last_name]
+          .filter(Boolean)
+          .join(" ")
+          .trim() ||
         "Unknown";
       return {
         id: post.ID || post.Unique_ID || `memo-${idx}`,
@@ -4733,7 +5085,8 @@ document.addEventListener("alpine:init", () => {
         author: {
           name,
           avatar:
-            author.profile_image || "https://placehold.co/40x40?text=User&font=inter",
+            author.profile_image ||
+            "https://placehold.co/40x40?text=User&font=inter",
         },
         replies: replies.map((reply, rIdx) => {
           const rAuthor = reply.Author || {};
@@ -4768,7 +5121,8 @@ document.addEventListener("alpine:init", () => {
       if (!value) return null;
       if (typeof value === "string") {
         const trimmed = value.trim();
-        if (!trimmed || trimmed === "null" || trimmed === "undefined") return null;
+        if (!trimmed || trimmed === "null" || trimmed === "undefined")
+          return null;
         try {
           const parsed = JSON.parse(trimmed);
           return this.parseFileField(parsed) || null;
@@ -4795,7 +5149,8 @@ document.addEventListener("alpine:init", () => {
     normalizeFileLink(raw = "") {
       if (typeof raw !== "string") return null;
       const trimmed = raw.trim();
-      if (!trimmed || trimmed === "null" || trimmed === "undefined") return null;
+      if (!trimmed || trimmed === "null" || trimmed === "undefined")
+        return null;
       if (/^\{.*\}$/.test(trimmed)) return null;
       return trimmed;
     },
@@ -4873,7 +5228,10 @@ document.addEventListener("alpine:init", () => {
         await graphqlRequest(DELETE_FORUM_COMMENT_MUTATION, { id: commentId });
         this.memos = this.memos.map((m) =>
           m.id === postId
-            ? { ...m, replies: (m.replies || []).filter((r) => r.id !== commentId) }
+            ? {
+              ...m,
+              replies: (m.replies || []).filter((r) => r.id !== commentId),
+            }
             : m
         );
         this.emitToast("Reply deleted.");
@@ -5005,5 +5363,4 @@ document.addEventListener("alpine:init", () => {
       );
     },
   }));
-
 });

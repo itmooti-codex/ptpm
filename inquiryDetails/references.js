@@ -6,12 +6,12 @@
 // const INQUIRY_RECORD_ID = "312"; 
 // const CONTACT_ID = "168"; //Primary Contact of inquiry
 // const COMPANY_ID = "63"; //Company linked to inquiry
-// const JOB_ID = ""; // Job linked to inquiry
+// const JOB_ID = "375"; // Job linked to inquiry
 // const PROPERTY_ID = "174"; // Property linked to inquiry
 // const JOB_UNIQUE_ID = "62GF7PS"; // Unique Job ID linked to inquiry
 // const UPLOAD_ENDPOINT = "https://peterpm.vitalstats.app/api/v1/rest/upload";
 // const accountType = "Company";
-// const SERVICE_PROVIDER_ID = "";
+// const SERVICE_PROVIDER_ID = "1";
 
 
 

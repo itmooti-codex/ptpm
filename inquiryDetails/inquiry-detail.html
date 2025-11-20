@@ -2051,332 +2051,237 @@
                 </div>
                 <div class="space-y-4 px-5 py-5">
                   <div
-                      class="flex flex-col gap-2"
-                      data-dynamic-list="HdrrHrQPUKTcjcfRVv8q6"
-                      data-entity="peterpm"
-                      data-entity-key="1rBR-jpR3yE3HE1VhFD0j"
-                      data-var-inquiryid="312"
-                    >
-                      <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-2 text-sm">
-                          <span class="text-neutral-600 text-nowrap"
-                            >Account Name:</span
-                          >
-                          <span class="text-zinc-800 font-medium text-nowrap"
-                            >[Primary_Contact_First_Name]
-                            [Primary_Contact_Last_Name]</span
-                          >
-                        </div>
-                        <div class="px-2.5 py-0.5 bg-violet-100 rounded-full">
-                          <span class="text-violet-800 text-xs font-medium"
-                            >[Inquiry_Status]</span
-                          >
-                        </div>
-                      </div>
+                    class="flex flex-col gap-2"
+                    data-dynamic-list="HdrrHrQPUKTcjcfRVv8q6"
+                    data-entity="peterpm"
+                    data-entity-key="1rBR-jpR3yE3HE1VhFD0j"
+                    data-var-inquiryid="312"
+                  >
+                    <div class="flex items-center justify-between">
                       <div class="flex items-center gap-2 text-sm">
                         <span class="text-neutral-600 text-nowrap"
-                          >SMS Number:</span
+                          >Account Name:</span
                         >
                         <span class="text-zinc-800 font-medium text-nowrap"
-                          >[Primary_Contact_SMS_Number]</span
+                          >[Primary_Contact_First_Name]
+                          [Primary_Contact_Last_Name]</span
+                        >
+                      </div>
+                      <div class="px-2.5 py-0.5 bg-violet-100 rounded-full">
+                        <span class="text-violet-800 text-xs font-medium"
+                          >[Inquiry_Status]</span
                         >
                       </div>
                     </div>
-
-                    <!-- Job Email -->
-                    <div
-                      class="flex flex-col gap-1"
-                      x-data="contactEmailDropdown({ placeholder: 'Select job email contact' })"
-                    >
-                      <label class="space-y-1 w-full">
-                        <span
-                          class="text-xs font-semibold uppercase text-slate-500"
-                          >Job Email</span
-                        >
-                        <div
-                          class="relative"
-                          @keydown.escape.stop.prevent="closeDropdown"
-                          @click.outside="closeDropdown"
-                        >
-                          <button
-                            type="button"
-                            class="flex w-full items-center justify-between rounded-lg border border-slate-300 bg-white px-3 py-2 text-left text-sm text-slate-800 shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500"
-                            @click="toggleDropdown"
-                            :aria-expanded="open"
-                          >
-                            <span class="truncate" x-text="displayLabel()"></span>
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              class="h-4 w-4 text-slate-500 transition"
-                              :class="open ? 'rotate-180' : ''"
-                              viewBox="0 0 20 20"
-                              fill="currentColor"
-                            >
-                              <path
-                                fill-rule="evenodd"
-                                d="M5.23 7.21a.75.75 0 011.06.02L10 11.175l3.71-3.944a.75.75 0 011.08 1.04l-4.25 4.518a.75.75 0 01-1.08 0L5.25 8.27a.75.75 0 01-.02-1.06z"
-                                clip-rule="evenodd"
-                              />
-                            </svg>
-                          </button>
-                          <div
-                            x-show="open"
-                            x-transition
-                            x-cloak
-                            class="absolute z-20 mt-2 w-full rounded-xl border border-slate-200 bg-white shadow-2xl"
-                          >
-                          <div class="border-b border-slate-100 px-3 py-2">
-                            <input
-                              x-ref="contactSearchInput"
-                              type="text"
-                              autocomplete="off"
-                              x-model="searchTerm"
-                              @input="handleSearchInput"
-                              placeholder="Search by name, email, or phone"
-                              class="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500"
-                            />
-                          </div>
-                            <div class="max-h-64 overflow-y-auto">
-                              <template x-if="isSearching">
-                                <p class="px-3 py-4 text-sm text-slate-500">
-                                  Searching contacts…
-                                </p>
-                              </template>
-                              <template x-if="error">
-                                <p class="px-3 py-4 text-sm text-rose-600" x-text="error"></p>
-                              </template>
-                              <template x-if="!isSearching && suggestions.length">
-                                <ul class="divide-y divide-slate-100">
-                                  <template
-                                    x-for="contact in suggestions"
-                                    :key="contact.id || contact.displayLabel"
-                                  >
-                                    <li>
-                                      <button
-                                        type="button"
-                                        class="flex w-full flex-col gap-0.5 px-3 py-2 text-left text-sm hover:bg-slate-50"
-                                        @click="selectContact(contact)"
-                                      >
-                                        <span class="font-medium text-slate-900" x-text="contact.displayLabel"></span>
-                                        <span
-                                          class="text-xs text-slate-500"
-                                          x-text="contact.email"
-                                        ></span>
-                                      </button>
-                                    </li>
-                                  </template>
-                                </ul>
-                              </template>
-                              <template x-if="!isSearching && !suggestions.length && hasSearched && !error">
-                                <p class="px-3 py-4 text-sm text-slate-500">
-                                  No contacts found.
-                                </p>
-                              </template>
-                              <template x-if="!isSearching && !hasSearched && !error">
-                                <p class="px-3 py-4 text-sm text-slate-500">
-                                  Start typing to search existing contacts.
-                                </p>
-                              </template>
-                            </div>
-                            <div class="flex flex-col gap-2 border-t border-slate-100 px-3 py-3">
-                              <button
-                                type="button"
-                                class="flex w-full items-center justify-center gap-2 rounded-md border border-dashed border-sky-300 px-3 py-2 text-sm font-semibold text-sky-800 hover:bg-sky-50"
-                                @click.prevent.stop="openAddContact"
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  class="h-4 w-4"
-                                  viewBox="0 0 20 20"
-                                  fill="none"
-                                >
-                                  <path
-                                    d="M10 4.16675C10.2761 4.16675 10.5 4.39061 10.5 4.66675V9.50008H15.3333C15.6095 9.50008 15.8333 9.72394 15.8333 10.0001C15.8333 10.2762 15.6095 10.5001 15.3333 10.5001H10.5V15.3334C10.5 15.6095 10.2761 15.8334 10 15.8334C9.72386 15.8334 9.50001 15.6095 9.50001 15.3334V10.5001H4.66667C4.39053 10.5001 4.16667 10.2762 4.16667 10.0001C4.16667 9.72394 4.39053 9.50008 4.66667 9.50008H9.50001V4.66675C9.50001 4.39061 9.72386 4.16675 10 4.16675Z"
-                                    fill="currentColor"
-                                  />
-                                </svg>
-                                Add new contact
-                              </button>
-                              <button
-                                type="button"
-                                class="text-sm text-slate-500 hover:text-slate-700"
-                                @click="clearSelection"
-                                x-show="selectedContact"
-                                x-cloak
-                              >
-                                Clear selection
-                              </button>
-                            </div>
-                          </div>
-                          <span
-                            class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-slate-400"
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              class="h-4 w-4"
-                              viewBox="0 0 20 20"
-                              fill="currentColor"
-                            >
-                              <path
-                                fill-rule="evenodd"
-                                d="M5.23 7.21a.75.75 0 011.06.02L10 11.175l3.71-3.944a.75.75 0 011.08 1.04l-4.25 4.518a.75.75 0 01-1.08 0L5.25 8.27a.75.75 0 01-.02-1.06z"
-                                clip-rule="evenodd"
-                              />
-                            </svg>
-                          </span>
-                        </div>
-                      </label>
+                    <div class="flex items-center gap-2 text-sm">
+                      <span class="text-neutral-600 text-nowrap"
+                        >SMS Number:</span
+                      >
+                      <span class="text-zinc-800 font-medium text-nowrap"
+                        >[Primary_Contact_SMS_Number]</span
+                      >
                     </div>
+                  </div>
 
-                    <!-- Account Email -->
-                    <div
-                      class="flex flex-col gap-1"
-                      x-data="contactEmailDropdown({ placeholder: 'Select account email contact' })"
-                    >
-                      <label class="space-y-1 w-full">
-                        <span
-                          class="text-xs font-semibold uppercase text-slate-500"
-                          >Account Email</span
+                  <!-- Job Email -->
+                  <div
+                    class="flex flex-col gap-1"
+                    x-data="contactEmailDropdown({ placeholder: 'Select job email contact', field: 'client_individual_id', initialId: jobEmailContactId })"
+                  >
+                    <label class="space-y-1 w-full">
+                      <span
+                        class="text-xs font-semibold uppercase text-slate-500"
+                        >Job Email</span
+                      >
+                      <div
+                        class="relative"
+                        @keydown.escape.stop.prevent="closeDropdown"
+                        @click.outside="closeDropdown"
+                      >
+                        <button
+                          type="button"
+                          class="flex w-full items-center justify-between rounded-lg border border-slate-300 bg-white px-3 py-2 text-left text-sm text-slate-800 shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                          @click="toggleDropdown"
+                          :aria-expanded="open"
                         >
-                        <div
-                          class="relative"
-                          @keydown.escape.stop.prevent="closeDropdown"
-                          @click.outside="closeDropdown"
-                        >
-                          <button
-                            type="button"
-                            class="flex w-full items-center justify-between rounded-lg border border-slate-300 bg-white px-3 py-2 text-left text-sm text-slate-800 shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500"
-                            @click="toggleDropdown"
-                            :aria-expanded="open"
+                          <span class="truncate" x-text="displayLabel()"></span>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-4 w-4 text-slate-500 transition"
+                            :class="open ? 'rotate-180' : ''"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
                           >
-                            <span class="truncate" x-text="displayLabel()"></span>
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              class="h-4 w-4 text-slate-500 transition"
-                              :class="open ? 'rotate-180' : ''"
-                              viewBox="0 0 20 20"
-                              fill="currentColor"
-                            >
-                              <path
-                                fill-rule="evenodd"
-                                d="M5.23 7.21a.75.75 0 011.06.02L10 11.175l3.71-3.944a.75.75 0 011.08 1.04l-4.25 4.518a.75.75 0 01-1.08 0L5.25 8.27a.75.75 0 01-.02-1.06z"
-                                clip-rule="evenodd"
-                              />
-                            </svg>
-                          </button>
-                          <div
-                            x-show="open"
-                            x-transition
-                            x-cloak
-                            class="absolute z-20 mt-2 w-full rounded-xl border border-slate-200 bg-white shadow-2xl"
-                          >
-                          <div class="border-b border-slate-100 px-3 py-2">
-                            <input
-                              x-ref="contactSearchInput"
-                              type="text"
-                              autocomplete="off"
-                              x-model="searchTerm"
-                              @input="handleSearchInput"
-                              placeholder="Search by name, email, or phone"
-                              class="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                            <path
+                              fill-rule="evenodd"
+                              d="M5.23 7.21a.75.75 0 011.06.02L10 11.175l3.71-3.944a.75.75 0 011.08 1.04l-4.25 4.518a.75.75 0 01-1.08 0L5.25 8.27a.75.75 0 01-.02-1.06z"
+                              clip-rule="evenodd"
                             />
-                          </div>
-                            <div class="max-h-64 overflow-y-auto">
-                              <template x-if="isSearching">
-                                <p class="px-3 py-4 text-sm text-slate-500">
-                                  Searching contacts…
-                                </p>
-                              </template>
-                              <template x-if="error">
-                                <p class="px-3 py-4 text-sm text-rose-600" x-text="error"></p>
-                              </template>
-                              <template x-if="!isSearching && suggestions.length">
-                                <ul class="divide-y divide-slate-100">
-                                  <template
-                                    x-for="contact in suggestions"
-                                    :key="contact.id || contact.displayLabel"
-                                  >
-                                    <li>
-                                      <button
-                                        type="button"
-                                        class="flex w-full flex-col gap-0.5 px-3 py-2 text-left text-sm hover:bg-slate-50"
-                                        @click="selectContact(contact)"
-                                      >
-                                        <span class="font-medium text-slate-900" x-text="contact.displayLabel"></span>
-                                        <span
-                                          class="text-xs text-slate-500"
-                                          x-text="contact.email"
-                                        ></span>
-                                      </button>
-                                    </li>
-                                  </template>
-                                </ul>
-                              </template>
-                              <template x-if="!isSearching && !suggestions.length && hasSearched && !error">
-                                <p class="px-3 py-4 text-sm text-slate-500">
-                                  No contacts found.
-                                </p>
-                              </template>
-                              <template x-if="!isSearching && !hasSearched && !error">
-                                <p class="px-3 py-4 text-sm text-slate-500">
-                                  Start typing to search existing contacts.
-                                </p>
-                              </template>
-                            </div>
-                            <div class="flex flex-col gap-2 border-t border-slate-100 px-3 py-3">
-                              <button
-                                type="button"
-                                class="flex w-full items-center justify-center gap-2 rounded-md border border-dashed border-sky-300 px-3 py-2 text-sm font-semibold text-sky-800 hover:bg-sky-50"
-                                @click.prevent.stop="openAddContact"
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  class="h-4 w-4"
-                                  viewBox="0 0 20 20"
-                                  fill="none"
+                          </svg>
+                        </button>
+                        <div
+                          x-show="open"
+                          x-transition
+                          x-cloak
+                          class="absolute z-20 mt-2 w-full rounded-xl border border-slate-200 bg-white shadow-2xl"
+                        >
+                          <template x-if="!isUpdating">
+                            <div>
+                              <div class="border-b border-slate-100 px-3 py-2">
+                                <input
+                                  x-ref="contactSearchInput"
+                                  type="text"
+                                  autocomplete="off"
+                                  x-model="searchTerm"
+                                  @input="handleSearchInput"
+                                  placeholder="Search by name, email, or phone"
+                                  class="w-full rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                                />
+                              </div>
+                              <div class="max-h-64 overflow-y-auto">
+                                <template x-if="isSearching">
+                                  <p class="px-3 py-4 text-sm text-slate-500">
+                                    Searching contacts…
+                                  </p>
+                                </template>
+                                <template x-if="error">
+                                  <p
+                                    class="px-3 py-4 text-sm text-rose-600"
+                                    x-text="error"
+                                  ></p>
+                                </template>
+                                <template
+                                  x-if="!isSearching && suggestions.length"
                                 >
-                                  <path
-                                    d="M10 4.16675C10.2761 4.16675 10.5 4.39061 10.5 4.66675V9.50008H15.3333C15.6095 9.50008 15.8333 9.72394 15.8333 10.0001C15.8333 10.2762 15.6095 10.5001 15.3333 10.5001H10.5V15.3334C10.5 15.6095 10.2761 15.8334 10 15.8334C9.72386 15.8334 9.50001 15.6095 9.50001 15.3334V10.5001H4.66667C4.39053 10.5001 4.16667 10.2762 4.16667 10.0001C4.16667 9.72394 4.39053 9.50008 4.66667 9.50008H9.50001V4.66675C9.50001 4.39061 9.72386 4.16675 10 4.16675Z"
-                                    fill="currentColor"
-                                  />
-                                </svg>
-                                Add new contact
-                              </button>
-                              <button
-                                type="button"
-                                class="text-sm text-slate-500 hover:text-slate-700"
-                                @click="clearSelection"
-                                x-show="selectedContact"
-                                x-cloak
+                                  <ul class="divide-y divide-slate-100">
+                                    <template
+                                      x-for="contact in suggestions"
+                                      :key="contact.id || contact.displayLabel"
+                                    >
+                                      <li>
+                                        <button
+                                          type="button"
+                                          class="flex w-full flex-col gap-0.5 px-3 py-2 text-left text-sm hover:bg-slate-50"
+                                          @click="selectContact(contact)"
+                                        >
+                                          <span
+                                            class="font-medium text-slate-900"
+                                            x-text="contact.displayLabel"
+                                          ></span>
+                                          <span
+                                            class="text-xs text-slate-500"
+                                            x-text="contact.email"
+                                          ></span>
+                                        </button>
+                                      </li>
+                                    </template>
+                                  </ul>
+                                </template>
+                                <template
+                                  x-if="!isSearching && !suggestions.length && hasSearched && !error"
+                                >
+                                  <p class="px-3 py-4 text-sm text-slate-500">
+                                    No contacts found.
+                                  </p>
+                                </template>
+                                <template
+                                  x-if="!isSearching && !hasSearched && !error"
+                                >
+                                  <p class="px-3 py-4 text-sm text-slate-500">
+                                    Start typing to search existing contacts.
+                                  </p>
+                                </template>
+                              </div>
+                              <div
+                                class="flex flex-col gap-2 border-t border-slate-100 px-3 py-3"
                               >
-                                Clear selection
-                              </button>
+                                <button
+                                  type="button"
+                                  class="flex w-full items-center justify-center gap-2 rounded-md border border-dashed border-sky-300 px-3 py-2 text-sm font-semibold text-sky-800 hover:bg-sky-50"
+                                  @click.prevent.stop="openAddContact"
+                                >
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    class="h-4 w-4"
+                                    viewBox="0 0 20 20"
+                                    fill="none"
+                                  >
+                                    <path
+                                      d="M10 4.16675C10.2761 4.16675 10.5 4.39061 10.5 4.66675V9.50008H15.3333C15.6095 9.50008 15.8333 9.72394 15.8333 10.0001C15.8333 10.2762 15.6095 10.5001 15.3333 10.5001H10.5V15.3334C10.5 15.6095 10.2761 15.8334 10 15.8334C9.72386 15.8334 9.50001 15.6095 9.50001 15.3334V10.5001H4.66667C4.39053 10.5001 4.16667 10.2762 4.16667 10.0001C4.16667 9.72394 4.39053 9.50008 4.66667 9.50008H9.50001V4.66675C9.50001 4.39061 9.72386 4.16675 10 4.16675Z"
+                                      fill="currentColor"
+                                    />
+                                  </svg>
+                                  Add new contact
+                                </button>
+                                <button
+                                  type="button"
+                                  class="text-sm text-slate-500 hover:text-slate-700"
+                                  @click="clearSelection"
+                                  x-show="selectedContact"
+                                  x-cloak
+                                >
+                                  Clear selection
+                                </button>
+                              </div>
                             </div>
-                          </div>
-                          <span
-                            class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-slate-400"
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              class="h-4 w-4"
-                              viewBox="0 0 20 20"
-                              fill="currentColor"
+                          </template>
+                          <template x-if="isUpdating">
+                            <div
+                              class="px-4 py-6 text-sm text-slate-600 flex items-center gap-3"
                             >
-                              <path
-                                fill-rule="evenodd"
-                                d="M5.23 7.21a.75.75 0 011.06.02L10 11.175l3.71-3.944a.75.75 0 011.08 1.04l-4.25 4.518a.75.75 0 01-1.08 0L5.25 8.27a.75.75 0 01-.02-1.06z"
-                                clip-rule="evenodd"
-                              />
-                            </svg>
-                          </span>
+                              <svg
+                                class="h-5 w-5 animate-spin text-slate-500"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <circle
+                                  class="opacity-25"
+                                  cx="12"
+                                  cy="12"
+                                  r="10"
+                                  stroke="currentColor"
+                                  stroke-width="4"
+                                ></circle>
+                                <path
+                                  class="opacity-75"
+                                  d="M4 12a8 8 0 018-8"
+                                  stroke="currentColor"
+                                  stroke-width="4"
+                                  stroke-linecap="round"
+                                ></path>
+                              </svg>
+                              <span
+                                x-text="updateMessage || 'Updating contact…'"
+                              ></span>
+                            </div>
+                          </template>
                         </div>
-                      </label>
-                    </div>
-                    <div
-                      class="space-y-1"
-                      x-show="shouldShowRecipientSelector"
-                      x-cloak
-                    >
+                        <span
+                          class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-slate-400"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-4 w-4"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                          >
+                            <path
+                              fill-rule="evenodd"
+                              d="M5.23 7.21a.75.75 0 011.06.02L10 11.175l3.71-3.944a.75.75 0 011.08 1.04l-4.25 4.518a.75.75 0 01-1.08 0L5.25 8.27a.75.75 0 01-.02-1.06z"
+                              clip-rule="evenodd"
+                            />
+                          </svg>
+                        </span>
+                      </div>
+                    </label>
+                  </div>
+
+                  <div
+                    class="space-y-1"
+                    x-show="shouldShowRecipientSelector"
+                    x-cloak
+                  >
                     <label
                       class="text-xs font-semibold uppercase text-slate-500"
                       >Send Quote To:<span class="text-rose-600">*</span></label
@@ -2393,12 +2298,12 @@
                       >
                         <div class="flex flex-wrap gap-1">
                           <span
-                            x-show="selectedRecipientIds.length"
+                            x-show="selectedRecipientId"
                             class="text-slate-800"
                             x-text="quoteRecipients"
                           ></span>
                           <span
-                            x-show="!selectedRecipientIds.length"
+                            x-show="!selectedRecipientId"
                             class="text-slate-400"
                             >Select recipients or type to search...</span
                           >
@@ -2427,98 +2332,136 @@
                         @click.outside="closeRecipientDropdown"
                         class="absolute z-20 mt-1 w-full rounded-lg border border-slate-200 bg-white shadow-xl"
                       >
-                        <div class="border-b border-slate-100 px-3 py-2">
-                          <input
-                            type="text"
-                            x-model="recipientSearchTerm"
-                            class="w-full rounded-md border border-slate-200 px-3 py-1.5 text-sm text-slate-800 focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500"
-                            placeholder="Search recipients"
-                            @keydown.stop
-                          />
-                        </div>
-                        <div
-                          class="max-h-72 divide-y divide-slate-100 overflow-y-auto"
-                        >
-                          <template x-if="filteredRecipients.length">
-                            <div>
-                              <template
-                                x-for="recipient in filteredRecipients"
-                                :key="recipient.id"
-                              >
-                                <label
-                                  class="flex cursor-pointer items-start gap-3 px-4 py-3 hover:bg-slate-50"
-                                >
-                                  <input
-                                    type="checkbox"
-                                    class="mt-1 h-4 w-4 rounded border-slate-300 text-sky-600 focus:ring-sky-500"
-                                    :value="recipient.id"
-                                    :checked="isRecipientSelected(recipient.id)"
-                                    @change="toggleRecipient(recipient.id)"
-                                  />
-                                  <div class="flex-1">
-                                    <div class="flex items-center gap-2">
-                                      <svg
-                                        width="14"
-                                        height="14"
-                                        viewBox="0 0 14 14"
-                                        fill="none"
-                                        class="text-amber-400"
-                                        x-show="recipient.isImportant"
-                                      >
-                                        <path
-                                          d="M6.08085 2.1472C6.47693 1.22242 7.52309 1.22242 7.91917 2.1472L8.74416 4.07619C8.812 4.23845 8.92155 4.3787 9.06056 4.48049C9.19956 4.58228 9.36294 4.64154 9.5329 4.65127L11.6036 4.7729C12.6073 4.8308 13.0172 6.08494 12.2481 6.71173L10.6271 8.02795C10.492 8.13925 10.387 8.28539 10.3228 8.45279C10.2585 8.62019 10.2371 8.80326 10.2607 8.98269L10.5315 11.034C10.6708 12.0361 9.59277 12.7615 8.70702 12.2903L6.88459 11.3346C6.72812 11.252 6.56154 11.2091 6.39233 11.2091C6.22312 11.2091 6.05653 11.252 5.90006 11.3346L4.07764 12.2894C3.19349 12.7607 2.11599 12.0354 2.25486 11.0337L2.52561 8.98269C2.54923 8.80326 2.52779 8.62019 2.46355 8.45279C2.39932 8.28539 2.2943 8.13925 2.1593 8.02795L0.538292 6.71173C-0.23079 6.08494 0.178603 4.8308 1.18351 4.7729L3.2542 4.65127C3.4242 4.64154 3.58757 4.58228 3.72658 4.48049C3.86559 4.3787 3.97513 4.23845 4.04297 4.07619L4.86796 2.1472H6.08085Z"
-                                          fill="currentColor"
-                                        />
-                                      </svg>
-                                      <span
-                                        class="text-sm font-semibold text-slate-900"
-                                        x-text="recipient.displayName"
-                                      ></span>
-                                      <span
-                                        class="text-xs font-medium text-slate-500"
-                                        x-text="recipient.roleLabel || recipient.role || ''"
-                                      ></span>
-                                    </div>
-                                    <div
-                                      class="text-xs text-slate-500"
-                                      x-text="recipient.phone"
-                                    ></div>
-                                    <div
-                                      class="text-xs text-slate-500"
-                                      x-text="recipient.email"
-                                    ></div>
-                                  </div>
-                                </label>
-                              </template>
+                        <template x-if="!isRecipientUpdating">
+                          <div>
+                            <div class="border-b border-slate-100 px-3 py-2">
+                              <input
+                                type="text"
+                                x-model="recipientSearchTerm"
+                                class="w-full rounded-md border border-slate-200 px-3 py-1.5 text-sm text-slate-800 focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                                placeholder="Search recipients"
+                                @keydown.stop
+                              />
                             </div>
-                          </template>
-                          <p
-                            class="px-4 py-3 text-sm text-slate-500"
-                            x-show="!filteredRecipients.length"
-                          >
-                            No contacts found.
-                          </p>
-                        </div>
-                        <div class="flex flex-col gap-2 border-t border-slate-100 px-3 py-3">
-                          <button
-                            type="button"
-                            class="flex w-full items-center justify-center gap-2 rounded-md border border-dashed border-sky-300 px-3 py-2 text-sm font-semibold text-sky-800 hover:bg-sky-50"
-                            @click.prevent.stop="handleAddContact"
+                            <div
+                              class="max-h-72 divide-y divide-slate-100 overflow-y-auto"
+                            >
+                              <template x-if="filteredRecipients.length">
+                                <div>
+                                  <template
+                                    x-for="recipient in filteredRecipients"
+                                    :key="recipient.id"
+                                  >
+                                    <label
+                                      class="flex cursor-pointer items-start gap-3 px-4 py-3 hover:bg-slate-50"
+                                    >
+                                      <input
+                                        type="radio"
+                                        name="quote-recipient"
+                                        class="mt-1 h-4 w-4 border-slate-300 text-sky-600 focus:ring-sky-500"
+                                        :value="recipient.id"
+                                        :checked="isRecipientSelected(recipient.id)"
+                                        @change="toggleRecipient(recipient.id)"
+                                      />
+                                      <div class="flex-1">
+                                        <div class="flex items-center gap-2">
+                                          <svg
+                                            width="14"
+                                            height="14"
+                                            viewBox="0 0 14 14"
+                                            fill="none"
+                                            class="text-amber-400"
+                                            x-show="recipient.isImportant"
+                                          >
+                                            <path
+                                              d="M6.08085 2.1472C6.47693 1.22242 7.52309 1.22242 7.91917 2.1472L8.74416 4.07619C8.812 4.23845 8.92155 4.3787 9.06056 4.48049C9.19956 4.58228 9.36294 4.64154 9.5329 4.65127L11.6036 4.7729C12.6073 4.8308 13.0172 6.08494 12.2481 6.71173L10.6271 8.02795C10.492 8.13925 10.387 8.28539 10.3228 8.45279C10.2585 8.62019 10.2371 8.80326 10.2607 8.98269L10.5315 11.034C10.6708 12.0361 9.59277 12.7615 8.70702 12.2903L6.88459 11.3346C6.72812 11.252 6.56154 11.2091 6.39233 11.2091C6.22312 11.2091 6.05653 11.252 5.90006 11.3346L4.07764 12.2894C3.19349 12.7607 2.11599 12.0354 2.25486 11.0337L2.52561 8.98269C2.54923 8.80326 2.52779 8.62019 2.46355 8.45279C2.39932 8.28539 2.2943 8.13925 2.1593 8.02795L0.538292 6.71173C-0.23079 6.08494 0.178603 4.8308 1.18351 4.7729L3.2542 4.65127C3.4242 4.64154 3.58757 4.58228 3.72658 4.48049C3.86559 4.3787 3.97513 4.23845 4.04297 4.07619L4.86796 2.1472H6.08085Z"
+                                              fill="currentColor"
+                                            />
+                                          </svg>
+                                          <span
+                                            class="text-sm font-semibold text-slate-900"
+                                            x-text="recipient.displayName"
+                                          ></span>
+                                          <span
+                                            class="text-xs font-medium text-slate-500"
+                                            x-text="recipient.roleLabel || recipient.role || ''"
+                                          ></span>
+                                        </div>
+                                        <div
+                                          class="text-xs text-slate-500"
+                                          x-text="recipient.phone"
+                                        ></div>
+                                        <div
+                                          class="text-xs text-slate-500"
+                                          x-text="recipient.email"
+                                        ></div>
+                                      </div>
+                                    </label>
+                                  </template>
+                                </div>
+                              </template>
+                              <p
+                                class="px-4 py-3 text-sm text-slate-500"
+                                x-show="!filteredRecipients.length"
+                              >
+                                No contacts found.
+                              </p>
+                            </div>
+                            <div
+                              class="flex flex-col gap-2 border-t border-slate-100 px-3 py-3"
+                            >
+                              <button
+                                type="button"
+                                class="flex w-full items-center justify-center gap-2 rounded-md border border-dashed border-sky-300 px-3 py-2 text-sm font-semibold text-sky-800 hover:bg-sky-50"
+                                @click.prevent.stop="handleAddContact"
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  class="h-4 w-4"
+                                  viewBox="0 0 20 20"
+                                  fill="none"
+                                >
+                                  <path
+                                    d="M10 4.16675C10.2761 4.16675 10.5 4.39061 10.5 4.66675V9.50008H15.3333C15.6095 9.50008 15.8333 9.72394 15.8333 10.0001C15.8333 10.2762 15.6095 10.5001 15.3333 10.5001H10.5V15.3334C10.5 15.6095 10.2761 15.8334 10 15.8334C9.72386 15.8334 9.50001 15.6095 9.50001 15.3334V10.5001H4.66667C4.39053 10.5001 4.16667 10.2762 4.16667 10.0001C4.16667 9.72394 4.39053 9.50008 4.66667 9.50008H9.50001V4.66675C9.50001 4.39061 9.72386 4.16675 10 4.16675Z"
+                                    fill="currentColor"
+                                  />
+                                </svg>
+                                Add new contact
+                              </button>
+                            </div>
+                          </div>
+                        </template>
+                        <template x-if="isRecipientUpdating">
+                          <div
+                            class="px-4 py-6 text-sm text-slate-600 flex items-center gap-3"
                           >
                             <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              class="h-4 w-4"
-                              viewBox="0 0 20 20"
+                              class="h-5 w-5 animate-spin text-slate-500"
+                              viewBox="0 0 24 24"
                               fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
                             >
+                              <circle
+                                class="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                stroke-width="4"
+                              ></circle>
                               <path
-                                d="M10 4.16675C10.2761 4.16675 10.5 4.39061 10.5 4.66675V9.50008H15.3333C15.6095 9.50008 15.8333 9.72394 15.8333 10.0001C15.8333 10.2762 15.6095 10.5001 15.3333 10.5001H10.5V15.3334C10.5 15.6095 10.2761 15.8334 10 15.8334C9.72386 15.8334 9.50001 15.6095 9.50001 15.3334V10.5001H4.66667C4.39053 10.5001 4.16667 10.2762 4.16667 10.0001C4.16667 9.72394 4.39053 9.50008 4.66667 9.50008H9.50001V4.66675C9.50001 4.39061 9.72386 4.16675 10 4.16675Z"
-                                fill="currentColor"
-                              />
+                                class="opacity-75"
+                                d="M4 12a8 8 0 018-8"
+                                stroke="currentColor"
+                                stroke-width="4"
+                                stroke-linecap="round"
+                              ></path>
                             </svg>
-                            Add new contact
-                          </button>
-                        </div>
+                            <span
+                              x-text="recipientUpdateMessage || 'Updating contact…'"
+                            ></span>
+                          </div>
+                        </template>
                       </div>
                       <span
                         class="mt-1 block text-xs text-rose-600"
@@ -2541,7 +2484,7 @@
                     >
                       <div
                         data-recipient-option
-                        data-recipient-id="[ContactEmail]"
+                        data-recipient-id="[ID]"
                         data-recipient-name="[Contact_First_Name] [Contact_Last_Name]"
                         data-recipient-role="[Role]"
                         data-recipient-phone="[Contact_SMS_Number]"
@@ -2550,6 +2493,7 @@
                       ></div>
                     </div>
                   </div>
+                  
                   <div class="grid gap-3 text-sm text-slate-700">
                     <div class="flex items-center gap-2">
                       <span class="text-slate-500">Quote No.:</span>
@@ -3481,7 +3425,7 @@
       <!-- Floating Action Button with notification -->
       <button
         class="fixed bottom-6 right-6 z-40 h-16 w-16 rounded-full bg-[#003882] text-white shadow-2xl flex items-center justify-center hover:bg-[#022d62] transition"
-       @click="open = true"
+        @click="open = true"
         aria-label="Open memos"
       >
         <!-- document/edit icon -->
@@ -3503,7 +3447,6 @@
           x-text="newMessages"
         ></span>
       </button>
-   
 
       <div
         class="fixed inset-0 w-screen h-screen z-500 flex items-start justify-center bg-slate-900/50 px-4 pt-6 pb-10"
