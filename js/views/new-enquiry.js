@@ -115,7 +115,7 @@ export class NewEnquiryView {
     this._propertyFooterInitialized = false;
     this._propertyPredictionRequestId = 0;
 
-    this.createPropertyList([]);
+    // this.createPropertyList([]);
   }
 
   isActive() {
@@ -322,7 +322,7 @@ export class NewEnquiryView {
     try {
       const related = await this.model.fetchRelatedForEntity(normalized);
       if (this.entityRelatedRequestId !== requestId) return;
-      this.createPropertyList(related.properties || []);
+      // this.createPropertyList(related.properties || []);
       this.renderRelated(related);
     } catch (error) {
       console.error("[NewEnquiry] Failed to load entity related data", error);
@@ -954,6 +954,9 @@ export class NewEnquiryView {
           const fields = document.querySelectorAll(
             "#property-information input, #property-information select"
           );
+
+          document.querySelector('[placeholder="Search properties"]').value =
+            "";
 
           const fieldIds = Array.from(fields).map((field) =>
             field.getAttribute("data-property-id")
@@ -2163,162 +2166,167 @@ export class NewEnquiryView {
     }
   }
 
-  async createPropertyList(properties) {
-    // Root elements (reuse contact search structure conventions)
-    const root = document.querySelector('[data-search-root="property"]');
-    const input = root?.querySelector("[data-search-input]");
-    const panel = root?.querySelector("[data-search-panel]");
-    const results = root?.querySelector("[data-search-results]");
-    const footer = root?.querySelector("[data-search-footer]");
+  // async createPropertyList(properties) {
+  //   // Root elements (reuse contact search structure conventions)
+  //   const root = document.querySelector('[data-search-root="property"]');
+  //   const input = root?.querySelector("[data-search-input]");
+  //   const panel = root?.querySelector("[data-search-panel]");
+  //   const results = root?.querySelector("[data-search-results]");
+  //   const footer = root?.querySelector("[data-search-footer]");
 
-    if (!root || !input || !panel || !results) return;
+  //   if (!root || !input || !panel || !results) return;
 
-    const filter = (q = "") => {
-      const term = q.trim().toLowerCase();
-      if (!term) return properties;
-      return properties.filter((p) => {
-        const hay = [p.property_name].filter(Boolean).join(" ").toLowerCase();
-        return hay.includes(term);
-      });
-    };
+  //   const filter = (q = "") => {
+  //     const term = q.trim().toLowerCase();
+  //     if (!term) return properties;
+  //     return properties.filter((p) => {
+  //       const hay = [p.property_name].filter(Boolean).join(" ").toLowerCase();
+  //       return hay.includes(term);
+  //     });
+  //   };
 
-    const render = async (q = "") => {
-      const list = filter(q);
-      results.innerHTML = "";
+  //   const render = async (q = "") => {
+  //     const list = filter(q);
+  //     results.innerHTML = "";
 
-      // if (!list.length) {
-      //   const empty = document.createElement("div");
-      //   empty.className =
-      //     "px-4 py-6 text-sm text-slate-500 text-center select-none";
-      //   empty.textContent = "No matching properties. Add a new property.";
-      //   results.appendChild(empty);
-      // } else {
-      //   list.forEach((p, idx) => {
-      //     const li = document.createElement("li");
-      //     const btn = document.createElement("button");
-      //     btn.type = "button";
-      //     btn.dataset.optionIndex = String(idx);
+  //     // if (!list.length) {
+  //     //   const empty = document.createElement("div");
+  //     //   empty.className =
+  //     //     "px-4 py-6 text-sm text-slate-500 text-center select-none";
+  //     //   empty.textContent = "No matching properties. Add a new property.";
+  //     //   results.appendChild(empty);
+  //     // } else {
+  //     //   list.forEach((p, idx) => {
+  //     //     const li = document.createElement("li");
+  //     //     const btn = document.createElement("button");
+  //     //     btn.type = "button";
+  //     //     btn.dataset.optionIndex = String(idx);
 
-      //     btn.className =
-      //       "w-full px-4 py-3 text-left hover:bg-slate-50 focus:bg-slate-50 focus:outline-none";
-      //     btn.innerHTML = `
-      //       <div data-property-id= ${
-      //         p.id
-      //       } class="flex items-start justify-between gap-3">
-      //         <div>
-      //           <p class="text-sm font-medium text-slate-700">${this.#escapeHtml(
-      //             p.property_name || p.id
-      //           )}</p>
-      //         </div>
-      //     </div>`;
-      //     btn.addEventListener("mousedown", async (e) => {
-      //       e.preventDefault();
-      //       // Store the chosen property id similar to contacts
-      //       this.#setSelectedProperty(p.id);
-      //       const propertyFields = document.querySelectorAll(
-      //         "[data-section-id='property'] input:not([data-search-input]), [data-section-id='property'] select"
-      //       );
-      //       let result = await this.model.fetchPropertiesById(this.propertyId);
-      //       this.populatePropertyFields(propertyFields, result.resp);
+  //     //     btn.className =
+  //     //       "w-full px-4 py-3 text-left hover:bg-slate-50 focus:bg-slate-50 focus:outline-none";
+  //     //     btn.innerHTML = `
+  //     //       <div data-property-id= ${
+  //     //         p.id
+  //     //       } class="flex items-start justify-between gap-3">
+  //     //         <div>
+  //     //           <p class="text-sm font-medium text-slate-700">${this.#escapeHtml(
+  //     //             p.property_name || p.id
+  //     //           )}</p>
+  //     //         </div>
+  //     //     </div>`;
+  //     //     btn.addEventListener("mousedown", async (e) => {
+  //     //       e.preventDefault();
+  //     //       // Store the chosen property id similar to contacts
+  //     //       this.#setSelectedProperty(p.id);
+  //     //       const propertyFields = document.querySelectorAll(
+  //     //         "[data-section-id='property'] input:not([data-search-input]), [data-section-id='property'] select"
+  //     //       );
+  //     //       let result = await this.model.fetchPropertiesById(this.propertyId);
+  //     //       this.populatePropertyFields(propertyFields, result.resp);
 
-      //       input.value = `${p.property_name || p.id} — ${
-      //         p.address_1 || ""
-      //       }`.trim();
-      //       input.dispatchEvent(new Event("input", { bubbles: true }));
-      //       input.dispatchEvent(new Event("change", { bubbles: true }));
-      //       panel.classList.add("hidden");
-      //     });
-      //     li.appendChild(btn);
-      //     results.appendChild(li);
-      //   });
-      // }
+  //     //       input.value = `${p.property_name || p.id} — ${
+  //     //         p.address_1 || ""
+  //     //       }`.trim();
+  //     //       input.dispatchEvent(new Event("input", { bubbles: true }));
+  //     //       input.dispatchEvent(new Event("change", { bubbles: true }));
+  //     //       panel.classList.add("hidden");
+  //     //     });
+  //     //     li.appendChild(btn);
+  //     //     results.appendChild(li);
+  //     //   });
+  //     // }
 
-      // Fixed footer with Add New Property
-      let x = await this.model.fetchProperties(q);
-      if (footer) footer.innerHTML = "";
-      const addBtn = document.createElement("button");
-      addBtn.type = "button";
-      addBtn.innerHTML = `
-                    <span class="inline-flex h-5 w-5 items-center justify-center rounded-full border border-sky-900 text-sky-900">
-                        +
-                      </span>
+  //     // Fixed footer with Add New Property
+  //     let x = await this.model.fetchProperties(q);
+  //     if (footer) footer.innerHTML = "";
+  //     const addBtn = document.createElement("button");
+  //     addBtn.type = "button";
+  //     addBtn.innerHTML = `
+  //                   <span class="inline-flex h-5 w-5 items-center justify-center rounded-full border border-sky-900 text-sky-900">
+  //                       +
+  //                     </span>
 
-                    <span class="text-sky-900 hover:bg-slate-50">Add New Property</span>
-                   `;
-      addBtn.className =
-        "flex w-full items-center gap-2 border-t border-slate-200 px-4 py-3 text-sm font-medium text-sky-900 hover:bg-slate-50";
-      addBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        this.clearPropertyFieldValues(
-          "#property-information input, #property-information select"
-        );
-        const addPropertyBtn = document.getElementById("add-property-btn");
-        if (!addPropertyBtn) return;
-        addPropertyBtn.classList.remove("hidden");
-        addPropertyBtn.addEventListener("click", async () => {
-          this.showLoader("Saving property...");
-          try {
-            const details = this.getValuesFromFields(
-              "[data-property-id]",
-              "data-property-id"
-            );
-            const contactField = document.querySelector(
-              "[data-contact-field='contact_id']"
-            );
-            const entityField = document.querySelector(
-              "[data-contact-field='entity-id']"
-            );
-            const contactId = contactField?.value || "";
-            const entityId = entityField?.value || "";
+  //                   <span class="text-sky-900 hover:bg-slate-50">Add New Property</span>
+  //                  `;
+  //     addBtn.className =
+  //       "flex w-full items-center gap-2 border-t border-slate-200 px-4 py-3 text-sm font-medium text-sky-900 hover:bg-slate-50";
+  //     addBtn.addEventListener("click", (e) => {
+  //       e.preventDefault();
+  //       this.clearPropertyFieldValues(
+  //         "#property-information input, #property-information select"
+  //       );
+  //       const addPropertyBtn = document.getElementById("add-property-btn");
+  //       if (!addPropertyBtn) return;
+  //       addPropertyBtn.classList.remove("hidden");
+  //       addPropertyBtn.addEventListener("click", async () => {
+  //         this.showLoader("Saving property...");
+  //         try {
+  //           const details = this.getValuesFromFields(
+  //             "[data-property-id]",
+  //             "data-property-id"
+  //           );
+  //           const contactField = document.querySelector(
+  //             "[data-contact-field='contact_id']"
+  //           );
+  //           const entityField = document.querySelector(
+  //             "[data-contact-field='entity-id']"
+  //           );
+  //           const contactId = contactField?.value || "";
+  //           const entityId = entityField?.value || "";
 
-            const activeTab = this.getActiveTabs();
-            let result = "";
-            if (activeTab == "individual") {
-              result = await this.model.createNewProperties(
-                details,
-                contactId,
-                ""
-              );
-            } else {
-              result = await this.model.createNewProperties(
-                details,
-                "",
-                entityId
-              );
-            }
-            if (!result.isCancelling) {
-              this.customModalHeader.innerText = "Successful";
-              this.customModalBody.innerText =
-                "New Property created successfully.";
+  //           const activeTab = this.getActiveTabs();
+  //           let result = "";
+  //           if (activeTab == "individual") {
+  //             result = await this.model.createNewProperties(
+  //               details,
+  //               contactId,
+  //               ""
+  //             );
+  //           } else {
+  //             result = await this.model.createNewProperties(
+  //               details,
+  //               "",
+  //               entityId
+  //             );
+  //           }
+  //           if (!result.isCancelling) {
+  //             let propertyId = Object.keys(
+  //               result.mutations.PeterpmProperty.managedData
+  //             )[0];
+  //             document.getElementById("selected-property-id").value =
+  //               propertyId;
+  //             this.customModalHeader.innerText = "Successful";
+  //             this.customModalBody.innerText =
+  //               "New Property created successfully.";
 
-              this.clearPropertyFieldValues(
-                "#property-information input, #property-information select"
-              );
-              this.toggleModal("statusModal");
-            } else {
-              this.customModalHeader.innerText = "Failed";
-              this.customModalBody.innerText = "Properties create failed.";
-              this.toggleModal("statusModal");
-            }
-          } catch (error) {
-            console.error("[NewEnquiry] Failed to create property", error);
-            this.showFeedback("Unable to create property right now.");
-          } finally {
-            this.hideLoader();
-          }
-        });
-      });
-      if (footer) footer.appendChild(addBtn);
+  //             // this.clearPropertyFieldValues(
+  //             //   "#property-information input, #property-information select"
+  //             // );
+  //             this.toggleModal("statusModal");
+  //           } else {
+  //             this.customModalHeader.innerText = "Failed";
+  //             this.customModalBody.innerText = "Properties create failed.";
+  //             this.toggleModal("statusModal");
+  //           }
+  //         } catch (error) {
+  //           console.error("[NewEnquiry] Failed to create property", error);
+  //           this.showFeedback("Unable to create property right now.");
+  //         } finally {
+  //           this.hideLoader();
+  //         }
+  //       });
+  //     });
+  //     if (footer) footer.appendChild(addBtn);
 
-      panel.classList.remove("hidden");
-    };
+  //     panel.classList.remove("hidden");
+  //   };
 
-    input.addEventListener("input", (e) => render(e.target.value || ""));
-    input.addEventListener("focus", () => render(input.value || ""));
-    document.addEventListener("click", (e) => {
-      if (!root.contains(e.target)) panel.classList.add("hidden");
-    });
-  }
+  //   input.addEventListener("input", (e) => render(e.target.value || ""));
+  //   input.addEventListener("focus", () => render(input.value || ""));
+  //   document.addEventListener("click", (e) => {
+  //     if (!root.contains(e.target)) panel.classList.add("hidden");
+  //   });
+  // }
 
   clearPropertyFieldValues(section) {
     let fields = document.querySelectorAll(section);
@@ -2748,65 +2756,65 @@ export class NewEnquiryView {
         });
       }
 
-      // Fixed footer with Add New Property
-      if (footer) footer.innerHTML = "";
-      const addBtn = document.createElement("button");
-      addBtn.type = "button";
-      addBtn.innerHTML = `
-                    <span class="inline-flex h-5 w-5 items-center justify-center rounded-full border border-sky-900 text-sky-900">
-                        +
-                      </span>
+      // // Fixed footer with Add New Property
+      // if (footer) footer.innerHTML = "";
+      // const addBtn = document.createElement("button");
+      // addBtn.type = "button";
+      // addBtn.innerHTML = `
+      //               <span class="inline-flex h-5 w-5 items-center justify-center rounded-full border border-sky-900 text-sky-900">
+      //                   +
+      //                 </span>
 
-                    <span class="text-sky-900 hover:bg-slate-50">Add New Property</span>
-                   `;
-      addBtn.className =
-        "flex w-full items-center gap-2 border-t border-slate-200 px-4 py-3 text-sm font-medium text-sky-900 hover:bg-slate-50";
-      addBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        this.clearPropertyFieldValues(
-          "#property-information input, #property-information select"
-        );
-        const addPropertyBtn = document.getElementById("add-property-btn");
-        if (!addPropertyBtn) return;
-        addPropertyBtn.classList.remove("hidden");
-        addPropertyBtn.addEventListener("click", async () => {
-          this.showLoader("Saving property...");
-          try {
-            const details = this.getValuesFromFields(
-              "[data-property-id]",
-              "data-property-id"
-            );
-            const contactField = document.querySelector(
-              "[data-contact-field='contact_id']"
-            );
-            const contactId = contactField?.value || "";
-            const result = await this.model.createNewProperties(
-              details,
-              contactId
-            );
-            if (!result.isCancelling) {
-              this.customModalHeader.innerText = "Successful";
-              this.customModalBody.innerText =
-                "New Property created successfully.";
+      //               <span class="text-sky-900 hover:bg-slate-50">Add New Property</span>
+      //              `;
+      // addBtn.className =
+      //   "flex w-full items-center gap-2 border-t border-slate-200 px-4 py-3 text-sm font-medium text-sky-900 hover:bg-slate-50";
+      // addBtn.addEventListener("click", (e) => {
+      //   e.preventDefault();
+      //   this.clearPropertyFieldValues(
+      //     "#property-information input, #property-information select"
+      //   );
+      //   const addPropertyBtn = document.getElementById("add-property-btn");
+      //   // if (!addPropertyBtn) return;
+      //   // addPropertyBtn.classList.remove("hidden");
+      //   addPropertyBtn.addEventListener("click", async () => {
+      //     this.showLoader("Saving property...");
+      //     try {
+      //       const details = this.getValuesFromFields(
+      //         "[data-property-id]",
+      //         "data-property-id"
+      //       );
+      //       const contactField = document.querySelector(
+      //         "[data-contact-field='contact_id']"
+      //       );
+      //       const contactId = contactField?.value || "";
+      //       const result = await this.model.createNewProperties(
+      //         details,
+      //         contactId
+      //       );
+      //       if (!result.isCancelling) {
+      //         this.customModalHeader.innerText = "Successful";
+      //         this.customModalBody.innerText =
+      //           "New Property created successfully.";
 
-              this.clearPropertyFieldValues(
-                "#property-information input, #property-information select"
-              );
-              this.toggleModal("statusModal");
-            } else {
-              this.customModalHeader.innerText = "Failed";
-              this.customModalBody.innerText = "Properties create failed.";
-              this.toggleModal("statusModal");
-            }
-          } catch (error) {
-            console.error("[NewEnquiry] Failed to create property", error);
-            this.showFeedback("Unable to create property right now.");
-          } finally {
-            this.hideLoader();
-          }
-        });
-      });
-      if (footer) footer.appendChild(addBtn);
+      //         this.clearPropertyFieldValues(
+      //           "#property-information input, #property-information select"
+      //         );
+      //         this.toggleModal("statusModal");
+      //       } else {
+      //         this.customModalHeader.innerText = "Failed";
+      //         this.customModalBody.innerText = "Properties create failed.";
+      //         this.toggleModal("statusModal");
+      //       }
+      //     } catch (error) {
+      //       console.error("[NewEnquiry] Failed to create property", error);
+      //       this.showFeedback("Unable to create property right now.");
+      //     } finally {
+      //       this.hideLoader();
+      //     }
+      //   });
+      // });
+      // if (footer) footer.appendChild(addBtn);
 
       panel.classList.remove("hidden");
     };
@@ -2850,6 +2858,15 @@ export class NewEnquiryView {
       if (smsField) smsField.value = item.sms_number || "";
       if (phoneNumber) phoneNumber.value = item.office_phone || "";
       if (entityTypeField) entityTypeField.value = item.entity_type || "";
+    });
+  }
+
+  setGoogleSearchAddress(data) {
+    Object.keys(data).forEach((key) => {
+      let field = document.querySelector(`[data-property-id=${key}]`);
+      if (field) {
+        field.value = data[key];
+      }
     });
   }
 }

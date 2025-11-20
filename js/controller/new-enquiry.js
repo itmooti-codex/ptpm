@@ -175,6 +175,7 @@ export class NewEnquiryController {
     this.createInquiryDetailOption();
     this.showHideAddAddressModal();
     this.onSameAsContactCheckboxClicked();
+    this.onAddPropertyButtonClick();
   }
 
   async #loadContacts() {
@@ -260,7 +261,7 @@ export class NewEnquiryController {
     this.view.showRelatedLoading();
     try {
       const related = await this.model.fetchRelated(normalized);
-      this.view.createPropertyList(related.properties || []);
+      // this.view.createPropertyList(related.properties || []);
       if (this.relatedRequestId !== requestId) return;
       this.view.renderRelated(related);
     } catch (error) {
@@ -554,14 +555,26 @@ export class NewEnquiryController {
       if (selectedPropertyId) {
         dealsObj.property_id = selectedPropertyId;
       } else {
-        delete dealsObj.property_id;
+        this.view.customModalBody.innerText =
+          "Please add or select a property before saving inquiry details.";
+        this.view.customModalHeader.innerText = "Failed";
+        this.view.toggleModal("statusModal");
+        return;
       }
 
+      if (!contactId && !companyId) {
+        this.view.customModalBody.innerText =
+          "Please select a contact before saving inquiry details.";
+        this.view.customModalHeader.innerText = "Failed";
+        this.view.toggleModal("statusModal");
+        return;
+      }
       if (contactId) {
         dealsObj["primary_contact_id"] = contactId;
       } else {
         dealsObj["company_id"] = companyId;
       }
+      this.view.showLoader("creating new enquiry...");
       let result = await this.model.createNewInquiry(dealsObj);
 
       if (!result.isCancelling) {
@@ -574,6 +587,7 @@ export class NewEnquiryController {
         this.view.customModalBody.innerText = "New inquiry creation failed.";
         this.view.toggleModal("statusModal");
       }
+      this.view.hideLoader();
       return;
     });
   }
@@ -656,5 +670,158 @@ export class NewEnquiryController {
           .classList.remove("hidden");
       });
     }
+  }
+
+  initAutocomplete() {
+    const input = document.querySelector('[placeholder="Search properties"]');
+    const autocomplete = new google.maps.places.Autocomplete(input, {
+      types: ["address"],
+      componentRestrictions: { country: "au" },
+    });
+    autocomplete.addListener("place_changed", () => {
+      const place = autocomplete.getPlace();
+      const parsed = this.parseAddressComponents(place);
+      this.view.setGoogleSearchAddress(parsed);
+      return parsed;
+    });
+  }
+
+  parseAddressComponents(place) {
+    const components = place.address_components || [];
+
+    const result = {
+      "unit-number": "",
+      "lot-number": "",
+      "address-1": "",
+      "address-2": "",
+      "suburb-town": "",
+      "suburb-town": "",
+      state: "",
+      "postal-code": "",
+      street_number: "",
+      street: "",
+    };
+
+    components.forEach((c) => {
+      if (c.types.includes("subpremise")) result["unit-number"] = c.long_name;
+      if (c.types.includes("premise")) result["lot-number"] = c.long_name;
+      if (c.types.includes("lot_number")) result["lot-number"] = c.long_name;
+
+      if (c.types.includes("street_number")) result.street_number = c.long_name;
+      if (c.types.includes("route")) result.street = c.long_name;
+
+      if (c.types.includes("locality")) result["suburb-town"] = c.long_name;
+
+      if (
+        c.types.includes("sublocality") ||
+        c.types.includes("sublocality_level_1")
+      ) {
+        result["suburb-town"] = c.long_name;
+      }
+
+      if (c.types.includes("administrative_area_level_1"))
+        result.state = c.short_name;
+
+      if (c.types.includes("postal_code")) result["postal-code"] = c.long_name;
+    });
+
+    const formatted = place.formatted_address || "";
+
+    const unitMatch =
+      formatted.match(/(Unit|Apt|Apartment|Suite)\s*([\w-]+)/i) ||
+      formatted.match(/^([\w-]+)\//);
+
+    if (!result["unit-number"] && unitMatch) {
+      result["unit-number"] = unitMatch[2] || unitMatch[1];
+    }
+
+    const lotMatch =
+      formatted.match(/Lot\s*([\w-]+)/i) || formatted.match(/\bL(\d+)\b/i);
+
+    if (!result["lot-number"] && lotMatch) {
+      result["lot-number"] = lotMatch[1];
+    }
+
+    result["address-1"] = `${result.street_number} ${result.street}`.trim();
+    result["address-2"] = result["unit-number"]
+      ? `Unit ${result["unit-number"]}`
+      : "";
+
+    return result;
+  }
+
+  mapAddressToFields(parsed) {
+    return {
+      "lot-number": parsed.lot_number || "",
+      "unit-number": parsed.unit_number || "",
+      "address-1": `${parsed.street_number} ${parsed.street}`.trim(),
+      "suburb-town": parsed.city || parsed.suburb || "",
+      "postal-code": parsed.postcode || "",
+      state: parsed.state || "",
+    };
+  }
+
+  onAddPropertyButtonClick() {
+    let button = document.getElementById("add-property-btn");
+    button.addEventListener("click", async () => {
+      try {
+        const details = this.view.getValuesFromFields(
+          "[data-property-id]",
+          "data-property-id"
+        );
+
+        const propertyName = document.querySelector(
+          '[placeholder="Search properties"]'
+        ).value;
+        details["property_name"] = propertyName;
+
+        const contactField = document.querySelector(
+          "[data-contact-field='contact_id']"
+        );
+        const entityField = document.querySelector(
+          "[data-contact-field='entity-id']"
+        );
+
+        const contactId = contactField?.value || "";
+        const entityId = entityField?.value || "";
+
+        if (!contactId && !entityId) {
+          this.view.customModalBody.innerText =
+            "Please select a contact or a company";
+          this.view.customModalHeader.innerText = "failed";
+          return;
+        }
+
+        const activeTab = this.view.getActiveTabs();
+        let result = "";
+        this.view.showLoader("Adding new company...");
+
+        if (activeTab === "individual") {
+          result = await this.model.createNewProperties(details, contactId, "");
+        } else {
+          result = await this.model.createNewProperties(details, "", entityId);
+        }
+
+        if (!result.isCancelling) {
+          let propertyId = Object.keys(
+            result.mutations.PeterpmProperty.managedData
+          )[0];
+          document.getElementById("selected-property-id").value = propertyId;
+          this.view.customModalHeader.innerText = "Successful";
+          this.view.customModalBody.innerText =
+            "New Property created successfully.";
+          this.view.toggleModal("statusModal");
+        } else {
+          this.view.customModalHeader.innerText = "Failed";
+          this.view.customModalBody.innerText = "Properties create failed.";
+          this.view.toggleModal("statusModal");
+        }
+      } catch (error) {
+        console.error("[NewEnquiry] Failed to create property", error);
+        this.view.showFeedback("Unable to create property right now.");
+      } finally {
+        this.view.hideLoader();
+      }
+    });
   }
 }
