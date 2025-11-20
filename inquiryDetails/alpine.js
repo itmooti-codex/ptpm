@@ -92,6 +92,7 @@ document.addEventListener("alpine:init", () => {
           event?.detail?.provider?.provider_id;
         if (this.normalizeId(providerId)) {
           this.hasProvider = true;
+          this.hasJob = this.computeHasJob();
         }
       };
       window.addEventListener("provider-selected", this.listener);
@@ -128,6 +129,7 @@ document.addEventListener("alpine:init", () => {
         document.body?.dataset?.jobId ||
         document.querySelector("[data-var-jobid]")?.dataset?.varJobid ||
         "";
+      if (!this.hasProvider) return false;
       return !!this.normalizeId(jobId);
     },
   }));
