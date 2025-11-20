@@ -75,9 +75,31 @@ const CREATE_UPLOAD_MUTATION = `
 const CREATE_JOB_MUTATION = `
           mutation createJob($payload: JobCreateInput = null) {
             createJob(payload: $payload) {
-              Inquiry_Record {
-                id
-              }
+              inquiry_record_id
+              quote_date
+              quote_status
+              primary_service_provider_id
+              property_id
+              account_type
+              client_individual_id
+              client_entity_id
+              id
+            }
+          }
+        `;
+
+const UPDATE_DEAL_AFTER_QUOTE_MUTATION = `
+          mutation updateDeal(
+            $id: PeterpmDealID!
+            $payload: DealUpdateInput = null
+          ) {
+            updateDeal(
+              query: [{ where: { id: $id } }]
+              payload: $payload
+            ) {
+              inquiry_status
+              quote_record_id
+              inquiry_for_job_id
             }
           }
         `;
