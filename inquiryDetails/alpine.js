@@ -2050,12 +2050,22 @@ document.addEventListener("alpine:init", () => {
       if (/^\[[^\]]+\]$/.test(raw)) return "";
       return raw;
     },
+    getJobId() {
+      return (
+        this.normalizeId(JOB_ID) ||
+        this.normalizeId(document.body?.dataset?.jobId) ||
+        this.normalizeId(
+          document.querySelector("[data-var-jobid]")?.dataset?.varJobid
+        )
+      );
+    },
     async handleSend() {
       if (!this.recipients.length) {
         this.emitToast("No recipients selected.", "error");
         return;
       }
-      if (!JOB_ID) {
+      const jobId = this.getJobId();
+      if (!jobId) {
         this.emitToast("Missing job id.", "error");
         return;
       }
@@ -2068,7 +2078,7 @@ document.addEventListener("alpine:init", () => {
           this.selectedContactId ||
           this.normalizeId(this.recipients[0]?.id || "");
         await graphqlRequest(UPDATE_JOB_MUTATION, {
-          id: JOB_ID,
+          id: jobId,
           payload: {
             quote_status: "Sent",
             date_quote_sent: String(nowTs),
@@ -2083,6 +2093,18 @@ document.addEventListener("alpine:init", () => {
             },
           })
         );
+        if (contactId) {
+          window.dispatchEvent(
+            new CustomEvent("job-contact:update-status", {
+              detail: {
+                field: "accounts_contact_id",
+                contactId,
+                success: true,
+                message: "Account email updated.",
+              },
+            })
+          );
+        }
         this.emitToast("Quote marked as sent.");
         this.close();
       } catch (error) {
