@@ -79,9 +79,12 @@ document.addEventListener("alpine:init", () => {
 
   Alpine.data("providerAllocationState", () => ({
     hasProvider: false,
+    hasJob: false,
     listener: null,
+    quoteListener: null,
     init() {
       this.hasProvider = !!this.normalizeId(SERVICE_PROVIDER_ID);
+      this.hasJob = this.computeHasJob();
       this.listener = (event) => {
         const providerId =
           event?.detail?.provider?.id ??
@@ -92,11 +95,25 @@ document.addEventListener("alpine:init", () => {
         }
       };
       window.addEventListener("provider-selected", this.listener);
+      this.quoteListener = (event) => {
+        const fromEvent =
+          event?.detail?.jobId || event?.detail?.id || event?.detail?.job_id;
+        if (this.normalizeId(fromEvent)) {
+          this.hasJob = true;
+        } else {
+          this.hasJob = true; // quote created implies job flow
+        }
+      };
+      window.addEventListener("quote:created", this.quoteListener);
     },
     destroy() {
       if (this.listener) {
         window.removeEventListener("provider-selected", this.listener);
         this.listener = null;
+      }
+      if (this.quoteListener) {
+        window.removeEventListener("quote:created", this.quoteListener);
+        this.quoteListener = null;
       }
     },
     normalizeId(value) {
@@ -104,6 +121,154 @@ document.addEventListener("alpine:init", () => {
       if (!raw || raw === "-" || raw === "—") return "";
       if (/^\[[^\]]+\]$/.test(raw)) return "";
       return raw;
+    },
+    computeHasJob() {
+      const jobId =
+        JOB_ID ||
+        document.body?.dataset?.jobId ||
+        document.querySelector("[data-var-jobid]")?.dataset?.varJobid ||
+        "";
+      return !!this.normalizeId(jobId);
+    },
+  }));
+
+  Alpine.data("contactEmailDropdown", (props = {}) => ({
+    open: false,
+    searchTerm: "",
+    searchDebounceId: null,
+    isSearching: false,
+    hasSearched: false,
+    suggestions: [],
+    error: "",
+    selectedContact: null,
+    placeholder: props.placeholder || "Select contact",
+    minSearchLength: props.minSearchLength || 2,
+    limit: props.limit || 10,
+    displayLabel() {
+      return (
+        this.selectedContact?.displayLabel ||
+        this.placeholder ||
+        "Select contact"
+      );
+    },
+    toggleDropdown() {
+      this.open = !this.open;
+      if (this.open) this.prepareDropdown();
+    },
+    closeDropdown() {
+      this.open = false;
+      this.isSearching = false;
+      this.suggestions = [];
+      this.error = "";
+      this.hasSearched = false;
+      if (this.searchDebounceId) {
+        clearTimeout(this.searchDebounceId);
+        this.searchDebounceId = null;
+      }
+    },
+    prepareDropdown() {
+      this.$nextTick(() => {
+        this.$refs?.contactSearchInput?.focus?.();
+      });
+      if ((this.searchTerm || "").trim().length >= this.minSearchLength) {
+        this.triggerSearch();
+      }
+    },
+    handleSearchInput() {
+      if (this.searchDebounceId) {
+        clearTimeout(this.searchDebounceId);
+        this.searchDebounceId = null;
+      }
+      const term = (this.searchTerm || "").trim();
+      if (!term || term.length < this.minSearchLength) {
+        this.suggestions = [];
+        this.hasSearched = false;
+        this.isSearching = false;
+        this.error = "";
+        return;
+      }
+      this.searchDebounceId = setTimeout(() => this.triggerSearch(), 200);
+    },
+    triggerSearch() {
+      const term = (this.searchTerm || "").trim();
+      if (!term || term.length < this.minSearchLength) return;
+      this.fetchSuggestions(term);
+    },
+    async fetchSuggestions(term) {
+      const normalized = term.trim();
+      if (!normalized) return;
+      this.isSearching = true;
+      this.error = "";
+      try {
+        const data = await graphqlRequest(CALC_CONTACTS_QUERY, {
+          limit: this.limit,
+          offset: 0,
+          searchExpression: this.buildSearchExpression(normalized),
+        });
+        const rows = Array.isArray(data?.calcContacts)
+          ? data.calcContacts
+          : [];
+        this.suggestions = rows.map((row) => this.normalizeContact(row));
+        this.hasSearched = true;
+      } catch (error) {
+        console.error(error);
+        this.error = error?.message || "Unable to fetch contacts.";
+        this.suggestions = [];
+        this.hasSearched = false;
+      } finally {
+        this.isSearching = false;
+      }
+    },
+    buildSearchExpression(term = "") {
+      const sanitized = term.replace(/[%_]/g, (ch) => `\\${ch}`);
+      return `%${sanitized}%`;
+    },
+    normalizeContact(row) {
+      const firstName = (row?.First_Name || "").trim();
+      const lastName = (row?.Last_Name || "").trim();
+      const email = (row?.Email || "").trim();
+      const displayName = [firstName, lastName].filter(Boolean).join(" ");
+      const label =
+        displayName && email
+          ? `${displayName} · ${email}`
+          : displayName || email || "Unnamed Contact";
+      return {
+        id: row?.Contact_ID || null,
+        firstName,
+        lastName,
+        email,
+        sms: (row?.SMS_Number || "").trim(),
+        displayLabel: label,
+      };
+    },
+    selectContact(contact) {
+      if (!contact) return;
+      this.selectedContact = contact;
+      this.closeDropdown();
+    },
+    clearSelection() {
+      this.selectedContact = null;
+      this.searchTerm = "";
+      this.suggestions = [];
+      this.error = "";
+      this.hasSearched = false;
+    },
+    openAddContact() {
+      this.closeDropdown();
+      const propertyId =
+        PROPERTY_ID ||
+        document.body?.dataset?.propertyId ||
+        document.querySelector("[data-var-propertyid]")?.dataset?.varPropertyid ||
+        null;
+      window.dispatchEvent(
+        new CustomEvent("propertyContact:add:open", {
+          detail: {
+            propertyId,
+            showRoleField: false,
+            showPrimaryToggle: false,
+          },
+        })
+      );
     },
   }));
 
@@ -647,6 +812,23 @@ document.addEventListener("alpine:init", () => {
         this.$nextTick(() => this.ensureRecipientsLoaded());
       }
     },
+    openAddContact() {
+      this.closeRecipientDropdown();
+      const propertyId =
+        PROPERTY_ID ||
+        document.body?.dataset?.propertyId ||
+        document.querySelector("[data-var-propertyid]")?.dataset?.varPropertyid ||
+        null;
+      window.dispatchEvent(
+        new CustomEvent("propertyContact:add:open", {
+          detail: {
+            propertyId,
+            showRoleField: false,
+            showPrimaryToggle: false,
+          },
+        })
+      );
+    },
     closeRecipientDropdown() {
       this.recipientDropdownOpen = false;
       this.recipientSearchTerm = "";
@@ -757,8 +939,7 @@ document.addEventListener("alpine:init", () => {
       );
     },
     handleAddContact() {
-      window.dispatchEvent(new CustomEvent("property-contacts:add-requested"));
-      this.closeRecipientDropdown();
+      this.openAddContact();
     },
     ensureRecipientsLoaded() {
       if (this.recipientsLoaded) return Promise.resolve();
@@ -3992,6 +4173,8 @@ document.addEventListener("alpine:init", () => {
     error: "",
     propertyId: null,
     isEdit: false,
+    showRoleField: true,
+    showPrimaryToggle: true,
 
     // live search dropdown state
     suggestions: [],
@@ -4024,6 +4207,18 @@ document.addEventListener("alpine:init", () => {
         const d = e?.detail || {};
         this.reset();
         this.propertyId = d.propertyId ?? null;
+        this.showRoleField =
+          typeof d.showRoleField === "boolean"
+            ? d.showRoleField
+            : typeof d.hideRoleField === "boolean"
+            ? !d.hideRoleField
+            : true;
+        this.showPrimaryToggle =
+          typeof d.showPrimaryToggle === "boolean"
+            ? d.showPrimaryToggle
+            : typeof d.hidePrimaryToggle === "boolean"
+            ? !d.hidePrimaryToggle
+            : true;
         const prefill = { ...(d.prefill || {}) };
         if (d.contactId && !prefill.contactId) prefill.contactId = d.contactId;
         if (d.affiliationId && !prefill.affiliationId)
@@ -4033,6 +4228,8 @@ document.addEventListener("alpine:init", () => {
           mode === "edit" ||
           Boolean(prefill.contactId || prefill.affiliationId);
         if (Object.keys(prefill).length) Object.assign(this.form, prefill);
+        if (!this.showRoleField) this.form.role = "";
+        if (!this.showPrimaryToggle) this.form.isPrimary = false;
         if (!this.form.search) {
           const derivedName = [this.form.firstName, this.form.lastName]
             .filter(Boolean)
@@ -4047,6 +4244,8 @@ document.addEventListener("alpine:init", () => {
     reset() {
       this.error = "";
       this.isSubmitting = false;
+      this.showRoleField = true;
+      this.showPrimaryToggle = true;
       this.suggestions = [];
       this.searchDropdownOpen = false;
       this.searchLoading = false;

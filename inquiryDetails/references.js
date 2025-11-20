@@ -12,3 +12,19 @@
 // const UPLOAD_ENDPOINT = "https://peterpm.vitalstats.app/api/v1/rest/upload";
 // const accountType = "Company";
 // const SERVICE_PROVIDER_ID = "1";
+
+
+// fields to send when creating a quote
+// Inquiry id
+// Quote Date - Time of submit
+// Quote Staus - New
+// Service provider id - selected service provider
+// Property id - linked property
+// Account Type - current account type
+// Company id - linked company
+// Contact id - primary contact of inquiry
+
+// Update deal record
+// status to Quote Created
+// Quote Record id to newly created quote record id
+// Inquiry for job id to newly created quote record id
