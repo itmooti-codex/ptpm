@@ -1468,6 +1468,7 @@ export class NewEnquiryModel {
         "stories",
         "bedrooms",
         "building_age",
+        "property_name",
       ])
       .noDestroy();
     query.getOrInitQueryCalc?.();
@@ -1692,22 +1693,6 @@ export class NewEnquiryModel {
         }
         resolve(result || null);
       });
-    });
-  }
-
-  initAutocomplete() {
-    const input = document.querySelector('[placeholder="Search properties"]');
-
-    // Enable Google Places autocomplete
-    const autocomplete = new google.maps.places.Autocomplete(input, {
-      types: ["address"], // or "geocode" for full addresses
-      componentRestrictions: { country: "au" }, // restrict to Australia
-    });
-
-    // Triggered when user selects a suggestion
-    autocomplete.addListener("place_changed", () => {
-      const place = autocomplete.getPlace();
-      console.log("Selected place:", place);
     });
   }
 }
