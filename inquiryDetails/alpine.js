@@ -1115,6 +1115,7 @@ document.addEventListener("alpine:init", () => {
     isSubmitting: false,
     boundOpenListener: null,
     boundProviderListener: null,
+    jobCreatedId: null,
     init() {
       this.boundOpenListener = () => this.handleOpen();
       this.boundProviderListener = (event) =>
@@ -1149,24 +1150,47 @@ document.addEventListener("alpine:init", () => {
       if (provider) this.provider = provider;
     },
     async confirmAction() {
-      if (!this.hasProvider || this.isSubmitting) return;
-      if (!INQUIRY_RECORD_ID) {
-        this.dispatchToast("Missing inquiry record id.", "error");
-        return;
-      }
+      if (this.isSubmitting) return;
+      if (!INQUIRY_RECORD_ID) return this.dispatchToast("Missing inquiry record id.", "error");
+      if (!this.hasProvider) return this.dispatchToast("Allocate a service provider first.", "error");
       this.isSubmitting = true;
       try {
+        const nowISO = new Date().toISOString();
+        const payload = {
+          inquiry_record_id: INQUIRY_RECORD_ID,
+          quote_date: nowISO,
+          quote_status: "New",
+          primary_service_provider_id: this.provider?.id || null,
+          property_id: PROPERTY_ID || null,
+          account_type: accountType || null,
+          client_individual_id: CONTACT_ID || null,
+          client_entity_id: COMPANY_ID || null,
+        };
         const data = await graphqlRequest(CREATE_JOB_MUTATION, {
-          payload: { inquiry_record_id: INQUIRY_RECORD_ID },
+          payload,
         });
+        const createdJobId =
+          data?.createJob?.id ||
+          data?.createJob?.job_id ||
+          data?.createJob?.Job_ID ||
+          null;
+        this.jobCreatedId = createdJobId;
+        if (createdJobId) {
+          await graphqlRequest(UPDATE_DEAL_AFTER_QUOTE_MUTATION, {
+            id: INQUIRY_RECORD_ID,
+            payload: {
+              inquiry_status: "Quote Created",
+              quote_record_id: createdJobId,
+              inquiry_for_job_id: createdJobId,
+            },
+          });
+        }
         this.dispatchToast(
           `Quote created & notified for ${this.providerName}.`,
           "success"
         );
-        const createdId =
-          data?.createJob?.Inquiry_Record?.id ?? INQUIRY_RECORD_ID;
-        const quoteNumber = createdId
-          ? `#Q${String(createdId).padStart(4, "0")}`
+        const quoteNumber = createdJobId
+          ? `#Q${String(createdJobId).padStart(4, "0")}`
           : "#Q0000";
         const quoteDate = new Date().toLocaleDateString("en-US", {
           day: "2-digit",
@@ -1180,6 +1204,7 @@ document.addEventListener("alpine:init", () => {
               quoteDate,
               quotePrice: "$0.00",
               recipients: this.providerName,
+              jobId: createdJobId,
             },
           })
         );
