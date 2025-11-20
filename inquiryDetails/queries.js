@@ -58,6 +58,8 @@ const UPDATE_JOB_MUTATION = `
               date_quote_sent
               date_quoted_accepted
               create_a_callback
+              client_individual_id
+              accounts_contact_id
             }
           }
         `;
@@ -83,6 +85,7 @@ const CREATE_JOB_MUTATION = `
               account_type
               client_individual_id
               client_entity_id
+              accounts_contact_id
               id
             }
           }
@@ -110,6 +113,8 @@ const CALC_JOBS_QUERY = `
               Inquiry_Record_ID: field(arg: ["Inquiry_Record", "id"])
               ID: field(arg: ["id"])
               Unique_ID: field(arg: ["unique_id"])
+              Client_Individual_ID: field(arg: ["client_individual_id"])
+              Accounts_Contact_ID: field(arg: ["accounts_contact_id"])
               Quote_Date: field(arg: ["quote_date"])
                 @dateFormat(value: "DD/MM/YYYY")
               Quote_Total: field(arg: ["quote_total"])
@@ -557,6 +562,18 @@ const CALC_CONTACTS_QUERY = `
       offset: $offset
       orderBy: [{ path: ["first_name"], type: asc }]
     ) {
+      Contact_ID: field(arg: ["id"])
+      First_Name: field(arg: ["first_name"])
+      Last_Name: field(arg: ["last_name"])
+      Email: field(arg: ["email"])
+      SMS_Number: field(arg: ["sms_number"])
+    }
+  }
+`;
+
+const CONTACT_BY_ID_QUERY = `
+  query calcContacts($id: PeterpmContactID!) {
+    calcContacts(query: [{ where: { id: $id } }]) {
       Contact_ID: field(arg: ["id"])
       First_Name: field(arg: ["first_name"])
       Last_Name: field(arg: ["last_name"])
