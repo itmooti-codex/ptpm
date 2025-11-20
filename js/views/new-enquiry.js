@@ -144,7 +144,7 @@ export class NewEnquiryView {
     this._saveListenerBound = true;
   }
 
-  populateContact(contact) {
+  populateContactDetails(contact) {
     if (contact.id) {
       document.getElementById("view-contact-detail").classList.remove("hidden");
     }
@@ -2422,7 +2422,7 @@ export class NewEnquiryView {
       if (tab == "individual") {
         records = await this.model.fetchcontactDetailsById(id);
       } else {
-        records = await this.model.fetchCompany(id);
+        records = await this.model.fetchCompanyById(id);
       }
 
       if (!records?.resp?.length) return;
@@ -2654,7 +2654,7 @@ export class NewEnquiryView {
       .addEventListener("click", async () => {
         this.#switchSection("entity");
         this.toggleModal("switchAccountTypeModalWrapper");
-        let propertiesList = await this.model.fetchCompany();
+        let propertiesList = await this.model.fetchCompanyById();
         this.createEntityList(propertiesList.resp);
       });
 
@@ -2869,4 +2869,21 @@ export class NewEnquiryView {
       }
     });
   }
+
+  async checkInquiryId() {
+    let url = new URL(window.location.href);
+    let enquiryId = url.searchParams.get("enquiry");
+    let accountType = url.searchParams.get("account-type");
+
+    let enquiryDetail = await this.model.fetchRelatedInquiries(enquiryId);
+    let propertyData = await this.model.fetchPropertiesById();
+
+    if (accountType == "company") {
+      let companyData = await this.model.fetchCompanyById();
+    } else if (accountType == "contact") {
+      let contactData = await this.model.fetchcontactDetailsById();
+    }
+  }
+
+  setEnquiryValuesToFields() {}
 }
