@@ -5251,7 +5251,7 @@ document.addEventListener("alpine:init", () => {
     },
     isAuthor(id) {
       if (id == null) return false;
-      return String(id) === String(CONTACT_ID);
+      return String(id) === String(loggedInUserID);
     },
     parseFileField(value) {
       if (!value) return null;
@@ -5409,7 +5409,7 @@ document.addEventListener("alpine:init", () => {
         }
         await graphqlRequest(CREATE_FORUM_POST_MUTATION, {
           payload: {
-            author_id: CONTACT_ID,
+            author_id: loggedInUserID,
             post_copy: text,
             related_inquiry_id: INQUIRY_RECORD_ID,
             related_job_id: JOB_ID,
@@ -5433,7 +5433,7 @@ document.addEventListener("alpine:init", () => {
         await graphqlRequest(CREATE_FORUM_COMMENT_MUTATION, {
           payload: {
             forum_post_id: postId,
-            author_id: CONTACT_ID,
+            author_id: loggedInUserID,
             comment: text,
             created_at: Math.floor(Date.now() / 1000),
           },
