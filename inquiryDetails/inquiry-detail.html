@@ -342,8 +342,8 @@
               data-trail-icon="true"
               data-type="outline"
               class="px-4 py-3 rounded outline outline-1 outline-offset-[-1px] outline-white inline-flex justify-center items-center gap-2 relative cursor-pointer"
-              x-data="{ open: false}"
-              @click="open = !open"
+              x-data="jobActionsDropdown()"
+              @click="toggle()"
             >
               <div
                 class="justify-end text-white text-[14px] font-medium f-inter"
@@ -368,7 +368,7 @@
                 x-cloak
                 x-show="open"
                 x-transition
-                @click.outside="open = false"
+                @click.outside="close()"
               >
                 <div
                   class="self-stretch bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 flex flex-col justify-start items-start overflow-hidden"
@@ -376,30 +376,32 @@
                   <div
                     data-state="Default"
                     class="self-stretch px-6 py-4 bg-white inline-flex justify-start items-start gap-2 cursor-pointer hover:bg-[#E3EFFF]"
-                    @click="createCallback(375)"
+                    :class="{ 'pointer-events-none opacity-70': isProcessing('callback') }"
+                    @click.stop="handleAction('callback', () => createCallback(currentJobId))"
                   >
                     <div class="justify-start">
                       <span
                         class="text-slate-500 text-sm font-medium font-['Inter'] leading-4"
-                        >Create Call Back</span
+                        x-text="actionLabel('callback', 'Create Call Back', 'Creating...')"
+                        ></span
                       >
                     </div>
                   </div>
                   <div
                     data-state="Default"
                     class="self-stretch px-6 py-4 bg-white inline-flex justify-start items-start gap-2 cursor-pointer hover:bg-[#E3EFFF]"
-                    @click="duplicateJob(currentJobId)"
-                    :class="isDuplicating ? 'pointer-events-none opacity-70' : ''"
+                    :class="{ 'pointer-events-none opacity-70': isProcessing('duplicate') || isDuplicating }"
+                    @click.stop="handleAction('duplicate', () => duplicateJob(currentJobId))"
                   >
                     <div class="justify-start">
                       <span
                         class="text-slate-500 text-sm font-medium font-['Inter'] leading-4"
-                        x-show="!isDuplicating"
+                        x-show="!isDuplicating && !isProcessing('duplicate')"
                         >Duplicate Job</span
                       >
                       <span
                         class="text-slate-500 text-sm font-medium font-['Inter'] leading-4 inline-flex items-center gap-2"
-                        x-show="isDuplicating"
+                        x-show="isDuplicating || isProcessing('duplicate')"
                       >
                         <svg
                           class="h-4 w-4 animate-spin"
@@ -427,7 +429,8 @@
                   <div
                     data-state="Default"
                     class="self-stretch px-6 py-4 bg-white inline-flex justify-start items-start gap-2 cursor-pointer hover:bg-[#E3EFFF]"
-                    @click="deleteJob(379)"
+                    :class="{ 'pointer-events-none opacity-70': isProcessing('delete') }"
+                    @click.stop="handleAction('delete', () => deleteJob(currentJobId))"
                   >
                     <div class="flex items-center gap-2">
                       <svg
@@ -445,7 +448,8 @@
 
                       <span
                         class="text-[#D80F0F] text-sm font-medium font-['Inter'] leading-4"
-                        >Delete Record</span
+                        x-text="actionLabel('delete', 'Delete Record', 'Deleting...')"
+                        ></span
                       >
                     </div>
                   </div>

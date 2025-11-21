@@ -121,6 +121,48 @@ document.addEventListener("alpine:init", () => {
     },
   }));
 
+  Alpine.data("jobActionsDropdown", () => ({
+    open: false,
+    processing: false,
+    current: "",
+    toggle() {
+      if (this.processing) return;
+      this.open = !this.open;
+    },
+    close() {
+      if (this.processing) return;
+      this.open = false;
+    },
+    isProcessing(key) {
+      return this.processing && this.current === key;
+    },
+    actionLabel(key, idleLabel = "", busyLabel = "Processing...") {
+      return this.isProcessing(key) ? busyLabel : idleLabel;
+    },
+    async handleAction(key, actionFn) {
+      if (this.processing || typeof actionFn !== "function") return;
+      this.processing = true;
+      this.current = key;
+      try {
+        await actionFn();
+      } catch (error) {
+        console.error("Job action failed", error);
+        window.dispatchEvent(
+          new CustomEvent("toast:show", {
+            detail: {
+              message: error?.message || "Failed to complete job action.",
+              variant: "error",
+            },
+          })
+        );
+      } finally {
+        this.processing = false;
+        this.current = "";
+        this.open = false;
+      }
+    },
+  }));
+
   Alpine.data("providerAllocationState", () => ({
     hasProvider: false,
     hasJob: false,
