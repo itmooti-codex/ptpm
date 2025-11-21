@@ -33,46 +33,7 @@ function pageActions() {
 
     // ...rest of your methods
     async printJobSheet() {
-      /* unchanged */
-    },
-    async duplicateJob(jobId) {
-      /* unchanged */
-    },
-
-    async printJobSheet() {
-      const target = document.getElementById("job-sheet") || document.body;
-
-      const opt = {
-        margin: 0,
-        filename: "job-sheet.pdf",
-        image: { type: "jpeg", quality: 0.98 },
-        html2canvas: { scale: 1, useCORS: true },
-        jsPDF: { unit: "pt", format: "a1", orientation: "landscape" },
-        pagebreak: { mode: ["avoid-all", "css", "legacy"] },
-      };
-
-      // Generate PDF and open in a new tab without forcing download
-      await html2pdf()
-        .from(target)
-        .set(opt)
-        .toPdf()
-        .get("pdf")
-        .then((pdf) => {
-          const blob = pdf.output("blob");
-          const url = URL.createObjectURL(blob);
-          window.open(url, "_blank");
-        })
-        .catch((e) => {
-          console.error(e);
-          window.dispatchEvent(
-            new CustomEvent("toast:show", {
-              detail: {
-                type: "error",
-                message: "Could not generate PDF.",
-              },
-            })
-          );
-        });
+      // intentionally left blank; button retained for future use
     },
 
     async duplicateJob(jobId) {
