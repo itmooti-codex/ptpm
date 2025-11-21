@@ -75,6 +75,94 @@ document.addEventListener("alpine:init", () => {
     { value: "736", text: "7.30-10 pm" },
   ]);
 
+  Alpine.data("emailOptionsDropdown", (groupKey = "") => ({
+    open: false,
+    groupKey,
+    sendingId: null,
+    toggle() {
+      this.open = !this.open;
+    },
+    close() {
+      this.open = false;
+    },
+    buttonLabel(button = {}) {
+      const id = this.normalizeId(button);
+      if (id && this.sendingId === id) return "Sending email...";
+      return button.button_name || "Send Email";
+    },
+    normalizeId(button = {}) {
+      return button.message_id || button.field_id || button.button_name || null;
+    },
+    async handleEmail(button = {}) {
+      if (!button?.field_id || this.sendingId) return;
+      const id = this.normalizeId(button);
+      this.sendingId = id;
+      try {
+        await updateJobEmailCheckbox(button.field_id);
+        window.dispatchEvent(
+          new CustomEvent("toast:show", {
+            detail: { message: "Email Sent Successfully", variant: "success" },
+          })
+        );
+        this.close();
+      } catch (error) {
+        console.error("Failed to send email", error);
+        window.dispatchEvent(
+          new CustomEvent("toast:show", {
+            detail: {
+              message: error?.message || "Failed to send email.",
+              variant: "error",
+            },
+          })
+        );
+      } finally {
+        this.sendingId = null;
+      }
+    },
+  }));
+
+  Alpine.data("jobActionsDropdown", () => ({
+    open: false,
+    processing: false,
+    current: "",
+    toggle() {
+      if (this.processing) return;
+      this.open = !this.open;
+    },
+    close() {
+      if (this.processing) return;
+      this.open = false;
+    },
+    isProcessing(key) {
+      return this.processing && this.current === key;
+    },
+    actionLabel(key, idleLabel = "", busyLabel = "Processing...") {
+      return this.isProcessing(key) ? busyLabel : idleLabel;
+    },
+    async handleAction(key, actionFn) {
+      if (this.processing || typeof actionFn !== "function") return;
+      this.processing = true;
+      this.current = key;
+      try {
+        await actionFn();
+      } catch (error) {
+        console.error("Job action failed", error);
+        window.dispatchEvent(
+          new CustomEvent("toast:show", {
+            detail: {
+              message: error?.message || "Failed to complete job action.",
+              variant: "error",
+            },
+          })
+        );
+      } finally {
+        this.processing = false;
+        this.current = "";
+        this.open = false;
+      }
+    },
+  }));
+
   Alpine.data("providerAllocationState", () => ({
     hasProvider: false,
     hasJob: false,
@@ -4910,6 +4998,7 @@ document.addEventListener("alpine:init", () => {
 
   Alpine.data("memosModal", () => ({
     open: false,
+    boundOpenListener: null,
     memos: [],
     newMessages: 0,
     lastSeenCount: 0,
@@ -4929,11 +5018,28 @@ document.addEventListener("alpine:init", () => {
         if (value) {
           this.lastSeenCount = this.memos.length;
           this.newMessages = 0;
+          this.emitBadge();
         }
       });
+      this.$watch(
+        () => this.memos.length,
+        () => this.emitBadge()
+      );
+      this.$watch("newMessages", () => this.emitBadge());
+      this.boundOpenListener = () => {
+        this.open = true;
+        this.lastSeenCount = this.memos.length;
+        this.newMessages = 0;
+        this.emitBadge();
+      };
+      window.addEventListener("memos:open", this.boundOpenListener);
     },
     destroy() {
       this.cleanupSocket();
+      if (this.boundOpenListener) {
+        window.removeEventListener("memos:open", this.boundOpenListener);
+        this.boundOpenListener = null;
+      }
     },
     connect() {
       this.cleanupSocket();
@@ -4980,6 +5086,14 @@ document.addEventListener("alpine:init", () => {
         }
         this.socket = null;
       }
+      this.emitBadge();
+    },
+    emitBadge() {
+      window.dispatchEvent(
+        new CustomEvent("memos:badge", {
+          detail: { newMessages: this.newMessages },
+        })
+      );
     },
     sendMessage(message) {
       if (this.socket?.readyState === WebSocket.OPEN) {

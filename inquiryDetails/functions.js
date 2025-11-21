@@ -10,44 +10,30 @@ function openTemplateLink(messageId) {
 
 function pageActions() {
   return {
-    // ...other methods/state
-    currentJobId: JOB_ID, // reuse the constant you already set
+    currentJobId: JOB_ID,
     isDuplicating: false,
 
+    inquiryCollapsed: false, // controls layout + memo state
+    openmemos: false, // controls memo open/close
+
+    // prevent memo from closing when collapsed
+    handleMemoClose() {
+      if (this.inquiryCollapsed) return;
+      this.openmemos = false;
+    },
+
+    // auto-open memos when collapsed
+    init() {
+      this.$watch("inquiryCollapsed", (value) => {
+        if (value === true) {
+          this.openmemos = true; // stay open when collapsed
+        }
+      });
+    },
+
+    // ...rest of your methods
     async printJobSheet() {
-      const target = document.getElementById("job-sheet") || document.body;
-
-      const opt = {
-        margin: 0,
-        filename: "job-sheet.pdf",
-        image: { type: "jpeg", quality: 0.98 },
-        html2canvas: { scale: 1, useCORS: true },
-        jsPDF: { unit: "pt", format: "a1", orientation: "landscape" },
-        pagebreak: { mode: ["avoid-all", "css", "legacy"] },
-      };
-
-      // Generate PDF and open in a new tab without forcing download
-      await html2pdf()
-        .from(target)
-        .set(opt)
-        .toPdf()
-        .get("pdf")
-        .then((pdf) => {
-          const blob = pdf.output("blob");
-          const url = URL.createObjectURL(blob);
-          window.open(url, "_blank");
-        })
-        .catch((e) => {
-          console.error(e);
-          window.dispatchEvent(
-            new CustomEvent("toast:show", {
-              detail: {
-                type: "error",
-                message: "Could not generate PDF.",
-              },
-            })
-          );
-        });
+      // intentionally left blank; button retained for future use
     },
 
     async duplicateJob(jobId) {
@@ -55,29 +41,10 @@ function pageActions() {
       this.isDuplicating = true;
 
       try {
-        // 1) fetch the source job using your existing FULL_JOB_QUERY
-        const data = await graphqlRequest(FULL_JOB_QUERY, { id: jobId });
-        const src = (data?.calcJobs && data.calcJobs[0]) || null;
-        if (!src) throw new Error("Could not load job to duplicate.");
-
-        // 2) transform aliased fields like Accepted_Quote_Activity_Price -> accepted_quote_activity_price
-        const toCreatePayload = (jobObj) => {
-          const payload = {};
-          for (const [key, val] of Object.entries(jobObj)) {
-            // ignore purely display/helper aliases if any sneak in
-            if (key === "ID") continue; // server will set a new id
-            const snake = key.toLowerCase(); // aliases are already snake-like with underscores
-            payload[snake] = val;
-          }
-          return payload;
-        };
-
-        const payload = toCreatePayload(src);
-
-        // 3) create the duplicate
-        await graphqlRequest(DUPLICATE_JOB_QUERY, { payload });
-
-        // 4) toast + close the menu popover (if any)
+        await graphqlRequest(UPDATE_JOB_MUTATION, {
+          id: jobId,
+          payload: { duplicate_job: true },
+        });
         window.dispatchEvent(
           new CustomEvent("toast:show", {
             detail: {
