@@ -171,3 +171,41 @@ export class DashboardHelper {
     }));
   }
 }
+
+export function initOperationLoader() {
+  const existing = document.getElementById("ptpm-operation-loader");
+  if (existing) return existing;
+
+  const loader = document.createElement("div");
+  loader.id = "ptpm-operation-loader";
+  loader.className =
+    "fixed inset-0 z-[9999] hidden flex items-center justify-center bg-black/40 backdrop-blur-sm";
+  loader.innerHTML = `
+      <div class="flex flex-col items-center gap-3 rounded-2xl bg-white/95 px-6 py-5 shadow-lg ring-1 ring-slate-200">
+        <div class="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-[#003882]"></div>
+        <p class="text-sm font-semibold text-slate-800" data-loader-message>Working...</p>
+      </div>
+    `;
+  document.body.appendChild(loader);
+  return loader;
+}
+
+export function showLoader(loaderElement, loaderMessageEl, counterRef, message) {
+  if (!loaderElement || !counterRef) return;
+  counterRef.count = (counterRef.count || 0) + 1;
+  if (loaderMessageEl && message) loaderMessageEl.textContent = message;
+  loaderElement.classList.remove("hidden");
+}
+
+export function hideLoader(loaderElement, counterRef, force = false) {
+  if (!loaderElement || !counterRef) return;
+  if (force) {
+    counterRef.count = 0;
+  } else if (counterRef.count > 0) {
+    counterRef.count -= 1;
+  }
+  if (counterRef.count <= 0) {
+    loaderElement.classList.add("hidden");
+    counterRef.count = 0;
+  }
+}

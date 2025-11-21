@@ -1,4 +1,6 @@
-export class NewEnquiryView {
+import { initOperationLoader, showLoader, hideLoader } from "../helper.js";
+
+export class NewInquiryView {
   constructor(model) {
     this.model = model;
     this.sections = {
@@ -99,8 +101,8 @@ export class NewEnquiryView {
     this.customModalBody = document.getElementById("statusMessage");
     this.statusModel = document.getElementById("statusModal");
 
-    this.loaderCount = 0;
-    this.loaderElement = this.#initOperationLoader();
+    this.loaderCounter = { count: 0 };
+    this.loaderElement = initOperationLoader();
     this.loaderMessageEl =
       this.loaderElement?.querySelector("[data-loader-message]") || null;
     this.createSwithcAccountTypeModal();
@@ -116,11 +118,10 @@ export class NewEnquiryView {
     this._propertyPredictionRequestId = 0;
 
     this.checkInquiryId();
-    // this.createPropertyList([]);
   }
 
   isActive() {
-    return document.body?.dataset?.page === "new-enquiry";
+    return document.body?.dataset?.page === "new-inquiry";
   }
 
   setContacts(contacts = []) {
@@ -326,7 +327,7 @@ export class NewEnquiryView {
       // this.createPropertyList(related.properties || []);
       this.renderRelated(related);
     } catch (error) {
-      console.error("[NewEnquiry] Failed to load entity related data", error);
+      console.error("[NewInquiry] Failed to load entity related data", error);
       if (this.entityRelatedRequestId !== requestId) return;
       this.renderRelated();
     }
@@ -1267,7 +1268,12 @@ export class NewEnquiryView {
       btn.addEventListener("click", async (e) => {
         const tr = e.target.closest("tr");
         if (!tr) return;
-        this.showLoader("Deleting affiliation...");
+        showLoader(
+          this.loaderElement,
+          this.loaderMessageEl,
+          this.loaderCounter,
+          "Deleting affiliation..."
+        );
         try {
           const result = await this.model.deleteAffiliationById(
             tr.getAttribute("data-affiliation-id")
@@ -1279,10 +1285,10 @@ export class NewEnquiryView {
             this.toggleModal("statusModal");
           }
         } catch (error) {
-          console.error("[NewEnquiry] Failed to delete affiliation", error);
+          console.error("[NewInquiry] Failed to delete affiliation", error);
           this.showFeedback("Unable to delete affiliation right now.");
         } finally {
-          this.hideLoader();
+          hideLoader(this.loaderElement, this.loaderCounter);
         }
       })
     );
@@ -1737,7 +1743,12 @@ export class NewEnquiryView {
     });
 
     saveBtn.addEventListener("click", async () => {
-      this.showLoader("Saving contact...");
+      showLoader(
+        this.loaderElement,
+        this.loaderMessageEl,
+        this.loaderCounter,
+        "Saving contact..."
+      );
       try {
         const contact = {
           first_name: firstNameInput.value,
@@ -1760,7 +1771,7 @@ export class NewEnquiryView {
             if (!result.isCancelling) {
               this.customModalHeader.innerText = "Successful";
               this.customModalBody.innerText =
-                "Affiliation deleted successfully.";
+                "Affiliation created successfully.";
               this.toggleModal("statusModal");
             }
           }
@@ -1803,16 +1814,16 @@ export class NewEnquiryView {
             if (!affiliationResult.isCancelling) {
               this.customModalHeader.innerText = "Successful";
               this.customModalBody.innerText =
-                "Affiliation creation successfully.";
+                "Affiliation created successfully.";
               this.toggleModal("statusModal");
             }
           }
         }
       } catch (error) {
-        console.error("[NewEnquiry] Failed to save affiliation", error);
+        console.error("[NewInquiry] Failed to save affiliation", error);
         this.showFeedback("Unable to save contact right now.");
       } finally {
-        this.hideLoader();
+        hideLoader(this.loaderElement, this.loaderCounter);
       }
     });
 
@@ -1964,7 +1975,12 @@ export class NewEnquiryView {
     const button = document.getElementById("pcSearchFooter");
     if (!button) return;
     button.addEventListener("click", async () => {
-      this.showLoader("Creating contact...");
+      showLoader(
+        this.loaderElement,
+        this.loaderMessageEl,
+        this.loaderCounter,
+        "Creating contact..."
+      );
       try {
         const firstname = document.getElementById("pcFirstName").value;
         const lastName = document.getElementById("pcLastName").value;
@@ -1979,10 +1995,10 @@ export class NewEnquiryView {
         };
         await this.model.createNewContact(contactObj);
       } catch (error) {
-        console.error("[NewEnquiry] Failed to create quick contact", error);
+        console.error("[NewInquiry] Failed to create quick contact", error);
         this.showFeedback("Unable to create contact right now.");
       } finally {
-        this.hideLoader();
+        hideLoader(this.loaderElement, this.loaderCounter);
       }
     });
   }
@@ -1992,7 +2008,12 @@ export class NewEnquiryView {
     const contactData = this.buildContactData(formElements);
     const contactId = this.getContactId();
 
-    this.showLoader(contactId ? "Updating contact..." : "Creating contact...");
+    showLoader(
+      this.loaderElement,
+      this.loaderMessageEl,
+      this.loaderCounter,
+      contactId ? "Updating contact..." : "Creating contact..."
+    );
 
     try {
       const result = await this.saveContact(contactId, contactData);
@@ -2006,10 +2027,10 @@ export class NewEnquiryView {
         this.handleFailure(!!contactId);
       }
     } catch (error) {
-      console.error("[NewEnquiry] Contact modal save failed", error);
+      console.error("[NewInquiry] Contact modal save failed", error);
       this.showFeedback("Unable to save contact right now.");
     } finally {
-      this.hideLoader();
+      hideLoader(this.loaderElement, this.loaderCounter);
     }
   }
 
@@ -2068,7 +2089,7 @@ export class NewEnquiryView {
     const element = Array.from(elements);
     const entityDetailObj = {};
     element.forEach((item) => {
-      const key = item.getAttribute("Data-contact-id");
+      const key = item.item.dataset.contactId;
       const value = item.value;
       if (key) entityDetailObj[key] = value;
       0;
@@ -2078,7 +2099,10 @@ export class NewEnquiryView {
       "[data-contact-field='contact_id']"
     ).value;
 
-    this.showLoader(
+    showLoader(
+      this.loaderElement,
+      this.loaderMessageEl,
+      this.loaderCounter,
       primaryContactPersonId ? "Updating contact..." : "Creating contact..."
     );
     try {
@@ -2161,10 +2185,10 @@ export class NewEnquiryView {
         }
       }
     } catch (error) {
-      console.error("[NewEnquiry] Contact modal save failed", error);
+      console.error("[NewInquiry] Contact modal save failed", error);
       this.showFeedback("Unable to save contact right now.");
     } finally {
-      this.hideLoader();
+      hideLoader(this.loaderElement, this.loaderCounter);
     }
   }
 
@@ -2311,7 +2335,7 @@ export class NewEnquiryView {
   //             this.toggleModal("statusModal");
   //           }
   //         } catch (error) {
-  //           console.error("[NewEnquiry] Failed to create property", error);
+  //           console.error("[NewInquiry] Failed to create property", error);
   //           this.showFeedback("Unable to create property right now.");
   //         } finally {
   //           this.hideLoader();
@@ -2440,7 +2464,7 @@ export class NewEnquiryView {
         this.toggleModal("addressDetailsModalWrapper");
       }
     } catch (error) {
-      console.error("[NewEnquiry] Unable to load contact details", error);
+      console.error("[NewInquiry] Unable to load contact details", error);
       this.showFeedback("Unable to load contact details right now.");
     }
   }
@@ -2523,43 +2547,6 @@ export class NewEnquiryView {
     });
 
     document.body.appendChild(modal);
-  }
-
-  showLoader(message = "Working...") {
-    if (!this.loaderElement) return;
-    this.loaderCount += 1;
-    if (this.loaderMessageEl) this.loaderMessageEl.textContent = message;
-    this.loaderElement.classList.remove("hidden");
-  }
-
-  hideLoader(force = false) {
-    if (!this.loaderElement) return;
-    if (force) {
-      this.loaderCount = 0;
-    } else if (this.loaderCount > 0) {
-      this.loaderCount -= 1;
-    }
-    if (this.loaderCount <= 0) {
-      this.loaderElement.classList.add("hidden");
-      this.loaderCount = 0;
-    }
-  }
-
-  #initOperationLoader() {
-    const existing = document.getElementById("ptpm-operation-loader");
-    if (existing) return existing;
-    const loader = document.createElement("div");
-    loader.id = "ptpm-operation-loader";
-    loader.className =
-      "fixed inset-0 z-[9999] hidden flex items-center justify-center bg-black/40 backdrop-blur-sm";
-    loader.innerHTML = `
-      <div class="flex flex-col items-center gap-3 rounded-2xl bg-white/95 px-6 py-5 shadow-lg ring-1 ring-slate-200">
-        <div class="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-[#003882]"></div>
-        <p class="text-sm font-semibold text-slate-800" data-loader-message>Working...</p>
-      </div>
-    `;
-    document.body.appendChild(loader);
-    return loader;
   }
 
   populatePropertyFields(fields, data) {
@@ -2681,8 +2668,9 @@ export class NewEnquiryView {
       const term = q.trim().toLowerCase();
       if (!term) return entities;
       return entities.filter((p) => {
-        const hay = [p.property_name].filter(Boolean).join(" ").toLowerCase();
-        return hay.includes(term);
+        const name = (p.Name || p.name || "").toLowerCase();
+        const companyId = String(p.ID || p.id || "");
+        return name.includes(term) || companyId.includes(term);
       });
     };
 
@@ -2809,7 +2797,7 @@ export class NewEnquiryView {
       //         this.toggleModal("statusModal");
       //       }
       //     } catch (error) {
-      //       console.error("[NewEnquiry] Failed to create property", error);
+      //       console.error("[NewInquiry] Failed to create property", error);
       //       this.showFeedback("Unable to create property right now.");
       //     } finally {
       //       this.hideLoader();
@@ -2873,156 +2861,302 @@ export class NewEnquiryView {
   }
 
   async checkInquiryId() {
-    let url = new URL(window.location.href);
-    // let enquiryId = url.searchParams.get("enquiry");
-    // let accountType = url.searchParams.get("account-type");
+    try {
+      const url = new URL(window.location.href);
 
-    let accountType = "contact";
+      const inquiryId = url.searchParams.get("inquiry");
+      const accountType = url.searchParams.get("accountType");
 
-    let enquiry = await this.model.fetchRelatedInquiries("", "329");
-    let enquriyData = enquiry?.resp ? enquiry.resp[0] : null;
-    let propertyData = await this.model.fetchPropertiesById(
-      enquriyData?.Property_ID
-    );
+      const inquiryData = await this.getInquiryData(inquiryId);
+      if (!inquiryData) return;
 
-    if (accountType == "company") {
-      this.#switchSection("entity");
-      document.querySelector("[data-contact-field='entity-id']").value =
-        enquriyData.Company_ID;
-      let company = await this.model.fetchCompanyById(enquriyData.Company_ID);
-      let primaryPerson = this.extractPrimaryPerson(company.resp[0]);
-      this.populateAddressDetails(primaryPerson);
-      await this.#loadEntityRelated(enquriyData.Company_ID);
-      let article = document.querySelector(
-        `[data-related-panel="properties"] [id="${enquriyData?.Property_ID}"]`
+      const propertyData = await this.safeCall(() =>
+        this.model.fetchPropertiesById(inquiryData.Property_ID)
       );
-      this.#setSelectedProperty(enquriyData?.Property_ID, article);
+
+      if (accountType === "company") {
+        await this.handleCompanyAccount(inquiryData, propertyData);
+      } else {
+        await this.handleContactAccount(inquiryData, propertyData);
+      }
+
+      this.setCommonUiState();
+    } catch (err) {
+      console.error("checkInquiryId Error:", err);
+    } finally {
+      hideLoader(this.loaderElement, this.loaderCounter, true);
+    }
+  }
+
+  async getInquiryData(inquiryID) {
+    try {
+      const inquiry = await this.model.fetchRelatedInquiries("", inquiryID);
+      return inquiry?.resp?.[0] ?? null;
+    } catch (err) {
+      console.error("getInquiryData Error:", err);
+      return null;
+    }
+  }
+
+  async handleCompanyAccount(inquiryData, propertyData) {
+    try {
+      this.#switchSection("entity");
+
+      const entityField = document.querySelector(
+        "[data-contact-field='entity-id']"
+      );
+      if (entityField) entityField.value = inquiryData?.Company_ID ?? "";
+
+      const company = await this.safeCall(() =>
+        this.model.fetchCompanyById(inquiryData.Company_ID)
+      );
+
+      this.setSearchContactNameOrCompanyName("company", company.resp[0].Name);
+
+      const primaryPerson = this.extractPrimaryPerson(company?.resp?.[0] ?? {});
+
+      if (primaryPerson) this.populateAddressDetails(primaryPerson);
+
+      await this.safeCall(() =>
+        this.#loadEntityRelated(inquiryData.Company_ID)
+      );
+
+      this.highlightSelectedProperty(inquiryData?.Property_ID);
+      await this.loadPropertyInfo(propertyData);
+
+      this.setValuesToInquiryDetail(inquiryData);
+      this.setValuesToResidentFeedbak(inquiryData);
+    } catch (err) {
+      console.error("handleCompanyAccount Error:", err);
+    }
+  }
+
+  async handleContactAccount(inquiryData, propertyData) {
+    try {
+      this.#switchSection("individual");
+      document.querySelector("[data-contact-field='contact_id']").value =
+        inquiryData.Primary_Contact_ID;
+      const contactData = await this.safeCall(() =>
+        this.model.fetchcontactDetailsById(inquiryData.Primary_Contact_ID)
+      );
+
+      const contact = contactData?.resp?.[0] ?? null;
+      if (contact) this.populateAddressDetails(contact);
+
+      let fullName = contact.First_Name + " " + contact.Last_Name;
+      this.setSearchContactNameOrCompanyName("individual", fullName);
+
+      const email = contact?.Email?.trim?.() ?? "";
+      if (email) {
+        const related = await this.safeCall(() =>
+          this.model.fetchRelated(email)
+        );
+        if (related) this.renderRelated(related);
+      }
+
+      this.highlightSelectedProperty(inquiryData?.Property_ID);
+      await this.loadPropertyInfo(propertyData);
+
+      this.setValuesToInquiryDetail(inquiryData);
+      this.setValuesToResidentFeedbak(inquiryData);
+    } catch (err) {
+      console.error("handleContactAccount Error:", err);
+    }
+  }
+
+  async loadPropertyInfo(propertyData) {
+    try {
+      if (!propertyData?.resp?.[0]) return;
+
       const fields = document.querySelectorAll(
         "#property-information input, #property-information select"
       );
-      const fieldIds = Array.from(fields).map((field) =>
-        field.getAttribute("data-property-id")
+
+      const fieldIds = Array.from(fields)
+        .map((field) => field?.getAttribute("data-property-id"))
+        .filter(Boolean);
+
+      const values = this.generatePropertyInformationKeys(
+        fieldIds,
+        propertyData.resp[0]
       );
-      if (propertyData) {
-        let values = this.generatePropertyInformationKeys(
-          fieldIds,
-          propertyData.resp[0]
-        );
-        await this.model.fetchAffiliationByPropertyId(
+
+      await this.safeCall(() =>
+        this.model.fetchAffiliationByPropertyId(
           this.propertyId,
           (affiliationData) => {
             this.setPropertyInformationToFields(fieldIds, values);
             this.createPropertyContactTable(affiliationData);
           }
-        );
-      }
-
-      this.setValuesToEnquiryDetail(enquriyData);
-      this.setValuesToResidentFeedbak(enquriyData);
-      document
-        .querySelector("#property-contacts #add-contact-btn")
-        .classList.remove("hidden");
-      document.getElementById("view-contact-detail").classList.remove("hidden");
-    } else if (accountType == "contact") {
-      this.#switchSection("individual");
-      let individualOwnerId = propertyData.resp[0].individual_owner_id;
-      let contactData = await this.model.fetchcontactDetailsById(
-        individualOwnerId
+        )
       );
-      return contactData;
+    } catch (err) {
+      console.error("loadPropertyInfo Error:", err);
     }
   }
 
-  setValuesToEnquiryDetail(values) {
-    if (!values) return;
+  highlightSelectedProperty(propertyId) {
+    try {
+      const article = document.querySelector(
+        `[data-related-panel="properties"] [id="${propertyId}"]`
+      );
+      this.#setSelectedProperty(propertyId, article);
+    } catch (err) {
+      console.error("highlightSelectedProperty Error:", err);
+    }
+  }
 
-    const normalizedValues = {};
-    Object.keys(values).forEach((key) => {
-      const normKey = key
-        .replace(/[-\s]+/g, "_")
-        .replace(/[A-Z]/g, (m) => "_" + m.toLowerCase())
-        .replace(/__+/g, "_")
-        .replace(/^_/, "")
-        .toLowerCase();
-      normalizedValues[normKey] = values[key];
+  setCommonUiState() {
+    try {
+      const addBtn = document.querySelector(
+        "#property-contacts #add-contact-btn"
+      );
+      if (addBtn) addBtn.classList.remove("hidden");
+
+      const viewBtn = document.getElementById("view-contact-detail");
+      if (viewBtn) viewBtn.classList.remove("hidden");
+    } catch (err) {
+      console.error("setCommonUiState Error:", err);
+    }
+  }
+
+  async safeCall(fn) {
+    try {
+      return await fn();
+    } catch (err) {
+      console.error("safeCall Error:", err);
+      return null;
+    }
+  }
+
+  normalizeKey(key) {
+    if (!key) return "";
+    return key
+      .replace(/[-\s]+/g, "_")
+      .replace(/[A-Z]/g, (m) => "_" + m.toLowerCase())
+      .replace(/__+/g, "_")
+      .replace(/^_/, "")
+      .toLowerCase();
+  }
+
+  normalizeObjectKeys(obj = {}) {
+    const out = {};
+    Object.keys(obj).forEach((k) => {
+      out[this.normalizeKey(k)] = obj[k];
     });
+    return out;
+  }
 
-    const fields = document.querySelectorAll(
-      '[data-inquiry-id="inquiry-detail"] input, [data-inquiry-id="inquiry-detail"] select, [data-inquiry-id="inquiry-detail"] textarea'
-    );
+  setSearchContactNameOrCompanyName(activeTab, name) {
+    if (activeTab == "individual") {
+      document.querySelector(
+        '[data-search-root="contact-individual"] [data-search-input]'
+      ).value = name;
+    } else if (activeTab == "company") {
+      document.querySelector(
+        '[data-search-root="contact-entity"] [data-search-input]'
+      ).value = name;
+    }
+  }
 
+  convertUnixToAU(unix) {
+    try {
+      if (!unix) return "";
+      const date = new Date(unix * 1000);
+      return new Intl.DateTimeFormat("en-AU", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+        timeZone: "Australia/Sydney",
+      }).format(date);
+    } catch (e) {
+      console.error("Date conversion error:", e);
+      return "";
+    }
+  }
+
+  populateFields(fields, normalizedValues) {
     fields.forEach((item) => {
-      const htmlKey = item.getAttribute("data-inquiry-id");
+      const htmlKey =
+        item.getAttribute("data-feedback-id") ||
+        item.getAttribute("data-inquiry-id");
       if (!htmlKey) return;
-
-      const normalizedHtmlKey = htmlKey.replace(/[-\s]+/g, "_").toLowerCase();
-
-      const val = normalizedValues[normalizedHtmlKey];
+      const nk = this.normalizeKey(htmlKey);
+      let val;
+      if (nk == "service_name") {
+        val = normalizedValues["service_inquiry_service_name"];
+      } else {
+        val = normalizedValues[nk];
+      }
       if (val !== undefined && val !== null) {
         item.value = val;
       }
     });
   }
 
-  setValuesToResidentFeedbak(values) {
-    if (!values) return;
-
-    const normalizedValues = {};
-    Object.keys(values).forEach((key) => {
-      const normKey = key
-        .replace(/[-\s]+/g, "_")
-        .replace(/[A-Z]/g, (m) => "_" + m.toLowerCase())
-        .replace(/__+/g, "_")
-        .replace(/^_/, "")
-        .toLowerCase();
-      normalizedValues[normKey] = values[key];
-    });
-    const fields = document.querySelectorAll(
-      '[data-feedback-id="resident-feedback"] input:not([type="checkbox"]), [data-feedback-id="resident-feedback"] select, [data-feedback-id="resident-feedback"] textarea'
-    );
-
-    fields.forEach((item) => {
-      const htmlKey = item.getAttribute("data-feedback-id");
-      if (!htmlKey) return;
-
-      const normalizedHtmlKey = htmlKey.replace(/[-\s]+/g, "_").toLowerCase();
-      const val = normalizedValues[normalizedHtmlKey];
-      if (normalizedHtmlKey === "date_job_required_by" && val) {
-        const date = new Date(val * 1000);
-        const auDate = new Intl.DateTimeFormat("en-AU", {
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-          hour12: false,
-          timeZone: "Australia/Sydney",
-        }).format(date);
-
-        item.value = auDate;
-      } else if (val !== undefined && val !== null) {
-        item.value = val;
-      }
-    });
-    const checkboxGroups = document.querySelectorAll(
-      '[data-feedback-id="resident-feedback"] ul[data-feedback-id]'
-    );
-
-    checkboxGroups.forEach((ul) => {
+  populateCheckboxGroups(groups, normalizedValues, delimiter = "*/*") {
+    groups.forEach((ul) => {
       const htmlKey = ul.getAttribute("data-feedback-id");
       if (!htmlKey) return;
-
-      const normalizedHtmlKey = htmlKey.replace(/[-\s]+/g, "_").toLowerCase();
-      const valString = normalizedValues[normalizedHtmlKey];
-      if (!valString) return;
-
-      const valuesArray = valString.split("*/*").filter((v) => v);
-
+      const nk = this.normalizeKey(htmlKey);
+      const raw = normalizedValues[nk];
+      if (!raw) return;
+      const selectedValues = raw.split(delimiter).filter((v) => v);
       const checkboxes = ul.querySelectorAll('input[type="checkbox"]');
-      checkboxes.forEach((checkbox) => {
-        checkbox.checked = valuesArray.includes(checkbox.value);
+      checkboxes.forEach((cb) => {
+        cb.checked = selectedValues.includes(cb.value);
       });
     });
+  }
+
+  setValuesToInquiryDetail(values) {
+    try {
+      if (!values) return;
+      const normalizedValues = this.normalizeObjectKeys(values);
+      const fields = document.querySelectorAll(
+        '[data-inquiry-id="inquiry-detail"] input, ' +
+          '[data-inquiry-id="inquiry-detail"] select, ' +
+          '[data-inquiry-id="inquiry-detail"] textarea'
+      );
+      this.populateFields(fields, normalizedValues);
+    } catch (err) {
+      console.error("Error in setValuesToInquiryDetail:", err);
+    }
+  }
+
+  setValuesToResidentFeedbak(values) {
+    try {
+      if (!values) return;
+      const normalizedValues = this.normalizeObjectKeys(values);
+      const fields = document.querySelectorAll(
+        '[data-feedback-id="resident-feedback"] input:not([type="checkbox"]), ' +
+          '[data-feedback-id="resident-feedback"] select, ' +
+          '[data-feedback-id="resident-feedback"] textarea'
+      );
+
+      fields.forEach((item) => {
+        const htmlKey = item.getAttribute("data-feedback-id");
+        if (!htmlKey) return;
+        const nk = this.normalizeKey(htmlKey);
+        const val = normalizedValues[nk];
+        if (nk === "date_job_required_by" && val) {
+          item.value = this.convertUnixToAU(val);
+        } else if (val !== undefined && val !== null) {
+          item.value = val;
+        }
+      });
+
+      const checkboxGroups = document.querySelectorAll(
+        '[data-feedback-id="resident-feedback"] ul[data-feedback-id]'
+      );
+
+      this.populateCheckboxGroups(checkboxGroups, normalizedValues, "*/*");
+    } catch (err) {
+      console.error("Error in setValuesToResidentFeedbak:", err);
+    }
   }
 }

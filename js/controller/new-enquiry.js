@@ -1,8 +1,11 @@
-export class NewEnquiryController {
+import { showLoader, hideLoader } from "../helper.js";
+
+export class NewInquiryController {
   constructor(model, view) {
     this.model = model;
     this.view = view;
     this.relatedRequestId = 0;
+    this.#bindLoaderHelpers();
     this.noises = [
       { value: 768, text: "Fighting" },
       { value: 767, text: "Walking" },
@@ -143,6 +146,26 @@ export class NewEnquiryController {
     this.onEntityAddButtonClick();
   }
 
+  #bindLoaderHelpers() {
+    // Cache the view's loader references so the controller can call helper-based loaders.
+    this.loaderElement = this.view?.loaderElement || null;
+    this.loaderMessageEl = this.view?.loaderMessageEl || null;
+    this.loaderCounter = this.view?.loaderCounter || { count: 0 };
+  }
+
+  #showLoader(message) {
+    showLoader(
+      this.loaderElement,
+      this.loaderMessageEl,
+      this.loaderCounter,
+      message
+    );
+  }
+
+  #hideLoader(force = false) {
+    hideLoader(this.loaderElement, this.loaderCounter, force);
+  }
+
   init() {
     if (!this.view?.isActive?.()) return;
 
@@ -189,7 +212,7 @@ export class NewEnquiryController {
       }
       this.view.setContacts(contacts);
     } catch (error) {
-      console.error("[NewEnquiry] Failed to load contacts", error);
+      console.error("[NewInquiry] Failed to load contacts", error);
       this.view.showFeedback("Unable to load contacts right now.");
     }
   }
@@ -215,7 +238,7 @@ export class NewEnquiryController {
     }
 
     try {
-      this.view.showLoader("Saving contact...");
+      this.#showLoader("Saving contact...");
       this.view.setSaving(true);
       const contact = await this.model.createContact(normalized);
       if (!contact) {
@@ -230,13 +253,13 @@ export class NewEnquiryController {
       await this.#loadRelated(contact.fields.email);
       this.view.showFeedback("Contact saved and selected.", "success");
     } catch (error) {
-      console.error("[NewEnquiry] Failed to create contact", error);
+      console.error("[NewInquiry] Failed to create contact", error);
       this.view.showFeedback(
         "Unable to save contact right now. Please try again."
       );
     } finally {
       this.view.setSaving(false);
-      this.view.hideLoader();
+      this.#hideLoader();
     }
   }
 
@@ -265,7 +288,7 @@ export class NewEnquiryController {
       if (this.relatedRequestId !== requestId) return;
       this.view.renderRelated(related);
     } catch (error) {
-      console.error("[NewEnquiry] Failed to load related data", error);
+      console.error("[NewInquiry] Failed to load related data", error);
       if (this.relatedRequestId !== requestId) return;
       this.view.renderRelated();
     }
@@ -574,7 +597,7 @@ export class NewEnquiryController {
       } else {
         dealsObj["company_id"] = companyId;
       }
-      this.view.showLoader("creating new enquiry...");
+      this.#showLoader("creating new enquiry...");
       let result = await this.model.createNewInquiry(dealsObj);
 
       if (!result.isCancelling) {
@@ -587,7 +610,7 @@ export class NewEnquiryController {
         this.view.customModalBody.innerText = "New inquiry creation failed.";
         this.view.toggleModal("statusModal");
       }
-      this.view.hideLoader();
+      this.#hideLoader();
       return;
     });
   }
@@ -794,7 +817,7 @@ export class NewEnquiryController {
 
         const activeTab = this.view.getActiveTabs();
         let result = "";
-        this.view.showLoader("Adding new company...");
+        this.#showLoader("Adding new company...");
 
         if (activeTab === "individual") {
           result = await this.model.createNewProperties(details, contactId, "");
@@ -817,10 +840,10 @@ export class NewEnquiryController {
           this.view.toggleModal("statusModal");
         }
       } catch (error) {
-        console.error("[NewEnquiry] Failed to create property", error);
+        console.error("[NewInquiry] Failed to create property", error);
         this.view.showFeedback("Unable to create property right now.");
       } finally {
-        this.view.hideLoader();
+        this.#hideLoader();
       }
     });
   }

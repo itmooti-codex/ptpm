@@ -1,4 +1,4 @@
-export class NewEnquiryModel {
+export class NewInquiryModel {
   constructor(plugin, { maxRecords = 200 } = {}) {
     window.plugin = plugin;
     this.affiliationModel = plugin.switchTo("PeterpmAffiliation");
@@ -41,7 +41,7 @@ export class NewEnquiryModel {
     try {
       await this.#primeContacts(model);
     } catch (error) {
-      console.warn("[NewEnquiry] Failed to prime contacts", error);
+      console.warn("[NewInquiry] Failed to prime contacts", error);
     }
     return this.getContacts();
   }
@@ -95,7 +95,7 @@ export class NewEnquiryModel {
       return contact;
     } catch (error) {
       console.warn(
-        "[NewEnquiry] Falling back to local contact creation",
+        "[NewInquiry] Falling back to local contact creation",
         error
       );
       return this.#createLocalContact(payload);
@@ -390,7 +390,7 @@ export class NewEnquiryModel {
         related = await this.#fetchRelatedFromSdk(normalized);
       } catch (error) {
         console.warn(
-          "[NewEnquiry] Related fetch failed, using mock data",
+          "[NewInquiry] Related fetch failed, using mock data",
           error
         );
         related = this.#mockRelated(normalized);
@@ -687,7 +687,7 @@ export class NewEnquiryModel {
       }
       return await this.#awaitResult(execution);
     } catch (error) {
-      console.warn("[NewEnquiry] calc query execution failed", error);
+      console.warn("[NewInquiry] calc query execution failed", error);
       return null;
     } finally {
       try {
@@ -1218,7 +1218,7 @@ export class NewEnquiryModel {
         this.affiliationCallback(payload.resp);
       }
     } catch (error) {
-      console.warn("[NewEnquiry] fetchAffiliationByPropertyId failed", error);
+      console.warn("[NewInquiry] fetchAffiliationByPropertyId failed", error);
       return [];
     }
   }
@@ -1301,7 +1301,7 @@ export class NewEnquiryModel {
       const payload = await query.fetchDirect().toPromise();
       return payload.resp;
     } catch (error) {
-      console.warn("[NewEnquiry] fetchAffiliationByPropertyId failed", error);
+      console.warn("[NewInquiry] fetchAffiliationByPropertyId failed", error);
       return [];
     }
   }
@@ -1496,14 +1496,14 @@ export class NewEnquiryModel {
     return query.fetchDirect().toPromise();
   }
 
-  async fetchRelatedInquiries(entityId, enquiryId) {
+  async fetchRelatedInquiries(entityId, inquiryId) {
     let query = this.dealModel.query();
     if (entityId) {
       query = query.where("company_id", entityId);
     }
 
-    if (enquiryId) {
-      query = query.where("id", enquiryId);
+    if (inquiryId) {
+      query = query.where("id", inquiryId);
     }
 
     query
@@ -1527,6 +1527,9 @@ export class NewEnquiryModel {
         "property_id",
         "primary_contact_id",
       ])
+      .include("Service_Inquiry", (q) => {
+        q.deSelectAll().select(["service_name"]);
+      })
       .noDestroy();
     query.getOrInitQueryCalc?.();
     return query.fetchDirect().toPromise();
@@ -1652,7 +1655,7 @@ export class NewEnquiryModel {
     if (!query) return [];
     const service = this.#getAutocompleteService();
     if (!service) {
-      console.warn("[NewEnquiry] Google Places library not ready");
+      console.warn("[NewInquiry] Google Places library not ready");
       return [];
     }
 
@@ -1669,7 +1672,7 @@ export class NewEnquiryModel {
     return new Promise((resolve) => {
       service.getPlacePredictions(request, (predictions = [], status) => {
         if (!this.#isPlacesStatusOk(status)) {
-          console.warn("[NewEnquiry] fetchProperties returned", status);
+          console.warn("[NewInquiry] fetchProperties returned", status);
           if (status === this.#getPlacesStatusConstants().INVALID_REQUEST) {
             this.#ensureGooglePlacesSessionToken(true);
           }
@@ -1686,7 +1689,7 @@ export class NewEnquiryModel {
     if (!id) return null;
     const service = this.#getPlacesDetailsService();
     if (!service) {
-      console.warn("[NewEnquiry] Google Places library not ready");
+      console.warn("[NewInquiry] Google Places library not ready");
       return null;
     }
 
@@ -1704,7 +1707,7 @@ export class NewEnquiryModel {
     return new Promise((resolve) => {
       service.getDetails(request, (result, status) => {
         if (status !== statuses.OK) {
-          console.warn("[NewEnquiry] fetchPropertyDetails returned", status);
+          console.warn("[NewInquiry] fetchPropertyDetails returned", status);
           resolve(null);
           return;
         }

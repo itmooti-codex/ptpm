@@ -1,15 +1,22 @@
-import { NewEnquiryController } from "./controller/new-enquiry.js";
-import { NewEnquiryModel } from "./models/new-enquiry.js";
-import { NewEnquiryView } from "./views/new-enquiry.js";
+import { NewInquiryController } from "./controller/new-enquiry.js";
+import { NewInquiryModel } from "./models/new-enquiry.js";
+import { NewInquiryView } from "./views/new-enquiry.js";
 import { DashboardModel } from "./models/dashboard.js";
 import { DashboardView, renderDynamicTable } from "./views/dashboard.js";
 import { DashboardController } from "./controller/dashboard.js";
+import { initOperationLoader, showLoader, hideLoader } from "./helper.js";
 
 import { config } from "../sdk/config.js";
 import { VitalStatsSDK } from "../sdk/init.js";
 
 // Central app bootstrap: instantiate classes once based on page
 (function bootstrap() {
+  const loaderElement = initOperationLoader();
+  const loaderMessageEl =
+    loaderElement?.querySelector("[data-loader-message]") || null;
+  const loaderCounter = { count: 0 };
+
+  showLoader(loaderElement, loaderMessageEl, loaderCounter, "Loading app...");
   const App = {
     services: {},
     controllers: {},
@@ -34,13 +41,13 @@ import { VitalStatsSDK } from "../sdk/init.js";
       this.maybeInitDashboard();
 
       // Page-specific
-      if (page == "new-enquiry") this.initNewEnquiry();
+      if (page == "new-inquiry") this.initNewInquiry();
       if (page === "dashboard") this.maybeInitDashboard();
     },
 
     maybeInitDashboard() {
       const hasCalendar = document.getElementById("calendar-grid");
-      const hasTable = document.getElementById("inquiry-table-container");
+      const hasTable = document.getElementById("enquiry-table-container");
       if (!hasCalendar || !hasTable) return;
       if (typeof dayjs === "undefined") return;
       if (this.controllers.dashboard) return; // already initialized
@@ -51,15 +58,15 @@ import { VitalStatsSDK } from "../sdk/init.js";
       this.controllers.dashboard = ctrl;
     },
 
-    initNewEnquiry() {
-      if (this.controllers.newEnquiry) return;
-      const model = new NewEnquiryModel(tempPlugin);
-      const view = new NewEnquiryView(model);
-      const ctrl = new NewEnquiryController(model, view);
+    initNewInquiry() {
+      if (this.controllers.newInquiry) return;
+      const model = new NewInquiryModel(tempPlugin);
+      const view = new NewInquiryView(model);
+      const ctrl = new NewInquiryController(model, view);
       const boundInitAutocomplete = ctrl.initAutocomplete.bind(ctrl);
       window.initAutocomplete = boundInitAutocomplete;
       ctrl.init();
-      this.controllers.newEnquiry = ctrl;
+      this.controllers.newInquiry = ctrl;
     },
   };
 
