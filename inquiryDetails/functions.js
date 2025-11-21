@@ -80,29 +80,10 @@ function pageActions() {
       this.isDuplicating = true;
 
       try {
-        // 1) fetch the source job using your existing FULL_JOB_QUERY
-        const data = await graphqlRequest(FULL_JOB_QUERY, { id: jobId });
-        const src = (data?.calcJobs && data.calcJobs[0]) || null;
-        if (!src) throw new Error("Could not load job to duplicate.");
-
-        // 2) transform aliased fields like Accepted_Quote_Activity_Price -> accepted_quote_activity_price
-        const toCreatePayload = (jobObj) => {
-          const payload = {};
-          for (const [key, val] of Object.entries(jobObj)) {
-            // ignore purely display/helper aliases if any sneak in
-            if (key === "ID") continue; // server will set a new id
-            const snake = key.toLowerCase(); // aliases are already snake-like with underscores
-            payload[snake] = val;
-          }
-          return payload;
-        };
-
-        const payload = toCreatePayload(src);
-
-        // 3) create the duplicate
-        await graphqlRequest(DUPLICATE_JOB_QUERY, { payload });
-
-        // 4) toast + close the menu popover (if any)
+        await graphqlRequest(UPDATE_JOB_MUTATION, {
+          id: jobId,
+          payload: { duplicate_job: true },
+        });
         window.dispatchEvent(
           new CustomEvent("toast:show", {
             detail: {
