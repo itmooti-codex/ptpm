@@ -1401,7 +1401,7 @@ export class NewEnquiryModel {
     return result;
   }
 
-  async fetchCompany(id) {
+  async fetchCompanyById(id) {
     let query = this.companyModel.query();
     if (id) {
       query = query.where("id", id);
@@ -1508,7 +1508,17 @@ export class NewEnquiryModel {
         "type",
         "inquiry_status",
         "how_did_you_hear",
+        "how_can_we_help",
         "admin_notes",
+        "company_id",
+        "noise_signs_options_as_text",
+        "pest_active_times_options_as_text",
+        "pest_location_options_as_text",
+        "date_job_required_by",
+        "renovations",
+        "service_name",
+        "company_id",
+        "property_id",
       ])
       .noDestroy();
     query.getOrInitQueryCalc?.();

@@ -1,0 +1,309 @@
+<h1>Dashboard &amp; Job Enquiry Documentation</h1>
+<h2>Overview</h2>
+<ul>
+<li><strong>Purpose</strong>: capture how the Peter the Possum &amp; Bird Man dashboard and job inquiry (aka new enquiry) experiences are wired together so implementers can safely extend the flows.</li>
+<li><strong>Audience</strong>: front-end devs and low-code builders using the VitalStats SDK bundle included under <code>ptpm/js</code>.</li>
+<li><strong>Scope</strong>: web assets living in <code>ptpm/index.html</code> (dashboard) and <code>ptpm/pages/new-enquiry.html</code> (job enquiry) plus their related MVC-style controllers, models, and views.</li>
+</ul>
+<h2>Shared bootstrap &amp; dependencies</h2>
+<ul>
+<li><code>ptpm/js/app.js</code> bootstraps both screens once the DOM loads. It instantiates <code>VitalStatsSDK</code>, switches to the Peterpm plugin models (deal/job/property/contact/etc), and conditionally spins up controllers based on the <code>data-page</code> attribute on <code>&lt;body&gt;</code>.</li>
+<li>Shared front-end stack: Tailwind via CDN, vanilla JS modules, Day.js (with timezone + UTC plugins for the dashboard), Flatpickr for date pickers, and Google Places (lazy-loaded) for property search on the enquiry form.</li>
+<li>All controllers follow a thin MVC pattern: the model encapsulates SDK queries/mutations, the view performs DOM writes/listeners, and controllers glue them together.</li>
+</ul>
+<h2>Dashboard module</h2>
+<h3>Entry points &amp; layout</h3>
+<ul>
+<li>Page: <code>ptpm/index.html</code> (body has <code>data-page=&quot;dashboard&quot;</code>).</li>
+<li>Initialization happens in <code>app.js</code> → <code>App.maybeInitDashboard()</code>, which only runs once Day.js and calendar/table containers exist.</li>
+</ul>
+<h3>Model (<code>js/models/dashboard.js</code>)</h3>
+<ul>
+<li>Wraps <code>dayjs</code> to build a rolling 14-day calendar (<code>#buildCalendarDays</code>) aligned to <code>Australia/Brisbane</code>.</li>
+<li>Persists filter state, selected date, status colour classes (<code>DASHBOARD_STATUS_CLASSES</code>), and cached query handles for each tab (deals, quotes, jobs, payments, active jobs, urgent calls).</li>
+<li>Each <code>fetch*</code> method builds SDK queries with <code>.andWhere</code> filters derived from <code>collectAllFiltersFromUI()</code> (dates become epoch ranges, text fields converted to SQL <code>like</code>).</li>
+<li><code>initScheduledTotals()</code> precomputes the per-day counts shown on the calendar heatmap; <code>getRowsForDate()</code> scopes the day’s table rows.</li>
+<li>External data sources: <code>ptpmDealModel</code>, <code>ptpmJobModel</code>, payment-related models exposed via <code>plugin.switchTo</code>.</li>
+</ul>
+<h3>Controller (<code>js/controller/dashboard.js</code>)</h3>
+<ul>
+<li>Owns dropdown wiring (<code>initServiceProviderDropdown</code>, <code>initAccountTypeDropdown</code>, <code>initSourceDropdown</code>, <code>initStatusDropdown</code>), calendar click handling, global search, and filter chips.</li>
+<li>Maintains <code>currentTab</code> state (default <code>inquiry</code>) plus <code>filters</code> object with every UI filter (global text, account, resident, source, service provider, price min/max, date ranges, etc.).</li>
+<li><code>init()</code> queues Day.js totals, renders calendar, wires notification icon, search bar, filter apply/reset buttons, and tab navigation via <code>view.initTopTabs</code>.</li>
+<li><code>handleTabChange()</code> delegates to per-tab fetchers:<ul>
+<li><code>fetchDealsAndRenderTable()</code> for Inquiry list.</li>
+<li><code>fetchQuotesAndRenderTable()</code> for Quote tab.</li>
+<li><code>fetchPaymentsAndRenderTable()</code> for Payment tab.</li>
+<li><code>fetchJobsAndRenderTable()</code> for Jobs tab.</li>
+<li><code>fetchActiveJobsAndRenderTable()</code> for Active Jobs tab.</li>
+<li><code>fetchUrgentCallsAndRenderTable()</code> for Urgent Calls tab.</li>
+</ul>
+</li>
+<li><code>renderTable()</code> selects the correct view renderer per tab (<code>renderQuoteTable</code>, <code>renderPaymentTable</code>, etc.) and passes status colour mappings + date formatter.</li>
+<li>Error handling: every fetch is wrapped in <code>try/catch</code>, writes to console, and clears table state on failures.</li>
+</ul>
+<h3>View (<code>js/views/dashboard.js</code>)</h3>
+<ul>
+<li>Provides <code>renderDynamicTable()</code> helper plus tab-specific renderers (Inquiry/Quote/Payment/Jobs/Active Jobs/Urgent Calls) that describe headers, row formatters, and inline action buttons.</li>
+<li><code>renderCalendar()</code> draws the 14-day grid with totals + selection styling.</li>
+<li><code>initTopTabs()</code> attaches click listeners to <code>data-tab</code> buttons and keeps ARIA attributes in sync.</li>
+<li>Extra UX helpers: toast notifications, notification modals, inline loading skeletons, filter chip renderer.</li>
+</ul>
+<h3>Tab reference</h3>
+<table>
+<thead>
+<tr>
+<th>Tab</th>
+<th>Controller fetcher</th>
+<th>Primary data source</th>
+<th>Key columns</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Inquiry</td>
+<td><code>fetchDealsAndRenderTable</code></td>
+<td><code>ptpmDealModel</code> deal query filtered by <code>inquiry_status</code></td>
+<td>Created date, account, resident, property, source, assigned provider, status pill, action buttons</td>
+</tr>
+<tr>
+<td>Quote</td>
+<td><code>fetchQuotesAndRenderTable</code></td>
+<td><code>dashboardHelper.fetchQuotes</code> (or fallback) mapped via <code>DashboardHelper.mapQuoteRows</code></td>
+<td>Quote #, job reference, amount, quote status, contact, action menu</td>
+</tr>
+<tr>
+<td>Jobs</td>
+<td><code>fetchJobsAndRenderTable</code></td>
+<td><code>DashboardHelper.mapJobsRows</code> from job query</td>
+<td>Job #, task name, appointment window, crew/serviceman, status</td>
+</tr>
+<tr>
+<td>Active Jobs</td>
+<td><code>fetchActiveJobsAndRenderTable</code></td>
+<td><code>dashboardHelper.mapActiveJobRows</code></td>
+<td>Appointment, serviceman, job/invoice references, progress</td>
+</tr>
+<tr>
+<td>Payment</td>
+<td><code>fetchPaymentsAndRenderTable</code></td>
+<td><code>DashboardHelper.mapPaymentsRows</code> from invoice data</td>
+<td>Invoice/quote numbers, account, outstanding total, due/bill dates, Xero sync state</td>
+</tr>
+<tr>
+<td>Urgent Calls</td>
+<td><code>fetchUrgentCallsAndRenderTable</code></td>
+<td><code>dashboardHelper.mapUrgentCallRows</code></td>
+<td>Task, due date, priority flags, instruction columns</td>
+</tr>
+</tbody></table>
+<h3>Filter reference (UI ids → filter keys)</h3>
+<table>
+<thead>
+<tr>
+<th>UI element</th>
+<th>Filter key</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>#global-search</code></td>
+<td><code>global</code></td>
+<td>Text search hits first/last name, email, sms number</td>
+</tr>
+<tr>
+<td><code>#filter-account-name</code></td>
+<td><code>accountName</code></td>
+<td>Company name wildcard</td>
+</tr>
+<tr>
+<td><code>#filter-resident</code></td>
+<td><code>resident</code></td>
+<td>Matches contact first/last name</td>
+</tr>
+<tr>
+<td><code>#filter-address</code></td>
+<td><code>address</code></td>
+<td>Property <code>address_1</code> wildcard</td>
+</tr>
+<tr>
+<td>Source dropdown (<code>data-source</code>)</td>
+<td><code>source</code></td>
+<td>Multi-select list with “None” toggle synced to controller</td>
+</tr>
+<tr>
+<td>Status dropdown (<code>data-status</code>)</td>
+<td><code>statuses</code></td>
+<td>Tab aware (Inquiry statuses, Quote statuses, etc.)</td>
+</tr>
+<tr>
+<td><code>#filter-serviceman</code></td>
+<td><code>serviceman</code></td>
+<td>Technician/staff filter for job-based tabs</td>
+</tr>
+<tr>
+<td>Account type dropdown (<code>data-account-type</code>)</td>
+<td><code>accountTypes</code></td>
+<td>Multi-select (Res/Com) used for company filters</td>
+</tr>
+<tr>
+<td>Service provider dropdown (<code>data-service-provider</code>)</td>
+<td><code>serviceProviders</code></td>
+<td>Multi-select toggles + “All” button</td>
+</tr>
+<tr>
+<td><code>#price-min</code> / <code>#price-max</code></td>
+<td><code>priceMin</code>, <code>priceMax</code></td>
+<td>Numeric range applied where available</td>
+</tr>
+<tr>
+<td><code>#date-from</code> / <code>#date-to</code></td>
+<td><code>dateFrom</code>, <code>dateTo</code></td>
+<td>Applied to creation date across tabs</td>
+</tr>
+<tr>
+<td>Payment-only fields</td>
+<td><code>invoiceDateFrom</code>, <code>invoiceDateTo</code>, <code>dueDateFrom</code>, <code>dueDateTo</code>, <code>billPaidDateFrom</code>, etc.</td>
+<td>Only read when those inputs exist in the DOM</td>
+</tr>
+<tr>
+<td>Task checkboxes <code>#task-due-today</code>, <code>#task-assigned-to-me</code></td>
+<td><code>taskDueToday</code>, <code>taskAssignedToMe</code></td>
+<td>Used for Urgent Calls / tasks tab</td>
+</tr>
+</tbody></table>
+<h3>Extending the dashboard</h3>
+<ol>
+<li><strong>Add a new tab</strong>: place a button with <code>data-tab</code> inside the nav + a matching <code>data-panel</code> section in HTML. Extend <code>handleTabChange</code> with a new case that fetches + maps data, then add a renderer inside <code>DashboardView</code> (or reuse <code>renderDynamicTable</code>).</li>
+<li><strong>Add filters</strong>: give the input a unique id or <code>data-*</code> attribute, extend <code>collectAllFiltersFromUI()</code> to read it, then use the value while building queries in <code>DashboardModel</code>.</li>
+<li><strong>New status pills</strong>: extend <code>inquiryStatues</code>/<code>quoteStatuses</code>/etc arrays in the controller and update <code>DASHBOARD_STATUS_CLASSES</code> so new statuses have colour tokens.</li>
+<li><strong>SDK queries</strong>: the model always reuses <code>plugin.switchTo</code> handles. Keep query building pure (no DOM) and prefer <code>.deSelectAll().select([...])</code> to minimize payload size.</li>
+</ol>
+<h3>Operational considerations</h3>
+<ul>
+<li>Day.js timezone plugins must be present globally; otherwise the constructor throws an error early (helps catch missing CDN scripts).</li>
+<li><code>App.maybeInitDashboard()</code> short-circuits when required DOM nodes are missing so the JS bundle can be shared across multiple pages.</li>
+<li>When filters change, <code>bindApplyFilters()</code> writes chips via <code>renderAppliedFilters()</code>; keep chip labels short to avoid overflow on small screens.</li>
+</ul>
+<h2>Job / New Enquiry module</h2>
+<h3>Entry points &amp; layout</h3>
+<ul>
+<li>Page: <code>ptpm/pages/new-enquiry.html</code> with <code>data-page=&quot;new-enquiry&quot;</code>. Contains three major sections: <strong>Contact selection</strong>, <strong>Property information</strong>, and <strong>Inquiry/Feedback forms</strong> plus supporting modals for contact/entity details.</li>
+<li><code>App.initNewEnquiry()</code> (in <code>app.js</code>) injects <code>NewEnquiryModel</code>, <code>NewEnquiryView</code>, and <code>NewEnquiryController</code>, and binds the controller’s <code>initAutocomplete</code> as the Google callback.</li>
+</ul>
+<h3>Model (<code>js/models/new-enquiry.js</code>)</h3>
+<ul>
+<li>Provides handles to VitalStats models: contacts, affiliations, properties, deals, companies, jobs, etc. All retrieved via <code>plugin.switchTo(&quot;Peterpm*&quot;)</code>.</li>
+<li>Maintains a local cache of contacts (<code>contacts</code>) plus a map of <code>relatedCache</code> keyed by email to avoid duplicate property/job lookups.</li>
+<li>Core responsibilities:<ul>
+<li><code>loadContacts()</code> primes the contact list using <code>.query().fetchAllRecords()</code> with <code>maxRecords</code> limit and stores normalized entries for the view.</li>
+<li>CRUD helpers for contacts, affiliations, companies, properties, and deals (new inquiry). Mutations all go through <code>model.mutation().createOne()</code> or <code>.update()</code> followed by <code>.execute(true).toPromise()</code>.</li>
+<li><code>fetchRelated(email)</code> hydrates existing properties/jobs/inquiries for the selected contact/entity (used to render the side panel).</li>
+<li>Google Places helpers store API key/session tokens when needed (current UI loads Maps via <code>&lt;script&gt;</code> and the controller handles parsing).</li>
+</ul>
+</li>
+</ul>
+<h3>Controller (<code>js/controller/new-enquiry.js</code>)</h3>
+<ul>
+<li>Seeds dropdown definitions for noises, pest locations, time-of-day observations, state options, inquiry metadata (service, source, type, referral source).</li>
+<li>Binds UI events on construction: contact field change watchers, add affiliation/property contact buttons, modal save buttons, submit button, view detail link, entity add button, property add button, Google address auto-complete, etc.</li>
+<li>Flow summary:<ol>
+<li><strong>Contact lookup</strong>: <code>this.view.onContactSelected</code> surfaces matches from the view search widget. When a contact is selected, the controller clears property inputs and loads related deals/properties.</li>
+<li><strong>Manual add</strong>: <code>onManualAdd</code> resets selection so the user can enter contact details from scratch.</li>
+<li><strong>Contact save</strong>: <code>#handleSave()</code> normalizes payload, validates required fields, detects duplicates by email, and either selects the existing record or creates a new contact via the model.</li>
+<li><strong>Related panel</strong>: <code>#loadRelated(email)</code> fetches properties/jobs/inquiries tied to the contact; request IDs guard against stale responses.</li>
+<li><strong>Dropdown cards</strong>: <code>#renderDropdownOptionsForTab()</code> + <code>#initDropdown()</code> generate “select all/none” behaviours for noises, locations, and times.</li>
+<li><strong>Property modals</strong>: hooking <code>showHideAddAddressModal</code>, <code>onAddAffiliationButtonClicked</code>, <code>onAddPropertyContactButtonClicked</code>, and <code>onAddPropertyButtonClick</code> toggles modals, syncs selected contact/entity, and eventually calls <code>model.createNewProperties()</code>.</li>
+<li><strong>Inquiry submission</strong>: <code>onSubmitButtonClicked()</code> merges <code>[data-inquiry-id]</code> and <code>[data-feedback-id]</code> inputs, injects account type + primary contact/company IDs, requires a property selection, calls <code>model.createNewInquiry()</code>, and surfaces success/failure state via the status modal.</li>
+</ol>
+</li>
+<li>Other helpers: <code>createInquiryDetailOption()</code> populates service/type/source selects, <code>renderDropdownForStates()</code> feeds state options, <code>onSameAsContactCheckboxClicked()</code> copies contact address into property fields, <code>initAutocomplete()</code> wires Google Places.</li>
+</ul>
+<h3>View (<code>js/views/new-enquiry.js</code>)</h3>
+<ul>
+<li>Wraps DOM nodes for both <strong>Individual</strong> and <strong>Entity</strong> tabs and exposes methods controllers call:<ul>
+<li>Contact search panel with built-in dropdown (includes empty states, add button, manual entry toggle).</li>
+<li>Field getters such as <code>getValuesFromFields(selector, attr)</code> and <code>getFormValues()</code> powering the submit payload.</li>
+<li>Modal helpers (<code>toggleModal</code>, <code>resetAffiliationModal</code>, <code>setAffiliationContacts</code>, etc.), loader overlay, status modal, and toast-like feedback element (<code>data-contact-feedback</code>).</li>
+<li>Related panel management: <code>renderRelated()</code>, <code>showRelatedLoading()</code>, <code>setRelatedTab()</code> for properties/jobs/inquiries subsections.</li>
+<li>Visual affordances: highlight selected property card, duplicate contact address for property when “same as contact” is checked, <code>createOptionsForSelectbox()</code> to populate selects from controller config.</li>
+</ul>
+</li>
+<li>Maintains UI state such as the currently active tab, selected contact/property IDs, cached contacts filtered by search, and loader counters so nested async sections can show/hide a shared spinner.</li>
+</ul>
+<h3>Form sections &amp; key fields</h3>
+<table>
+<thead>
+<tr>
+<th>Section</th>
+<th>Selectors</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Contact search</td>
+<td><code>[data-search-root=&quot;contact-individual&quot;]</code></td>
+<td>Debounced search, manual entry toggle, add-new button opens contact modal</td>
+</tr>
+<tr>
+<td>Individual contact fields</td>
+<td><code>[data-contact-field]</code> inputs</td>
+<td>Includes first/last name, email, sms, office phone, work requested by</td>
+</tr>
+<tr>
+<td>Entity tab</td>
+<td><code>[data-contact-section=&quot;entity&quot;]</code></td>
+<td>Contains company search/add UI, entity-specific <code>data-contact-field=&quot;entity-id&quot;</code> hidden input</td>
+</tr>
+<tr>
+<td>Property information</td>
+<td><code>[data-property-id]</code> fields + Google Places input</td>
+<td>Captures address lines, suburb, state, postal code, property meta</td>
+</tr>
+<tr>
+<td>Inquiry details</td>
+<td><code>[data-inquiry-id]</code> inputs</td>
+<td>Service inquiry, status, job type, priority, scheduling windows, etc. (see <code>inquiryConfigs</code> for select options)</td>
+</tr>
+<tr>
+<td>Feedback &amp; observation</td>
+<td><code>[data-feedback-id]</code> inputs</td>
+<td>Multi-select dropdowns for noises, pest location, times active</td>
+</tr>
+<tr>
+<td>Submission controls</td>
+<td><code>#submit-btn</code>, <code>#cancel-btn</code>, <code>#reset-btn</code></td>
+<td>Controller resets/unsets fields but actual cancel navigation is left to host app</td>
+</tr>
+</tbody></table>
+<h3>External integrations</h3>
+<ul>
+<li><strong>VitalStats SDK</strong>: all CRUD flows run through the plugin instance injected when the page loads. Keep long-lived references in <code>NewEnquiryModel</code> so multiple controller calls reuse the same handles.</li>
+<li><strong>Google Places Autocomplete</strong>: script tag appended 9 seconds after load to reduce blocking; once Google calls <code>initAutocomplete</code>, the controller stores parsed address parts via <code>view.setGoogleSearchAddress()</code>.</li>
+<li><strong>Flatpickr</strong>: <code>flatpickr(&quot;.date-picker&quot;, { dateFormat: &quot;d/m/Y&quot;, allowInput: true })</code> attaches to inputs with <code>.date-picker</code> class for scheduling fields.</li>
+</ul>
+<h3>Submission guardrails &amp; UX notes</h3>
+<ul>
+<li>Inquiry submission requires both a contact/company <strong>and</strong> a property. Missing prerequisites trigger the shared status modal with failure copy.</li>
+<li>Duplicate contacts (same email) are automatically surfaced; the existing record is selected and its related data refreshed instead of creating a new contact.</li>
+<li>Long-running mutations use <code>view.showLoader(message)</code> / <code>hideLoader()</code> so the CTA footer shows progress.</li>
+<li><code>relatedRequestId</code> patterns prevent race conditions when multiple async related-data requests overlap (e.g., fast contact switching).</li>
+</ul>
+<h3>Extending the enquiry workflow</h3>
+<ol>
+<li><strong>New dropdown chips</strong>: add entries to <code>this.inquiryConfigs</code> in the controller, then update the HTML template with matching <code>data-inquiry-id</code> selects.</li>
+<li><strong>Persist more fields</strong>: ensure the HTML input has a <code>data-inquiry-id</code>/<code>data-feedback-id</code>, update <code>NewEnquiryModel.createNewInquiry()</code> to map the field into the mutation payload, and adjust any validation logic in <code>#validate()</code>.</li>
+<li><strong>Custom validations</strong>: extend <code>#validate()</code> with new rules (e.g., require phone number for certain services) and surface messages via <code>view.showFeedback()</code>.</li>
+<li><strong>Property search</strong>: hook additional autocomplete providers by swapping <code>initAutocomplete</code> or by setting <code>this.propertySearchData</code> in the view and reusing the existing prediction UI skeleton.</li>
+</ol>
+<h2>Combined operational runbook</h2>
+<ol>
+<li><strong>Dashboard</strong>: open <code>index.html</code>, ensure Day.js + Tailwind CDNs resolve, and confirm the controller logs <code>App.controllers.dashboard</code> in DevTools. Use the top-right filters to scope the dataset and verify rows change accordingly.</li>
+<li><strong>Job enquiry</strong>: open <code>pages/new-enquiry.html</code>, wait for the contact list to load, select or create a contact, attach/create a property, fill in inquiry + feedback details, then hit <strong>Submit</strong>. A success modal indicates the mutation executed.</li>
+<li><strong>PDF generation</strong>: the HTML companion file <code>docs/dashboard-and-job-enquiry.html</code> plus the exported PDF (see below) are regenerated via <code>npx --yes marked docs/dashboard-and-job-enquiry.md -o docs/dashboard-and-job-enquiry.html</code> and <code>libreoffice --headless --convert-to pdf docs/dashboard-and-job-enquiry.html --outdir docs</code>.</li>
+</ol>
+<h2>Artifact list</h2>
+<ul>
+<li>Markdown source: <code>docs/dashboard-and-job-enquiry.md</code> (this file).</li>
+<li>HTML rendition: <code>docs/dashboard-and-job-enquiry.html</code>.</li>
+<li>Combined PDF: <code>docs/dashboard-and-job-enquiry.pdf</code>.</li>
+</ul>

@@ -204,7 +204,7 @@ export class NewEnquiryController {
 
     const existing = this.#findByEmail(normalized.email);
     if (existing) {
-      this.view.populateContact(existing);
+      this.view.populateContactDetails(existing);
       this.view.showRelatedLoading();
       this.#loadRelated(existing.fields.email).catch(() => {});
       this.view.showFeedback(
@@ -226,7 +226,7 @@ export class NewEnquiryController {
       }
 
       this.view.setContacts(this.model.getContacts());
-      this.view.populateContact(contact);
+      this.view.populateContactDetails(contact);
       await this.#loadRelated(contact.fields.email);
       this.view.showFeedback("Contact saved and selected.", "success");
     } catch (error) {
@@ -245,7 +245,7 @@ export class NewEnquiryController {
     this.view.clearPropertyFieldValues(
       "#property-information input, #property-information select"
     );
-    this.view.populateContact(contact);
+    this.view.populateContactDetails(contact);
     this.view.showRelatedLoading();
     this.#loadRelated(contact.fields?.email).catch(() => {});
   }
