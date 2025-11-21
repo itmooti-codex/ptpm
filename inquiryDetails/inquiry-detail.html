@@ -90,20 +90,91 @@
             <!-- Page Title -->
 
             <!-- Email Options -->
-            <div class="flex gap-2 justify-start items-center">
+              <div class="flex gap-2 justify-start items-center">
+                <!-- Generate Emails -->
+                <div
+                  x-data="emailOptionsDropdown('general')"
+                  class="flex flex-inline gap-1 justify-around items-center relative"
+                >
+                  <!-- Trigger: clicking this toggles the email options -->
+                  <button
+                    type="button"
+                    @click="toggle()"
+                    class="flex items-center gap-1 justify-end"
+                  >
+                    <div
+                      class="text-white text-[14px] font-medium f-inter"
+                      x-text="EMAIL_OPTIONS_DATA[groupKey].label"
+                  ></div>
+                  <svg
+                    :class="open ? 'rotate-180 transition-transform' : 'transition-transform'"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 14 14"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M12.678 4.98899L7.37519 10.2918C7.32594 10.3411 7.26746 10.3802 7.20308 10.4069C7.13871 10.4335 7.06971 10.4473 7.00002 10.4473C6.93033 10.4473 6.86133 10.4335 6.79696 10.4069C6.73258 10.3802 6.6741 10.3411 6.62485 10.2918L1.32209 4.98899C1.22259 4.88949 1.16669 4.75454 1.16669 4.61382C1.16669 4.47311 1.22259 4.33815 1.32209 4.23865C1.42159 4.13915 1.55654 4.08325 1.69726 4.08325C1.83797 4.08325 1.97293 4.13915 2.07243 4.23865L7.00002 9.16691L11.9276 4.23865C11.9769 4.18938 12.0354 4.1503 12.0997 4.12364C12.1641 4.09698 12.2331 4.08325 12.3028 4.08325C12.3725 4.08325 12.4415 4.09698 12.5058 4.12364C12.5702 4.1503 12.6287 4.18938 12.678 4.23865C12.7272 4.28792 12.7663 4.34641 12.793 4.41078C12.8196 4.47515 12.8334 4.54415 12.8334 4.61382C12.8334 4.6835 12.8196 4.75249 12.793 4.81686C12.7663 4.88124 12.7272 4.93973 12.678 4.98899Z"
+                      fill="white"
+                    />
+                  </svg>
+                </button>
+
+                <!-- Dropdown -->
+                <div
+                  x-cloak
+                  x-show="open"
+                  x-transition
+                  @click.outside="close()"
+                  class="w-max shadow-[0px_4px_6px_-4px_rgba(0,0,0,0.10)] shadow-lg inline-flex flex-col justify-start items-start absolute top-8 left-0 z-10"
+                >
+                  <div
+                    class="self-stretch bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 flex flex-col justify-start items-start overflow-hidden"
+                  >
+                    <template
+                      x-for="button in EMAIL_OPTIONS_DATA[groupKey].buttons"
+                      :key="button.message_id"
+                    >
+                      <div
+                        data-state="Default"
+                        class="self-stretch px-6 py-4 bg-white inline-flex justify-start items-start gap-2 cursor-pointer hover:bg-[#E3EFFF]"
+                        @click="handleEmail(button)"
+                      >
+                        <div class="justify-start">
+                          <!-- main action: runs updateJob mutation -->
+                          <span
+                            class="text-slate-500 text-sm font-medium font-['Inter'] leading-4"
+                            x-text="buttonLabel(button)"
+                          ></span>
+
+                          <!-- template link: opens Ontraport in new tab -->
+                          <span
+                            class="text-blue-700 text-sm font-medium font-['Inter'] leading-4 cursor-pointer underline"
+                            x-text="'(' + button.template_link_button + ')'"
+                            @click.stop="openTemplateLink(button.message_id)"
+                          ></span>
+                        </div>
+                      </div>
+                    </template>
+                  </div>
+                </div>
+              </div>
               <!-- Generate Emails -->
+
+              <!-- Quote Emails -->
               <div
-                x-data="{ open: false, groupKey: 'general' }"
+                x-data="emailOptionsDropdown('quote')"
                 class="flex flex-inline gap-1 justify-around items-center relative"
               >
-                <!-- Trigger: clicking this toggles the email options -->
+                <!-- Trigger -->
                 <button
                   type="button"
-                  @click="open = !open"
+                  @click="toggle()"
                   class="flex items-center gap-1 justify-end"
                 >
                   <div
-                    class="text-white text-[14px] font-medium f-inter"
+                    class="justify-end text-white text-[14px] font-medium f-inter"
                     x-text="EMAIL_OPTIONS_DATA[groupKey].label"
                   ></div>
                   <svg
@@ -126,7 +197,7 @@
                   x-cloak
                   x-show="open"
                   x-transition
-                  @click.outside="open = false"
+                  @click.outside="close()"
                   class="w-max shadow-[0px_4px_6px_-4px_rgba(0,0,0,0.10)] shadow-lg inline-flex flex-col justify-start items-start absolute top-8 left-0 z-10"
                 >
                   <div
@@ -139,84 +210,13 @@
                       <div
                         data-state="Default"
                         class="self-stretch px-6 py-4 bg-white inline-flex justify-start items-start gap-2 cursor-pointer hover:bg-[#E3EFFF]"
-                        @click="updateJobEmailCheckbox(button.field_id)"
+                        @click="handleEmail(button)"
                       >
                         <div class="justify-start">
                           <!-- main action: runs updateJob mutation -->
                           <span
                             class="text-slate-500 text-sm font-medium font-['Inter'] leading-4"
-                            x-text="button.button_name"
-                          ></span>
-
-                          <!-- template link: opens Ontraport in new tab -->
-                          <span
-                            class="text-blue-700 text-sm font-medium font-['Inter'] leading-4 cursor-pointer underline"
-                            x-text="'(' + button.template_link_button + ')'"
-                            @click.stop="openTemplateLink(button.message_id)"
-                          ></span>
-                        </div>
-                      </div>
-                    </template>
-                  </div>
-                </div>
-              </div>
-              <!-- Generate Emails -->
-
-              <!-- Quote Emails -->
-              <div
-                x-data="{ openQuote: false, groupKey: 'quote' }"
-                class="flex flex-inline gap-1 justify-around items-center relative"
-              >
-                <!-- Trigger -->
-                <button
-                  type="button"
-                  @click="openQuote = !openQuote"
-                  class="flex items-center gap-1 justify-end"
-                >
-                  <div
-                    class="justify-end text-white text-[14px] font-medium f-inter"
-                    x-text="EMAIL_OPTIONS_DATA[groupKey].label"
-                  ></div>
-                  <svg
-                    :class="openQuote ? 'rotate-180 transition-transform' : 'transition-transform'"
-                    width="14"
-                    height="14"
-                    viewBox="0 0 14 14"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M12.678 4.98899L7.37519 10.2918C7.32594 10.3411 7.26746 10.3802 7.20308 10.4069C7.13871 10.4335 7.06971 10.4473 7.00002 10.4473C6.93033 10.4473 6.86133 10.4335 6.79696 10.4069C6.73258 10.3802 6.6741 10.3411 6.62485 10.2918L1.32209 4.98899C1.22259 4.88949 1.16669 4.75454 1.16669 4.61382C1.16669 4.47311 1.22259 4.33815 1.32209 4.23865C1.42159 4.13915 1.55654 4.08325 1.69726 4.08325C1.83797 4.08325 1.97293 4.13915 2.07243 4.23865L7.00002 9.16691L11.9276 4.23865C11.9769 4.18938 12.0354 4.1503 12.0997 4.12364C12.1641 4.09698 12.2331 4.08325 12.3028 4.08325C12.3725 4.08325 12.4415 4.09698 12.5058 4.12364C12.5702 4.1503 12.6287 4.18938 12.678 4.23865C12.7272 4.28792 12.7663 4.34641 12.793 4.41078C12.8196 4.47515 12.8334 4.54415 12.8334 4.61382C12.8334 4.6835 12.8196 4.75249 12.793 4.81686C12.7663 4.88124 12.7272 4.93973 12.678 4.98899Z"
-                      fill="white"
-                    />
-                  </svg>
-                </button>
-
-                <!-- Dropdown -->
-                <div
-                  x-cloak
-                  x-show="openQuote"
-                  x-transition
-                  @click.outside="openQuote = false"
-                  class="w-max shadow-[0px_4px_6px_-4px_rgba(0,0,0,0.10)] shadow-lg inline-flex flex-col justify-start items-start absolute top-8 left-0 z-10"
-                >
-                  <div
-                    class="self-stretch bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 flex flex-col justify-start items-start overflow-hidden"
-                  >
-                    <template
-                      x-for="button in EMAIL_OPTIONS_DATA[groupKey].buttons"
-                      :key="button.message_id"
-                    >
-                      <div
-                        data-state="Default"
-                        class="self-stretch px-6 py-4 bg-white inline-flex justify-start items-start gap-2 cursor-pointer hover:bg-[#E3EFFF]"
-                        @click="updateJobEmailCheckbox(button.field_id)"
-                      >
-                        <div class="justify-start">
-                          <!-- main action: runs updateJob mutation -->
-                          <span
-                            class="text-slate-500 text-sm font-medium font-['Inter'] leading-4"
-                            x-text="button.button_name"
+                            x-text="buttonLabel(button)"
                           ></span>
 
                           <!-- template link: opens Ontraport in new tab -->
@@ -235,13 +235,13 @@
 
               <!-- Invoice Emails -->
               <div
-                x-data="{ openInvoice: false, groupKey: 'invoice' }"
+                x-data="emailOptionsDropdown('invoice')"
                 class="flex flex-inline gap-1 justify-around items-center relative"
               >
                 <!-- Trigger -->
                 <button
                   type="button"
-                  @click="openInvoice = !openInvoice"
+                  @click="toggle()"
                   class="flex items-center gap-1 justify-end"
                 >
                   <div
@@ -250,7 +250,7 @@
                   ></div>
 
                   <svg
-                    :class="openInvoice ? 'rotate-180 transition-transform' : 'transition-transform'"
+                    :class="open ? 'rotate-180 transition-transform' : 'transition-transform'"
                     width="14"
                     height="14"
                     viewBox="0 0 14 14"
@@ -267,9 +267,9 @@
                 <!-- Dropdown -->
                 <div
                   x-cloak
-                  x-show="openInvoice"
+                  x-show="open"
                   x-transition
-                  @click.outside="openInvoice = false"
+                  @click.outside="close()"
                   class="w-max shadow-[0px_4px_6px_-4px_rgba(0,0,0,0.10)] shadow-lg inline-flex flex-col justify-start items-start absolute top-8 left-0 z-10"
                 >
                   <div
@@ -282,13 +282,13 @@
                       <div
                         data-state="Default"
                         class="self-stretch px-6 py-4 bg-white inline-flex justify-start items-start gap-2 cursor-pointer hover:bg-[#E3EFFF]"
-                        @click="updateJobEmailCheckbox(button.field_id)"
+                        @click="handleEmail(button)"
                       >
                         <div class="justify-start">
                           <!-- main action: runs updateJob mutation -->
                           <span
                             class="text-slate-500 text-sm font-medium font-['Inter'] leading-4"
-                            x-text="button.button_name"
+                            x-text="buttonLabel(button)"
                           ></span>
 
                           <!-- template link: opens Ontraport in new tab -->

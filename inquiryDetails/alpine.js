@@ -75,6 +75,52 @@ document.addEventListener("alpine:init", () => {
     { value: "736", text: "7.30-10 pm" },
   ]);
 
+  Alpine.data("emailOptionsDropdown", (groupKey = "") => ({
+    open: false,
+    groupKey,
+    sendingId: null,
+    toggle() {
+      this.open = !this.open;
+    },
+    close() {
+      this.open = false;
+    },
+    buttonLabel(button = {}) {
+      const id = this.normalizeId(button);
+      if (id && this.sendingId === id) return "Sending email...";
+      return button.button_name || "Send Email";
+    },
+    normalizeId(button = {}) {
+      return button.message_id || button.field_id || button.button_name || null;
+    },
+    async handleEmail(button = {}) {
+      if (!button?.field_id || this.sendingId) return;
+      const id = this.normalizeId(button);
+      this.sendingId = id;
+      try {
+        await updateJobEmailCheckbox(button.field_id);
+        window.dispatchEvent(
+          new CustomEvent("toast:show", {
+            detail: { message: "Email Sent Successfully", variant: "success" },
+          })
+        );
+        this.close();
+      } catch (error) {
+        console.error("Failed to send email", error);
+        window.dispatchEvent(
+          new CustomEvent("toast:show", {
+            detail: {
+              message: error?.message || "Failed to send email.",
+              variant: "error",
+            },
+          })
+        );
+      } finally {
+        this.sendingId = null;
+      }
+    },
+  }));
+
   Alpine.data("providerAllocationState", () => ({
     hasProvider: false,
     hasJob: false,
