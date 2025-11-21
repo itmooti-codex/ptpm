@@ -29,6 +29,12 @@ function pageActions() {
           this.openmemos = true; // stay open when collapsed
         }
       });
+      // --- set store avatar after Alpine is ready ---
+      this.$nextTick(() => {
+        if (window.Alpine?.store?.avatar) {
+          Alpine.store("avatar").setAll();
+        }
+      });
     },
 
     // ...rest of your methods
