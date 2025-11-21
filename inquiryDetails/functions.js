@@ -10,9 +10,34 @@ function openTemplateLink(messageId) {
 
 function pageActions() {
   return {
-    // ...other methods/state
-    currentJobId: JOB_ID, // reuse the constant you already set
+    currentJobId: JOB_ID,
     isDuplicating: false,
+
+    inquiryCollapsed: false, // controls layout + memo state
+    openmemos: false, // controls memo open/close
+
+    // prevent memo from closing when collapsed
+    handleMemoClose() {
+      if (this.inquiryCollapsed) return;
+      this.openmemos = false;
+    },
+
+    // auto-open memos when collapsed
+    init() {
+      this.$watch("inquiryCollapsed", (value) => {
+        if (value === true) {
+          this.openmemos = true; // stay open when collapsed
+        }
+      });
+    },
+
+    // ...rest of your methods
+    async printJobSheet() {
+      /* unchanged */
+    },
+    async duplicateJob(jobId) {
+      /* unchanged */
+    },
 
     async printJobSheet() {
       const target = document.getElementById("job-sheet") || document.body;

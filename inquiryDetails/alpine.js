@@ -4910,6 +4910,7 @@ document.addEventListener("alpine:init", () => {
 
   Alpine.data("memosModal", () => ({
     open: false,
+    boundOpenListener: null,
     memos: [],
     newMessages: 0,
     lastSeenCount: 0,
@@ -4929,11 +4930,28 @@ document.addEventListener("alpine:init", () => {
         if (value) {
           this.lastSeenCount = this.memos.length;
           this.newMessages = 0;
+          this.emitBadge();
         }
       });
+      this.$watch(
+        () => this.memos.length,
+        () => this.emitBadge()
+      );
+      this.$watch("newMessages", () => this.emitBadge());
+      this.boundOpenListener = () => {
+        this.open = true;
+        this.lastSeenCount = this.memos.length;
+        this.newMessages = 0;
+        this.emitBadge();
+      };
+      window.addEventListener("memos:open", this.boundOpenListener);
     },
     destroy() {
       this.cleanupSocket();
+      if (this.boundOpenListener) {
+        window.removeEventListener("memos:open", this.boundOpenListener);
+        this.boundOpenListener = null;
+      }
     },
     connect() {
       this.cleanupSocket();
@@ -4980,6 +4998,14 @@ document.addEventListener("alpine:init", () => {
         }
         this.socket = null;
       }
+      this.emitBadge();
+    },
+    emitBadge() {
+      window.dispatchEvent(
+        new CustomEvent("memos:badge", {
+          detail: { newMessages: this.newMessages },
+        })
+      );
     },
     sendMessage(message) {
       if (this.socket?.readyState === WebSocket.OPEN) {
