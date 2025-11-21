@@ -1285,12 +1285,13 @@ export class NewEnquiryModel {
     return result;
   }
 
-  async fetchAffiliationByContactId(contactId) {
+  async fetchAffiliationByContactId(contactId, propertyId) {
     try {
       this.affiliationQuery = await this.affiliationModel.query();
 
       let query = await this.affiliationQuery
         .where("contact_id", contactId)
+        .andWhere("property_id", propertyId)
         .deSelectAll()
         .select(["id"])
         .noDestroy();
@@ -1395,6 +1396,7 @@ export class NewEnquiryModel {
         "bedrooms",
         "manhole",
         "building_age",
+        "individual_owner_id",
       ])
       .noDestroy();
     let result = await query.fetchDirect().toPromise();
@@ -1494,10 +1496,14 @@ export class NewEnquiryModel {
     return query.fetchDirect().toPromise();
   }
 
-  async fetchRelatedInquiries(entityId) {
+  async fetchRelatedInquiries(entityId, enquiryId) {
     let query = this.dealModel.query();
     if (entityId) {
       query = query.where("company_id", entityId);
+    }
+
+    if (enquiryId) {
+      query = query.where("id", enquiryId);
     }
 
     query
@@ -1519,6 +1525,7 @@ export class NewEnquiryModel {
         "service_name",
         "company_id",
         "property_id",
+        "primary_contact_id",
       ])
       .noDestroy();
     query.getOrInitQueryCalc?.();

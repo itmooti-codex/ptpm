@@ -115,6 +115,7 @@ export class NewEnquiryView {
     this._propertyFooterInitialized = false;
     this._propertyPredictionRequestId = 0;
 
+    this.checkInquiryId();
     // this.createPropertyList([]);
   }
 
@@ -1766,7 +1767,8 @@ export class NewEnquiryView {
         } else {
           let isAffiliationExisting =
             await this.model.fetchAffiliationByContactId(
-              this.contactId.toString()
+              this.contactId.toString(),
+              this.propertyId.toString()
             );
           if (isAffiliationExisting && isAffiliationExisting.length != 0) {
             let affiliation = {};
@@ -2872,18 +2874,155 @@ export class NewEnquiryView {
 
   async checkInquiryId() {
     let url = new URL(window.location.href);
-    let enquiryId = url.searchParams.get("enquiry");
-    let accountType = url.searchParams.get("account-type");
+    // let enquiryId = url.searchParams.get("enquiry");
+    // let accountType = url.searchParams.get("account-type");
 
-    let enquiryDetail = await this.model.fetchRelatedInquiries(enquiryId);
-    let propertyData = await this.model.fetchPropertiesById();
+    let accountType = "contact";
+
+    let enquiry = await this.model.fetchRelatedInquiries("", "329");
+    let enquriyData = enquiry?.resp ? enquiry.resp[0] : null;
+    let propertyData = await this.model.fetchPropertiesById(
+      enquriyData?.Property_ID
+    );
 
     if (accountType == "company") {
-      let companyData = await this.model.fetchCompanyById();
+      this.#switchSection("entity");
+      document.querySelector("[data-contact-field='entity-id']").value =
+        enquriyData.Company_ID;
+      let company = await this.model.fetchCompanyById(enquriyData.Company_ID);
+      let primaryPerson = this.extractPrimaryPerson(company.resp[0]);
+      this.populateAddressDetails(primaryPerson);
+      await this.#loadEntityRelated(enquriyData.Company_ID);
+      let article = document.querySelector(
+        `[data-related-panel="properties"] [id="${enquriyData?.Property_ID}"]`
+      );
+      this.#setSelectedProperty(enquriyData?.Property_ID, article);
+      const fields = document.querySelectorAll(
+        "#property-information input, #property-information select"
+      );
+      const fieldIds = Array.from(fields).map((field) =>
+        field.getAttribute("data-property-id")
+      );
+      if (propertyData) {
+        let values = this.generatePropertyInformationKeys(
+          fieldIds,
+          propertyData.resp[0]
+        );
+        await this.model.fetchAffiliationByPropertyId(
+          this.propertyId,
+          (affiliationData) => {
+            this.setPropertyInformationToFields(fieldIds, values);
+            this.createPropertyContactTable(affiliationData);
+          }
+        );
+      }
+
+      this.setValuesToEnquiryDetail(enquriyData);
+      this.setValuesToResidentFeedbak(enquriyData);
+      document
+        .querySelector("#property-contacts #add-contact-btn")
+        .classList.remove("hidden");
+      document.getElementById("view-contact-detail").classList.remove("hidden");
     } else if (accountType == "contact") {
-      let contactData = await this.model.fetchcontactDetailsById();
+      this.#switchSection("individual");
+      let individualOwnerId = propertyData.resp[0].individual_owner_id;
+      let contactData = await this.model.fetchcontactDetailsById(
+        individualOwnerId
+      );
+      return contactData;
     }
   }
 
-  setEnquiryValuesToFields() {}
+  setValuesToEnquiryDetail(values) {
+    if (!values) return;
+
+    const normalizedValues = {};
+    Object.keys(values).forEach((key) => {
+      const normKey = key
+        .replace(/[-\s]+/g, "_")
+        .replace(/[A-Z]/g, (m) => "_" + m.toLowerCase())
+        .replace(/__+/g, "_")
+        .replace(/^_/, "")
+        .toLowerCase();
+      normalizedValues[normKey] = values[key];
+    });
+
+    const fields = document.querySelectorAll(
+      '[data-inquiry-id="inquiry-detail"] input, [data-inquiry-id="inquiry-detail"] select, [data-inquiry-id="inquiry-detail"] textarea'
+    );
+
+    fields.forEach((item) => {
+      const htmlKey = item.getAttribute("data-inquiry-id");
+      if (!htmlKey) return;
+
+      const normalizedHtmlKey = htmlKey.replace(/[-\s]+/g, "_").toLowerCase();
+
+      const val = normalizedValues[normalizedHtmlKey];
+      if (val !== undefined && val !== null) {
+        item.value = val;
+      }
+    });
+  }
+
+  setValuesToResidentFeedbak(values) {
+    if (!values) return;
+
+    const normalizedValues = {};
+    Object.keys(values).forEach((key) => {
+      const normKey = key
+        .replace(/[-\s]+/g, "_")
+        .replace(/[A-Z]/g, (m) => "_" + m.toLowerCase())
+        .replace(/__+/g, "_")
+        .replace(/^_/, "")
+        .toLowerCase();
+      normalizedValues[normKey] = values[key];
+    });
+    const fields = document.querySelectorAll(
+      '[data-feedback-id="resident-feedback"] input:not([type="checkbox"]), [data-feedback-id="resident-feedback"] select, [data-feedback-id="resident-feedback"] textarea'
+    );
+
+    fields.forEach((item) => {
+      const htmlKey = item.getAttribute("data-feedback-id");
+      if (!htmlKey) return;
+
+      const normalizedHtmlKey = htmlKey.replace(/[-\s]+/g, "_").toLowerCase();
+      const val = normalizedValues[normalizedHtmlKey];
+      if (normalizedHtmlKey === "date_job_required_by" && val) {
+        const date = new Date(val * 1000);
+        const auDate = new Intl.DateTimeFormat("en-AU", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: false,
+          timeZone: "Australia/Sydney",
+        }).format(date);
+
+        item.value = auDate;
+      } else if (val !== undefined && val !== null) {
+        item.value = val;
+      }
+    });
+    const checkboxGroups = document.querySelectorAll(
+      '[data-feedback-id="resident-feedback"] ul[data-feedback-id]'
+    );
+
+    checkboxGroups.forEach((ul) => {
+      const htmlKey = ul.getAttribute("data-feedback-id");
+      if (!htmlKey) return;
+
+      const normalizedHtmlKey = htmlKey.replace(/[-\s]+/g, "_").toLowerCase();
+      const valString = normalizedValues[normalizedHtmlKey];
+      if (!valString) return;
+
+      const valuesArray = valString.split("*/*").filter((v) => v);
+
+      const checkboxes = ul.querySelectorAll('input[type="checkbox"]');
+      checkboxes.forEach((checkbox) => {
+        checkbox.checked = valuesArray.includes(checkbox.value);
+      });
+    });
+  }
 }
