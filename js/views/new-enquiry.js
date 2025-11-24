@@ -3063,17 +3063,14 @@ export class NewInquiryView {
   convertUnixToAU(unix) {
     try {
       if (!unix) return "";
+
       const date = new Date(unix * 1000);
-      return new Intl.DateTimeFormat("en-AU", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: false,
-        timeZone: "Australia/Sydney",
-      }).format(date);
+
+      const yyyy = date.getFullYear();
+      const mm = String(date.getMonth() + 1).padStart(2, "0");
+      const dd = String(date.getDate()).padStart(2, "0");
+
+      return `${yyyy}-${mm}-${dd}`;
     } catch (e) {
       console.error("Date conversion error:", e);
       return "";
