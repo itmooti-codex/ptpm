@@ -47,7 +47,7 @@ import { VitalStatsSDK } from "../sdk/init.js";
 
     maybeInitDashboard() {
       const hasCalendar = document.getElementById("calendar-grid");
-      const hasTable = document.getElementById("enquiry-table-container");
+      // const hasTable = document.getElementById("enquiry-table-container");
       if (!hasCalendar || !hasTable) return;
       if (typeof dayjs === "undefined") return;
       if (this.controllers.dashboard) return; // already initialized

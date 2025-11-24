@@ -2943,7 +2943,7 @@ export class NewInquiryView {
       const contact = contactData?.resp?.[0] ?? null;
       if (contact) this.populateAddressDetails(contact);
 
-      let fullName = contact.First_Name + " " + contact.Last_Name;
+      let fullName = contact?.First_Name + " " + contact?.Last_Name;
       this.setSearchContactNameOrCompanyName("individual", fullName);
 
       const email = contact?.Email?.trim?.() ?? "";
