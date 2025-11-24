@@ -847,4 +847,6 @@ export class NewInquiryController {
       }
     });
   }
+
+  getAddressValue() {}
 }

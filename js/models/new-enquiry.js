@@ -1316,6 +1316,8 @@ export class NewInquiryModel {
 
     if (propertyDetails.manhole.length == 0) {
       propertyDetails.manhole = false;
+    } else if (propertyDetails.manhole == "on") {
+      propertyDetails.manhole = "true";
     }
     query.createOne(propertyDetails);
     let result = await query.execute(true).toPromise();
