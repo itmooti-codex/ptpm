@@ -574,6 +574,7 @@ export class NewInquiryController {
       const selectedPropertyInput = document.getElementById(
         "selected-property-id"
       );
+
       const selectedPropertyId = selectedPropertyInput?.value?.trim();
       if (selectedPropertyId) {
         dealsObj.property_id = selectedPropertyId;
@@ -817,7 +818,7 @@ export class NewInquiryController {
 
         const activeTab = this.view.getActiveTabs();
         let result = "";
-        this.#showLoader("Adding new company...");
+        this.#showLoader("Adding new property...");
 
         if (activeTab === "individual") {
           result = await this.model.createNewProperties(details, contactId, "");
@@ -830,6 +831,7 @@ export class NewInquiryController {
             result.mutations.PeterpmProperty.managedData
           )[0];
           document.getElementById("selected-property-id").value = propertyId;
+          this.view.setSelectedPropertyId(propertyId);
           this.view.customModalHeader.innerText = "Successful";
           this.view.customModalBody.innerText =
             "New Property created successfully.";

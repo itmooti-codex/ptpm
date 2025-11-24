@@ -1019,6 +1019,14 @@ export class NewInquiryView {
     }
   }
 
+  /**
+   * Exposed for controller to set a newly created property as selected.
+   * Ensures both the internal propertyId and the hidden input stay in sync.
+   */
+  setSelectedPropertyId(propertyId) {
+    this.#setSelectedProperty(propertyId);
+  }
+
   generatePropertyInformationKeys(fieldIds, data) {
     const mappedValues = {};
 
