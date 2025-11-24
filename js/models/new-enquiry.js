@@ -1313,6 +1313,10 @@ export class NewInquiryModel {
     } else if (propertyId) {
       propertyDetails["owner_company_id"] = propertyId;
     }
+
+    if (propertyDetails.manhole.length == 0) {
+      propertyDetails.manhole = false;
+    }
     query.createOne(propertyDetails);
     let result = await query.execute(true).toPromise();
     return result;

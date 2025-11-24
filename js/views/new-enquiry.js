@@ -2941,6 +2941,7 @@ export class NewInquiryView {
       );
 
       const contact = contactData?.resp?.[0] ?? null;
+      if (!contact) return;
       if (contact) this.populateAddressDetails(contact);
 
       let fullName = contact?.First_Name + " " + contact?.Last_Name;

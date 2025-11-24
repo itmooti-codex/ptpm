@@ -21,6 +21,9 @@ import { VitalStatsSDK } from "../sdk/init.js";
     services: {},
     controllers: {},
     started: false,
+    loaderElement,
+    loaderMessageEl,
+    loaderCounter,
     start: async function () {
       if (this.started) return;
       this.started = true;
@@ -38,24 +41,30 @@ import { VitalStatsSDK } from "../sdk/init.js";
       const page = document.body?.dataset?.page || "";
 
       // Always-available controllers (if DOM present)
-      this.maybeInitDashboard();
+      await this.maybeInitDashboard();
 
       // Page-specific
       if (page == "new-inquiry") this.initNewInquiry();
-      if (page === "dashboard") this.maybeInitDashboard();
+      if (page === "dashboard") await this.maybeInitDashboard();
     },
 
-    maybeInitDashboard() {
-      const hasCalendar = document.getElementById("calendar-grid");
+    async maybeInitDashboard() {
+      if (this.controllers.dashboard) return this.controllers.dashboard;
+      // const hasCalendar = document.getElementById("calendar-grid");
       // const hasTable = document.getElementById("enquiry-table-container");
-      if (!hasCalendar || !hasTable) return;
-      if (typeof dayjs === "undefined") return;
-      if (this.controllers.dashboard) return; // already initialized
+      // if (!hasCalendar || !hasTable) return;
+      // if (typeof dayjs === "undefined") return;
+      // if (this.controllers.dashboard) return; // already initialized
       const model = new DashboardModel(tempPlugin);
       const view = new DashboardView();
-      const ctrl = new DashboardController(model, view);
-      ctrl.init();
+      const ctrl = new DashboardController(model, view, {
+        loaderElement: this.loaderElement,
+        loaderCounter: this.loaderCounter,
+        loaderMessageEl: this.loaderMessageEl,
+      });
+      await ctrl.init();
       this.controllers.dashboard = ctrl;
+      return ctrl;
     },
 
     initNewInquiry() {

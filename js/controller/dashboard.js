@@ -1,8 +1,11 @@
-import { DashboardHelper } from "../helper.js";
+import { DashboardHelper, hideLoader } from "../helper.js";
 export class DashboardController {
-  constructor(model, view) {
+  constructor(model, view, loaderRefs = {}) {
     this.model = model;
     this.view = view;
+    this.loaderElement = loaderRefs.loaderElement || null;
+    this.loaderMessageEl = loaderRefs.loaderMessageEl || null;
+    this.loaderCounter = loaderRefs.loaderCounter || null;
     this.initAccountTypeDropdown();
     this.initServiceProviderDropdown();
     this.initSourceDropdown();
@@ -279,6 +282,7 @@ export class DashboardController {
         defaultTab,
         onTabChange: (tab) => this.handleTabChange(tab),
       });
+      this.hidePageLoader(true);
       return;
     }
 
@@ -347,29 +351,33 @@ export class DashboardController {
 
   async handleTabChange(tab) {
     this.currentTab = tab;
-    switch (tab) {
-      case "quote":
-        await this.fetchQuotesAndRenderTable();
-        break;
-      case "payment":
-        await this.fetchPaymentsAndRenderTable();
-        break;
-      case "active-jobs":
-        await this.fetchActiveJobsAndRenderTable();
-        break;
-      case "jobs":
-        await this.fetchJobsAndRenderTable();
-        break;
-      case "urgent-calls":
-        await this.fetchUrgentCallsAndRenderTable();
-        break;
-      case "inquiry":
-        await this.fetchDealsAndRenderTable();
-        break;
-      default:
-        this.deals = [];
-        this.clearTable(tab);
-        break;
+    try {
+      switch (tab) {
+        case "quote":
+          await this.fetchQuotesAndRenderTable();
+          break;
+        case "payment":
+          await this.fetchPaymentsAndRenderTable();
+          break;
+        case "active-jobs":
+          await this.fetchActiveJobsAndRenderTable();
+          break;
+        case "jobs":
+          await this.fetchJobsAndRenderTable();
+          break;
+        case "urgent-calls":
+          await this.fetchUrgentCallsAndRenderTable();
+          break;
+        case "inquiry":
+          await this.fetchDealsAndRenderTable();
+          break;
+        default:
+          this.deals = [];
+          this.clearTable(tab);
+          break;
+      }
+    } finally {
+      this.hidePageLoader();
     }
   }
 
@@ -521,33 +529,39 @@ export class DashboardController {
       const baseRows = Array.isArray(this.deals) ? this.deals : [];
       this.renderTable(selected, baseRows);
       this.renderStatusOptionsForTab(this.inquiryStatues);
+      this.hidePageLoader();
       return;
     }
     if (this.currentTab === "quote") {
       const rows = Array.isArray(this.deals) ? this.deals : [];
       this.renderTable(null, rows);
       this.renderStatusOptionsForTab(this.quoteStatuses);
+      this.hidePageLoader();
       return;
     }
     if (this.currentTab === "jobs") {
       const rows = Array.isArray(this.deals) ? this.deals : [];
       this.renderTable(null, rows);
       this.renderStatusOptionsForTab(this.jobStatuses);
+      this.hidePageLoader();
       return;
     }
     if (this.currentTab === "active-jobs") {
       const rows = Array.isArray(this.deals) ? this.deals : [];
       this.renderTable(null, rows);
       this.renderStatusOptionsForTab(this.activeJobStatuses);
+      this.hidePageLoader();
       return;
     }
     if (this.currentTab === "payment") {
       const rows = Array.isArray(this.deals) ? this.deals : [];
       this.renderTable(null, rows);
       this.renderStatusOptionsForTab(this.paymentStatuses);
+      this.hidePageLoader();
       return;
     }
     this.clearTable(this.currentTab);
+    this.hidePageLoader();
   }
 
   onNotificationIconClick() {
@@ -683,6 +697,10 @@ export class DashboardController {
       this.clearTable("urgent-calls");
       return [];
     }
+  }
+
+  hidePageLoader(force = false) {
+    hideLoader(this.loaderElement, this.loaderCounter, force);
   }
 
   bindApplyFilters() {
