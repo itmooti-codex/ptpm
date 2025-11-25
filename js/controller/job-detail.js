@@ -6,8 +6,8 @@ export class JobDetailController {
   }
 
   init() {
-    this.onDealInfoButtonClicked();
-    this.onEditBtnClicked();
+    // this.onDealInfoButtonClicked();
+    // this.onEditBtnClicked();
   }
 
   onDealInfoButtonClicked() {
@@ -25,4 +25,6 @@ export class JobDetailController {
       });
     });
   }
+
+  renderClientList() {}
 }

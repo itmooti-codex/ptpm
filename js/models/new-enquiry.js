@@ -10,7 +10,6 @@ export class NewInquiryModel {
     this.maxRecords = maxRecords;
     this.contactModel = null;
     this.contactModelName = null;
-    // Start with no default contacts; will be populated from SDK or user input
     this.contacts = [];
     this.relatedCache = new Map();
     this.relatedModelNames = {

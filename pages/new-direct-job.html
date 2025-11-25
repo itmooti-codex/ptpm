@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>New Direct Job</title>
+    <script src="../js/app.js" type="module"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
+  </head>
+  <body class="bg-gray-50" data-page="new-direct-job">
+    <div
+      class="w-full min-h-screen bg-gray-50 flex-col justify-start items-end overflow-hidden"
+    >
+      <div
+        class="px-6 py-4 flex flex-row bg-sky-900 border-b border-gray-300 justify-between items-center"
+      >
+        <div class="flex justify-start items-center gap-28">
+          <div class="flex justify-start items-center gap-3">
+            <div
+              class="justify-end text-white text-xl   leading-6"
+            >
+              New Direct Job
+              <span
+                data-current-section-label
+                class="ml-3 text-sm text-gray-200 align-middle"
+              ></span>
+            </div>
+          </div>
+        </div>
+        <div class="flex justify-start items-center gap-4">
+          <div
+            data-lead-icon="false"
+            data-size="medium"
+            data-state="Default"
+            data-text="true"
+            data-trail-icon="false"
+            data-type="outline"
+            class="px-4 py-3 rounded outline outline-1 outline-offset-[-1px] outline-white flex justify-center items-center gap-2 overflow-hidden"
+          >
+            <div
+              class="justify-start text-white text-sm   leading-4"
+            >
+              Cancel
+            </div>
+          </div>
+          <div
+            data-lead-icon="true"
+            data-size="medium"
+            data-state="Default"
+            data-text="true"
+            data-trail-icon="false"
+            data-type="outline"
+            class="px-4 py-3 rounded outline outline-1 outline-offset-[-1px] outline-white flex justify-center items-center gap-2 overflow-hidden"
+          >
+            <div class="w-3.5 h-3.5 overflow-hidden">
+              <div class="w-3 h-3 left-[1.17px] top-[1.17px] bg-white"></div>
+            </div>
+            <div
+              class="justify-start text-white text-sm   leading-4"
+            >
+              Reset Form
+            </div>
+          </div>
+          <div
+            data-lead-icon="true"
+            data-size="medium"
+            data-state="Default"
+            data-text="true"
+            data-trail-icon="false"
+            data-type="outline"
+            class="px-4 py-3 rounded outline outline-1 outline-offset-[-1px] outline-white flex justify-center items-center gap-2 overflow-hidden"
+          >
+            <div class="w-3.5 overflow-hidden">
+              <div
+                class="w-2.5 h-2.5 left-[1.75px] top-[1.75px] bg-white"
+              ></div>
+            </div>
+            <div
+              class="justify-start text-white text-sm   leading-4"
+            >
+              Save draft
+            </div>
+          </div>
+          <div
+            data-lead-icon="true"
+            data-size="medium"
+            data-state="Default"
+            data-text="true"
+            data-trail-icon="false"
+            data-type="main"
+            class="px-4 py-3 bg-gray-300 rounded outline outline-1 outline-offset-[-1px] outline-gray-300 flex justify-center items-center gap-2 overflow-hidden"
+            data-nav-action="back"
+          >
+            <div
+              data-property-1="expand arrow"
+              class="w-3.5 h-3.5 overflow-hidden"
+            >
+              <div class="w-3.5 h-2 left-0 top-[2.62px] bg-slate-500"></div>
+            </div>
+            <div
+              class="justify-start text-slate-500 text-sm   leading-4"
+            >
+              Back
+            </div>
+          </div>
+          <div
+            class="px-4 py-3 bg-white rounded outline outline-1 outline-offset-[-1px] outline-white flex justify-center items-center gap-2 overflow-hidden"
+            data-nav-action="next"
+          >
+            <div
+              class="justify-start text-sky-900 text-sm   leading-4"
+            >
+              Next: Add Activities
+            </div>
+            <div
+              data-property-1="expand arrow"
+              class="w-3.5 h-3.5 origin-top-left rotate-180 overflow-hidden"
+            >
+              <div
+                class="w-3.5 h-2 left-0 top-[2.62px] bg-white border border-sky-900"
+              ></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="w-fit  flex flex-row gap-3">
+        <div data-property-1="extendedStep1" class="flex flex-col gap-3 ">
+          <div
+            class=" w-64 pl-4 pr-16 py-6 left-0 top-0 bg-white shadow-[0px_4px_6px_-4px_rgba(0,0,0,0.10)] shadow-lg flex gap-4 flex-col justify-start items-start gap-6 h-full overflow-hidden"
+          >
+              <div class="justify-start items-center gap-10">
+                <div
+                  class="p-3 bg-neutral-100 rounded-lg flex justify-start items-center gap-2"
+                >
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H19C19.5304 3 20.0391 3.21071 20.4142 3.58579C20.7893 3.96086 21 4.46957 21 5V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21Z"
+                      stroke="#414042"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    ></path>
+                    <path
+                      d="M7.25 10L5.5 12L7.25 14M9.5 21V3"
+                      stroke="#414042"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    ></path>
+                  </svg>
+                </div>
+              </div>
+              <div class="w-fit">
+                <!-- Stepper column -->
+                <div class="flex flex-col items-start">
+                  <!-- STEP: Job Information -->
+                  <div
+                    class="flex items-center gap-3 cursor-pointer"
+                    data-section-target="job-information"
+                  >
+                    <div
+                      class="p-3 bg-sky-100 rounded-[32px] flex items-center justify-center"
+                    >
+                      <!-- icon bubble content -->
+                      <svg
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M10.29 21.961H9.39C6.142 21.961 4.517 21.961 3.508 20.936C2.499 19.911 2.5 18.261 2.5 14.961V9.961C2.5 6.661 2.5 5.011 3.51 3.987C4.517 2.96 6.142 2.96 9.39 2.96H12.343C15.592 2.96 17.49 3.016 18.499 4.04C19.509 5.066 19.499 6.66 19.499 9.96V11.147M15.945 2V4M10.945 2V4M5.945 2V4M7 15H11M7 10H15"
+                          stroke="#0052CC"
+                          stroke-width="1.5"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        ></path>
+                        <path
+                          opacity="0.93"
+                          d="M20.7601 14.8789C19.8541 13.8639 19.3111 13.9249 18.7081 14.1059C18.2851 14.1659 16.8371 15.8559 16.2331 16.3959C15.2421 17.3739 14.2461 18.3819 14.1811 18.5139C13.9931 18.8189 13.8191 19.3589 13.7341 19.9629C13.5771 20.8689 13.3511 21.8879 13.6371 21.9759C13.9231 22.0639 14.7241 21.8959 15.6291 21.7629C16.2331 21.6529 16.6551 21.5329 16.9571 21.3519C17.3801 21.0979 18.1641 20.2049 19.5171 18.8759C20.3641 17.9829 21.1821 17.3659 21.4241 16.7629C21.6651 15.8569 21.3041 15.3739 20.7601 14.8789Z"
+                          stroke="#0052CC"
+                          stroke-width="1.5"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        ></path>
+                      </svg>
+                    </div>
+
+                    <div class="text-neutral-700 text-base ">
+                      Job Information
+                    </div>
+                  </div>
+
+                  <!-- Connector under the icon -->
+                  <div class="ml-3 my-2">
+                    <!-- height controls the gap between steps -->
+                    <div class="h-8 border-l-2 border-sky-100"></div>
+                  </div>
+
+                  <!-- STEP: Add Activities -->
+                  <div
+                    class="flex items-center gap-3 cursor-pointer"
+                    data-section-target="add-activities"
+                  >
+                    <div
+                      class="p-3 bg-neutral-100 rounded-[32px] flex items-center justify-center"
+                    >
+                      <svg
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M2 12C2 7.286 2 4.929 3.464 3.464C4.93 2 7.286 2 12 2C16.714 2 19.071 2 20.535 3.464C22 4.93 22 7.286 22 12C22 16.714 22 19.071 20.535 20.535C19.072 22 16.714 22 12 22C7.286 22 4.929 22 3.464 20.535C2 19.072 2 16.714 2 12Z"
+                          stroke="#414042"
+                          stroke-width="1.5"
+                        ></path>
+                        <path
+                          d="M6 15.8L7.143 17L10 14M6 8.8L7.143 10L10 7"
+                          stroke="#414042"
+                          stroke-width="1.5"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        ></path>
+                        <path
+                          d="M13 9H18M13 16H18"
+                          stroke="#414042"
+                          stroke-width="1.5"
+                          stroke-linecap="round"
+                        ></path>
+                      </svg>
+                    </div>
+
+                    <div class="text-neutral-700 text-base ">
+                      Add Activities
+                    </div>
+                  </div>
+
+                  <!-- Connector -->
+                  <div class="ml-3 my-2">
+                    <div class="h-8 border-l-2 border-neutral-100"></div>
+                  </div>
+
+                  <!-- STEP: Materials -->
+                  <div
+                    class="flex items-center gap-3 cursor-pointer"
+                    data-section-target="add-materials"
+                  >
+                    <div
+                      class="p-3 bg-neutral-100 rounded-[32px] flex items-center justify-center"
+                    >
+                      <svg
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M10.0501 10.6069L2.98013 17.6769C2.79418 17.8626 2.64666 18.0832 2.54601 18.326C2.44536 18.5688 2.39355 18.8291 2.39355 19.0919C2.39355 19.3547 2.44536 19.615 2.54601 19.8578C2.64666 20.1006 2.79418 20.3211 2.98013 20.5069C3.35518 20.8818 3.8638 21.0925 4.39413 21.0925C4.92446 21.0925 5.43307 20.8818 5.80813 20.5069L12.8781 13.4349M17.1931 13.7999L21.0711 17.6779C21.4461 18.0529 21.6567 18.5616 21.6567 19.0919C21.6567 19.6222 21.4461 20.1308 21.0711 20.5059C20.6961 20.8808 20.1875 21.0915 19.6571 21.0915C19.1268 21.0915 18.6182 20.8808 18.2431 20.5059L12.0341 14.2979M6.73313 5.90389L4.61013 6.60989L2.49013 3.07489L3.90413 1.66089L7.44013 3.78189L6.73313 5.90389ZM6.73313 5.90389L9.56313 8.73389"
+                          stroke="#414042"
+                          stroke-width="1.5"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        ></path>
+                        <path
+                          d="M10.0502 10.607C9.20617 8.45396 9.37117 5.62896 11.1112 3.88896C12.8512 2.14896 16.0612 1.76796 17.8282 2.82896L14.7882 5.86896L14.5052 8.97996L17.6162 8.69796L20.6562 5.65696C21.7182 7.42496 21.3362 10.635 19.5962 12.374C17.8562 14.114 15.0322 14.279 12.8792 13.435"
+                          stroke="#414042"
+                          stroke-width="1.5"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        ></path>
+                      </svg>
+                    </div>
+
+                    <div class="text-neutral-700 text-base ">
+                      Materials
+                    </div>
+                  </div>
+
+                  <!-- Connector -->
+                  <div class="ml-3 my-2">
+                    <div class="h-8 border-l-2 border-neutral-100"></div>
+                  </div>
+
+                  <!-- STEP: Uploads -->
+                  <div
+                    class="flex items-center gap-3 cursor-pointer"
+                    data-section-target="uploads"
+                  >
+                    <div
+                      class="p-3 bg-neutral-100 rounded-[32px] flex items-center justify-center"
+                    >
+                      <div class="w-6 h-6 flex items-center justify-center">
+                        <svg
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M4 17V19C4 19.5304 4.21071 20.0391 4.58579 20.4142C4.96086 20.7893 5.46957 21 6 21H18C18.5304 21 19.0391 20.7893 19.4142 20.4142C19.7893 20.0391 20 19.5304 20 19V17M7 9L12 4M12 4L17 9M12 4V16"
+                            stroke="#414042"
+                            stroke-width="1.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          ></path>
+                        </svg>
+                      </div>
+                    </div>
+
+                    <div class="text-neutral-700 text-base ">
+                      Uploads
+                    </div>
+                  </div>
+
+                  <!-- Connector -->
+                  <div class="ml-3 my-2">
+                    <div class="h-8 border-l-2 border-neutral-100"></div>
+                  </div>
+
+                  <!-- STEP: Invoice -->
+                  <div
+                    class="flex items-center gap-3 cursor-pointer"
+                    data-section-target="invoice"
+                  >
+                    <div
+                      class="p-3 bg-neutral-100 rounded-[32px] flex items-center justify-center"
+                    >
+                      <svg
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M20.016 2C18.903 2 18 4.686 18 8H20.016C20.988 8 21.473 8 21.774 7.665C22.074 7.329 22.022 6.887 21.918 6.004C21.64 3.67 20.894 2 20.016 2Z"
+                          stroke="#414042"
+                          stroke-width="1.5"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        ></path>
+                        <path
+                          d="M18 8.054V18.646C18 20.157 18 20.913 17.538 21.211C16.783 21.697 15.616 20.677 15.029 20.307C14.544 20.001 14.302 19.849 14.033 19.84C13.742 19.83 13.495 19.977 12.971 20.307L11.06 21.512C10.544 21.837 10.287 22 10 22C9.713 22 9.455 21.837 8.94 21.512L7.03 20.307C6.544 20.001 6.302 19.849 6.033 19.84C5.742 19.83 5.495 19.977 4.971 20.307C4.384 20.677 3.217 21.697 2.461 21.211C2 20.913 2 20.158 2 18.646V8.054C2 5.2 2 3.774 2.879 2.887C3.757 2 5.172 2 8 2H20"
+                          stroke="#414042"
+                          stroke-width="1.5"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        ></path>
+                        <path
+                          d="M10 8C8.895 8 8 8.672 8 9.5C8 10.328 8.895 11 10 11C11.105 11 12 11.672 12 12.5C12 13.328 11.105 14 10 14M10 8C10.87 8 11.612 8.417 11.886 9M10 8V7M10 14C9.13 14 8.388 13.583 8.114 13M10 14V15"
+                          stroke="#414042"
+                          stroke-width="1.5"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        ></path>
+                      </svg>
+                    </div>
+
+                    <div class="text-neutral-700 text-base ">
+                      Invoice
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+       
+        <div data-section="replaceable-section" id="replaceable-section" class="flex flex-col gap-3">
+          
+
+        <div  data-section="job-information" class="flex flex-col gap-3">
+          <div class="pt-4 bg-white border-b border-gray-300 inline-flex justify-start items-center gap-4">
+            <div class="flex-1 flex justify-start items-center">
+                <div data-tab="overview" class="px-6 py-3 border-b-2 border-sky-900 flex justify-center items-center gap-2 overflow-hidden">
+                    <div data-color="Green" class="w-3 h-3 relative">
+                        <div class="w-3 h-3 left-0 top-0 absolute bg-teal-700 rounded-full"></div>
+                    </div>
+                    <div class="justify-start text-sky-900 text-base   leading-4">Overview</div>
+                </div>
+                <div data-tab="appointments" class="px-1 py-2.5 flex justify-center items-center gap-2 overflow-hidden">
+                    <div class="w-4 h-4 relative overflow-hidden">
+                        <div class="w-3 h-3.5 left-[2px] top-[1.33px] absolute outline outline-[1.50px] outline-offset-[-0.75px] outline-neutral-700"></div>
+                        <div class="w-1 h-[3.33px] left-[6px] top-[9px] absolute outline outline-[1.50px] outline-offset-[-0.75px] outline-neutral-700"></div>
+                    </div>
+                    <div class="justify-start text-neutral-700 text-base   leading-4">Appointments</div>
+                    <div data-dot="False" data-remove-button="False" data-size="Small" data-theme="Red" data-type="Basic" class="px-2.5 py-0.5 bg-sky-100 rounded-[10px] flex justify-center items-center">
+                        <div class="text-center justify-start text-blue-700 text-xs   leading-4">03</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+          <div
+          data-job-section="job-section-appointment"
+          class="hidden w-full flex flex-row gap-6"
+        >
+          <div
+            class="flex-1 bg-white rounded-lg outline outline-1 outline-gray-300 p-4 flex flex-col gap-4"
+          >
+            <div class="text-neutral-700 text-base font-bold">Appointments</div>
+
+            <div class="flex flex-col gap-3">
+              <div class="flex flex-col gap-2">
+                <div class="text-neutral-700 text-sm font-medium">Status</div>
+                <div class="relative w-full">
+                  <select
+                    class="appearance-none pr-10 px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 w-full text-slate-500"
+                  ></select>
+                  <span
+                    class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
+                  >
+                    <svg
+                      width="15"
+                      height="9"
+                      viewBox="0 0 15 9"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z"
+                        fill="#78829D"
+                      ></path>
+                    </svg>
+                  </span>
+                </div>
+              </div>
+
+              <div class="flex flex-col gap-2">
+                <div class="text-neutral-700 text-sm font-medium">Type</div>
+                <div class="relative w-full">
+                  <select
+                    class="appearance-none pr-10 px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 w-full text-slate-500"
+                  ></select>
+                  <span
+                    class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
+                  >
+                    <svg
+                      width="15"
+                      height="9"
+                      viewBox="0 0 15 9"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z"
+                        fill="#78829D"
+                      ></path>
+                    </svg>
+                  </span>
+                </div>
+              </div>
+
+              <div class="flex flex-col gap-2">
+                <div class="text-neutral-700 text-sm font-medium">Title</div>
+                <input
+                  type="text"
+                  class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700"
+                />
+              </div>
+
+              <div class="flex flex-row gap-3">
+                <div class="flex-1 flex flex-col gap-2">
+                  <div class="text-neutral-700 text-sm font-medium">Start Time</div>
+                  <div class="relative w-full">
+                    <input
+                      type="text"
+                      placeholder="Select date & time"
+                      class="w-full pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-500 placeholder:text-slate-400"
+                    />
+                    <span
+                      class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-500"
+                    >
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 18 18"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M5 2.5V4.5M13 2.5V4.5M3.5 7.5H14.5M4 3.5H14C14.5523 3.5 15 3.94772 15 4.5V14C15 14.5523 14.5523 15 14 15H4C3.44772 15 3 14.5523 3 14V4.5C3 3.94772 3.44772 3.5 4 3.5Z"
+                          stroke="#94A3B8"
+                          stroke-width="1.25"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                      </svg>
+                    </span>
+                  </div>
+                </div>
+                <div class="flex-1 flex flex-col gap-2">
+                  <div class="text-neutral-700 text-sm font-medium">End Time</div>
+                  <div class="relative w-full">
+                    <input
+                      type="text"
+                      placeholder="Select date & time"
+                      class="w-full pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-500 placeholder:text-slate-400"
+                    />
+                    <span
+                      class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-500"
+                    >
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 18 18"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M5 2.5V4.5M13 2.5V4.5M3.5 7.5H14.5M4 3.5H14C14.5523 3.5 15 3.94772 15 4.5V14C15 14.5523 14.5523 15 14 15H4C3.44772 15 3 14.5523 3 14V4.5C3 3.94772 3.44772 3.5 4 3.5Z"
+                          stroke="#94A3B8"
+                          stroke-width="1.25"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                      </svg>
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex flex-col gap-2">
+                <div class="text-neutral-700 text-sm font-medium">Description</div>
+                <textarea
+                  rows="4"
+                  class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700"
+                ></textarea>
+              </div>
+
+              <div class="flex flex-col gap-2">
+                <div class="text-neutral-700 text-sm font-medium">Location</div>
+                <div class="relative w-full">
+                  <select
+                    class="appearance-none pr-10 px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 w-full text-slate-500"
+                  ></select>
+                  <span
+                    class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
+                  >
+                    <svg
+                      width="15"
+                      height="9"
+                      viewBox="0 0 15 9"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z"
+                        fill="#78829D"
+                      ></path>
+                    </svg>
+                  </span>
+                </div>
+              </div>
+
+              <div class="flex flex-col gap-2">
+                <div class="text-neutral-700 text-sm font-medium">Host</div>
+                <div class="relative w-full">
+                  <select
+                    class="appearance-none pr-10 px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 w-full text-slate-500"
+                  ></select>
+                  <span
+                    class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
+                  >
+                    <svg
+                      width="15"
+                      height="9"
+                      viewBox="0 0 15 9"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z"
+                        fill="#78829D"
+                      ></path>
+                    </svg>
+                  </span>
+                </div>
+              </div>
+
+              <div class="flex flex-col gap-2">
+                <div class="text-neutral-700 text-sm font-medium">
+                  Primary Guest
+                </div>
+                <div class="relative w-full">
+                  <select
+                    class="appearance-none pr-10 px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 w-full text-slate-500"
+                  ></select>
+                  <span
+                    class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
+                  >
+                    <svg
+                      width="15"
+                      height="9"
+                      viewBox="0 0 15 9"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z"
+                        fill="#78829D"
+                      ></path>
+                    </svg>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="w-[480px] flex flex-col gap-4">
+            <div class="bg-white rounded-lg outline outline-1 outline-gray-300 p-4 flex flex-col gap-3">
+              <div class="text-neutral-700 text-base font-bold">
+                Inquiry or Job Information
+              </div>
+              <div class="flex flex-col gap-3">
+                <div class="flex flex-col gap-2">
+                  <div class="text-neutral-700 text-sm font-medium">Inquiry</div>
+                  <div class="relative w-full">
+                    <select
+                      class="appearance-none pr-10 px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 w-full text-slate-500"
+                    ></select>
+                    <span
+                      class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
+                    >
+                      <svg
+                        width="15"
+                        height="9"
+                        viewBox="0 0 15 9"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z"
+                          fill="#78829D"
+                        ></path>
+                      </svg>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                  <div class="text-neutral-700 text-sm font-medium">Job</div>
+                  <div class="relative w-full">
+                    <select
+                      class="appearance-none pr-10 px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 w-full text-slate-500"
+                    ></select>
+                    <span
+                      class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
+                    >
+                      <svg
+                        width="15"
+                        height="9"
+                        viewBox="0 0 15 9"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z"
+                          fill="#78829D"
+                        ></path>
+                      </svg>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-lg outline outline-1 outline-gray-300 p-4 flex flex-col gap-3">
+              <div class="text-neutral-700 text-base font-bold">
+                Google Calendar
+              </div>
+              <div class="flex flex-col gap-2">
+                <div class="text-neutral-700 text-sm font-medium">Event Color</div>
+                <div class="relative w-full">
+                  <select
+                    class="appearance-none pr-10 px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 w-full text-slate-500"
+                  ></select>
+                  <span
+                    class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
+                  >
+                    <svg
+                      width="15"
+                      height="9"
+                      viewBox="0 0 15 9"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z"
+                        fill="#78829D"
+                      ></path>
+                    </svg>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+          <div data-job-section="job-section-individual" class="flex gap-6">
+            <!-- LEFT: Job Details -->
+            <div class="flex flex-col gap-3 w-[460px]">
+              <div
+                class="bg-white rounded-lg outline outline-1 outline-offset-[-1px] outline-gray-300 flex-col justify-start items-start overflow-hidden"
+              >
+                <div class="px-4 pt-4 bg-white justify-start items-center gap-2">
+                  <div
+                    class="justify-end text-neutral-700 text-base font-bold  leading-4"
+                  >
+                    Job Details
+                  </div>
+                </div>
+  
+                <div class="p-4 flex flex-col justify-start items-start gap-4">
+                  <div class="flex flex-row gap-4">
+                    <div
+                      data-add-btn="true"
+                      data-filter="true"
+                      data-icon="false"
+                      data-tab="false"
+                      data-type="primary"
+                      class="px-2 py-1 bg-blue-700 rounded-xl flex justify-center items-center gap-1"
+                    >
+                      <div
+                        class="justify-end text-white text-xs font-normal  leading-3"
+                      >
+                        Individual
+                      </div>
+                    </div>
+                    <div
+                      data-add-btn="true"
+                      data-filter="true"
+                      data-icon="false"
+                      data-tab="false"
+                      data-type="gray"
+                      class="px-2 py-1 bg-white rounded-xl outline outline-1 outline-offset-[-1px] outline-slate-500 flex justify-center items-center gap-1"
+                    >
+                      <div
+                        class="justify-end text-slate-500 text-xs font-normal  leading-3"
+                      >
+                        Entity
+                      </div>
+                    </div>
+                  </div>
+  
+                  <div
+                    class="w-full h-14 flex flex-col justify-start items-start gap-2"
+                  >
+                    <div
+                      class="justify-start text-neutral-700 text-sm   leading-4"
+                  >
+                    Client
+                  </div>
+                  <div class="relative w-full" data-contact-search="root">
+                    <input
+                      type="text"
+                      placeholder="Search by name, email, phone"
+                      class="w-full text-sm pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-500 placeholder:text-slate-500"
+                      data-contact-search="input"
+                    />
+                    <input type="hidden" data-contact-field="contact_id" />
+                    <span
+                      class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                    >
+                      <svg
+                        width="18"
+                          height="18"
+                          viewBox="0 0 18 18"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                          d="M16.3311 15.5156L12.7242 11.9095C13.7696 10.6544 14.2909 9.04453 14.1797 7.41486C14.0684 5.7852 13.3331 4.26116 12.1268 3.15979C10.9205 2.05843 9.33603 1.46453 7.70299 1.50164C6.06995 1.53875 4.51409 2.20402 3.35906 3.35906C2.20402 4.51409 1.53875 6.06995 1.50164 7.70299C1.46453 9.33603 2.05843 10.9205 3.15979 12.1268C4.26116 13.3331 5.7852 14.0684 7.41486 14.1797C9.04453 14.2909 10.6544 13.7696 11.9095 12.7242L15.5156 16.3311C15.5692 16.3847 15.6328 16.4271 15.7027 16.4561C15.7727 16.4851 15.8477 16.5 15.9234 16.5C15.9991 16.5 16.0741 16.4851 16.144 16.4561C16.214 16.4271 16.2776 16.3847 16.3311 16.3311C16.3847 16.2776 16.4271 16.214 16.4561 16.144C16.4851 16.0741 16.5 15.9991 16.5 15.9234C16.5 15.8477 16.4851 15.7727 16.4561 15.7027C16.4271 15.6328 16.3847 15.5692 16.3311 15.5156ZM2.66852 7.8552C2.66852 6.82937 2.97271 5.82658 3.54263 4.97364C4.11255 4.12069 4.9226 3.4559 5.87035 3.06333C6.81809 2.67076 7.86096 2.56805 8.86708 2.76818C9.87319 2.96831 10.7974 3.46229 11.5227 4.18766C12.2481 4.91303 12.7421 5.83721 12.9422 6.84333C13.1424 7.84945 13.0396 8.89232 12.6471 9.84006C12.2545 10.7878 11.5897 11.5979 10.7368 12.1678C9.88383 12.7377 8.88103 13.0419 7.8552 13.0419C6.48008 13.0404 5.16171 12.4934 4.18935 11.5211C3.21699 10.5487 2.67004 9.23033 2.66852 7.8552Z"
+                          fill="#78829D"
+                        ></path>
+                      </svg>
+                    </span>
+                    <div
+                      data-contact-search="results"
+                      class="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded shadow hidden max-h-64 overflow-y-auto z-10"
+                    ></div>
+                  </div>
+                  </div>
+  
+                  <div
+                    class="w-full h-14 flex flex-col justify-start items-start gap-2"
+                  >
+                    <div
+                      class="justify-start text-neutral-700 text-sm   leading-4"
+                    >
+                      Property Search
+                    </div>
+                    <div class="relative w-full">
+                      <input
+                        type="text"
+                        placeholder="Search properties"
+                        class="w-full text-sm pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-500 placeholder:text-slate-500"
+                      />
+                      <span
+                        class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
+                      >
+                        <svg
+                          width="18"
+                          height="18"
+                          viewBox="0 0 18 18"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M16.3311 15.5156L12.7242 11.9095C13.7696 10.6544 14.2909 9.04453 14.1797 7.41486C14.0684 5.7852 13.3331 4.26116 12.1268 3.15979C10.9205 2.05843 9.33603 1.46453 7.70299 1.50164C6.06995 1.53875 4.51409 2.20402 3.35906 3.35906C2.20402 4.51409 1.53875 6.06995 1.50164 7.70299C1.46453 9.33603 2.05843 10.9205 3.15979 12.1268C4.26116 13.3331 5.7852 14.0684 7.41486 14.1797C9.04453 14.2909 10.6544 13.7696 11.9095 12.7242L15.5156 16.3311C15.5692 16.3847 15.6328 16.4271 15.7027 16.4561C15.7727 16.4851 15.8477 16.5 15.9234 16.5C15.9991 16.5 16.0741 16.4851 16.144 16.4561C16.214 16.4271 16.2776 16.3847 16.3311 16.3311C16.3847 16.2776 16.4271 16.214 16.4561 16.144C16.4851 16.0741 16.5 15.9991 16.5 15.9234C16.5 15.8477 16.4851 15.7727 16.4561 15.7027C16.4271 15.6328 16.3847 15.5692 16.3311 15.5156ZM2.66852 7.8552C2.66852 6.82937 2.97271 5.82658 3.54263 4.97364C4.11255 4.12069 4.9226 3.4559 5.87035 3.06333C6.81809 2.67076 7.86096 2.56805 8.86708 2.76818C9.87319 2.96831 10.7974 3.46229 11.5227 4.18766C12.2481 4.91303 12.7421 5.83721 12.9422 6.84333C13.1424 7.84945 13.0396 8.89232 12.6471 9.84006C12.2545 10.7878 11.5897 11.5979 10.7368 12.1678C9.88383 12.7377 8.88103 13.0419 7.8552 13.0419C6.48008 13.0404 5.16171 12.4934 4.18935 11.5211C3.21699 10.5487 2.67004 9.23033 2.66852 7.8552Z"
+                            fill="#78829D"
+                          ></path>
+                        </svg>
+                      </span>
+                    </div>
+                  </div>
+  
+                  
+                    <div class="flex flex-col gap-2 w-full">
+                      <div
+                        class="text-neutral-700 text-sm   leading-4"
+                      >
+                        Job Type
+                      </div>
+                      <div class="relative w-full">
+                        <select
+                          class="appearance-none pr-10 px-2.5 py-2 bg-white rounded outline outline-1 outline-gray-300 flex justify-between items-center w-full"
+                        ></select>
+                        <span
+                          class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
+                        >
+                          <svg
+                            width="15"
+                            height="9"
+                            viewBox="0 0 15 9"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z"
+                              fill="#78829D"
+                            ></path>
+                          </svg>
+                        </span>
+                      </div>
+                    </div>
+  
+                    <div class="w-full flex flex-col gap-2">
+                      <div class="text-neutral-700 text-sm ">
+                        Priority
+                      </div>
+                      <div class="relative w-full">
+                        <select
+                          class="appearance-none pr-10 px-2.5 py-2 bg-white rounded outline outline-1 outline-gray-300 flex justify-between items-center w-full"
+                        ></select>
+                        <span
+                          class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
+                        >
+                          <svg
+                            width="15"
+                            height="9"
+                            viewBox="0 0 15 9"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z"
+                              fill="#78829D"
+                            ></path>
+                          </svg>
+                        </span>
+                      </div>
+                    </div>
+  
+                    <div class="w-full flex flex-col gap-2">
+                      <div class="text-neutral-700 text-sm ">
+                        Job Status
+                      </div>
+                      <div class="relative w-full">
+                        <select
+                          class="appearance-none pr-10 px-2.5 py-2 bg-white rounded outline outline-1 outline-gray-300 flex justify-between items-center w-full"
+                        ></select>
+                        <span
+                          class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
+                        >
+                          <svg
+                            width="15"
+                            height="9"
+                            viewBox="0 0 15 9"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z"
+                              fill="#78829D"
+                            ></path>
+                          </svg>
+                        </span>
+                      </div>
+                    </div>
+  
+                    <div class="w-full flex flex-col gap-2">
+                      <div class="text-neutral-700 text-sm ">
+                        Payment Status
+                      </div>
+                      <div class="relative w-full">
+                        <select
+                          class="appearance-none pr-10 px-2.5 py-2 bg-white rounded outline outline-1 outline-gray-300 flex justify-between items-center w-full"
+                        ></select>
+                        <span
+                          class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
+                        >
+                          <svg
+                            width="15"
+                            height="9"
+                            viewBox="0 0 15 9"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z"
+                              fill="#78829D"
+                            ></path>
+                          </svg>
+                        </span>
+                      </div>
+                    </div>
+              
+  
+                  <div
+                    class="w-full bg-white rounded-lg outline outline-1 outline-gray-300"
+                  >
+                    <div class="p-4 flex flex-col gap-4">
+                      <div class="flex items-center gap-2">
+                        <input type="checkbox" class="w-6 h-6 bg-gray-300"></input>
+                        <div class="text-neutral-700 text-sm ">
+                          Mark Complete
+                        </div>
+                      </div>
+  
+                      <div class="flex items-center gap-2">
+                        <input type="checkbox" class="w-6 h-6 bg-gray-300"></input>
+                        <div class="text-neutral-700 text-sm ">
+                          PCA Done
+                        </div>
+                      </div>
+  
+                      <div class="flex items-center gap-2">
+                        <input type="checkbox" class="w-6 h-6 bg-gray-300"></input>
+                        <div class="text-neutral-700 text-sm ">
+                          Prestart Done
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+  
+                  <div
+                    class="w-full bg-white rounded-lg outline outline-1 outline-gray-300"
+                  >
+                    <div class="p-4">
+                      <div class="flex flex-col gap-2">
+                        <div class="text-neutral-700 text-sm ">
+                          Job Required By
+                        </div>
+                        <div
+                          class="px-2.5 py-2 bg-white rounded outline outline-1 outline-gray-300 flex justify-between items-center"
+                        >
+                          <div class="text-slate-500 text-sm">dd/mm/yyyy</div>
+                          <div class="w-4 h-4 bg-slate-500"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+  
+            <!-- RIGHT: Assign Serviceman -->
+            <div
+              class="h-fit w-[460px] bg-white rounded-lg outline outline-1 outline-gray-300 flex flex-col"
+            >
+              <div
+                class="px-4 pt-4 bg-white border-l border-r border-t border-gray-300"
+              >
+                <div class="text-neutral-700 text-base font-bold">
+                  Assign Serviceman
+                </div>
+              </div>
+              <div class="p-4 flex flex-col gap-4">
+                <div class="flex flex-col gap-2">
+                  <div
+                    class="px-4 py-3 bg-white rounded outline outline-1 outline-gray-300 flex justify-between items-center"
+                  >
+                    <div class="text-neutral-700 text-sm ">
+                      Assign Serviceman
+                    </div>
+                    <div class="w-3.5 h-3.5 bg-slate-500"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

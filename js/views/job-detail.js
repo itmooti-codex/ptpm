@@ -12,6 +12,418 @@ export class JobDetailView {
     this.createActivityListModal();
     this.createWildlifeReportModal();
     this.createTasksModal();
+    this.createAddActivitiesSection();
+    this.createAddMaterialsSection();
+    this.createUploadsSection();
+    this.createInvoiceSection();
+    this.setupSectionNavigation();
+    this.setupClientSearch();
+  }
+
+  createAddActivitiesSection() {
+    // This section stays hidden until the Add Activities tab is shown; rows will be rendered dynamically.
+    const wrapper = document.createElement("div");
+    wrapper.setAttribute("data-section", "add-activities");
+    wrapper.className =
+      "hidden w-full h-full flex flex-row gap-4 p-4 bg-gray-50";
+
+    wrapper.innerHTML = `
+      <div class="w-[440px] bg-white rounded-lg outline outline-1 outline-gray-300 p-4 flex flex-col gap-4">
+        <div class="flex items-center gap-2">
+          <input type="checkbox" class="w-4 h-4 border-gray-300 rounded" />
+          <div class="text-neutral-700 text-base font-semibold">Add New Activity</div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div class="flex flex-col gap-1">
+            <label class="text-neutral-700 text-sm font-medium">Task</label>
+            <div class="relative">
+              <select class="appearance-none w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10"></select>
+              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+                <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"/></svg>
+              </span>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label class="text-neutral-700 text-sm font-medium">Options</label>
+            <div class="relative">
+              <select class="appearance-none w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10"></select>
+              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+                <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"/></svg>
+              </span>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label class="text-neutral-700 text-sm font-medium">Service</label>
+            <div class="relative">
+              <select class="appearance-none w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10"></select>
+              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+                <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"/></svg>
+              </span>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label class="text-neutral-700 text-sm font-medium">Quantity</label>
+            <input type="text" class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700" />
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label class="text-neutral-700 text-sm font-medium">Activity Price</label>
+            <div class="relative">
+              <input type="text" class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10" />
+              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">$</span>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label class="text-neutral-700 text-sm font-medium">Activity Text</label>
+            <div class="relative">
+              <select class="appearance-none w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10"></select>
+              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+                <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"/></svg>
+              </span>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label class="text-neutral-700 text-sm font-medium">Activity Status</label>
+            <div class="relative">
+              <select class="appearance-none w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10"></select>
+              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+                <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"/></svg>
+              </span>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label class="text-neutral-700 text-sm font-medium">Date Required</label>
+            <div class="relative">
+              <input type="text" placeholder="dd/mm/yyyy" class="w-full pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-500 placeholder:text-slate-400" />
+              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 2.5V4.5M13 2.5V4.5M3.5 7.5H14.5M4 3.5H14C14.5523 3.5 15 3.94772 15 4.5V14C15 14.5523 14.5523 15 14 15H4C3.44772 15 3 14.5523 3 14V4.5C3 3.94772 3.44772 3.5 4 3.5Z" stroke="#94A3B8" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label class="text-neutral-700 text-sm font-medium">Quoted Price</label>
+            <div class="relative">
+              <input type="text" class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10" />
+              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">$</span>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label class="text-neutral-700 text-sm font-medium">Quoted Text</label>
+            <textarea rows="2" class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700"></textarea>
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label class="text-neutral-700 text-sm font-medium">Warranty</label>
+            <textarea rows="2" class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700"></textarea>
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label class="text-neutral-700 text-sm font-medium">Note</label>
+            <textarea rows="2" class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700"></textarea>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-6">
+          <label class="flex items-center gap-2 text-neutral-700 text-sm">
+            <input type="checkbox" class="w-4 h-4 border-gray-300 rounded" /> Include in Quote
+          </label>
+          <label class="flex items-center gap-2 text-neutral-700 text-sm">
+            <input type="checkbox" class="w-4 h-4 border-gray-300 rounded" /> Include in Quote Subtotal
+          </label>
+        </div>
+
+        <div class="flex justify-end items-center gap-3">
+          <button class="text-sky-700 text-sm font-medium px-3 py-2 rounded">Cancel</button>
+          <button class="text-white bg-sky-900 text-sm font-medium px-4 py-2 rounded">Add</button>
+        </div>
+      </div>
+
+      <div class="flex-1 bg-white rounded-lg outline outline-1 outline-gray-300 p-4">
+        <div id="addActivitiesTable" class="w-full"></div>
+      </div>
+    `;
+
+    document.getElementById("replaceable-section").appendChild(wrapper);
+  }
+
+  createAddMaterialsSection() {
+    // Hidden container for Materials tab content; table rows to be injected dynamically.
+    const wrapper = document.createElement("div");
+    wrapper.setAttribute("data-section", "add-materials");
+    wrapper.className =
+      "hidden w-full h-full flex flex-row gap-4 p-4 bg-gray-50";
+
+    wrapper.innerHTML = `
+      <div class="w-[440px] bg-white rounded-lg outline outline-1 outline-gray-300 p-4 flex flex-col gap-4">
+        <div class="text-neutral-700 text-base font-semibold">Add Materials</div>
+
+        <div class="flex flex-col gap-3">
+          <div class="flex flex-col gap-1">
+            <label class="text-neutral-700 text-sm font-medium">Material Name</label>
+            <input type="text" placeholder="Enter material name" class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700" />
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div class="flex flex-col gap-1">
+              <label class="text-neutral-700 text-sm font-medium">Status</label>
+              <div class="relative">
+                <select class="appearance-none w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10"></select>
+                <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+                  <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"/></svg>
+                </span>
+              </div>
+            </div>
+            <div class="flex flex-col gap-1">
+              <label class="text-neutral-700 text-sm font-medium">Total</label>
+              <div class="relative">
+                <input type="text" value="$ 0.00" class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10" />
+                <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">$</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label class="text-neutral-700 text-sm font-medium">Description</label>
+            <textarea rows="2" class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700"></textarea>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div class="flex flex-col gap-1">
+              <label class="text-neutral-700 text-sm font-medium">Transaction Type</label>
+              <div class="relative">
+                <select class="appearance-none w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10"></select>
+                <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+                  <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"/></svg>
+                </span>
+              </div>
+            </div>
+            <div class="flex flex-col gap-1">
+              <label class="text-neutral-700 text-sm font-medium">Tax</label>
+              <div class="relative">
+                <select class="appearance-none w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10"></select>
+                <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+                  <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"/></svg>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label class="text-neutral-700 text-sm font-medium">Receipt</label>
+            <div class="w-full h-20 border border-dashed border-gray-300 rounded bg-gray-50 flex items-center justify-center text-sky-700 text-sm">
+              <!-- placeholder for upload control -->
+              Click to upload or drag and drop
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label class="text-neutral-700 text-sm font-medium">Service Provider</label>
+            <div class="relative">
+              <select class="appearance-none w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10"></select>
+              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+                <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"/></svg>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-3 pt-2 border-t border-gray-200">
+          <div class="text-neutral-700 text-sm font-semibold">Payment</div>
+          <div class="grid grid-cols-2 gap-3">
+            <div class="flex flex-col gap-1">
+              <label class="text-neutral-700 text-sm font-medium">Batch Code</label>
+              <input type="text" class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700" />
+            </div>
+            <div class="flex flex-col gap-1">
+              <label class="text-neutral-700 text-sm font-medium">Xero Bill ID</label>
+              <input type="text" class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div class="flex flex-col gap-1">
+              <label class="text-neutral-700 text-sm font-medium">Date Scheduled</label>
+              <div class="relative">
+                <input type="text" placeholder="dd/mm/yyyy" class="w-full pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-500 placeholder:text-slate-400" />
+                <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 2.5V4.5M13 2.5V4.5M3.5 7.5H14.5M4 3.5H14C14.5523 3.5 15 3.94772 15 4.5V14C15 14.5523 14.5523 15 14 15H4C3.44772 15 3 14.5523 3 14V4.5C3 3.94772 3.44772 3.5 4 3.5Z" stroke="#94A3B8" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+              </div>
+            </div>
+            <div class="flex flex-col gap-1">
+              <label class="text-neutral-700 text-sm font-medium">Date Paid</label>
+              <div class="relative">
+                <input type="text" placeholder="dd/mm/yyyy" class="w-full pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-500 placeholder:text-slate-400" />
+                <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 2.5V4.5M13 2.5V4.5M3.5 7.5H14.5M4 3.5H14C14.5523 3.5 15 3.94772 15 4.5V14C15 14.5523 14.5523 15 14 15H4C3.44772 15 3 14.5523 3 14V4.5C3 3.94772 3.44772 3.5 4 3.5Z" stroke="#94A3B8" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-end items-center gap-3">
+          <button class="text-sky-700 text-sm font-medium px-3 py-2 rounded">Cancel</button>
+          <button class="text-white bg-sky-900 text-sm font-medium px-4 py-2 rounded">Add</button>
+        </div>
+      </div>
+
+      <div class="flex-1 bg-white rounded-lg outline outline-1 outline-gray-300 p-4">
+        <div id="addMaterialsTable" class="w-full"></div>
+      </div>
+    `;
+
+    document.getElementById("replaceable-section").appendChild(wrapper);
+  }
+
+  createUploadsSection() {
+    // Hidden container for Uploads tab; content to be populated dynamically.
+    const wrapper = document.createElement("div");
+    wrapper.setAttribute("data-section", "uploads");
+    wrapper.className =
+      "hidden w-full h-full flex flex-row gap-4 p-4 bg-gray-50";
+
+    wrapper.innerHTML = `
+      <div class="w-[440px] bg-white rounded-lg outline outline-1 outline-gray-300 p-4 flex flex-col gap-4">
+        <div class="text-neutral-700 text-base font-semibold">Uploads</div>
+        <div class="flex flex-col gap-3">
+          <div class="flex flex-col gap-1">
+            <label class="text-neutral-700 text-sm font-medium">Title</label>
+            <input type="text" class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700" />
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="text-neutral-700 text-sm font-medium">Description</label>
+            <textarea rows="3" class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700"></textarea>
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="text-neutral-700 text-sm font-medium">Upload</label>
+            <div class="w-full h-24 border border-dashed border-gray-300 rounded bg-gray-50 flex items-center justify-center text-sky-700 text-sm">
+              <!-- placeholder for upload control -->
+              Click to upload or drag and drop
+            </div>
+          </div>
+        </div>
+        <div class="flex justify-end items-center gap-3">
+          <button class="text-sky-700 text-sm font-medium px-3 py-2 rounded">Cancel</button>
+          <button class="text-white bg-sky-900 text-sm font-medium px-4 py-2 rounded">Add</button>
+        </div>
+      </div>
+
+      <div class="flex-1 bg-white rounded-lg outline outline-1 outline-gray-300 p-4">
+        <div id="uploadsTable" class="w-full"></div>
+      </div>
+    `;
+
+    document.getElementById("replaceable-section").appendChild(wrapper);
+  }
+
+  createInvoiceSection() {
+    // Hidden container for Invoice tab; values/status to be injected dynamically.
+    const wrapper = document.createElement("div");
+    wrapper.setAttribute("data-section", "invoice");
+    wrapper.className =
+      "hidden w-full h-full flex flex-col gap-4 p-4 bg-gray-50";
+
+    wrapper.innerHTML = `
+      <div class="bg-white rounded-lg outline outline-1 outline-gray-300 w-full">
+        <div class="h-2 bg-sky-900 rounded-t-lg"></div>
+
+        <div class="p-4 flex flex-col gap-4">
+          <div class="flex justify-between items-center">
+            <div class="flex flex-col gap-1">
+              <div class="text-neutral-700 text-base font-semibold">Invoice Detail</div>
+              <div class="text-sm text-neutral-700">
+                Invoice Number:
+                <a href="#" class="text-sky-700 font-medium underline-offset-2 hover:underline">#INV-0004</a>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <div class="text-neutral-700 text-sm">Xero Invoice Status:</div>
+              <div class="px-3 py-1 rounded-full bg-slate-100 text-neutral-700 text-xs font-semibold">Create Invoice</div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 items-start">
+            <div class="flex flex-col gap-2">
+              <div class="text-neutral-700 text-sm font-semibold">Xero Entity Info</div>
+              <div class="flex items-center gap-2 text-sky-700 text-sm"><span>◆</span><span>Contact Xero ID</span></div>
+              <div class="flex items-center gap-2 text-sky-700 text-sm"><span>◆</span><span>Company Xero ID</span></div>
+              <div class="flex items-center gap-2 text-sky-700 text-sm"><span>◆</span><span>Accounts Contact</span></div>
+            </div>
+            <div class="text-sm text-neutral-700 flex items-center gap-2">
+              <span>Invoice ID:</span>
+              <a href="#" class="text-sky-700 underline-offset-2 hover:underline">--</a>
+            </div>
+          </div>
+
+          <div class="border-t border-gray-200 pt-6 pb-4 flex flex-col items-center gap-4">
+            <div class="w-64 h-32 bg-slate-100 rounded-md flex items-center justify-center text-neutral-500 text-sm">
+              <!-- illustration placeholder -->
+              No invoice has been generated yet.
+            </div>
+            <button class="px-4 py-2 bg-sky-900 text-white text-sm font-medium rounded">Generate Invoice</button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+            <div class="flex flex-col gap-1">
+              <label class="text-neutral-700 text-sm font-medium">Payment ID</label>
+              <input type="text" class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700" />
+            </div>
+            <div class="flex flex-col gap-1">
+              <label class="text-neutral-700 text-sm font-medium">Payment Method</label>
+              <div class="relative">
+                <select class="appearance-none w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10"></select>
+                <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+                  <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"/></svg>
+                </span>
+              </div>
+            </div>
+            <div class="flex flex-col gap-1">
+              <label class="text-neutral-700 text-sm font-medium">Invoice Date</label>
+              <div class="relative">
+                <input type="text" placeholder="dd/mm/yyyy" class="w-full pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 placeholder:text-slate-500" />
+                <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 2.5V4.5M13 2.5V4.5M3.5 7.5H14.5M4 3.5H14C14.5523 3.5 15 3.94772 15 4.5V14C15 14.5523 14.5523 15 14 15H4C3.44772 15 3 14.5523 3 14V4.5C3 3.94772 3.44772 3.5 4 3.5Z" stroke="#94A3B8" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+              </div>
+            </div>
+            <div class="flex flex-col gap-1">
+              <label class="text-neutral-700 text-sm font-medium">Due Date</label>
+              <div class="relative">
+                <input type="text" placeholder="dd/mm/yyyy" class="w-full pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 placeholder:text-slate-500" />
+                <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 2.5V4.5M13 2.5V4.5M3.5 7.5H14.5M4 3.5H14C14.5523 3.5 15 3.94772 15 4.5V14C15 14.5523 14.5523 15 14 15H4C3.44772 15 3 14.5523 3 14V4.5C3 3.94772 3.44772 3.5 4 3.5Z" stroke="#94A3B8" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg outline outline-1 outline-gray-300 w-full flex flex-col gap-4 p-4">
+        <div class="flex justify-between items-center">
+          <div class="text-neutral-700 text-sm font-semibold">Invoice Total</div>
+          <div class="text-neutral-700 text-base font-bold">$ X.XX</div>
+        </div>
+        <div class="flex flex-wrap justify-end gap-3">
+          <button class="px-4 py-2 rounded outline outline-1 outline-gray-300 text-slate-500 text-sm" disabled>Download Invoice (PDF)</button>
+          <button class="px-4 py-2 rounded outline outline-1 outline-gray-300 text-slate-500 text-sm" disabled>View Xero Invoice (Admin)</button>
+          <button class="px-4 py-2 rounded outline outline-1 outline-gray-300 text-slate-500 text-sm" disabled>Send To Customer</button>
+          <button class="px-4 py-2 bg-sky-900 text-white text-sm font-medium rounded">Generate Invoice</button>
+        </div>
+      </div>
+    `;
+
+    document.getElementById("replaceable-section").appendChild(wrapper);
   }
 
   createDealInformationModal() {
@@ -871,5 +1283,229 @@ export class JobDetailView {
 
     // Expose a way to update later
     this.updateTasksModal = (next = []) => render(next);
+  }
+
+  setupSectionNavigation() {
+    this.sectionOrder = [
+      "job-information",
+      "add-activities",
+      "add-materials",
+      "uploads",
+      "invoice",
+    ].filter((id) => document.querySelector(`[data-section="${id}"]`));
+
+    this.currentSection = this.sectionOrder[0] || null;
+    this.showSection(this.currentSection);
+    this.setupJobInformationTabs();
+
+    const sidebarItems = document.querySelectorAll("[data-section-target]");
+    sidebarItems.forEach((item) => {
+      item.addEventListener("click", (e) => {
+        e.preventDefault();
+        const target = item.getAttribute("data-section-target");
+        this.showSection(target);
+      });
+    });
+
+    const nextBtn =
+      document.querySelector('[data-nav-action="next"]') ||
+      document.querySelector('[data-nav="next"]') ||
+      Array.from(document.querySelectorAll("button, div")).find((el) =>
+        el.textContent.trim().toLowerCase().startsWith("next")
+      );
+    const backBtn =
+      document.querySelector('[data-nav-action="back"]') ||
+      document.querySelector('[data-nav="back"]') ||
+      Array.from(document.querySelectorAll("button, div")).find(
+        (el) => el.textContent.trim().toLowerCase() === "back"
+      );
+
+    if (nextBtn)
+      nextBtn.addEventListener("click", (e) => this.goNextSection(e));
+    if (backBtn)
+      backBtn.addEventListener("click", (e) => this.goPrevSection(e));
+  }
+
+  setupJobInformationTabs() {
+    const jobInfo = document.querySelector('[data-section="job-information"]');
+    if (!jobInfo) return;
+
+    const individualSection = jobInfo.querySelector(
+      '[data-job-section="job-section-individual"]'
+    );
+    const appointmentSection =
+      jobInfo.querySelector('[data-job-section="job-section-appointment"]') ||
+      document.querySelector('[data-job-section="job-section-appointment"]');
+
+    const overviewTab = document.querySelector('[data-tab="overview"]');
+    const appointmentTab = document.querySelector('[data-tab="appointments"]');
+
+    const setTabState = (active) => {
+      if (overviewTab) {
+        overviewTab.classList.toggle("border-b-2", active === "overview");
+        overviewTab.classList.toggle("border-sky-900", active === "overview");
+        overviewTab.classList.toggle("text-sky-900", active === "overview");
+      }
+      if (appointmentTab) {
+        appointmentTab.classList.toggle(
+          "border-b-2",
+          active === "appointments"
+        );
+        appointmentTab.classList.toggle(
+          "border-sky-900",
+          active === "appointments"
+        );
+        appointmentTab.classList.toggle(
+          "text-sky-900",
+          active === "appointments"
+        );
+      }
+    };
+
+    const showIndividual = () => {
+      if (individualSection) individualSection.classList.remove("hidden");
+      if (appointmentSection) appointmentSection.classList.add("hidden");
+      setTabState("overview");
+    };
+
+    const showAppointment = () => {
+      if (individualSection) individualSection.classList.add("hidden");
+      if (appointmentSection) appointmentSection.classList.remove("hidden");
+      setTabState("appointments");
+    };
+
+    showIndividual();
+
+    if (overviewTab) overviewTab.addEventListener("click", showIndividual);
+    if (appointmentTab)
+      appointmentTab.addEventListener("click", showAppointment);
+  }
+
+  showSection(sectionId) {
+    if (!sectionId) return;
+    this.currentSection = sectionId;
+
+    this.sectionOrder.forEach((id) => {
+      const el = document.querySelector(`[data-section="${id}"]`);
+      if (!el) return;
+      if (id === sectionId) {
+        el.classList.remove("hidden");
+      } else {
+        el.classList.add("hidden");
+      }
+    });
+
+    this.updateSidebarState(sectionId);
+    this.updateSectionLabel(sectionId);
+  }
+
+  updateSidebarState(sectionId) {
+    const items = document.querySelectorAll("[data-section-target]");
+    const currentIndex = this.sectionOrder.indexOf(sectionId);
+    items.forEach((item) => {
+      const target = item.getAttribute("data-section-target");
+      const idx = this.sectionOrder.indexOf(target);
+      item.classList.remove("text-sky-900", "text-green-600");
+      if (target === sectionId) {
+        item.classList.add("text-sky-900");
+      } else if (idx !== -1 && idx < currentIndex) {
+        item.classList.add("text-green-600");
+      }
+    });
+  }
+
+  updateSectionLabel(sectionId) {
+    const labelEl =
+      document.querySelector("[data-current-section-label]") ||
+      document.getElementById("currentSectionLabel");
+    if (!labelEl) return;
+    const pretty = sectionId
+      .replace(/-/g, " ")
+      .replace(/\b\w/g, (c) => c.toUpperCase());
+    labelEl.textContent = pretty;
+  }
+
+  goNextSection(e) {
+    if (e) e.preventDefault();
+    const idx = this.sectionOrder.indexOf(this.currentSection);
+    const nextId = this.sectionOrder[idx + 1];
+    if (nextId) this.showSection(nextId);
+  }
+
+  goPrevSection(e) {
+    if (e) e.preventDefault();
+    const idx = this.sectionOrder.indexOf(this.currentSection);
+    const prevId = this.sectionOrder[idx - 1];
+    if (prevId) this.showSection(prevId);
+  }
+
+  async setupClientSearch() {
+    const input = document.querySelector('[data-contact-search="input"]');
+    const list = document.querySelector('[data-contact-search="results"]');
+    const hidden = document.querySelector('[data-contact-field="contact_id"]');
+    if (!input || !list) return;
+
+    const render = (items = [], query = "") => {
+      const lower = (query || "").toLowerCase();
+      const filtered = items.filter((c) => {
+        if (lower == "") {
+          return true;
+        } else {
+          return (
+            c.Email?.toString().includes(lower) ||
+            c.First_Name?.toString().includes(lower) ||
+            c.Last_Name?.toString().includes(lower) ||
+            c.SMS_Number?.toString().includes(lower)
+          );
+        }
+      });
+      list.innerHTML = filtered
+        .map(
+          (c, idx) => `
+            <button type="button" data-option-index="${idx}" class="w-full text-left px-3 py-2 hover:bg-sky-50 flex flex-col gap-0.5">
+              <span class="text-sm text-neutral-800">${
+                c.First_Name + "" + c.Last_Name || "Unknown"
+              }</span>
+              <span class="text-xs text-neutral-500">${c.Email || ""}</span>
+            </button>
+          `
+        )
+        .join("");
+      list.dataset.count = filtered.length;
+      list.filteredContacts = filtered;
+      list.classList.toggle("hidden", filtered.length === 0);
+    };
+
+    const contacts = (await this.model?.fetchContacts?.()) || [];
+
+    input.addEventListener("focus", () => {
+      render(contacts, input.value || "");
+    });
+    input.addEventListener("input", (e) => {
+      render(contacts, e.target.value || "");
+    });
+    list.addEventListener("mousedown", (e) => {
+      const btn = e.target.closest("button[data-option-index]");
+      if (!btn) return;
+      e.preventDefault();
+      const idx = Number(btn.dataset.optionIndex);
+      const opts = list.filteredContacts || [];
+      const contact = opts[idx];
+      if (!contact) return;
+      input.value = contact.label || "";
+      if (hidden) hidden.value = contact.id || "";
+      list.classList.add("hidden");
+    });
+    document.addEventListener("click", (e) => {
+      if (e.target === input || list.contains(e.target)) return;
+      list.classList.add("hidden");
+    });
+
+    // prime contacts asynchronously
+    if (typeof this.model?.loadContacts === "function") {
+      this.model.loadContacts().then((loaded) => {
+        render(loaded || contacts, input.value || "");
+      });
+    }
   }
 }

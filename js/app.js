@@ -5,6 +5,9 @@ import { DashboardModel } from "./models/dashboard.js";
 import { DashboardView, renderDynamicTable } from "./views/dashboard.js";
 import { DashboardController } from "./controller/dashboard.js";
 import { initOperationLoader, showLoader, hideLoader } from "./helper.js";
+import { JobDetailView } from "./views/job-detail.js";
+import { JobDetailController } from "../js/controller/job-detail.js";
+import { JobDetailModal } from "../js/models/job-detail.js";
 
 import { config } from "../sdk/config.js";
 import { VitalStatsSDK } from "../sdk/init.js";
@@ -46,6 +49,7 @@ import { VitalStatsSDK } from "../sdk/init.js";
       // Page-specific
       if (page == "new-inquiry") this.initNewInquiry();
       if (page === "dashboard") await this.maybeInitDashboard();
+      if (page == "new-direct-job") this.initDirectJob();
     },
 
     async maybeInitDashboard() {
@@ -76,6 +80,13 @@ import { VitalStatsSDK } from "../sdk/init.js";
       window.initAutocomplete = boundInitAutocomplete;
       ctrl.init();
       this.controllers.newInquiry = ctrl;
+    },
+
+    initDirectJob() {
+      const model = new JobDetailModal(tempPlugin);
+      const view = new JobDetailView(model);
+      const controller = new JobDetailController(model, view);
+      controller.init();
     },
   };
 
