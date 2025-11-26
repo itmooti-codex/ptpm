@@ -190,7 +190,12 @@ export function initOperationLoader() {
   return loader;
 }
 
-export function showLoader(loaderElement, loaderMessageEl, counterRef, message) {
+export function showLoader(
+  loaderElement,
+  loaderMessageEl,
+  counterRef,
+  message
+) {
   if (!loaderElement || !counterRef) return;
   counterRef.count = (counterRef.count || 0) + 1;
   if (loaderMessageEl && message) loaderMessageEl.textContent = message;

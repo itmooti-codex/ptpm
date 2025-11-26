@@ -4,9 +4,27 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>New Direct Job</title>
-    <script src="../js/app.js" type="module"></script>
+   
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
+    <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+  />
+
+  <!-- Flatpickr JS -->
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="../js/app.js" type="module"></script>
+  <script>
+    // Lazy-load Google Places for property search
+    setTimeout(() => {
+      const script = document.createElement("script");
+      script.src =
+        "https://maps.googleapis.com/maps/api/js?key=AIzaSyDAB5BuHgOkYcnAcTJk6jLEkS7hSHtqNwo&libraries=places&callback=initAutocomplete";
+      script.async = true;
+      document.head.appendChild(script);
+    }, 9000);
+  </script>
   </head>
   <body class="bg-gray-50" data-page="new-direct-job">
     <div
@@ -418,7 +436,9 @@
                 <div class="relative w-full">
                   <select
                     class="appearance-none pr-10 px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 w-full text-slate-500"
-                  ></select>
+                  >
+                    <option value="" disabled selected>Select</option>
+                  </select>
                   <span
                     class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
                   >
@@ -443,7 +463,9 @@
                 <div class="relative w-full">
                   <select
                     class="appearance-none pr-10 px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 w-full text-slate-500"
-                  ></select>
+                  >
+                    <option value="" disabled selected>Select</option>
+                  </select>
                   <span
                     class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
                   >
@@ -545,7 +567,9 @@
                 <div class="relative w-full">
                   <select
                     class="appearance-none pr-10 px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 w-full text-slate-500"
-                  ></select>
+                  >
+                    <option value="" disabled selected>Select</option>
+                  </select>
                   <span
                     class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
                   >
@@ -570,7 +594,9 @@
                 <div class="relative w-full">
                   <select
                     class="appearance-none pr-10 px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 w-full text-slate-500"
-                  ></select>
+                  >
+                    <option value="" disabled selected>Select</option>
+                  </select>
                   <span
                     class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
                   >
@@ -597,7 +623,9 @@
                 <div class="relative w-full">
                   <select
                     class="appearance-none pr-10 px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 w-full text-slate-500"
-                  ></select>
+                  >
+                    <option value="" disabled selected>Select</option>
+                  </select>
                   <span
                     class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
                   >
@@ -626,11 +654,13 @@
               </div>
               <div class="flex flex-col gap-3">
                 <div class="flex flex-col gap-2">
-                  <div class="text-neutral-700 text-sm font-medium">Inquiry</div>
-                  <div class="relative w-full">
-                    <select
-                      class="appearance-none pr-10 px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 w-full text-slate-500"
-                    ></select>
+                <div class="text-neutral-700 text-sm font-medium">Inquiry</div>
+                <div class="relative w-full">
+                  <select
+                    class="appearance-none pr-10 px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 w-full text-slate-500"
+                  >
+                    <option value="" disabled selected>Select</option>
+                  </select>
                     <span
                       class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
                     >
@@ -651,11 +681,13 @@
                 </div>
 
                 <div class="flex flex-col gap-2">
-                  <div class="text-neutral-700 text-sm font-medium">Job</div>
-                  <div class="relative w-full">
-                    <select
-                      class="appearance-none pr-10 px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 w-full text-slate-500"
-                    ></select>
+                <div class="text-neutral-700 text-sm font-medium">Job</div>
+                <div class="relative w-full">
+                  <select
+                    class="appearance-none pr-10 px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 w-full text-slate-500"
+                  >
+                    <option value="" disabled selected>Select</option>
+                  </select>
                     <span
                       class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
                     >
@@ -686,7 +718,9 @@
                 <div class="relative w-full">
                   <select
                     class="appearance-none pr-10 px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 w-full text-slate-500"
-                  ></select>
+                  >
+                    <option value="" disabled selected>Select</option>
+                  </select>
                   <span
                     class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
                   >
@@ -706,6 +740,8 @@
                 </div>
               </div>
             </div>
+
+            <button class="bg-blue-50">Create Appointment</button>
           </div>
         </div>
 
@@ -769,8 +805,9 @@
                       placeholder="Search by name, email, phone"
                       class="w-full text-sm pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-500 placeholder:text-slate-500"
                       data-contact-search="input"
+                      data-field="client"
                     />
-                    <input type="hidden" data-contact-field="contact_id" />
+                    <input class="hidden" data-contact-field="contact_id" />
                     <span
                       class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
                     >
@@ -805,6 +842,7 @@
                     <div class="relative w-full">
                       <input
                         type="text"
+                        data-field="properties"
                         placeholder="Search properties"
                         class="w-full text-sm pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-500 placeholder:text-slate-500"
                       />
@@ -835,9 +873,32 @@
                         Job Type
                       </div>
                       <div class="relative w-full">
-                        <select
+                        <select data-field="job_type"
                           class="appearance-none pr-10 px-2.5 py-2 bg-white rounded outline outline-1 outline-gray-300 flex justify-between items-center w-full"
-                        ></select>
+                        >
+                          <option value="" disabled selected>Select</option>
+                          <option value="Select none">Select none</option>
+                          <option value="PPI">PPI</option>
+                          <option value="Quote">Quote</option>
+                          <option value="Inspection">Inspection</option>
+                          <option value="Barrier Treatment">Barrier Treatment</option>
+                          <option value="MB Inquiry">MB Inquiry</option>
+                          <option value="Reticulation">Reticulation</option>
+                          <option value="Borer Treatment">Borer Treatment</option>
+                          <option value="Drywood Termites">Drywood Termites</option>
+                          <option value="Followup Inquiry - DW">Followup Inquiry - DW</option>
+                          <option value="Notes only">Notes only</option>
+                          <option value="Invoice Cancelled">Invoice Cancelled</option>
+                          <option value="General Pest">General Pest</option>
+                          <option value="Baiting System">Baiting System</option>
+                          <option value="42 Day Check">42 Day Check</option>
+                          <option value="Stump/Tree Treatment">Stump/Tree Treatment</option>
+                          <option value="Inspection &amp; General Pest">Inspection &amp; General Pest</option>
+                          <option value="Nest Treatment">Nest Treatment</option>
+                          <option value="Warranty ReTreatment">Warranty ReTreatment</option>
+                          <option value="Administration">Administration</option>
+                          <option value="Annual Maintenance">Annual Maintenance</option>
+                        </select>
                         <span
                           class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
                         >
@@ -862,9 +923,14 @@
                         Priority
                       </div>
                       <div class="relative w-full">
-                        <select
+                        <select data-field="priority"
                           class="appearance-none pr-10 px-2.5 py-2 bg-white rounded outline outline-1 outline-gray-300 flex justify-between items-center w-full"
-                        ></select>
+                        >
+                          <option value="" disabled selected>Select</option>
+                          <option value="Low">Low</option>
+                          <option value="Medium">Medium</option>
+                          <option value="High">High</option>
+                        </select>
                         <span
                           class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
                         >
@@ -889,9 +955,21 @@
                         Job Status
                       </div>
                       <div class="relative w-full">
-                        <select
+                        <select data-field="job_status"
                           class="appearance-none pr-10 px-2.5 py-2 bg-white rounded outline outline-1 outline-gray-300 flex justify-between items-center w-full"
-                        ></select>
+                        >
+                          <option value="" disabled selected>Select</option>
+                          <option value="Quote">Quote</option>
+                          <option value="On Hold">On Hold</option>
+                          <option value="Booked">Booked</option>
+                          <option value="Call Back">Call Back</option>
+                          <option value="Scheduled">Scheduled</option>
+                          <option value="Reschedule">Reschedule</option>
+                          <option value="In Progress">In Progress</option>
+                          <option value="Waiting For Payment">Waiting For Payment</option>
+                          <option value="Completed">Completed</option>
+                          <option value="Cancelled">Cancelled</option>
+                        </select>
                         <span
                           class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
                         >
@@ -916,9 +994,17 @@
                         Payment Status
                       </div>
                       <div class="relative w-full">
-                        <select
+                        <select data-field="payment_status"
                           class="appearance-none pr-10 px-2.5 py-2 bg-white rounded outline outline-1 outline-gray-300 flex justify-between items-center w-full"
-                        ></select>
+                        >
+                          <option value="" disabled selected>Select</option>
+                          <option value="Invoice Required">Invoice Required</option>
+                          <option value="Invoice Sent">Invoice Sent</option>
+                          <option value="Paid">Paid</option>
+                          <option value="Overdue">Overdue</option>
+                          <option value="Written Off">Written Off</option>
+                          <option value="Cancelled">Cancelled</option>
+                        </select>
                         <span
                           class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
                         >
@@ -944,21 +1030,21 @@
                   >
                     <div class="p-4 flex flex-col gap-4">
                       <div class="flex items-center gap-2">
-                        <input type="checkbox" class="w-6 h-6 bg-gray-300"></input>
+                        <input data-field="mark_complete" type="checkbox" class="w-6 h-6 bg-gray-300"></input>
                         <div class="text-neutral-700 text-sm ">
                           Mark Complete
                         </div>
                       </div>
   
                       <div class="flex items-center gap-2">
-                        <input type="checkbox" class="w-6 h-6 bg-gray-300"></input>
+                        <input data-field="pca_done" type="checkbox" class="w-6 h-6 bg-gray-300"></input>
                         <div class="text-neutral-700 text-sm ">
                           PCA Done
                         </div>
                       </div>
   
                       <div class="flex items-center gap-2">
-                        <input type="checkbox" class="w-6 h-6 bg-gray-300"></input>
+                        <input type="checkbox" data-field="prestart_done" class="w-6 h-6 bg-gray-300"></input>
                         <div class="text-neutral-700 text-sm ">
                           Prestart Done
                         </div>
@@ -974,11 +1060,29 @@
                         <div class="text-neutral-700 text-sm ">
                           Job Required By
                         </div>
-                        <div
-                          class="px-2.5 py-2 bg-white rounded outline outline-1 outline-gray-300 flex justify-between items-center"
-                        >
-                          <div class="text-slate-500 text-sm">dd/mm/yyyy</div>
-                          <div class="w-4 h-4 bg-slate-500"></div>
+                        
+                        <div class="relative">
+                          <input
+                            id="job-required-by"
+                            type="text"
+                            placeholder="dd-mm-yyyy"
+                            data-field="job_required_by"
+                            class="date-picker w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 placeholder:text-slate-400 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100 flatpickr-input"
+                          />
+                        
+                          <span class="absolute top-3 right-3">
+                            <div data-property-1="outline" class="w-4 h-4 relative overflow-hidden">
+                              <svg
+                                width="14"
+                                height="15"
+                                viewBox="0 0 14 15"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path d="M12.6923 1.15385H10.9615V0.576923C10.9615 0.423914 10.9008 0.277171 10.7926 0.168977C10.6844 0.0607828 10.5376 0 10.3846 0C10.2316 0 10.0849 0.0607828 9.97667 0.168977C9.86847 0.277171 9.80769 0.423914 9.80769 0.576923V1.15385H4.03846V0.576923C4.03846 0.423914 3.97768 0.277171 3.86948 0.168977C3.76129 0.0607828 3.61455 0 3.46154 0C3.30853 0 3.16179 0.0607828 3.05359 0.168977C2.9454 0.277171 2.88462 0.423914 2.88462 0.576923V1.15385H1.15385C0.847827 1.15385 0.554342 1.27541 0.337954 1.4918C0.121566 1.70819 0 2.00167 0 2.30769V13.8462C0 14.1522 0.121566 14.4457 0.337954 14.662C0.554342 14.8784 0.847827 15 1.15385 15H12.6923C12.9983 15 13.2918 14.8784 13.5082 14.662C13.7246 14.4457 13.8462 14.1522 13.8462 13.8462V2.30769C13.8462 2.00167 13.7246 1.70819 13.5082 1.4918C13.2918 1.27541 12.9983 1.15385 12.6923 1.15385ZM2.88462 2.30769V2.88462C2.88462 3.03762 2.9454 3.18437 3.05359 3.29256C3.16179 3.40076 3.30853 3.46154 3.46154 3.46154C3.61455 3.46154 3.76129 3.40076 3.86948 3.29256C3.97768 3.18437 4.03846 3.03762 4.03846 2.88462V2.30769H9.80769V2.88462C9.80769 3.03762 9.86847 3.18437 9.97667 3.29256C10.0849 3.40076 10.2316 3.46154 10.3846 3.46154C10.5376 3.46154 10.6844 3.40076 10.7926 3.29256C10.9008 3.18437 10.9615 3.03762 10.9615 2.88462V2.30769H12.6923V4.61538H1.15385V2.30769H2.88462ZM12.6923 13.8462H1.15385V5.76923H12.6923V13.8462ZM7.78846 8.36538C7.78846 8.53654 7.73771 8.70385 7.64262 8.84617C7.54753 8.98848 7.41237 9.0994 7.25424 9.1649C7.09612 9.23039 6.92212 9.24753 6.75425 9.21414C6.58638 9.18075 6.43218 9.09833 6.31116 8.9773C6.19013 8.85628 6.10771 8.70208 6.07432 8.53421C6.04093 8.36634 6.05807 8.19234 6.12357 8.03422C6.18906 7.87609 6.29998 7.74093 6.4423 7.64584C6.58461 7.55075 6.75192 7.5 6.92308 7.5C7.15259 7.5 7.3727 7.59117 7.535 7.75347C7.69729 7.91576 7.78846 8.13587 7.78846 8.36538ZM10.9615 8.36538C10.9615 8.53654 10.9108 8.70385 10.8157 8.84617C10.7206 8.98848 10.5855 9.0994 10.4273 9.1649C10.2692 9.23039 10.0952 9.24753 9.92733 9.21414C9.75946 9.18075 9.60526 9.09833 9.48423 8.9773C9.36321 8.85628 9.28079 8.70208 9.2474 8.53421C9.21401 8.36634 9.23114 8.19234 9.29664 8.03422C9.36214 7.87609 9.47306 7.74093 9.61537 7.64584C9.75768 7.55075 9.925 7.5 10.0962 7.5C10.3257 7.5 10.5458 7.59117 10.7081 7.75347C10.8704 7.91576 10.9615 8.13587 10.9615 8.36538ZM4.61538 11.25C4.61538 11.4212 4.56463 11.5885 4.46954 11.7308C4.37445 11.8731 4.2393 11.984 4.08117 12.0495C3.92304 12.115 3.74904 12.1321 3.58117 12.0988C3.4133 12.0654 3.25911 11.9829 3.13808 11.8619C3.01705 11.7409 2.93463 11.5867 2.90124 11.4188C2.86785 11.251 2.88499 11.077 2.95049 10.9188C3.01599 10.7607 3.12691 10.6255 3.26922 10.5305C3.41153 10.4354 3.57884 10.3846 3.75 10.3846C3.97951 10.3846 4.19963 10.4758 4.36192 10.6381C4.52421 10.8004 4.61538 11.0205 4.61538 11.25ZM7.78846 11.25C7.78846 11.4212 7.73771 11.5885 7.64262 11.7308C7.54753 11.8731 7.41237 11.984 7.25424 12.0495C7.09612 12.115 6.92212 12.1321 6.75425 12.0988C6.58638 12.0654 6.43218 11.9829 6.31116 11.8619C6.19013 11.7409 6.10771 11.5867 6.07432 11.4188C6.04093 11.251 6.05807 11.077 6.12357 10.9188C6.18906 10.7607 6.29998 10.6255 6.4423 10.5305C6.58461 10.4354 6.75192 10.3846 6.92308 10.3846C7.15259 10.3846 7.3727 10.4758 7.535 10.6381C7.69729 10.8004 7.78846 11.0205 7.78846 11.25ZM10.9615 11.25C10.9615 11.4212 10.9108 11.5885 10.8157 11.7308C10.7206 11.8731 10.5855 11.984 10.4273 12.0495C10.2692 12.115 10.0952 12.1321 9.92733 12.0988C9.75946 12.0654 9.60526 11.9829 9.48423 11.8619C9.36321 11.7409 9.28079 11.5867 9.2474 11.4188C9.21401 11.251 9.23114 11.077 9.29664 10.9188C9.36214 10.7607 9.47306 10.6255 9.61537 10.5305C9.75768 10.4354 9.925 10.3846 10.0962 10.3846C10.3257 10.3846 10.5458 10.4758 10.7081 10.6381C10.8704 10.8004 10.9615 11.0205 10.9615 11.25Z" fill="#78829D"></path>
+                              </svg>
+                            </div>
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -989,27 +1093,21 @@
   
             <!-- RIGHT: Assign Serviceman -->
             <div
-              class="h-fit w-[460px] bg-white rounded-lg outline outline-1 outline-gray-300 flex flex-col"
+              class="h-fit w-[460px] p-2 bg-white rounded-lg outline outline-1 outline-gray-300 flex flex-col"
             >
-              <div
-                class="px-4 pt-4 bg-white border-l border-r border-t border-gray-300"
-              >
-                <div class="text-neutral-700 text-base font-bold">
-                  Assign Serviceman
-                </div>
-              </div>
-              <div class="p-4 flex flex-col gap-4">
-                <div class="flex flex-col gap-2">
-                  <div
-                    class="px-4 py-3 bg-white rounded outline outline-1 outline-gray-300 flex justify-between items-center"
-                  >
-                    <div class="text-neutral-700 text-sm ">
-                      Assign Serviceman
-                    </div>
-                    <div class="w-3.5 h-3.5 bg-slate-500"></div>
-                  </div>
-                </div>
-              </div>
+            <div class="w-full flex flex-col justify-start items-start gap-2">
+              <div class="justify-end text-neutral-700 text-base font-bold leading-4 p-3">Assign Serviceman</div>
+            <div class="relative w-full" data-serviceman-search="root">
+              <input type="text" placeholder="Search by name, email, phone" class="w-full text-sm pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-500 placeholder:text-slate-500" data-serviceman-search="input" data-field="serviceman">
+              <input class="hidden" data-serviceman-field="serviceman_id">
+              <span class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16.3311 15.5156L12.7242 11.9095C13.7696 10.6544 14.2909 9.04453 14.1797 7.41486C14.0684 5.7852 13.3331 4.26116 12.1268 3.15979C10.9205 2.05843 9.33603 1.46453 7.70299 1.50164C6.06995 1.53875 4.51409 2.20402 3.35906 3.35906C2.20402 4.51409 1.53875 6.06995 1.50164 7.70299C1.46453 9.33603 2.05843 10.9205 3.15979 12.1268C4.26116 13.3331 5.7852 14.0684 7.41486 14.1797C9.04453 14.2909 10.6544 13.7696 11.9095 12.7242L15.5156 16.3311C15.5692 16.3847 15.6328 16.4271 15.7027 16.4561C15.7727 16.4851 15.8477 16.5 15.9234 16.5C15.9991 16.5 16.0741 16.4851 16.144 16.4561C16.214 16.4271 16.2776 16.3847 16.3311 16.3311C16.3847 16.2776 16.4271 16.214 16.4561 16.144C16.4851 16.0741 16.5 15.9991 16.5 15.9234C16.5 15.8477 16.4851 15.7727 16.4561 15.7027C16.4271 15.6328 16.3847 15.5692 16.3311 15.5156ZM2.66852 7.8552C2.66852 6.82937 2.97271 5.82658 3.54263 4.97364C4.11255 4.12069 4.9226 3.4559 5.87035 3.06333C6.81809 2.67076 7.86096 2.56805 8.86708 2.76818C9.87319 2.96831 10.7974 3.46229 11.5227 4.18766C12.2481 4.91303 12.7421 5.83721 12.9422 6.84333C13.1424 7.84945 13.0396 8.89232 12.6471 9.84006C12.2545 10.7878 11.5897 11.5979 10.7368 12.1678C9.88383 12.7377 8.88103 13.0419 7.8552 13.0419C6.48008 13.0404 5.16171 12.4934 4.18935 11.5211C3.21699 10.5487 2.67004 9.23033 2.66852 7.8552Z" fill="#78829D"></path>
+                </svg>
+              </span>
+              <div data-serviceman-search="results" class="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded shadow hidden max-h-64 overflow-y-auto z-10"></div>
+            </div>
+            </div>
             </div>
           </div>
         </div>

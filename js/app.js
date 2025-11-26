@@ -87,6 +87,8 @@ import { VitalStatsSDK } from "../sdk/init.js";
       const view = new JobDetailView(model);
       const controller = new JobDetailController(model, view);
       controller.init();
+      // Google Places callback for property search
+      window.initAutocomplete = controller.initAutocomplete.bind(controller);
     },
   };
 

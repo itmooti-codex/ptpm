@@ -17,7 +17,6 @@ export class JobDetailView {
     this.createUploadsSection();
     this.createInvoiceSection();
     this.setupSectionNavigation();
-    this.setupClientSearch();
   }
 
   createAddActivitiesSection() {
@@ -1425,11 +1424,19 @@ export class JobDetailView {
     labelEl.textContent = pretty;
   }
 
-  goNextSection(e) {
-    if (e) e.preventDefault();
-    const idx = this.sectionOrder.indexOf(this.currentSection);
-    const nextId = this.sectionOrder[idx + 1];
-    if (nextId) this.showSection(nextId);
+  async goNextSection(e) {
+    let data = this.getJobInformationFieldValues(
+      '[data-job-section="job-section-individual"] input:not(.hidden), [data-job-section="job-section-individual"] select'
+    );
+    let result = await this.model.createNewJob(data);
+    if (!result.isCancelling) {
+      if (e) e.preventDefault();
+      const idx = this.sectionOrder.indexOf(this.currentSection);
+      const nextId = this.sectionOrder[idx + 1];
+      if (nextId) this.showSection(nextId);
+    } else {
+      alert("failed to create new job");
+    }
   }
 
   goPrevSection(e) {
@@ -1439,11 +1446,13 @@ export class JobDetailView {
     if (prevId) this.showSection(prevId);
   }
 
-  async setupClientSearch() {
+  setupClientSearch(contacts = []) {
     const input = document.querySelector('[data-contact-search="input"]');
     const list = document.querySelector('[data-contact-search="results"]');
     const hidden = document.querySelector('[data-contact-field="contact_id"]');
     if (!input || !list) return;
+
+    const state = { contacts: contacts || [] };
 
     const render = (items = [], query = "") => {
       const lower = (query || "").toLowerCase();
@@ -1462,12 +1471,13 @@ export class JobDetailView {
       list.innerHTML = filtered
         .map(
           (c, idx) => `
-            <button type="button" data-option-index="${idx}" class="w-full text-left px-3 py-2 hover:bg-sky-50 flex flex-col gap-0.5">
+            <div data-option-index="${idx}" class="w-full text-left px-3 py-2 hover:bg-sky-50 flex flex-col gap-0.5">
               <span class="text-sm text-neutral-800">${
-                c.First_Name + "" + c.Last_Name || "Unknown"
+                c.First_Name + " " + c.Last_Name || "Unknown"
               }</span>
+              <span class="hidden"></span>
               <span class="text-xs text-neutral-500">${c.Email || ""}</span>
-            </button>
+            </div>
           `
         )
         .join("");
@@ -1476,24 +1486,22 @@ export class JobDetailView {
       list.classList.toggle("hidden", filtered.length === 0);
     };
 
-    const contacts = (await this.model?.fetchContacts?.()) || [];
-
     input.addEventListener("focus", () => {
-      render(contacts, input.value || "");
+      render(state.contacts, input.value || "");
     });
     input.addEventListener("input", (e) => {
-      render(contacts, e.target.value || "");
+      render(state.contacts, e.target.value || "");
     });
     list.addEventListener("mousedown", (e) => {
-      const btn = e.target.closest("button[data-option-index]");
+      const btn = e.target.closest("div[data-option-index]");
       if (!btn) return;
       e.preventDefault();
       const idx = Number(btn.dataset.optionIndex);
       const opts = list.filteredContacts || [];
       const contact = opts[idx];
       if (!contact) return;
-      input.value = contact.label || "";
-      if (hidden) hidden.value = contact.id || "";
+      input.value = contact.First_Name + " " + contact.Last_Name || "";
+      if (hidden) hidden.value = contact.Contact_ID || "";
       list.classList.add("hidden");
     });
     document.addEventListener("click", (e) => {
@@ -1501,11 +1509,183 @@ export class JobDetailView {
       list.classList.add("hidden");
     });
 
-    // prime contacts asynchronously
-    if (typeof this.model?.loadContacts === "function") {
-      this.model.loadContacts().then((loaded) => {
-        render(loaded || contacts, input.value || "");
+    this.updateClientSearchContacts = (nextContacts = []) => {
+      state.contacts = nextContacts;
+      render(state.contacts, input.value || "");
+    };
+  }
+
+  setupServiceProviderSearch(data = []) {
+    let contact_id = document.querySelector(
+      '[data-serviceman-field="serviceman_id"]'
+    );
+    let input = document.querySelector('[data-serviceman-search="input"]');
+    let results = document.querySelector('[data-serviceman-search="results"]');
+    if (!contact_id || !input || !results) return;
+    const state = { providers: data || [] };
+
+    const render = (serviceman, search = "") => {
+      const query = search.trim().toLowerCase();
+
+      const filtered = serviceman.filter((item) => {
+        if (!query) return true;
+
+        return (
+          (item.Contact_Information_First_Name || "")
+            .toLowerCase()
+            .includes(query) ||
+          (item.Contact_Information_Last_Name || "")
+            .toLowerCase()
+            .includes(query) ||
+          (item.Contact_Information_SMS_Number || "")
+            .toLowerCase()
+            .includes(query)
+        );
       });
-    }
+
+      const html = filtered
+        .map((item, idx) => {
+          return `
+            <div data-option-index="${idx}" class="flex items-center gap-3 p-3 hover:bg-gray-50 cursor-pointer" 
+                 data-id="${item.ID}">
+                
+              <img 
+                src="${
+                  item.Contact_Information_Profile_Image ||
+                  "https://via.placeholder.com/40"
+                }" 
+                alt="" 
+                class="h-10 w-10 rounded-full object-cover"
+              >
+  
+              <div class="flex flex-col flex-1">
+                <div class="text-gray-900 font-semibold text-sm">
+                  ${item.Contact_Information_First_Name} ${
+            item.Contact_Information_Last_Name
+          }
+                </div>
+                <div class="text-gray-500 text-xs">
+                  ${item.Contact_Information_SMS_Number}
+                </div>
+              </div>
+  
+              <div class="flex items-center gap-2">
+                <div class="h-2.5 w-2.5 rounded-full 
+                  ${item.Status === "Active" ? "bg-green-200" : ""}
+                  ${item.Status === "Offline" ? "bg-gray-200" : ""}
+                  ${item.Status === "On-Site" ? "bg-orange-200" : ""}
+                  ${item.Status === "Archived" ? "bg-purple-200" : ""}
+                  ">
+                </div>
+  
+                <span class="text-xs 
+                ${item.Status === "Active" ? "text-green-500" : ""}
+                ${item.Status === "Offline" ? "text-gray-500" : ""}
+                ${item.Status === "On-Site" ? "text-orange-500" : ""}
+                ${item.Status === "Archived" ? "text-purple-500" : ""}">
+                  ${item.Status}
+                </span>
+              </div>
+            </div>
+          `;
+        })
+        .join("");
+
+      const footer = `
+        <div data-field="confirm-allocation" class="p-2 bg-[#003882] flex justify-center sticky bottom-0">
+          <button class="text-white text-sm font-medium flex items-center gap-2">
+            Confirm Allocation ✓
+          </button>
+        </div>
+      `;
+
+      results.innerHTML = html + footer;
+      results.classList.remove("hidden");
+    };
+
+    // When input is focused
+    input.addEventListener("focus", () => {
+      render(state.providers, input.value);
+    });
+
+    // Live search
+    input.addEventListener("input", () => {
+      render(state.providers, input.value);
+    });
+
+    let serviceman = null;
+    let previousClicked = "";
+    // Click item to select
+    results.addEventListener("click", (e) => {
+      if (previousClicked) {
+        previousClicked.classList.remove("bg-blue-100");
+      }
+      const item = e.target.closest("div[data-option-index]");
+      if (!item) return;
+      if (item.classList.contains("bg-blue-100")) {
+        item.classList.remove("bg-blue-100");
+      } else {
+        item.classList.add("bg-blue-100");
+      }
+
+      let idx = item.getAttribute("data-option-index");
+      const current = state.providers[Number(idx)];
+      serviceman = current;
+
+      let confirm_allocation_btn = document.querySelector(
+        '[data-field="confirm-allocation"]'
+      );
+      confirm_allocation_btn.addEventListener("click", () => {
+        input.value =
+          "Allocated to " +
+          serviceman.Contact_Information_First_Name +
+          " " +
+          serviceman.Contact_Information_Last_Name;
+        contact_id.value = serviceman.ID;
+        results.classList.add("hidden");
+      });
+
+      previousClicked = item;
+    });
+
+    this.updateServiceProviderSearch = (nextProviders = []) => {
+      state.providers = nextProviders;
+      render(state.providers, input.value);
+    };
+
+    document.addEventListener("click", (e) => {
+      if (e.target === input || results.contains(e.target)) return;
+      results.classList.add("hidden");
+    });
+  }
+
+  getJobInformationFieldValues(selector) {
+    let jobObj = {};
+    let elements = document.querySelectorAll(selector);
+    elements.forEach((item) => {
+      let key = item?.getAttribute("data-field")?.toLowerCase();
+      let value;
+      if (key == "job_required_by") {
+        value = this.dateToUnix(item.value);
+      } else {
+        if (item.type == "checkbox") {
+          value = item.checked;
+        } else {
+          value = item?.value;
+        }
+      }
+      jobObj[key] = value;
+    });
+
+    return jobObj;
+  }
+
+  dateToUnix(actualDate) {
+    if (!actualDate) return null;
+
+    const [dd, mm, yyyy] = actualDate.split("/").map(Number);
+    const date = new Date(yyyy, mm - 1, dd);
+
+    return Math.floor(date.getTime() / 1000);
   }
 }
