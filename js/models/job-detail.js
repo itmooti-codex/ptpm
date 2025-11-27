@@ -1,16 +1,34 @@
 export class JobDetailModal {
   constructor(plugin) {
     window.plugin = plugin;
-    window.contactModel = plugin.switchTo("PeterpmContact");
-    window.serviceProviderModel = plugin.switchTo("PeterpmServiceProvider");
-    this.contactModel = null;
-    this.contactModelName = null;
+    this.contactModel = plugin.switchTo("PeterpmContact");
+    this.serviceProviderModel = plugin.switchTo("PeterpmServiceProvider");
+    this.propertyModel = plugin.switchTo("PeterpmProperty");
+    this.inquiryModel = plugin.switchTo("PeterpmDeal");
+    this.jobModel = plugin.switchTo("PeterpmJob");
+    this.appointmentModel = plugin.switchTo("PeterpmAppointment");
+
+    this.contactQuery = null;
+    this.contactCallback = null;
+
+    this.propertyQuery = null;
+    this.propertyCallback = null;
+
+    this.serviceProviderQuery = null;
+    this.serviceProviderCallback = null;
+
+    this.inquiryQuery = null;
+    this.inquiryCallback = null;
+
+    this.jobQuery = null;
+    this.jobCallback = null;
+
     this.contacts = [];
-    window.jobModel = plugin.switchTo("PeterpmJob");
+    window.jobModel = this.jobModel;
   }
 
-  async fetchContacts() {
-    let query = window.contactModel
+  async fetchContacts(callback) {
+    this.contactQuery = this.contactModel
       .query()
       .deSelectAll()
       .select([
@@ -22,15 +40,51 @@ export class JobDetailModal {
         "sms_number",
       ])
       .noDestroy();
-    query.getOrInitQueryCalc?.();
+    this.contactQuery.getOrInitQueryCalc?.();
 
-    let contact = await query.fetchDirect().toPromise();
-    return contact.resp;
+    let contact = await this.contactQuery.fetchDirect().toPromise();
+    this.contactCallback = callback;
+    this.subscribeToContactChanges();
+    if (this.contactCallback) {
+      this.contactCallback(contact.resp);
+    }
   }
 
-  async fetchServiceProviders() {
-    let query = serviceProviderModel.query();
-    query = query
+  subscribeToContactChanges() {
+    let liveObs = null;
+    try {
+      if (typeof this.contactQuery.subscribe === "function")
+        liveObs = this.contactQuery.subscribe();
+    } catch (_) {}
+
+    if (!liveObs && typeof this.contactQuery.localSubscribe === "function") {
+      try {
+        liveObs = this.contactQuery.localSubscribe();
+      } catch (_) {}
+
+      if (liveObs) {
+        this.sub = liveObs
+          .pipe(window.toMainInstance?.(true) ?? ((x) => x))
+          .subscribe({
+            next: (payload) => {
+              const data = Array.isArray(payload?.records)
+                ? payload.records
+                : Array.isArray(payload)
+                ? payload
+                : [];
+              if (this.contactCallback) {
+                this.contactCallback(data);
+              }
+            },
+            error: () => {},
+          });
+      }
+    }
+  }
+
+  async fetchServiceProviders(callback) {
+    this.serviceProviderQuery = this.serviceProviderModel.query();
+    this.serviceProviderQuery = this.serviceProviderQuery
       .deSelectAll()
       .select(["status", "id"])
       .include("Contact_Information", (q) =>
@@ -45,9 +99,13 @@ export class JobDetailModal {
           ])
       )
       .noDestroy();
-    query.getOrInitQueryCalc();
-    let serviceman = await query.fetchDirect().toPromise();
-    return serviceman.resp;
+    this.serviceProviderQuery.getOrInitQueryCalc();
+    let serviceman = await this.serviceProviderQuery.fetchDirect().toPromise();
+    this.serviceProviderCallback = callback;
+    this.subscribeToServiceProviderChanges();
+    if (callback) {
+      this.serviceProviderCallback(serviceman.resp);
+    }
   }
 
   #getAutocompleteService() {
@@ -171,6 +229,41 @@ export class JobDetailModal {
     this.googlePlacesSessionToken = null;
   }
 
+  subscribeToServiceProviderChanges() {
+    let liveObs = null;
+    try {
+      if (typeof this.serviceProviderQuery.subscribe === "function")
+        liveObs = this.serviceProviderQuery.subscribe();
+    } catch (_) {}
+
+    if (
+      !liveObs &&
+      typeof this.serviceProviderQuery.localSubscribe === "function"
+    ) {
+      try {
+        liveObs = this.serviceProviderQuery.localSubscribe();
+      } catch (_) {}
+
+      if (liveObs) {
+        this.sub = liveObs
+          .pipe(window.toMainInstance?.(true) ?? ((x) => x))
+          .subscribe({
+            next: (payload) => {
+              const data = Array.isArray(payload?.records)
+                ? payload.records
+                : Array.isArray(payload)
+                ? payload
+                : [];
+              if (this.serviceProviderCallback) {
+                this.serviceProviderCallback(data);
+              }
+            },
+            error: () => {},
+          });
+      }
+    }
+  }
+
   #ensureGooglePlacesSessionToken(forceNew = false) {
     const TokenCtor =
       window?.google?.maps?.places?.AutocompleteSessionToken || null;
@@ -200,6 +293,163 @@ export class JobDetailModal {
   async createNewJob(jobDeails) {
     let query = jobModel.mutation();
     query.createOne(jobDeails);
+    let result = await query.execute(true).toPromise();
+    return result;
+  }
+
+  async createNewProperty(propertyObj) {
+    let query = this.propertyModel.mutation();
+    query.createOne(propertyObj);
+    let result = await query.execute(true).toPromise();
+    return result;
+  }
+
+  async fetchPropertyOptions(callback) {
+    this.propertyQuery = this.propertyModel
+      .query()
+      .deSelectAll()
+      .select(["id", "property_name"])
+      .noDestroy();
+    this.propertyQuery.getOrInitQueryCalc();
+    let result = await this.propertyQuery.fetchDirect().toPromise();
+    this.propertyCallback = callback;
+    this.subscribeToPropertyChanges();
+    if (this.propertyCallback) {
+      this.propertyCallback(result.resp);
+    }
+    return result.resp;
+  }
+
+  async fetchInquiries(callback) {
+    this.inquiryQuery = this.inquiryModel
+      .query()
+      .deSelectAll()
+      .select(["id", "deal_name"])
+      .noDestroy();
+    this.inquiryQuery.getOrInitQueryCalc?.();
+    const result = await this.inquiryQuery.fetchDirect().toPromise();
+    this.inquiryCallback = callback;
+    this.subscribeToInquiryChanges();
+    if (this.inquiryCallback) {
+      this.inquiryCallback(result.resp);
+    }
+  }
+
+  async fetchJobs(callback) {
+    this.jobQuery = this.jobModel
+      .query()
+      .deSelectAll()
+      .select(["id", "unique_id"])
+      .include("Property", (q) => q.deSelectAll().select(["property_name"]))
+      .noDestroy();
+    this.jobQuery.getOrInitQueryCalc?.();
+    const result = await this.jobQuery.fetchDirect().toPromise();
+    this.jobCallback = callback;
+    this.subscribeToJobChanges();
+    if (this.jobCallback) {
+      this.jobCallback(result.resp);
+    }
+  }
+
+  subscribeToPropertyChanges() {
+    let liveObs = null;
+    try {
+      if (typeof this.propertyQuery.subscribe === "function")
+        liveObs = this.propertyQuery.subscribe();
+    } catch (_) {}
+
+    if (!liveObs && typeof this.propertyQuery.localSubscribe === "function") {
+      try {
+        liveObs = this.propertyQuery.localSubscribe();
+      } catch (_) {}
+
+      if (liveObs) {
+        this.sub = liveObs
+          .pipe(window.toMainInstance?.(true) ?? ((x) => x))
+          .subscribe({
+            next: (payload) => {
+              const data = Array.isArray(payload?.records)
+                ? payload.records
+                : Array.isArray(payload)
+                ? payload
+                : [];
+              if (this.propertyCallback) {
+                this.propertyCallback(data);
+              }
+            },
+            error: () => {},
+          });
+      }
+    }
+  }
+
+  subscribeToInquiryChanges() {
+    let liveObs = null;
+    try {
+      if (typeof this.inquiryQuery.subscribe === "function")
+        liveObs = this.inquiryQuery.subscribe();
+    } catch (_) {}
+
+    if (!liveObs && typeof this.inquiryQuery.localSubscribe === "function") {
+      try {
+        liveObs = this.inquiryQuery.localSubscribe();
+      } catch (_) {}
+
+      if (liveObs) {
+        this.sub = liveObs
+          .pipe(window.toMainInstance?.(true) ?? ((x) => x))
+          .subscribe({
+            next: (payload) => {
+              const data = Array.isArray(payload?.records)
+                ? payload.records
+                : Array.isArray(payload)
+                ? payload
+                : [];
+              if (this.inquiryCallback) {
+                this.inquiryCallback(data);
+              }
+            },
+            error: () => {},
+          });
+      }
+    }
+  }
+
+  subscribeToJobChanges() {
+    let liveObs = null;
+    try {
+      if (typeof this.jobQuery.subscribe === "function")
+        liveObs = this.jobQuery.subscribe();
+    } catch (_) {}
+
+    if (!liveObs && typeof this.jobQuery.localSubscribe === "function") {
+      try {
+        liveObs = this.jobQuery.localSubscribe();
+      } catch (_) {}
+
+      if (liveObs) {
+        this.sub = liveObs
+          .pipe(window.toMainInstance?.(true) ?? ((x) => x))
+          .subscribe({
+            next: (payload) => {
+              const data = Array.isArray(payload?.records)
+                ? payload.records
+                : Array.isArray(payload)
+                ? payload
+                : [];
+              if (this.jobCallback) {
+                this.jobCallback(data);
+              }
+            },
+            error: () => {},
+          });
+      }
+    }
+  }
+
+  async createAppointment(appointmentObj) {
+    let query = this.appointmentModel.mutation();
+    query.createOne(appointmentObj);
     let result = await query.execute(true).toPromise();
     return result;
   }

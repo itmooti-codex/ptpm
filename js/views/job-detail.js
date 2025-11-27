@@ -1,6 +1,7 @@
 export class JobDetailView {
   constructor(model) {
     this.model = model;
+
     this.init();
   }
 
@@ -16,6 +17,8 @@ export class JobDetailView {
     this.createAddMaterialsSection();
     this.createUploadsSection();
     this.createInvoiceSection();
+
+    this.setupAddButtons();
     this.setupSectionNavigation();
   }
 
@@ -1468,7 +1471,7 @@ export class JobDetailView {
           );
         }
       });
-      list.innerHTML = filtered
+      let html = filtered
         .map(
           (c, idx) => `
             <div data-option-index="${idx}" class="w-full text-left px-3 py-2 hover:bg-sky-50 flex flex-col gap-0.5">
@@ -1481,6 +1484,9 @@ export class JobDetailView {
           `
         )
         .join("");
+
+      let footer = `<button type="button" class=" w-full text-white gap-2 p-2 bg-[#003882] flex justify-center sticky bottom-0"> <span class="inline-flex h-5 w-5 items-center justify-center bg-white text-blue rounded-full border border-sky-900 text-sky-900"> + </span> <span>Add New Client</span> </button>`;
+      list.innerHTML = html + footer;
       list.dataset.count = filtered.length;
       list.filteredContacts = filtered;
       list.classList.toggle("hidden", filtered.length === 0);
@@ -1513,6 +1519,45 @@ export class JobDetailView {
       state.contacts = nextContacts;
       render(state.contacts, input.value || "");
     };
+  }
+
+  setupAddButtons() {
+    const toggleModal = (id, show) => {
+      const modal = document.getElementById(id);
+      if (!modal) return;
+      modal.classList.toggle("hidden", !show);
+      modal.classList.toggle("flex", !!show);
+    };
+
+    document.addEventListener("click", (e) => {
+      const openClient = e.target.closest('[data-action="open-add-client"]');
+      const openProperty = e.target.closest(
+        '[data-action="open-add-property"]'
+      );
+      const closeBtn = e.target.closest("[data-modal-close]");
+      if (openClient) {
+        toggleModal("jobAddClientModal", true);
+      } else if (openProperty) {
+        toggleModal("jobAddPropertyModal", true);
+      } else if (closeBtn) {
+        toggleModal(closeBtn.getAttribute("data-modal-close"), false);
+      }
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        toggleModal("jobAddClientModal", false);
+        toggleModal("jobAddPropertyModal", false);
+      }
+    });
+
+    ["jobAddClientModal", "jobAddPropertyModal"].forEach((id) => {
+      const modal = document.getElementById(id);
+      if (!modal) return;
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) toggleModal(id, false);
+      });
+    });
   }
 
   setupServiceProviderSearch(data = []) {
@@ -1687,5 +1732,49 @@ export class JobDetailView {
     const date = new Date(yyyy, mm - 1, dd);
 
     return Math.floor(date.getTime() / 1000);
+  }
+
+  setupLocationOptions() {
+    // let locations =
+  }
+
+  setupHostOptions() {}
+
+  setupPrimaryGuestOptions() {}
+
+  setupInquiryOptions() {}
+
+  setupJobOptions() {}
+
+  createOptionsForSelectBox(selectEl, options) {
+    options.forEach((item) => {
+      let element = document.createElement("option");
+      element.innerText = item.name;
+      element.value = item.id;
+      selectEl.appendChild(element);
+    });
+  }
+
+  getApointmentsFieldValues() {
+    let section = document.querySelectorAll(
+      '[data-job-section="job-section-appointment"] input, [data-job-section="job-section-appointment"] select, [data-job-section="job-section-appointment"] textarea'
+    );
+    let dataObj = {};
+    section.forEach((item) => {
+      let key = item?.getAttribute("data-field");
+      let value;
+      if (key == "start_time" || key == "end_time") {
+        value = this.dateToUnix(item.value);
+      } else {
+        if (item.type == "checkbox") {
+          value = item.checked;
+        } else {
+          value = item.value;
+        }
+      }
+      dataObj[key] = value;
+    });
+    delete dataObj[null];
+    return dataObj;
   }
 }
