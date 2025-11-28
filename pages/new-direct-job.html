@@ -6,6 +6,12 @@
     <title>New Direct Job</title>
    
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      /* Keep Google Places dropdown above modals/overlays */
+      .pac-container {
+        z-index: 10050 !important;
+      }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
     <link
     rel="stylesheet"
@@ -942,6 +948,7 @@
                           type="button"
                           class="sticky bottom-0 flex w-full items-center gap-2 border-t border-slate-200 px-4 py-3 text-sm font-medium text-sky-900 hover:bg-slate-50"
                           data-property-search="add"
+                          data-action="open-add-property"
                         >
                           <span
                             class="inline-flex h-5 w-5 items-center justify-center rounded-full border border-sky-900 text-sky-900"
@@ -1204,13 +1211,7 @@
       </div>
     </div>
 
-
-
-
-
-
-
-
+    <!-- Contact/Address detail popup -->
     <div modal-name="contact-detail-modal" id="addressDetailsModalBox" class=" bg-white rounded-lg shadow-xl w-[40vw] max-w-3xl max-h-[90vh] overflow-auto">
       <div class="flex items-center justify-between px-5 py-3 bg-[#003882] text-white rounded-t-lg">
         <h3 class="text-base font-semibold">Contact Details</h3>
@@ -1275,18 +1276,18 @@
             <div  class="hidden">
             <input id="contact-address" type="text"/>
             </div>
-            
-
             <div>
               <label class="text-sm font-medium text-slate-600">Office Number</label>
               <input type="tel" data-contact-field="office_phone" data-contact-id="office_phone" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100">
             </div>
+
+          <div data-section="address">
           <div>
             <label class="block text-sm  font-medium text-gray-700 mb-1">Address</label>
-          <div class="relative hidden">
+          <!-- <div class="relative hidden">
             <input id="adTopSearch" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 pr-9 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
               <svg class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" viewBox="0 0 24 24" fill="currentColor"><path d="M21 20l-5.6-5.6a7.5 7.5 0 10-1.4 1.4L20 21l1-1Zm-13.5-5A5.5 5.5 0 1113 9.5 5.51 5.51 0 017.5 15Z"/></svg>
-            </div>
+            </div> -->
           </div>
           <div class="flex gap-3">
             <div class="flex-1">
@@ -1322,8 +1323,9 @@
             </div>
           </div>
         </div>
+          </div>
 
-        <div class="pt-2">
+        <div data-section="postal-address" class="pt-2">
           <div class="mb-2 flex items-center justify-between">
             <h4 class="text-sm font-medium text-gray-900">Postal Address</h4>
             <div class="flex items-center gap-2">
@@ -1388,11 +1390,190 @@
         <button id="updateAddressDetailsBtn" class="px-4 py-2 bg-[#003882] text-white text-sm font-medium rounded hover:bg-blue-700">Save</button>
       </div>
     </div>
-  
 
+    <!-- Add Property Modal -->
+    <div id="jobAddPropertyModal" class="fixed inset-0 z-[9999] hidden items-center justify-center bg-black/50 px-4">
+      <div class="relative max-h-[90vh] w-[40vw] max-w-5xl overflow-y-auto rounded-2xl bg-white shadow-xl">
+        
 
+        <div id="property-information" class="flex flex-col gap-6">
 
+          <header class="w-full p-4 text-white flex justify-between items-center bg-[#003882]">
+            <div class="w-full  justify-end text-base font-bold  font-sans leading-none">
+              Property Information
+            </div>
+            <button
+          type="button"
+          class=""
+          data-modal-close="jobAddPropertyModal"
+        ><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M18.75 6.81984L17.1802 5.25L12 10.4302L6.81984 5.25L5.25 6.81984L10.4302 12L5.25 17.1802L6.81984 18.75L12 13.5698L17.1802 18.75L18.75 17.1802L13.5698 12L18.75 6.81984Z" fill="white"/>
+          </svg>
+          
+        </button>
+          </header>
+          <div class="grow-[1] space-y-2 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm xl:col-span-4">
+            <div data-section-id="property" class="space-y-4">
+              <div data-search-root="property" class="relative">
+                <label class="block text-sm font-medium text-slate-600">Property Search</label>
+                <input
+                  type="text"
+                  placeholder="Search properties"
+                  class="mt-2 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 placeholder:text-slate-400 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100 pac-target-input"
+                  data-search-input
+                  data-field="properties"
+                  autocomplete="off"
+                />
+                <input type="hidden" id="selected-property-id" data-selected-property-id="selected-property-id" />
+                <div class="absolute left-0 right-0 top-full z-[999] mt-2 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg hidden" data-search-panel>
+                  <ul class="max-h-72 overflow-auto py-2" data-search-results></ul>
+                  <div data-search-footer></div>
+                </div>
+              </div>
 
+              <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div>
+                  <label class="block text-sm font-medium text-slate-600">Lot Number</label>
+                  <input type="text" data-property-id="lot-number" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-slate-600">Unit Number</label>
+                  <input type="text" data-property-id="unit-number" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+                </div>
+                <div>
+                  <label class="flex items-center gap-1 text-sm font-medium text-slate-600">Address <span class="text-rose-500">*</span></label>
+                  <input type="text" data-property-id="address-1" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-slate-600">Address 2</label>
+                  <input type="text" data-property-id="address-2" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+                </div>
+                <div>
+                  <label class="flex items-center gap-1 text-sm font-medium text-slate-600">Suburb/ Town <span class="text-rose-500">*</span></label>
+                  <input type="text" data-property-id="suburb-town" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+                </div>
+                <div>
+                  <label class="flex items-center gap-1 text-sm font-medium text-slate-600">Postal Code <span class="text-rose-500">*</span></label>
+                  <input type="text" data-property-id="postal-code" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+                </div>
+              </div>
 
+              <div>
+                <label class="flex items-center gap-1 text-sm font-medium text-slate-600">State <span class="text-rose-500">*</span></label>
+                <div class="relative mt-1">
+                  <select class="!block w-full appearance-none rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100" data-property-id="state">
+                    <option value="" disabled selected hidden>Select a state</option>
+                    <option value="NSW">New South Wales</option>
+                    <option value="QLD">Queensland</option>
+                    <option value="VIC">Victoria</option>
+                    <option value="TAS">Tasmania</option>
+                    <option value="SA">South Australia</option>
+                    <option value="ACT">Australian Capital Territory</option>
+                    <option value="NT">Northern Territory</option>
+                    <option value="WA">Western Australia</option>
+                  </select>
+
+                  <span class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400">
+                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M6 9l6 6 6-6"></path>
+                    </svg>
+                  </span>
+                </div>
+              </div>
+
+              <div>
+                <h3 class="mt-[70px] mb-9 text-sm font-semibold text-slate-800">Property Description</h3>
+              </div>
+              <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div>
+                  <label class="block text-sm font-medium text-slate-600">Property Type</label>
+                  <div class="relative mt-1">
+                    <select class="!block w-full appearance-none rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100" data-property-id="property-type">
+                      <option value="" disabled selected hidden>Select None</option>
+                      <option value="Residential">Residential</option>
+                      <option value="Commercial">Commercial</option>
+                      <option value="Industrial">Industrial</option>
+                    </select>
+                    <span class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400">
+                      <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 9l6 6 6-6"></path>
+                      </svg>
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-slate-600">Building Type</label>
+                  <div class="relative mt-1">
+                    <select class="!block w-full appearance-none rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100" data-property-id="building-type">
+                      <option value="" disabled selected hidden>Select None</option>
+                      <option value="House">House</option>
+                      <option value="Unit">Unit</option>
+                      <option value="Unit Block">Unit Block</option>
+                      <option value="Offices">Offices</option>
+                      <option value="Warehouse">Warehouse</option>
+                      <option value="Other">Other</option>
+                    </select>
+                    <span class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400">
+                      <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 9l6 6 6-6"></path>
+                      </svg>
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-slate-600">Foundation Type</label>
+                  <div class="relative mt-1">
+                    <select class="!block w-full appearance-none rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100" data-property-id="foundation-type">
+                      <option value="" disabled selected hidden>Select None</option>
+                      <option value="Slab on Ground">Slab on Ground</option>
+                      <option value="Lowset">Lowset</option>
+                      <option value="Highset">Highset</option>
+                    </select>
+                    <span class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400">
+                      <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 9l6 6 6-6"></path>
+                      </svg>
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-slate-600">Building Features</label>
+                  <div class="relative mt-1">
+                    <select class="!block w-full appearance-none rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100" data-property-id="building-features">
+                      <option>Select</option>
+                    </select>
+                    <span class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400">
+                      <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 9l6 6 6-6"></path>
+                      </svg>
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-slate-600">Storeys</label>
+                  <input type="number" value="1" data-property-id="stories" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-slate-600">Bedrooms</label>
+                  <input type="number" value="1" data-property-id="bedrooms" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-slate-600">Building Age</label>
+                  <input type="number" value="1" data-property-id="building-age" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+                </div>
+                <label class="inline-flex items-center gap-2 text-sm text-slate-600">
+                  <input type="checkbox" checked data-property-id="manhole" class="accent-[#003882] h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-200" />
+                  Manhole
+                </label>
+              </div>
+
+              <div id="add-property-btn" class="float-right px-4 py-3 rounded outline outline-1 outline-offset-[-1px] outline-sky-900 inline-flex justify-center items-center gap-2 overflow-hidden">
+                <div class="justify-start text-sky-900 text-sm font-medium leading-4">Add Property</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </body>
 </html>

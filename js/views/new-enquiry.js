@@ -1,4 +1,9 @@
-import { initOperationLoader, showLoader, hideLoader } from "../helper.js";
+import {
+  initOperationLoader,
+  initCustomModal,
+  showLoader,
+  hideLoader,
+} from "../helper.js";
 
 export class NewInquiryView {
   constructor(model) {
@@ -96,10 +101,11 @@ export class NewInquiryView {
       "selected-property-id"
     );
     this.selectedPropertyCard = null;
-    this.createStatusModal();
-    this.customModalHeader = document.getElementById("statusTitle");
-    this.customModalBody = document.getElementById("statusMessage");
-    this.statusModel = document.getElementById("statusModal");
+    const customModal = initCustomModal();
+    this.statusModel = customModal.modal;
+    this.customModalHeader = customModal.headerEl;
+    this.customModalBody = customModal.bodyEl;
+    this.customModalIcon = customModal.iconEl;
 
     this.loaderCounter = { count: 0 };
     this.loaderElement = initOperationLoader();
@@ -2516,45 +2522,6 @@ export class NewInquiryView {
         }
       });
     }
-  }
-
-  createStatusModal() {
-    let modal = document.getElementById("statusModal");
-    if (modal) return modal;
-    modal = document.createElement("div");
-    modal.id = "statusModal";
-    modal.className =
-      "fixed inset-0 z-[9999] hidden items-center justify-center bg-black/40 transition-opacity duration-200";
-
-    modal.innerHTML = `
-      <div class="bg-white rounded-lg shadow-xl w-[350px] text-center p-6 flex flex-col items-center space-y-4">
-        <div id="statusIcon" class="w-12 h-12 rounded-full flex items-center justify-center text-white text-2xl"></div>
-        <h3 id="statusTitle" class="text-lg font-semibold text-gray-800">Success</h3>
-        <p id="statusMessage" class="text-sm text-gray-600">Your action was successful.</p>
-        <button id="statusCloseBtn" class="mt-3 px-4 py-2 bg-[#003882] text-white rounded hover:bg-blue-700">
-          OK
-        </button>
-      </div>
-    `;
-
-    document.body.appendChild(modal);
-
-    const closeBtn = document.getElementById("statusCloseBtn");
-    const hide = () => {
-      modal.classList.add("hidden");
-      modal.classList.remove("flex");
-      document.body.style.overflow = "";
-    };
-    closeBtn.onclick = hide;
-    modal.addEventListener("click", (e) => {
-      if (e.target === modal) hide();
-    });
-
-    document.addEventListener("keydown", (e) => {
-      if (!modal.classList.contains("hidden") && e.key === "Escape") hide();
-    });
-
-    document.body.appendChild(modal);
   }
 
   populatePropertyFields(fields, data) {

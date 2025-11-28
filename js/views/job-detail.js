@@ -1,7 +1,28 @@
+import {
+  initOperationLoader,
+  initCustomModal,
+  showLoader,
+  hideLoader,
+} from "../helper.js";
+
 export class JobDetailView {
   constructor(model) {
     this.model = model;
     this._addressAutocompleteReady = false;
+    this.feedbackEl = document.querySelector("[data-contact-feedback]");
+
+    // Loader setup for contact modal save flows
+    this.loaderCounter = { count: 0 };
+    this.loaderElement = initOperationLoader();
+    this.loaderMessageEl =
+      this.loaderElement?.querySelector("[data-loader-message]") || null;
+
+    // Shared status modal
+    const customModal = initCustomModal();
+    this.statusModal = customModal.modal;
+    this.customModalHeader = customModal.headerEl;
+    this.customModalBody = customModal.bodyEl;
+    this.customModalIcon = customModal.iconEl;
 
     this.init();
   }
@@ -2064,9 +2085,9 @@ export class JobDetailView {
     const closeBtn = $("closeAddressDetailsBtn");
     const cancelBtn = $("cancelAddressDetailsBtn");
     const sameAsAboveBtn = $("adSameAsAbove");
+    const saveBtn = $("updateAddressDetailsBtn");
 
     const topInputs = [
-      $("adTopSearch"),
       $("adTopLine1"),
       $("adTopLine2"),
       $("adTopCity"),
@@ -2075,7 +2096,6 @@ export class JobDetailView {
       $("adTopCountry"),
     ];
     const botInputs = [
-      $("adBotSearch"),
       $("adBotLine1"),
       $("adBotLine2"),
       $("adBotCity"),
@@ -2098,6 +2118,13 @@ export class JobDetailView {
           input.value = "";
         });
       }
+    });
+
+    saveBtn.addEventListener("click", async () => {
+      let elements = document.querySelectorAll(
+        "#addressDetailsModalWrapper [data-contact-id]"
+      );
+      let valuesObj = this.getValuesFromContactDetailModal(elements);
     });
 
     const hide = () => {
@@ -2139,58 +2166,150 @@ export class JobDetailView {
     });
   }
 
-  moveAddressFieldToModal({
-    parseAddressComponents,
-    createPropertyObj,
-    createNewProperty,
-  } = {}) {
-    const inputs = document.querySelectorAll(
-      '[data-contact-field="top_address_line1"], [data-contact-field="top_address_line2"]'
+  initializeAutoCompleteToModal({ initAutocomplete } = {}) {
+    // Delegate autocomplete wiring to the shared initializer to avoid duplicating Google bindings.
+    if (typeof initAutocomplete === "function") {
+      initAutocomplete();
+    }
+  }
+
+  async getValuesFromContactDetailModal(elements) {
+    const formElements = Array.from(elements);
+    const contactData = this.buildContactData(formElements);
+    const contactId = this.getContactId();
+
+    showLoader(
+      this.loaderElement,
+      this.loaderMessageEl,
+      this.loaderCounter,
+      contactId ? "Updating contact..." : "Creating contact..."
     );
 
-    if (
-      !inputs.length ||
-      this._addressAutocompleteReady ||
-      !window.google?.maps?.places?.Autocomplete
-    )
-      return;
+    try {
+      const result = await this.saveContact(contactId, contactData);
 
-    if (!parseAddressComponents || !createPropertyObj || !createNewProperty) {
-      console.warn(
-        "Address helpers missing; skipping Google Places autocomplete wiring."
-      );
+      if (result?.isCancelling) return;
+
+      if (result) {
+        this.handleSuccess(!!contactId);
+        this.clearForm(formElements);
+      } else {
+        this.handleFailure(!!contactId);
+      }
+    } catch (error) {
+      console.error("[NewInquiry] Contact modal save failed", error);
+      this.showFeedback("Unable to save contact right now.");
+    } finally {
+      hideLoader(this.loaderElement, this.loaderCounter);
+    }
+  }
+
+  showFeedback(message, tone = "error") {
+    if (!this.feedbackEl) {
+      console.warn("Feedback:", message);
       return;
     }
+    this.feedbackEl.textContent = message;
+    this.feedbackEl.classList.remove(
+      "hidden",
+      "text-rose-600",
+      "text-emerald-600",
+      "text-slate-600"
+    );
+    const toneClass =
+      tone === "success"
+        ? "text-emerald-600"
+        : tone === "info"
+        ? "text-slate-600"
+        : "text-rose-600";
+    this.feedbackEl.classList.add(toneClass);
+  }
 
-    inputs.forEach((input) => {
-      if (input.dataset.googlePlacesBound === "true") return;
+  clearFeedback() {
+    if (!this.feedbackEl) return;
+    this.feedbackEl.textContent = "";
+    this.feedbackEl.classList.add("hidden");
+    this.feedbackEl.classList.remove(
+      "text-rose-600",
+      "text-emerald-600",
+      "text-slate-600"
+    );
+  }
 
-      const autocomplete = new google.maps.places.Autocomplete(input, {
-        types: ["address"],
-        componentRestrictions: { country: "au" },
-      });
+  buildContactData(elements) {
+    const data = {};
 
-      autocomplete.addListener("place_changed", () => {
-        const place = autocomplete.getPlace();
-
-        // Fill input
-        input.value = place?.formatted_address || input.value;
-
-        // Build property object
-        const parsed = parseAddressComponents(place);
-        const mapped = createPropertyObj(parsed);
-
-        const newObj = {
-          Properties: mapped,
-          property_name: place?.formatted_address,
-        };
-
-        return createNewProperty(newObj);
-      });
-
-      input.dataset.googlePlacesBound = "true";
+    elements.forEach((item) => {
+      const key = item.getAttribute("data-contact-id");
+      if (key) data[key] = item.value;
     });
+    return data;
+  }
 
-    this._addressAutocompleteReady = true;
+  async saveContact(contactId, contactData) {
+    if (contactId) {
+      return await this.model.updateContact(contactId, contactData);
+    }
+    return await this.model.createContact(contactData);
+  }
+
+  clearForm(elements) {
+    elements.forEach((item) => (item.value = ""));
+  }
+
+  getPropertyFormData() {
+    const fields = document.querySelectorAll(
+      '#property-information [data-property-id]'
+    );
+    const data = {};
+    fields.forEach((field) => {
+      const key = field.dataset.propertyId;
+      if (!key) return;
+      if (field.type === "checkbox") {
+        data[key] = field.checked;
+      } else {
+        data[key] = field.value || "";
+      }
+    });
+    return data;
+  }
+
+  handleSuccess(isUpdate) {
+    this.customModalHeader.innerText = "Successful";
+    this.customModalBody.innerText = isUpdate
+      ? "Contact updated successfully."
+      : "New contact created successfully.";
+
+    if (!isUpdate) {
+      document
+        .getElementById("addressDetailsModalWrapper")
+        .classList.add("hidden");
+    }
+
+    this.toggleModal("statusModal");
+  }
+
+  handleFailure(isUpdate) {
+    this.customModalHeader.innerText = "Failed";
+    this.customModalBody.innerText = isUpdate
+      ? "Contact update failed."
+      : "Contact create failed.";
+
+    this.toggleModal("statusModal");
+  }
+
+  setGoogleSearchAddress(data) {
+    Object.keys(data).forEach((key) => {
+      const field = document.querySelector(`[data-property-id="${key}"]`);
+      if (field) {
+        field.value = data[key];
+      }
+    });
+  }
+
+  getContactId() {
+    return (
+      document.querySelector("[data-contact-field='contact_id']")?.value || ""
+    );
   }
 }

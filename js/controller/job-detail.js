@@ -41,6 +41,7 @@ export class JobDetailController {
     this.handlePropertySearch();
     this.showHideAddAddressModal();
     this.renderDropdownForStates();
+    this.bindAddPropertyFlow();
   }
 
   renderDropdownForStates() {
@@ -126,31 +127,46 @@ export class JobDetailController {
   }
 
   initAutocomplete() {
-    // const inputs = document.querySelectorAll(
-    //   '[data-field="properties"], [data-contact-field="top_address_line1"], [data-contact-field="top_address_line2"]'
-    // );
-    // if (!inputs.length || !window.google?.maps?.places?.Autocomplete) return;
-    // inputs.forEach((input) => {
-    //   if (input.dataset.googlePlacesBound === "true") return;
-    //   const autocomplete = new google.maps.places.Autocomplete(input, {
-    //     types: ["address"],
-    //     componentRestrictions: { country: "au" },
-    //   });
-    //   autocomplete.addListener("place_changed", () => {
-    //     const place = autocomplete.getPlace();
-    //     // Fill input
-    //     input.value = place?.formatted_address || input.value;
-    //     // Build property object
-    //     const parsed = this.parseAddressComponents(place);
-    //     const mapped = this.createPropertyObj(parsed);
-    //     const newObj = {
-    //       Properties: mapped,
-    //       property_name: place?.formatted_address,
-    //     };
-    //     return this.model.createNewProperty(newObj);
-    //   });
-    //   input.dataset.googlePlacesBound = "true";
-    // });
+    const inputs = document.querySelectorAll(
+      '[data-field="properties"], [data-contact-field="bot_address_line1"],[data-contact-field="bot_address_line2"], [data-contact-field="top_address_line1"], [data-contact-field="top_address_line2"]'
+    );
+    if (!inputs.length || !window.google?.maps?.places?.Autocomplete) return;
+    inputs.forEach((input) => {
+      if (input.dataset.googlePlacesBound === "true") return;
+      const autocomplete = new google.maps.places.Autocomplete(input, {
+        types: ["address"],
+        componentRestrictions: { country: "au" },
+      });
+      autocomplete.addListener("place_changed", () => {
+        const place = autocomplete.getPlace();
+        // Fill input
+        input.value = place?.formatted_address || input.value;
+        // Build property object
+        const parsed = this.parseAddressComponents(place);
+        const mapped = this.createPropertyObj(parsed);
+        if (
+          input.getAttribute("data-contact-id") == "address" ||
+          input.getAttribute("data-contact-id") == "address_2"
+        ) {
+          this.setAddressValuesToPopup(mapped);
+        } else if (
+          input.getAttribute("data-contact-id") == "postal_address" ||
+          input.getAttribute("data-contact-id") == "postal_address_2"
+        ) {
+          this.setPostalAddressValuesToPopup(mapped);
+        }
+
+        if (input.getAttribute("data-field") === "properties") {
+          this.view?.setGoogleSearchAddress?.(parsed);
+          const newObj = {
+            Properties: mapped,
+            property_name: place?.formatted_address,
+          };
+          this.model.createNewProperty(newObj);
+        }
+      });
+      input.dataset.googlePlacesBound = "true";
+    });
   }
 
   parseAddressComponents(place) {
@@ -178,6 +194,7 @@ export class JobDetailController {
       if (c.types.includes("route")) result.street = c.long_name;
 
       if (c.types.includes("locality")) result["suburb-town"] = c.long_name;
+      if (c.types.includes("country")) result["country"] = c.short_name;
 
       if (
         c.types.includes("sublocality") ||
@@ -226,6 +243,7 @@ export class JobDetailController {
       "suburb-town": "suburb_town",
       "postal-code": "postal_code",
       state: "state",
+      country: "country",
     };
 
     const newObj = {};
@@ -247,12 +265,117 @@ export class JobDetailController {
     });
   }
 
+  bindAddPropertyFlow() {
+    const propertySearchInput = document.querySelector(
+      '[data-field="properties"]'
+    );
+    const addBtn = document.getElementById("add-property-btn");
+    const propertyHidden = document.querySelector('[data-field="property_id"]');
+
+    // Open modal when "Add Property" is clicked from search dropdown
+    if (propertySearchInput) {
+      propertySearchInput.addEventListener("property:add", (e) => {
+        this.view.toggleModal("jobAddPropertyModal");
+        const modalSearch = document.querySelector(
+          '#jobAddPropertyModal [data-field="properties"]'
+        );
+        if (modalSearch && e?.detail?.query) modalSearch.value = e.detail.query;
+      });
+    }
+
+    // Save property from modal
+    if (addBtn) {
+      addBtn.addEventListener("click", async () => {
+        const raw = this.view.getPropertyFormData?.() || {};
+        const mapped = this.createPropertyObj(raw);
+        const propertyName =
+          raw["address-1"] ||
+          raw["address-2"] ||
+          raw["suburb-town"] ||
+          "New Property";
+
+        const payload = {
+          Properties: mapped,
+          property_name: propertyName,
+        };
+
+        try {
+          const result = await this.model.createNewProperty(payload);
+          const newId =
+            result?.resp?.id ||
+            result?.resp?.data?.id ||
+            result?.id ||
+            result?.data?.id ||
+            "";
+
+          // Reflect selection in the main search input/hidden field
+          if (propertySearchInput) propertySearchInput.value = propertyName;
+          if (propertyHidden) propertyHidden.value = newId;
+
+          // Refresh property options/search list
+          await this.model.fetchProperty((data) => {
+            this.properties = data;
+            this.view.updatePropertySearch?.(data);
+          });
+
+          this.view.handleSuccess?.(false);
+          this.view.toggleModal("jobAddPropertyModal");
+        } catch (err) {
+          console.error("Failed to create property", err);
+          this.view.handleFailure?.(false);
+        }
+      });
+    }
+  }
+
   resetSelectOptions(selectEl) {
     if (!selectEl) return;
     const placeholder =
       selectEl.querySelector("option[disabled][selected]")?.outerHTML ||
       '<option value="" disabled selected>Select</option>';
     selectEl.innerHTML = placeholder;
+  }
+
+  setAddressValuesToPopup(data) {
+    const fieldIdentifier = {
+      address: "address_1",
+      address_2: "address_2",
+      city: "suburb_town",
+      country: "",
+      state: "state",
+      zip_code: "postal_code",
+      country: "country",
+    };
+
+    let elements = document.querySelectorAll(
+      '[data-section="address"] input, [data-section="address"] select'
+    );
+    elements.forEach((item) => {
+      let key = item.getAttribute("data-contact-id");
+      let val = data[fieldIdentifier[key]];
+      item.value = val;
+    });
+  }
+
+  setPostalAddressValuesToPopup(data) {
+    const fieldIdentifier = {
+      postal_address: "address_1",
+      postal_address_2: "address_2",
+      postal_city: "suburb_town",
+      country: "",
+      postal_state: "state",
+      postal_code: "postal_code",
+      postal_country: "country",
+    };
+
+    let elements = document.querySelectorAll(
+      '[data-section="postal-address"] input, [data-section="postal-address"] select'
+    );
+    elements.forEach((item) => {
+      let key = item.getAttribute("data-contact-id");
+      let val = data[fieldIdentifier[key]];
+      item.value = val;
+    });
   }
 
   async setupOptions(element) {
@@ -357,10 +480,9 @@ export class JobDetailController {
 
       document.querySelector('[data-contact-id="contact-id"]').value = "";
       this.view.toggleModal("addressDetailsModalWrapper");
-      this.view.moveAddressFieldToModal({
-        parseAddressComponents: this.parseAddressComponents.bind(this),
-        createPropertyObj: this.createPropertyObj.bind(this),
-        createNewProperty: this.model.createNewProperty.bind(this.model),
+      // Re-run shared autocomplete init to ensure modal inputs are wired (idempotent via dataset flag).
+      this.view.initializeAutoCompleteToModal({
+        initAutocomplete: this.initAutocomplete.bind(this),
       });
       document
         .querySelector(

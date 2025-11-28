@@ -453,4 +453,11 @@ export class JobDetailModal {
     let result = await query.execute(true).toPromise();
     return result;
   }
+
+  async createContact(contactObj) {
+    let query = this.contactModel.mutation();
+    query.createOne(contactObj);
+    let result = await query.execute(true).toPromise();
+    return result;
+  }
 }
