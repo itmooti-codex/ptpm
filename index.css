@@ -19,3 +19,8 @@
   background-color: #94a3b8;
   border-radius: 9999px;
 }
+
+/* Keep Google Places suggestions above modal overlays */
+.pac-container {
+  z-index: 10050 !important;
+}

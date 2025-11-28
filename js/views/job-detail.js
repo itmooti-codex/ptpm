@@ -1,6 +1,7 @@
 export class JobDetailView {
   constructor(model) {
     this.model = model;
+    this._addressAutocompleteReady = false;
 
     this.init();
   }
@@ -17,9 +18,9 @@ export class JobDetailView {
     this.createAddMaterialsSection();
     this.createUploadsSection();
     this.createInvoiceSection();
-
     this.setupAddButtons();
     this.setupSectionNavigation();
+    this.#createContactDetailsModalUI();
   }
 
   createAddActivitiesSection() {
@@ -1450,74 +1451,148 @@ export class JobDetailView {
   }
 
   setupClientSearch(contacts = []) {
-    const input = document.querySelector('[data-contact-search="input"]');
-    const list = document.querySelector('[data-contact-search="results"]');
+    const root = document.querySelector(
+      '[data-search-root="contact-individual"]'
+    );
+    const input = root?.querySelector("[data-search-input]");
+    const panel = root?.querySelector("[data-search-panel]");
+    const results = root?.querySelector("[data-search-results]");
+    const empty = root?.querySelector("[data-search-empty]");
+    const addBtn = root?.querySelector("[data-search-add]");
+    const searchTrigger = root?.querySelector("[data-search-trigger]");
     const hidden = document.querySelector('[data-contact-field="contact_id"]');
-    if (!input || !list) return;
+    if (!root || !input || !results || !panel) return;
 
-    const state = { contacts: contacts || [] };
-
-    const render = (items = [], query = "") => {
-      const lower = (query || "").toLowerCase();
-      const filtered = items.filter((c) => {
-        if (lower == "") {
-          return true;
-        } else {
-          return (
-            c.Email?.toString().includes(lower) ||
-            c.First_Name?.toString().includes(lower) ||
-            c.Last_Name?.toString().includes(lower) ||
-            c.SMS_Number?.toString().includes(lower)
-          );
-        }
+    const normalize = (items = []) =>
+      items.map((c) => {
+        const info = c.Contact_Information || {};
+        const first =
+          c.First_Name ||
+          c.first_name ||
+          info.first_name ||
+          c.Contact_Information_First_Name ||
+          "";
+        const last =
+          c.Last_Name ||
+          c.last_name ||
+          info.last_name ||
+          c.Contact_Information_Last_Name ||
+          "";
+        const email = c.Email || c.email || info.email || info.Email || "";
+        const phone =
+          c.SMS_Number ||
+          c.sms_number ||
+          info.sms_number ||
+          info.SMS_Number ||
+          "";
+        return {
+          id: c.Contact_ID || c.contact_id || c.id || c.ID || info.id || "",
+          label:
+            [first, last].filter(Boolean).join(" ").trim() ||
+            email ||
+            phone ||
+            "Unknown contact",
+          meta: [email, phone].filter(Boolean).join(" • "),
+          raw: c,
+        };
       });
-      let html = filtered
-        .map(
-          (c, idx) => `
-            <div data-option-index="${idx}" class="w-full text-left px-3 py-2 hover:bg-sky-50 flex flex-col gap-0.5">
-              <span class="text-sm text-neutral-800">${
-                c.First_Name + " " + c.Last_Name || "Unknown"
-              }</span>
-              <span class="hidden"></span>
-              <span class="text-xs text-neutral-500">${c.Email || ""}</span>
-            </div>
-          `
-        )
-        .join("");
 
-      let footer = `<button type="button" class=" w-full text-white gap-2 p-2 bg-[#003882] flex justify-center sticky bottom-0"> <span class="inline-flex h-5 w-5 items-center justify-center bg-white text-blue rounded-full border border-sky-900 text-sky-900"> + </span> <span>Add New Client</span> </button>`;
-      list.innerHTML = html + footer;
-      list.dataset.count = filtered.length;
-      list.filteredContacts = filtered;
-      list.classList.toggle("hidden", filtered.length === 0);
+    const state = { contacts: normalize(contacts), filtered: [] };
+
+    const openPanel = () => panel.classList.remove("hidden");
+    const closePanel = () => panel.classList.add("hidden");
+
+    const render = (query = "") => {
+      const term = query.trim().toLowerCase();
+      const filtered = state.contacts.filter((item) => {
+        if (!term) return true;
+        return [item.label, item.meta]
+          .filter(Boolean)
+          .some((value) => value.toLowerCase().includes(term));
+      });
+
+      state.filtered = filtered;
+      results.innerHTML = "";
+
+      if (!filtered.length) {
+        results.classList.add("hidden");
+        empty?.classList.remove("hidden");
+        return;
+      }
+
+      results.classList.remove("hidden");
+      empty?.classList.add("hidden");
+
+      filtered.forEach((item, idx) => {
+        const li = document.createElement("li");
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.dataset.optionIndex = String(idx);
+        btn.className =
+          "flex w-full flex-col gap-1 px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50";
+
+        const label = document.createElement("span");
+        label.className = "font-medium text-slate-700";
+        label.textContent = item.label;
+        btn.appendChild(label);
+
+        if (item.meta) {
+          const meta = document.createElement("span");
+          meta.className = "text-xs text-slate-500";
+          meta.textContent = item.meta;
+          btn.appendChild(meta);
+        }
+
+        li.id = item.id;
+        btn.id = item.id;
+        li.appendChild(btn);
+        results.appendChild(li);
+      });
     };
 
     input.addEventListener("focus", () => {
-      render(state.contacts, input.value || "");
+      openPanel();
+      render(input.value || "");
     });
+
     input.addEventListener("input", (e) => {
-      render(state.contacts, e.target.value || "");
+      openPanel();
+      render(e.target.value || "");
     });
-    list.addEventListener("mousedown", (e) => {
-      const btn = e.target.closest("div[data-option-index]");
+
+    searchTrigger?.addEventListener("click", (e) => {
+      e.preventDefault();
+      openPanel();
+      input.focus();
+      render(input.value || "");
+    });
+
+    results.addEventListener("mousedown", (e) => {
+      const btn = e.target.closest("button[data-option-index]");
       if (!btn) return;
       e.preventDefault();
       const idx = Number(btn.dataset.optionIndex);
-      const opts = list.filteredContacts || [];
-      const contact = opts[idx];
+      const contact = state.filtered?.[idx];
       if (!contact) return;
-      input.value = contact.First_Name + " " + contact.Last_Name || "";
-      if (hidden) hidden.value = contact.Contact_ID || "";
-      list.classList.add("hidden");
+      input.value = contact.label;
+      if (hidden) hidden.value = contact.id || "";
+      closePanel();
+      this.prefillContactModal(contact.raw);
+      this.toggleModal("addressDetailsModalWrapper");
     });
+
+    addBtn?.addEventListener("click", () => {
+      closePanel();
+    });
+
     document.addEventListener("click", (e) => {
-      if (e.target === input || list.contains(e.target)) return;
-      list.classList.add("hidden");
+      if (root.contains(e.target)) return;
+      closePanel();
     });
 
     this.updateClientSearchContacts = (nextContacts = []) => {
-      state.contacts = nextContacts;
-      render(state.contacts, input.value || "");
+      state.contacts = normalize(nextContacts);
+      render(input.value || "");
     };
   }
 
@@ -1725,6 +1800,126 @@ export class JobDetailView {
     return jobObj;
   }
 
+  setupPropertySearch(properties = []) {
+    const input = document.querySelector('[data-field="properties"]');
+    const locationSelect = document.querySelector('[data-field="location_id"]');
+    const propertyHidden = document.querySelector('[data-field="property_id"]');
+    if (!input) return;
+
+    const root = input.closest(".relative") || input.parentElement;
+    let panel = root.querySelector('[data-property-search="panel"]');
+    let results = root.querySelector('[data-property-search="results"]');
+    let empty = root.querySelector('[data-property-search="empty"]');
+    let addBtn = root.querySelector('[data-property-search="add"]');
+
+    const normalize = (items = []) =>
+      items.map((p) => {
+        const name =
+          p.property_name ||
+          p.Property_Name ||
+          p.name ||
+          p.Property_Property_Name ||
+          "";
+        return {
+          id: p.id || p.ID || p.property_id || p.Property_ID || "",
+          label: name || "Unnamed property",
+        };
+      });
+
+    const state = { items: normalize(properties), filtered: [] };
+
+    const open = () => panel.classList.remove("hidden");
+    const close = () => panel.classList.add("hidden");
+
+    const render = (query = "") => {
+      if (!results) return;
+      const term = query.trim().toLowerCase();
+      const filtered = state.items.filter((item) =>
+        item.label.toLowerCase().includes(term)
+      );
+      state.filtered = filtered;
+      results.innerHTML = "";
+
+      if (!filtered.length) {
+        results.classList.add("hidden");
+        empty?.classList.remove("hidden");
+        return;
+      }
+
+      results.classList.remove("hidden");
+      empty?.classList.add("hidden");
+
+      filtered.forEach((item, idx) => {
+        const li = document.createElement("li");
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.dataset.optionIndex = String(idx);
+        btn.className =
+          "flex w-full flex-col gap-1 px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50";
+        btn.textContent = item.label;
+
+        li.id = item.id;
+        li.appendChild(btn);
+        results.appendChild(li);
+      });
+    };
+
+    input.addEventListener("focus", () => {
+      open();
+      render(input.value || "");
+    });
+
+    input.addEventListener("input", (e) => {
+      open();
+      render(e.target.value || "");
+    });
+
+    results?.addEventListener("mousedown", (e) => {
+      const btn = e.target.closest("button[data-option-index]");
+      if (!btn) return;
+      e.preventDefault();
+      const idx = Number(btn.dataset.optionIndex);
+      const item = state.filtered?.[idx];
+      if (!item) return;
+      input.value = item.label;
+      if (propertyHidden) propertyHidden.value = item.id || "";
+      if (locationSelect) {
+        const exists = locationSelect.querySelector(
+          `option[value="${item.id}"]`
+        );
+        if (!exists && item.id) {
+          const option = document.createElement("option");
+          option.value = item.id;
+          option.textContent = item.label;
+          locationSelect.appendChild(option);
+        }
+        if (item.id) {
+          locationSelect.value = item.id;
+          locationSelect.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+      }
+      close();
+    });
+
+    addBtn?.addEventListener("click", () => {
+      const event = new CustomEvent("property:add", {
+        detail: { query: input.value || "" },
+      });
+      input.dispatchEvent(event);
+      close();
+    });
+
+    document.addEventListener("click", (e) => {
+      if (root.contains(e.target)) return;
+      close();
+    });
+
+    this.updatePropertySearch = (next = []) => {
+      state.items = normalize(next);
+      render(input.value || "");
+    };
+  }
+
   dateToUnix(actualDate) {
     if (!actualDate) return null;
 
@@ -1737,14 +1932,6 @@ export class JobDetailView {
   setupLocationOptions() {
     // let locations =
   }
-
-  setupHostOptions() {}
-
-  setupPrimaryGuestOptions() {}
-
-  setupInquiryOptions() {}
-
-  setupJobOptions() {}
 
   createOptionsForSelectBox(selectEl, options) {
     options.forEach((item) => {
@@ -1776,5 +1963,234 @@ export class JobDetailView {
     });
     delete dataObj[null];
     return dataObj;
+  }
+
+  toggleModal(id) {
+    const modal = document.getElementById(id);
+    if (!modal) return;
+    const isHidden = modal.classList.contains("hidden");
+    if (isHidden) {
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+      document.body.style.overflow = "hidden";
+    } else {
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+      document.body.style.overflow = "";
+    }
+  }
+
+  clearPropertyFieldValues(selector) {
+    const fields = document.querySelectorAll(selector);
+    fields.forEach((field) => {
+      if (field.type === "checkbox" || field.type === "radio") {
+        field.checked = false;
+        return;
+      }
+
+      if (field.tagName === "SELECT") {
+        const placeholder =
+          field.querySelector("option[disabled][selected]") ||
+          field.querySelector("option[disabled]");
+        if (placeholder) {
+          field.value = placeholder.value || "";
+        } else if (field.options?.length) {
+          field.selectedIndex = 0;
+        } else {
+          field.value = "";
+        }
+        return;
+      }
+
+      field.value = "";
+    });
+  }
+
+  prefillContactModal(contact = {}) {
+    const modal = document.getElementById("addressDetailsModalWrapper");
+    if (!modal) return;
+    this.clearPropertyFieldValues(
+      "[modal-name='contact-detail-modal'] input, [modal-name='contact-detail-modal'] select"
+    );
+    const info = contact.Contact_Information || {};
+    const values = {
+      first_name:
+        contact.First_Name ||
+        contact.first_name ||
+        info.first_name ||
+        contact.Contact_Information_First_Name ||
+        "",
+      last_name:
+        contact.Last_Name ||
+        contact.last_name ||
+        info.last_name ||
+        contact.Contact_Information_Last_Name ||
+        "",
+      email: contact.Email || contact.email || info.email || info.Email || "",
+      sms_number:
+        contact.SMS_Number ||
+        contact.sms_number ||
+        info.sms_number ||
+        info.SMS_Number ||
+        "",
+      office_phone:
+        contact.Office_Phone ||
+        contact.office_phone ||
+        info.office_phone ||
+        info.Office_Phone ||
+        "",
+    };
+
+    Object.entries(values).forEach(([key, value]) => {
+      const field = modal.querySelector(`[data-contact-field="${key}"]`);
+      if (field) field.value = value || "";
+    });
+  }
+
+  #createContactDetailsModalUI() {
+    // Wrapper
+    const wrapper = document.createElement("div");
+    wrapper.id = "addressDetailsModalWrapper";
+    wrapper.className =
+      "fixed inset-0 z-[9999] hidden flex items-center justify-center bg-black/50";
+    let element = document.getElementById("addressDetailsModalBox");
+    wrapper.appendChild(element);
+    document.body.appendChild(wrapper);
+
+    // Refs
+    const $ = (id) => document.getElementById(id);
+    const modal = $("addressDetailsModalWrapper");
+    const modalBox = $("addressDetailsModalBox");
+    const closeBtn = $("closeAddressDetailsBtn");
+    const cancelBtn = $("cancelAddressDetailsBtn");
+    const sameAsAboveBtn = $("adSameAsAbove");
+
+    const topInputs = [
+      $("adTopSearch"),
+      $("adTopLine1"),
+      $("adTopLine2"),
+      $("adTopCity"),
+      $("adTopState"),
+      $("adTopPostal"),
+      $("adTopCountry"),
+    ];
+    const botInputs = [
+      $("adBotSearch"),
+      $("adBotLine1"),
+      $("adBotLine2"),
+      $("adBotCity"),
+      $("adBotState"),
+      $("adBotPostal"),
+      $("adBotCountry"),
+    ];
+
+    sameAsAboveBtn.addEventListener("change", () => {
+      const isChecked = sameAsAboveBtn.checked;
+      if (isChecked) {
+        botInputs.forEach((input, idx) => {
+          input.value = topInputs[idx].value;
+          input.disabled = true;
+        });
+      } else {
+        botInputs.forEach((input) => {
+          input.disabled = false;
+          if (input.id === "adBotCountry") return;
+          input.value = "";
+        });
+      }
+    });
+
+    const hide = () => {
+      // reset fields (preserve search)
+      this.resetAffiliationModal?.({ preserveSearch: true });
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+      document.body.style.overflow = "";
+    };
+
+    modal.addEventListener("click", (e) => {
+      // Prevent bubbling to other modals under this overlay
+      e.stopPropagation();
+      if (e.currentTarget === modal && !modalBox.contains(e.target)) hide();
+    });
+    closeBtn.onclick = hide;
+    cancelBtn.onclick = hide;
+    document.addEventListener("keydown", (e) => {
+      if (!modal.classList.contains("hidden") && e.key === "Escape") hide();
+    });
+  }
+
+  renderDropdownOptionsForStates(states) {
+    let elements = document.querySelectorAll("#adTopState, #adBotState");
+    if (!elements) return;
+    elements.forEach((el) => {
+      const placeholderOption = document.createElement("option");
+      placeholderOption.text = "Select";
+      placeholderOption.value = "";
+      placeholderOption.disabled = true;
+      placeholderOption.selected = true;
+      el.add(placeholderOption);
+      states.forEach((state) => {
+        let option = document.createElement("option");
+        option.value = state.value;
+        option.text = state.displayValue;
+        el.add(option);
+      });
+    });
+  }
+
+  moveAddressFieldToModal({
+    parseAddressComponents,
+    createPropertyObj,
+    createNewProperty,
+  } = {}) {
+    const inputs = document.querySelectorAll(
+      '[data-contact-field="top_address_line1"], [data-contact-field="top_address_line2"]'
+    );
+
+    if (
+      !inputs.length ||
+      this._addressAutocompleteReady ||
+      !window.google?.maps?.places?.Autocomplete
+    )
+      return;
+
+    if (!parseAddressComponents || !createPropertyObj || !createNewProperty) {
+      console.warn(
+        "Address helpers missing; skipping Google Places autocomplete wiring."
+      );
+      return;
+    }
+
+    inputs.forEach((input) => {
+      if (input.dataset.googlePlacesBound === "true") return;
+
+      const autocomplete = new google.maps.places.Autocomplete(input, {
+        types: ["address"],
+        componentRestrictions: { country: "au" },
+      });
+
+      autocomplete.addListener("place_changed", () => {
+        const place = autocomplete.getPlace();
+
+        // Fill input
+        input.value = place?.formatted_address || input.value;
+
+        // Build property object
+        const parsed = parseAddressComponents(place);
+        const mapped = createPropertyObj(parsed);
+
+        const newObj = {
+          Properties: mapped,
+          property_name: place?.formatted_address,
+        };
+
+        return createNewProperty(newObj);
+      });
+
+      input.dataset.googlePlacesBound = "true";
+    });
+
+    this._addressAutocompleteReady = true;
   }
 }

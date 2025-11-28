@@ -304,7 +304,7 @@ export class JobDetailModal {
     return result;
   }
 
-  async fetchPropertyOptions(callback) {
+  async fetchProperty(callback) {
     this.propertyQuery = this.propertyModel
       .query()
       .deSelectAll()

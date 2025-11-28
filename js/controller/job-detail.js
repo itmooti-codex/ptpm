@@ -2,6 +2,8 @@ export class JobDetailController {
   constructor(model, view) {
     this.model = model;
     this.view = view;
+    this._autocompleteInitAttempts = 0;
+    this._autocompleteReady = false;
 
     this.contacts = [];
     this.properties = [];
@@ -11,6 +13,17 @@ export class JobDetailController {
 
     this.setupOptions();
     this.handleCreateAppointment();
+
+    this.stateOptions = [
+      { value: "NSW", displayValue: "New South Wales" },
+      { value: "QLD", displayValue: "Queensland" },
+      { value: "VIC", displayValue: "Victoria" },
+      { value: "TAS", displayValue: "Tasmania" },
+      { value: "SA", displayValue: "South Australia" },
+      { value: "ACT", displayValue: "Australian Capital Territory" },
+      { value: "NT", displayValue: "Northern Territory" },
+      { value: "WA", displayValue: "Western Australia" },
+    ];
   }
 
   async init() {
@@ -26,6 +39,12 @@ export class JobDetailController {
     this.initAutocomplete();
     this.setupSearches();
     this.handlePropertySearch();
+    this.showHideAddAddressModal();
+    this.renderDropdownForStates();
+  }
+
+  renderDropdownForStates() {
+    this.view.renderDropdownOptionsForStates(this.stateOptions);
   }
 
   async setupSearches() {
@@ -50,8 +69,14 @@ export class JobDetailController {
     }
 
     try {
-      await this.model.fetchPropertyOptions((data) => {
+      await this.model.fetchProperty((data) => {
         this.properties = data;
+        if (!this._propertySearchInit) {
+          this.view.setupPropertySearch(data);
+          this._propertySearchInit = true;
+        } else if (typeof this.view.updatePropertySearch === "function") {
+          this.view.updatePropertySearch(data);
+        }
         this.setupOptions("properties");
       });
     } catch (err) {
@@ -101,26 +126,31 @@ export class JobDetailController {
   }
 
   initAutocomplete() {
-    const input = document.querySelector('[data-field="properties"]');
-    if (!input || !window.google?.maps?.places?.Autocomplete) return;
-
-    const autocomplete = new google.maps.places.Autocomplete(input, {
-      types: ["address"],
-      componentRestrictions: { country: "au" },
-    });
-
-    autocomplete.addListener("place_changed", () => {
-      const place = autocomplete.getPlace();
-      input.value = place?.formatted_address || input.value;
-      let parsedProperty = this.parseAddressComponents(place);
-      let mappedPropertyObj = this.createPropertyObj(parsedProperty);
-      let newObj = {
-        Properties: mappedPropertyObj,
-        property_name: place?.formatted_address,
-      };
-      let mutationResult = this.model.createNewProperty(newObj);
-      return mutationResult;
-    });
+    // const inputs = document.querySelectorAll(
+    //   '[data-field="properties"], [data-contact-field="top_address_line1"], [data-contact-field="top_address_line2"]'
+    // );
+    // if (!inputs.length || !window.google?.maps?.places?.Autocomplete) return;
+    // inputs.forEach((input) => {
+    //   if (input.dataset.googlePlacesBound === "true") return;
+    //   const autocomplete = new google.maps.places.Autocomplete(input, {
+    //     types: ["address"],
+    //     componentRestrictions: { country: "au" },
+    //   });
+    //   autocomplete.addListener("place_changed", () => {
+    //     const place = autocomplete.getPlace();
+    //     // Fill input
+    //     input.value = place?.formatted_address || input.value;
+    //     // Build property object
+    //     const parsed = this.parseAddressComponents(place);
+    //     const mapped = this.createPropertyObj(parsed);
+    //     const newObj = {
+    //       Properties: mapped,
+    //       property_name: place?.formatted_address,
+    //     };
+    //     return this.model.createNewProperty(newObj);
+    //   });
+    //   input.dataset.googlePlacesBound = "true";
+    // });
   }
 
   parseAddressComponents(place) {
@@ -311,6 +341,33 @@ export class JobDetailController {
       let getFieldValues = this.view.getApointmentsFieldValues();
       let result = await this.model.createAppointment(getFieldValues);
       console.log(result);
+    });
+  }
+
+  showHideAddAddressModal() {
+    const element = document.querySelector(
+      "[data-contact-id='add-new-contact']"
+    );
+
+    element.addEventListener("click", () => {
+      this.view.clearPropertyFieldValues(
+        "[modal-name='contact-detail-modal'] input, [modal-name='contact-detail-modal'] select"
+      );
+      document.querySelector("[data-search-panel]").classList.toggle("hidden");
+
+      document.querySelector('[data-contact-id="contact-id"]').value = "";
+      this.view.toggleModal("addressDetailsModalWrapper");
+      this.view.moveAddressFieldToModal({
+        parseAddressComponents: this.parseAddressComponents.bind(this),
+        createPropertyObj: this.createPropertyObj.bind(this),
+        createNewProperty: this.model.createNewProperty.bind(this.model),
+      });
+      document
+        .querySelector(
+          '#addressDetailsModalWrapper [data-contact-field="account_type"]'
+        )
+        .closest("div")
+        .classList.add("hidden");
     });
   }
 }
