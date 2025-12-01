@@ -128,7 +128,7 @@ export class JobDetailController {
 
   initAutocomplete() {
     const inputs = document.querySelectorAll(
-      '[data-field="properties"], [data-contact-field="bot_address_line1"],[data-contact-field="bot_address_line2"], [data-contact-field="top_address_line1"], [data-contact-field="top_address_line2"]'
+      '[data-field="modal-properties"], [data-contact-field="bot_address_line1"],[data-contact-field="bot_address_line2"], [data-contact-field="top_address_line1"], [data-contact-field="top_address_line2"]'
     );
     if (!inputs.length || !window.google?.maps?.places?.Autocomplete) return;
     inputs.forEach((input) => {
@@ -156,7 +156,7 @@ export class JobDetailController {
           this.setPostalAddressValuesToPopup(mapped);
         }
 
-        if (input.getAttribute("data-field") === "properties") {
+        if (input.getAttribute("data-field") === "modal-properties") {
           this.view?.setGoogleSearchAddress?.(parsed);
           const newObj = {
             Properties: mapped,
@@ -173,40 +173,40 @@ export class JobDetailController {
     const components = place.address_components || [];
 
     const result = {
-      "unit-number": "",
-      "lot-number": "",
-      "address-1": "",
-      "address-2": "",
-      "suburb-town": "",
-      "suburb-town": "",
+      unit_number: "",
+      lot_number: "",
+      address_1: "",
+      address_2: "",
+      suburb_town: "",
+      suburb_town: "",
       state: "",
-      "postal-code": "",
+      postal_code: "",
       street_number: "",
       street: "",
     };
 
     components.forEach((c) => {
-      if (c.types.includes("subpremise")) result["unit-number"] = c.long_name;
-      if (c.types.includes("premise")) result["lot-number"] = c.long_name;
-      if (c.types.includes("lot_number")) result["lot-number"] = c.long_name;
+      if (c.types.includes("subpremise")) result["unit_number"] = c.long_name;
+      if (c.types.includes("premise")) result["lot_number"] = c.long_name;
+      if (c.types.includes("lot_number")) result["lot_number"] = c.long_name;
 
       if (c.types.includes("street_number")) result.street_number = c.long_name;
       if (c.types.includes("route")) result.street = c.long_name;
 
-      if (c.types.includes("locality")) result["suburb-town"] = c.long_name;
+      if (c.types.includes("locality")) result["suburb_town"] = c.long_name;
       if (c.types.includes("country")) result["country"] = c.short_name;
 
       if (
         c.types.includes("sublocality") ||
         c.types.includes("sublocality_level_1")
       ) {
-        result["suburb-town"] = c.long_name;
+        result["suburb_town"] = c.long_name;
       }
 
       if (c.types.includes("administrative_area_level_1"))
         result.state = c.short_name;
 
-      if (c.types.includes("postal_code")) result["postal-code"] = c.long_name;
+      if (c.types.includes("postal_code")) result["postal_code"] = c.long_name;
     });
 
     const formatted = place.formatted_address || "";
@@ -215,20 +215,20 @@ export class JobDetailController {
       formatted.match(/(Unit|Apt|Apartment|Suite)\s*([\w-]+)/i) ||
       formatted.match(/^([\w-]+)\//);
 
-    if (!result["unit-number"] && unitMatch) {
-      result["unit-number"] = unitMatch[2] || unitMatch[1];
+    if (!result["unit_number"] && unitMatch) {
+      result["unit_number"] = unitMatch[2] || unitMatch[1];
     }
 
     const lotMatch =
       formatted.match(/Lot\s*([\w-]+)/i) || formatted.match(/\bL(\d+)\b/i);
 
-    if (!result["lot-number"] && lotMatch) {
-      result["lot-number"] = lotMatch[1];
+    if (!result["lot_number"] && lotMatch) {
+      result["lot_number"] = lotMatch[1];
     }
 
-    result["address-1"] = `${result.street_number} ${result.street}`.trim();
-    result["address-2"] = result["unit-number"]
-      ? `Unit ${result["unit-number"]}`
+    result["address_1"] = `${result.street_number} ${result.street}`.trim();
+    result["address_2"] = result["unit_number"]
+      ? `Unit ${result["unit_number"]}`
       : "";
 
     return result;
@@ -236,12 +236,12 @@ export class JobDetailController {
 
   createPropertyObj(property) {
     const mapKeys = {
-      "address-1": "address_1",
-      "address-2": "address_2",
-      "lot-number": "lot_number",
-      "unit-number": "unit_number",
-      "suburb-town": "suburb_town",
-      "postal-code": "postal_code",
+      address_1: "address_1",
+      address_2: "address_2",
+      lot_number: "lot_number",
+      unit_number: "unit_number",
+      suburb_town: "suburb_town",
+      postal_code: "postal_code",
       state: "state",
       country: "country",
     };
@@ -287,21 +287,19 @@ export class JobDetailController {
     if (addBtn) {
       addBtn.addEventListener("click", async () => {
         const raw = this.view.getPropertyFormData?.() || {};
-        const mapped = this.createPropertyObj(raw);
-        const propertyName =
-          raw["address-1"] ||
-          raw["address-2"] ||
-          raw["suburb-town"] ||
-          "New Property";
 
-        const payload = {
-          Properties: mapped,
-          property_name: propertyName,
-        };
+        let propertyName = document.querySelector(
+          '[data-field="modal-properties"]'
+        ).value;
 
+        let payload = raw;
+        payload.property_name = propertyName;
+
+        this.view.startLoading?.("Creating property...");
         try {
           const result = await this.model.createNewProperty(payload);
           const newId =
+            this.view?.extractCreatedRecordId?.(result, "PeterpmProperty") ||
             result?.resp?.id ||
             result?.resp?.data?.id ||
             result?.id ||
@@ -318,11 +316,13 @@ export class JobDetailController {
             this.view.updatePropertySearch?.(data);
           });
 
-          this.view.handleSuccess?.(false);
+          this.view.handleSuccess?.("Property created successfully.");
           this.view.toggleModal("jobAddPropertyModal");
         } catch (err) {
           console.error("Failed to create property", err);
-          this.view.handleFailure?.(false);
+          this.view.handleFailure?.("Property creation failed.");
+        } finally {
+          this.view.stopLoading?.();
         }
       });
     }

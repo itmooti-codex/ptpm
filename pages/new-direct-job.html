@@ -785,116 +785,181 @@
                 </div>
   
                 <div class="p-4 flex flex-col justify-start items-start gap-6">
-                  <div class="flex flex-row gap-4">
-                    <div
-                      data-add-btn="true"
-                      data-filter="true"
-                      data-icon="false"
-                      data-tab="false"
-                      data-type="primary"
-                      class="px-2 py-1 bg-blue-700 rounded-xl flex justify-center items-center gap-1"
-                    >
-                      <div
-                        class="justify-end text-white text-xs font-normal  leading-3"
-                      >
-                        Individual
-                      </div>
-                    </div>
-                    <div
-                      data-add-btn="true"
-                      data-filter="true"
-                      data-icon="false"
-                      data-tab="false"
-                      data-type="gray"
-                      class="px-2 py-1 bg-white rounded-xl outline outline-1 outline-offset-[-1px] outline-slate-500 flex justify-center items-center gap-1"
-                    >
-                      <div
-                        class="justify-end text-slate-500 text-xs font-normal  leading-3"
-                      >
-                        Entity
-                      </div>
-                    </div>
-                  </div>
-  
-                  <div
-                    class="w-full h-14 flex flex-col justify-start items-start gap-2"
-                  >
-                    <div
-                      class="justify-start text-neutral-700 text-sm   leading-4"
-                  >
-                    Client
-                  </div>
-                  <div
-                    class="w-full relative mt-1"
-                    data-search-root="contact-individual"
-                  >
-                    <input
-                      type="text"
-                      placeholder="Search by name, email, phone"
-                      class="w-full text-sm pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-500 placeholder:text-slate-500 pac-target-input"
-                      data-search-input
-                      data-contact-id="search-input"
-                      data-field="client"
-                      autocomplete="off"
-                    />
-                    <input
-                      type="hidden"
-                      data-field="client_id"
-                      data-contact-field="contact_id"
-                      data-contact-id="contact-id"
-                    />
+                  <div class="flex flex-row gap-4" data-client-toggle>
                     <button
                       type="button"
-                      class="absolute inset-y-0 right-3 inline-flex items-center rounded-md px-2 text-slate-400 hover:text-sky-500"
-                      aria-label="Search contact"
-                      data-search-trigger
-                      data-contact-id="search-trigger"
+                      data-contact-toggle="individual"
+                      class="px-2 py-1 bg-blue-700 rounded-xl flex justify-center items-center gap-1 text-white text-xs"
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-4 w-4"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path
-                          fill-rule="evenodd"
-                          d="M12.9 14.32a8 8 0 111.414-1.414l3.387 3.386a1 1 0 01-1.414 1.415l-3.387-3.387zM14 8a6 6 0 11-12 0 6 6 0 0112 0z"
-                          clip-rule="evenodd"
-                        />
-                      </svg>
+                      Individual
                     </button>
-
-                    <div
-                      class="absolute left-0 right-0 top-full z-[999] mt-2 hidden overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg"
-                      data-search-panel
+                    <button
+                      type="button"
+                      data-contact-toggle="entity"
+                      class="px-2 py-1 bg-white rounded-xl outline outline-1 outline-offset-[-1px] outline-slate-500 flex justify-center items-center gap-1 text-slate-500 text-xs"
                     >
-                      <ul
-                        class="max-h-48 overflow-y-auto py-2"
-                        data-search-results
-                        data-contact-id="search-results"
-                      ></ul>
-                      <p
-                        class="px-4 py-3 text-sm text-slate-500 hidden"
-                        data-search-empty
-                        data-contact-id="search-empty"
-                      >
-                        No results found
-                      </p>
+                      Entity
+                    </button>
+                  </div>
+
+                  <input type="hidden" data-field="contact_type" value="individual" />
+
+                  <div
+                    class="w-full flex flex-col justify-start items-start gap-4"
+                    data-client-section="individual"
+                  >
+                    <div
+                      class="w-full flex flex-col justify-start items-start gap-2"
+                    >
+                      <div
+                        class="justify-start text-neutral-700 text-sm   leading-4"
+                    >
+                      Client
+                    </div>
+                    <div
+                      class="w-full relative mt-1"
+                      data-search-root="contact-individual"
+                    >
+                      <input
+                        type="text"
+                        placeholder="Search by name, email, phone"
+                        class="w-full text-sm pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-500 placeholder:text-slate-500 pac-target-input"
+                        data-search-input
+                        data-contact-id="search-input"
+                        data-field="client"
+                        autocomplete="off"
+                      />
+                      <input
+                        type="hidden"
+                        data-field="client_id"
+                        data-contact-field="contact_id"
+                        data-contact-id="contact-id"
+                      />
                       <button
                         type="button"
-                        class="flex w-full items-center gap-2 border-t border-slate-200 px-4 py-3 text-sm font-medium text-sky-900 hover:bg-slate-50"
-                        data-search-add
-                        data-contact-id="add-new-contact"
+                        class="absolute inset-y-0 right-3 inline-flex items-center rounded-md px-2 text-slate-400 hover:text-sky-500"
+                        aria-label="Search contact"
+                        data-search-trigger
+                        data-contact-id="search-trigger"
                       >
-                        <span
-                          class="inline-flex h-5 w-5 items-center justify-center rounded-full border border-sky-900 text-sky-900"
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          class="h-4 w-4"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
                         >
-                          +
-                        </span>
-                        <span>Add New Contact</span>
+                          <path
+                            fill-rule="evenodd"
+                            d="M12.9 14.32a8 8 0 111.414-1.414l3.387 3.386a1 1 0 01-1.414 1.415l-3.387-3.387zM14 8a6 6 0 11-12 0 6 6 0 0112 0z"
+                            clip-rule="evenodd"
+                          />
+                        </svg>
                       </button>
+
+                      <div
+                        class="absolute left-0 right-0 top-full z-[999] mt-2 hidden overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg"
+                        data-search-panel
+                      >
+                        <ul
+                          class="max-h-48 overflow-y-auto py-2"
+                          data-search-results
+                          data-contact-id="search-results"
+                        ></ul>
+                        <p
+                          class="px-4 py-3 text-sm text-slate-500 hidden"
+                          data-search-empty
+                          data-contact-id="search-empty"
+                        >
+                          No results found
+                        </p>
+                        <button
+                          type="button"
+                          class="flex w-full items-center gap-2 border-t border-slate-200 px-4 py-3 text-sm font-medium text-sky-900 hover:bg-slate-50"
+                          data-search-add
+                          data-contact-id="add-new-contact"
+                        >
+                          <span
+                            class="inline-flex h-5 w-5 items-center justify-center rounded-full border border-sky-900 text-sky-900"
+                          >
+                            +
+                          </span>
+                          <span>Add New Contact</span>
+                        </button>
+                      </div>
+                    </div>
                     </div>
                   </div>
+
+                  <div
+                    class="w-full flex flex-col justify-start items-start gap-4 hidden"
+                    data-client-section="entity"
+                  >
+                    <div class="w-full flex flex-col gap-2">
+                      <div class="text-neutral-700 text-sm leading-4">Company</div>
+                      <div class="relative mt-1" data-search-root="contact-entity">
+                        <input
+                          type="text"
+                          placeholder="Search entity"
+                          class="w-full text-sm pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-500 placeholder:text-slate-500"
+                          data-search-input
+                          data-contact-id="search-input"
+                          autocomplete="off"
+                        />
+                        <input type="hidden" data-field="company_id" data-entity-id="entity-id" />
+                        <input type="hidden" data-field="contact_id" data-entity-id="entity-contact-id" />
+                        <button
+                          type="button"
+                          class="absolute inset-y-0 right-3 inline-flex items-center rounded-md px-2 text-slate-400 hover:text-sky-500"
+                          aria-label="Search entity"
+                          data-search-trigger
+                          data-contact-id="search-trigger"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-4 w-4"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                          >
+                            <path
+                              fill-rule="evenodd"
+                              d="M12.9 14.32a8 8 0 111.414-1.414l3.387 3.386a1 1 0 01-1.414 1.415l-3.387-3.387zM14 8a6 6 0 11-12 0 6 6 0 0112 0z"
+                              clip-rule="evenodd"
+                            />
+                          </svg>
+                        </button>
+
+                        <div
+                          class="absolute left-0 right-0 top-full z-[999] mt-2 hidden overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg"
+                          data-search-panel
+                        >
+                          <ul
+                            class="max-h-48 overflow-y-auto py-2"
+                            data-search-results
+                            data-entity-id="search-results"
+                          ></ul>
+                          <p
+                            class="px-4 py-3 text-sm text-slate-500 hidden"
+                            data-search-empty
+                            data-entity-id="search-empty"
+                          >
+                            No results found
+                          </p>
+                          <button
+                            type="button"
+                            class="flex w-full items-center gap-2 border-t border-slate-200 px-4 py-3 text-sm font-medium text-sky-900 hover:bg-slate-50"
+                            data-search-add
+                            data-entity-id="add-new-entity"
+                          >
+                            <span
+                              class="inline-flex h-5 w-5 items-center justify-center rounded-full border border-sky-900 text-sky-900"
+                            >
+                              +
+                            </span>
+                            <span>Add New Entity</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
   
                   <div
@@ -1421,7 +1486,7 @@
                   placeholder="Search properties"
                   class="mt-2 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 placeholder:text-slate-400 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100 pac-target-input"
                   data-search-input
-                  data-field="properties"
+                  data-field="modal-properties"
                   autocomplete="off"
                 />
                 <input type="hidden" id="selected-property-id" data-selected-property-id="selected-property-id" />
@@ -1434,7 +1499,7 @@
               <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                   <label class="block text-sm font-medium text-slate-600">Lot Number</label>
-                  <input type="text" data-property-id="lot-number" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+                  <input type="text" data-property-id="lot_number" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100" />
                 </div>
                 <div>
                   <label class="block text-sm font-medium text-slate-600">Unit Number</label>
@@ -1442,19 +1507,19 @@
                 </div>
                 <div>
                   <label class="flex items-center gap-1 text-sm font-medium text-slate-600">Address <span class="text-rose-500">*</span></label>
-                  <input type="text" data-property-id="address-1" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+                  <input type="text" data-property-id="address_1" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100" />
                 </div>
                 <div>
                   <label class="block text-sm font-medium text-slate-600">Address 2</label>
-                  <input type="text" data-property-id="address-2" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+                  <input type="text" data-property-id="address_2" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100" />
                 </div>
                 <div>
                   <label class="flex items-center gap-1 text-sm font-medium text-slate-600">Suburb/ Town <span class="text-rose-500">*</span></label>
-                  <input type="text" data-property-id="suburb-town" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+                  <input type="text" data-property-id="suburb_town" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100" />
                 </div>
                 <div>
                   <label class="flex items-center gap-1 text-sm font-medium text-slate-600">Postal Code <span class="text-rose-500">*</span></label>
-                  <input type="text" data-property-id="postal-code" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+                  <input type="text" data-property-id="postal_code" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100" />
                 </div>
               </div>
 
@@ -1488,7 +1553,7 @@
                 <div>
                   <label class="block text-sm font-medium text-slate-600">Property Type</label>
                   <div class="relative mt-1">
-                    <select class="!block w-full appearance-none rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100" data-property-id="property-type">
+                    <select class="!block w-full appearance-none rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100" data-property-id="property_type">
                       <option value="" disabled selected hidden>Select None</option>
                       <option value="Residential">Residential</option>
                       <option value="Commercial">Commercial</option>
@@ -1504,7 +1569,7 @@
                 <div>
                   <label class="block text-sm font-medium text-slate-600">Building Type</label>
                   <div class="relative mt-1">
-                    <select class="!block w-full appearance-none rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100" data-property-id="building-type">
+                    <select class="!block w-full appearance-none rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100" data-property-id="building_type">
                       <option value="" disabled selected hidden>Select None</option>
                       <option value="House">House</option>
                       <option value="Unit">Unit</option>
@@ -1523,7 +1588,7 @@
                 <div>
                   <label class="block text-sm font-medium text-slate-600">Foundation Type</label>
                   <div class="relative mt-1">
-                    <select class="!block w-full appearance-none rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100" data-property-id="foundation-type">
+                    <select class="!block w-full appearance-none rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100" data-property-id="foundation_type">
                       <option value="" disabled selected hidden>Select None</option>
                       <option value="Slab on Ground">Slab on Ground</option>
                       <option value="Lowset">Lowset</option>
@@ -1539,7 +1604,7 @@
                 <div>
                   <label class="block text-sm font-medium text-slate-600">Building Features</label>
                   <div class="relative mt-1">
-                    <select class="!block w-full appearance-none rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100" data-property-id="building-features">
+                    <select class="!block w-full appearance-none rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100" data-property-id="building_features">
                       <option>Select</option>
                     </select>
                     <span class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400">
@@ -1559,7 +1624,7 @@
                 </div>
                 <div>
                   <label class="block text-sm font-medium text-slate-600">Building Age</label>
-                  <input type="number" value="1" data-property-id="building-age" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100" />
+                  <input type="number" value="1" data-property-id="building_age" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100" />
                 </div>
                 <label class="inline-flex items-center gap-2 text-sm text-slate-600">
                   <input type="checkbox" checked data-property-id="manhole" class="accent-[#003882] h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-200" />

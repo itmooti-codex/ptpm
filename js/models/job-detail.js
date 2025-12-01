@@ -2,6 +2,7 @@ export class JobDetailModal {
   constructor(plugin) {
     window.plugin = plugin;
     this.contactModel = plugin.switchTo("PeterpmContact");
+    this.companyModel = plugin.switchTo("PeterpmCompany");
     this.serviceProviderModel = plugin.switchTo("PeterpmServiceProvider");
     this.propertyModel = plugin.switchTo("PeterpmProperty");
     this.inquiryModel = plugin.switchTo("PeterpmDeal");
@@ -24,6 +25,11 @@ export class JobDetailModal {
     this.jobCallback = null;
 
     this.contacts = [];
+    this.contactSub = null;
+    this.propertySub = null;
+    this.serviceProviderSub = null;
+    this.inquirySub = null;
+    this.jobSub = null;
     window.jobModel = this.jobModel;
   }
 
@@ -51,6 +57,7 @@ export class JobDetailModal {
   }
 
   subscribeToContactChanges() {
+    this.contactSub?.unsubscribe?.();
     let liveObs = null;
     try {
       if (typeof this.contactQuery.subscribe === "function")
@@ -63,7 +70,7 @@ export class JobDetailModal {
       } catch (_) {}
 
       if (liveObs) {
-        this.sub = liveObs
+        this.contactSub = liveObs
           .pipe(window.toMainInstance?.(true) ?? ((x) => x))
           .subscribe({
             next: (payload) => {
@@ -230,6 +237,7 @@ export class JobDetailModal {
   }
 
   subscribeToServiceProviderChanges() {
+    this.serviceProviderSub?.unsubscribe?.();
     let liveObs = null;
     try {
       if (typeof this.serviceProviderQuery.subscribe === "function")
@@ -245,7 +253,7 @@ export class JobDetailModal {
       } catch (_) {}
 
       if (liveObs) {
-        this.sub = liveObs
+        this.serviceProviderSub = liveObs
           .pipe(window.toMainInstance?.(true) ?? ((x) => x))
           .subscribe({
             next: (payload) => {
@@ -293,6 +301,58 @@ export class JobDetailModal {
   async createNewJob(jobDeails) {
     let query = jobModel.mutation();
     query.createOne(jobDeails);
+    let result = await query.execute(true).toPromise();
+    return result;
+  }
+
+  async fetchCompanyById(id) {
+    let query = this.companyModel.query();
+    if (id) {
+      query = query.where("id", id);
+    }
+
+    query = await query
+      .deSelectAll()
+      .select(["id", "account_type", "name"])
+      .include("Primary_Person", (q) =>
+        q
+          .deSelectAll()
+          .select([
+            "id",
+            "first_name",
+            "last_name",
+            "email",
+            "sms_number",
+            "office_phone",
+            "address",
+            "address_2",
+            "city",
+            "state",
+            "country",
+            "zip_code",
+            "postal_address",
+            "postal_address_2",
+            "postal_code",
+            "postal_city",
+            "postal_country",
+          ])
+      )
+      .noDestroy();
+    query.getOrInitQueryCalc?.();
+    let result = await query.fetchDirect().toPromise();
+    return result;
+  }
+
+  async createNewCompany(companyObj) {
+    let query = await this.companyModel.mutation();
+    query.createOne(companyObj);
+    let result = await query.execute(true).toPromise();
+    return result;
+  }
+
+  async updateExistingCompany(companyId, companyObj) {
+    let query = await this.companyModel.mutation();
+    query.update((q) => q.where("id", companyId).set(companyObj));
     let result = await query.execute(true).toPromise();
     return result;
   }
@@ -352,6 +412,7 @@ export class JobDetailModal {
   }
 
   subscribeToPropertyChanges() {
+    this.propertySub?.unsubscribe?.();
     let liveObs = null;
     try {
       if (typeof this.propertyQuery.subscribe === "function")
@@ -364,7 +425,7 @@ export class JobDetailModal {
       } catch (_) {}
 
       if (liveObs) {
-        this.sub = liveObs
+        this.propertySub = liveObs
           .pipe(window.toMainInstance?.(true) ?? ((x) => x))
           .subscribe({
             next: (payload) => {
@@ -384,6 +445,7 @@ export class JobDetailModal {
   }
 
   subscribeToInquiryChanges() {
+    this.inquirySub?.unsubscribe?.();
     let liveObs = null;
     try {
       if (typeof this.inquiryQuery.subscribe === "function")
@@ -396,7 +458,7 @@ export class JobDetailModal {
       } catch (_) {}
 
       if (liveObs) {
-        this.sub = liveObs
+        this.inquirySub = liveObs
           .pipe(window.toMainInstance?.(true) ?? ((x) => x))
           .subscribe({
             next: (payload) => {
@@ -416,6 +478,7 @@ export class JobDetailModal {
   }
 
   subscribeToJobChanges() {
+    this.jobSub?.unsubscribe?.();
     let liveObs = null;
     try {
       if (typeof this.jobQuery.subscribe === "function")
@@ -428,7 +491,7 @@ export class JobDetailModal {
       } catch (_) {}
 
       if (liveObs) {
-        this.sub = liveObs
+        this.jobSub = liveObs
           .pipe(window.toMainInstance?.(true) ?? ((x) => x))
           .subscribe({
             next: (payload) => {
@@ -457,6 +520,13 @@ export class JobDetailModal {
   async createContact(contactObj) {
     let query = this.contactModel.mutation();
     query.createOne(contactObj);
+    let result = await query.execute(true).toPromise();
+    return result;
+  }
+
+  async updateContact(contactId, contactObj) {
+    let query = await this.contactModel.mutation();
+    query.update((q) => q.where("id", contactId).set(contactObj));
     let result = await query.execute(true).toPromise();
     return result;
   }

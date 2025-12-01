@@ -10,6 +10,8 @@ export class JobDetailView {
     this.model = model;
     this._addressAutocompleteReady = false;
     this.feedbackEl = document.querySelector("[data-contact-feedback]");
+    this.activeContactType = "individual";
+    this.companyList = [];
 
     // Loader setup for contact modal save flows
     this.loaderCounter = { count: 0 };
@@ -39,6 +41,11 @@ export class JobDetailView {
     this.createAddMaterialsSection();
     this.createUploadsSection();
     this.createInvoiceSection();
+    this.setupContactTypeToggle();
+    this.model.fetchContacts((list) => this.setupClientSearch(list || []));
+    this.model
+      .fetchCompanyById()
+      .then((resp) => this.setupCompanySearch(resp?.resp || resp || []));
     this.setupAddButtons();
     this.setupSectionNavigation();
     this.#createContactDetailsModalUI();
@@ -1405,6 +1412,243 @@ export class JobDetailView {
       appointmentTab.addEventListener("click", showAppointment);
   }
 
+  setupContactTypeToggle() {
+    const individualBtn = document.querySelector(
+      '[data-contact-toggle="individual"]'
+    );
+    const entityBtn = document.querySelector('[data-contact-toggle="entity"]');
+    const individualSection = document.querySelector(
+      '[data-client-section="individual"]'
+    );
+    const entitySection = document.querySelector(
+      '[data-client-section="entity"]'
+    );
+    const contactTypeField = document.querySelector(
+      '[data-field="contact_type"]'
+    );
+
+    const stripOldOutlines = (btn) => {
+      btn?.classList.remove(
+        "outline",
+        "outline-1",
+        "outline-offset-[-1px]",
+        "outline-slate-500"
+      );
+    };
+
+    const applyTabStyles = (btn, isActive) => {
+      if (!btn) return;
+      btn.classList.toggle("bg-sky-900", isActive);
+      btn.classList.toggle("text-white", isActive);
+      btn.classList.toggle("shadow-sm", isActive);
+      btn.classList.toggle("bg-white", !isActive);
+      btn.classList.toggle("text-slate-600", !isActive);
+      btn.classList.add("border");
+      btn.classList.toggle("border-sky-900", isActive);
+      btn.classList.toggle("border-slate-300", !isActive);
+    };
+
+    const setState = (type) => {
+      this.activeContactType = type;
+      if (contactTypeField) contactTypeField.value = type;
+
+      const isIndividual = type === "individual";
+      stripOldOutlines(individualBtn);
+      stripOldOutlines(entityBtn);
+      applyTabStyles(individualBtn, isIndividual);
+      applyTabStyles(entityBtn, !isIndividual);
+      individualSection?.classList.toggle("hidden", !isIndividual);
+
+      entitySection?.classList.toggle("hidden", isIndividual);
+
+      const disableSection = (section, disabled) => {
+        section
+          ?.querySelectorAll("input, select, textarea")
+          .forEach((el) => (el.disabled = disabled));
+      };
+      disableSection(individualSection, !isIndividual);
+      disableSection(entitySection, isIndividual);
+
+      this.toggleEntityModalFields(!isIndividual);
+
+      if (!isIndividual) {
+        this.ensureCompaniesLoaded();
+      }
+    };
+
+    individualBtn?.addEventListener("click", () => setState("individual"));
+    entityBtn?.addEventListener("click", () => setState("entity"));
+
+    setState("individual");
+  }
+
+  toggleEntityModalFields(show = false) {
+    const sections = [
+      document.getElementById("account-type-section"),
+      document.getElementById("company-name-section"),
+    ];
+
+    sections.forEach((section) => {
+      if (!section) return;
+      section.classList.toggle("hidden", !show);
+    });
+  }
+
+  async ensureCompaniesLoaded() {
+    if (this.companyList?.length) return;
+    const companies = await this.model.fetchCompanyById();
+    this.companyList = companies?.resp || companies || [];
+    this.setupCompanySearch(this.companyList);
+  }
+
+  setupCompanySearch(companies = []) {
+    this.companyList = companies || [];
+    const root = document.querySelector('[data-search-root="contact-entity"]');
+    const input = root?.querySelector("[data-search-input]");
+    const panel = root?.querySelector("[data-search-panel]");
+    const results = root?.querySelector("[data-search-results]");
+    const empty = root?.querySelector("[data-search-empty]");
+    const addBtn = root?.querySelector("[data-entity-id='add-new-entity']");
+    const firstNameField = root?.closest("[data-client-section]")
+      ? root
+          .closest("[data-client-section]")
+          .querySelector('[data-contact-field="first_name"]')
+      : null;
+    const lastNameField = root?.closest("[data-client-section]")
+      ? root
+          .closest("[data-client-section]")
+          .querySelector('[data-contact-field="last_name"]')
+      : null;
+    const emailField = root?.closest("[data-client-section]")
+      ? root
+          .closest("[data-client-section]")
+          .querySelector('[data-contact-field="email"]')
+      : null;
+    const phoneField = root?.closest("[data-client-section]")
+      ? root
+          .closest("[data-client-section]")
+          .querySelector('[data-contact-field="office_phone"]')
+      : null;
+
+    if (!root || !input || !panel || !results) return;
+
+    // If already initialized, just refresh the data and rerender once.
+    if (root.dataset.companySearchInit === "true") {
+      const cached = root._companySearchState;
+      if (cached) {
+        cached.state.items = cached.normalize(companies);
+        cached.render(input.value || "");
+      }
+      return;
+    }
+
+    const normalized = (items = []) =>
+      items.map((c) => ({
+        id: c.id || c.ID,
+        name: c.name || c.Name || "Unnamed entity",
+        account_type: c.account_type || c.Account_Type,
+        primary: c.Primary_Person || {},
+      }));
+
+    const state = { items: normalized(companies), filtered: [] };
+
+    const render = (q = "") => {
+      const term = q.trim().toLowerCase();
+      const filtered = state.items.filter((item) =>
+        [item.name, item.id].join(" ").toLowerCase().includes(term)
+      );
+      state.filtered = filtered;
+      results.innerHTML = "";
+
+      if (!filtered.length) {
+        results.classList.add("hidden");
+        empty?.classList.remove("hidden");
+        return;
+      }
+
+      results.classList.remove("hidden");
+      empty?.classList.add("hidden");
+
+      filtered.forEach((item, idx) => {
+        const li = document.createElement("li");
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.dataset.optionIndex = String(idx);
+        btn.className =
+          "w-full px-4 py-3 text-left hover:bg-slate-50 focus:bg-slate-50 focus:outline-none";
+        btn.innerHTML = `
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <p class="text-sm font-medium text-slate-700">${item.name}</p>
+              <p class="text-xs text-slate-500">${item.account_type || ""}</p>
+            </div>
+            <span class="text-xs text-slate-400">#${item.id}</span>
+          </div>
+        `;
+
+        btn.addEventListener("mousedown", (e) => {
+          e.preventDefault();
+          const current = state.filtered[idx];
+          input.value = current.name;
+          panel.classList.add("hidden");
+          this.setEntitySelection({
+            companyId: current.id || "",
+            primaryContactId: current.primary?.id || "",
+            name: current.name,
+          });
+          if (firstNameField)
+            firstNameField.value = current.primary?.first_name || "";
+          if (lastNameField)
+            lastNameField.value = current.primary?.last_name || "";
+          if (emailField) emailField.value = current.primary?.email || "";
+          if (phoneField)
+            phoneField.value =
+              current.primary?.office_phone ||
+              current.primary?.sms_number ||
+              "";
+        });
+
+        li.appendChild(btn);
+        results.appendChild(li);
+      });
+
+      panel.classList.remove("hidden");
+    };
+
+    // Cache references so subsequent calls can reuse without rebinding listeners.
+    root._companySearchState = { state, render, normalize: normalized };
+    root.dataset.companySearchInit = "true";
+
+    input.addEventListener("input", (e) => render(e.target.value || ""));
+    input.addEventListener("focus", () => render(input.value || ""));
+    document.addEventListener("click", (e) => {
+      if (!root.contains(e.target)) panel.classList.add("hidden");
+    });
+    if (addBtn) {
+      addBtn.addEventListener(
+        "click",
+        (e) => {
+          e.preventDefault();
+          this.onEntityAddButtonClick();
+        },
+        { once: false }
+      );
+    }
+  }
+
+  onEntityAddButtonClick() {
+    this.clearPropertyFieldValues(
+      "[modal-name='contact-detail-modal'] input, [modal-name='contact-detail-modal'] select"
+    );
+    document.querySelector('[data-entity-id="entity-id"]').value = "";
+    const primaryContactID = document.querySelector(
+      '[data-entity-id="entity-contact-id"]'
+    );
+    if (primaryContactID) primaryContactID.value = "";
+    this.toggleEntityModalFields(true);
+    this.toggleModal("addressDetailsModalWrapper");
+  }
+
   showSection(sectionId) {
     if (!sectionId) return;
     this.currentSection = sectionId;
@@ -1453,14 +1697,46 @@ export class JobDetailView {
     let data = this.getJobInformationFieldValues(
       '[data-job-section="job-section-individual"] input:not(.hidden), [data-job-section="job-section-individual"] select'
     );
-    let result = await this.model.createNewJob(data);
-    if (!result.isCancelling) {
-      if (e) e.preventDefault();
-      const idx = this.sectionOrder.indexOf(this.currentSection);
-      const nextId = this.sectionOrder[idx + 1];
-      if (nextId) this.showSection(nextId);
+
+    const servicemanId =
+      document.querySelector('[data-serviceman-field="serviceman_id"]')
+        ?.value || "";
+    const contactType = data.contact_type || this.activeContactType;
+    const individualContactId =
+      document.querySelector('[data-contact-field="contact_id"]')?.value || "";
+    const entityId =
+      document.querySelector('[data-entity-id="entity-id"]')?.value || "";
+    const entityPrimaryContactId =
+      document.querySelector('[data-entity-id="entity-contact-id"]')?.value ||
+      "";
+
+    data.primary_service_provider_id = servicemanId;
+
+    if (contactType === "entity") {
+      data.client_entity_id = entityId;
+      data.client_id = "";
+      data.contact_id = entityPrimaryContactId;
     } else {
+      data.client_individual_id = individualContactId;
+      data.contact_id = "";
+    }
+
+    this.startLoading("Creating job...");
+    try {
+      let result = await this.model.createNewJob(data);
+      if (!result.isCancelling) {
+        if (e) e.preventDefault();
+        const idx = this.sectionOrder.indexOf(this.currentSection);
+        const nextId = this.sectionOrder[idx + 1];
+        if (nextId) this.showSection(nextId);
+      } else {
+        alert("failed to create new job");
+      }
+    } catch (err) {
+      console.error("Failed to create new job", err);
       alert("failed to create new job");
+    } finally {
+      this.stopLoading();
     }
   }
 
@@ -1481,7 +1757,6 @@ export class JobDetailView {
     const empty = root?.querySelector("[data-search-empty]");
     const addBtn = root?.querySelector("[data-search-add]");
     const searchTrigger = root?.querySelector("[data-search-trigger]");
-    const hidden = document.querySelector('[data-contact-field="contact_id"]');
     if (!root || !input || !results || !panel) return;
 
     const normalize = (items = []) =>
@@ -1596,10 +1871,8 @@ export class JobDetailView {
       const contact = state.filtered?.[idx];
       if (!contact) return;
       input.value = contact.label;
-      if (hidden) hidden.value = contact.id || "";
+      this.setIndividualSelection(contact.id || "", contact.label);
       closePanel();
-      this.prefillContactModal(contact.raw);
-      this.toggleModal("addressDetailsModalWrapper");
     });
 
     addBtn?.addEventListener("click", () => {
@@ -1804,6 +2077,7 @@ export class JobDetailView {
     let jobObj = {};
     let elements = document.querySelectorAll(selector);
     elements.forEach((item) => {
+      if (item.disabled) return;
       let key = item?.getAttribute("data-field")?.toLowerCase();
       let value;
       if (key == "job_required_by") {
@@ -2121,10 +2395,25 @@ export class JobDetailView {
     });
 
     saveBtn.addEventListener("click", async () => {
+      const addressObj = {
+        "address-1": $("adTopLine1")?.value || "",
+        "address-2": $("adTopLine2")?.value || "",
+        "suburb-town": $("adTopCity")?.value || "",
+        state: $("adTopState")?.value || "",
+        "postal-code": $("adTopPostal")?.value || "",
+      };
+      const contactAddressField = document.getElementById("contact-address");
+      if (contactAddressField) {
+        contactAddressField.value = JSON.stringify(addressObj);
+      }
       let elements = document.querySelectorAll(
         "#addressDetailsModalWrapper [data-contact-id]"
       );
-      let valuesObj = this.getValuesFromContactDetailModal(elements);
+      if (this.activeContactType === "entity") {
+        await this.getEntityValuesFromContactDetailModal(elements);
+      } else {
+        await this.getValuesFromContactDetailModal(elements);
+      }
     });
 
     const hide = () => {
@@ -2173,6 +2462,15 @@ export class JobDetailView {
     }
   }
 
+  extractCreatedRecordId(resp = {}, key) {
+    const managed = resp?.mutations?.[key]?.managedData;
+    if (managed && typeof managed === "object") {
+      const ids = Object.keys(managed);
+      if (ids.length) return ids[0];
+    }
+    return resp?.resp?.id || resp?.id || "";
+  }
+
   async getValuesFromContactDetailModal(elements) {
     const formElements = Array.from(elements);
     const contactData = this.buildContactData(formElements);
@@ -2191,6 +2489,17 @@ export class JobDetailView {
       if (result?.isCancelling) return;
 
       if (result) {
+        const savedContactId =
+          contactId || this.extractCreatedRecordId(result, "PeterpmContact");
+        const savedContactLabel = [
+          contactData.first_name,
+          contactData.last_name,
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .trim();
+        if (savedContactId)
+          this.setIndividualSelection(savedContactId, savedContactLabel);
         this.handleSuccess(!!contactId);
         this.clearForm(formElements);
       } else {
@@ -2198,6 +2507,130 @@ export class JobDetailView {
       }
     } catch (error) {
       console.error("[NewInquiry] Contact modal save failed", error);
+      this.showFeedback("Unable to save contact right now.");
+    } finally {
+      hideLoader(this.loaderElement, this.loaderCounter);
+    }
+  }
+
+  async getEntityValuesFromContactDetailModal(elements) {
+    const formElements = Array.from(elements);
+    const entityDetailObj = {};
+    formElements.forEach((item) => {
+      const key = item.getAttribute("data-contact-id");
+      const value = item.value;
+      if (key) entityDetailObj[key] = value;
+    });
+
+    const primaryContactPersonId =
+      document.querySelector('[data-entity-id="entity-contact-id"]')?.value ||
+      "";
+
+    showLoader(
+      this.loaderElement,
+      this.loaderMessageEl,
+      this.loaderCounter,
+      primaryContactPersonId ? "Updating contact..." : "Creating contact..."
+    );
+
+    try {
+      if (primaryContactPersonId) {
+        entityDetailObj["Companies"] = {
+          account_type: document.getElementById("account-type")?.value,
+        };
+        const contactResult = await this.model.updateContact(
+          primaryContactPersonId,
+          entityDetailObj
+        );
+
+        const companyId =
+          document.querySelector('[data-entity-id="entity-id"]')?.value || "";
+        const companyObj = {
+          account_type:
+            entityDetailObj["account-type"] ||
+            document.getElementById("account-type")?.value,
+          name: entityDetailObj.company_name,
+        };
+
+        const updateCompanyData = companyId
+          ? await this.model.updateExistingCompany(companyId, companyObj)
+          : null;
+
+        if (contactResult && (updateCompanyData || !companyId)) {
+          const resolvedCompanyId =
+            companyId ||
+            this.extractCreatedRecordId(updateCompanyData, "PeterpmCompany");
+          if (!contactResult.isCancelling && !updateCompanyData?.isCancelling) {
+            this.customModalHeader.innerText = "Successful";
+            this.customModalBody.innerText = "Company updated successfully.";
+            this.toggleModal("statusModal");
+          }
+          this.setEntitySelection({
+            companyId: resolvedCompanyId,
+            primaryContactId: primaryContactPersonId,
+            name: entityDetailObj.company_name,
+          });
+          formElements.forEach((item) => {
+            item.value = "";
+          });
+        } else if (!contactResult?.isCancelling) {
+          this.customModalHeader.innerText = "Failed";
+          this.customModalBody.innerText = "Company update Failed.";
+          this.toggleModal("statusModal");
+        }
+      } else {
+        let result = "";
+        const contactResult = await this.model.createContact(entityDetailObj);
+        if (contactResult) {
+          const contactId = this.extractCreatedRecordId(
+            contactResult,
+            "PeterpmContact"
+          );
+          if (contactId) {
+            const companyData = {
+              account_type: document.getElementById("account-type")?.value,
+              name: entityDetailObj.company_name,
+              phone: entityDetailObj.office_phone,
+              address: entityDetailObj.address,
+              city: entityDetailObj.city,
+              state: entityDetailObj.state,
+              postal_code: entityDetailObj.postal_code,
+              Primary_Person: {
+                id: contactId,
+              },
+            };
+            result = await this.model.createNewCompany(companyData);
+          }
+          if (!result?.isCancelling) {
+            const companyId = this.extractCreatedRecordId(
+              result,
+              "PeterpmCompany"
+            );
+            this.setEntitySelection({
+              companyId,
+              primaryContactId: contactId || "",
+              name: entityDetailObj.company_name,
+            });
+            formElements.forEach((item) => {
+              item.value = "";
+            });
+            this.customModalHeader.innerText = "Successful";
+            this.customModalBody.innerText =
+              "New contact created successfully.";
+
+            document
+              .getElementById("addressDetailsModalWrapper")
+              .classList.add("hidden");
+            this.toggleModal("statusModal");
+          } else {
+            this.customModalHeader.innerText = "Failed";
+            this.customModalBody.innerText = "Contact create Failed.";
+            this.toggleModal("statusModal");
+          }
+        }
+      }
+    } catch (error) {
+      console.error("[NewJob] Contact modal save failed", error);
       this.showFeedback("Unable to save contact right now.");
     } finally {
       hideLoader(this.loaderElement, this.loaderCounter);
@@ -2257,9 +2690,96 @@ export class JobDetailView {
     elements.forEach((item) => (item.value = ""));
   }
 
+  startLoading(message = "Processing...") {
+    showLoader(
+      this.loaderElement,
+      this.loaderMessageEl,
+      this.loaderCounter,
+      message
+    );
+  }
+
+  stopLoading() {
+    hideLoader(this.loaderElement, this.loaderCounter);
+  }
+
+  clearIndividualSelection({ clearInput = false } = {}) {
+    const contactField = document.querySelector(
+      '[data-contact-field="contact_id"]'
+    );
+    if (contactField) contactField.value = "";
+
+    if (clearInput) {
+      const individualInput = document.querySelector(
+        '[data-search-root="contact-individual"] [data-search-input]'
+      );
+      if (individualInput) individualInput.value = "";
+    }
+  }
+
+  clearEntitySelection({ clearInput = false } = {}) {
+    const entityIdField = document.querySelector(
+      '[data-entity-id="entity-id"]'
+    );
+    if (entityIdField) entityIdField.value = "";
+
+    const entityPrimaryField = document.querySelector(
+      '[data-entity-id="entity-contact-id"]'
+    );
+    if (entityPrimaryField) entityPrimaryField.value = "";
+
+    if (clearInput) {
+      const entityInput = document.querySelector(
+        '[data-search-root="contact-entity"] [data-search-input]'
+      );
+      if (entityInput) entityInput.value = "";
+    }
+  }
+
+  setIndividualSelection(contactId = "", label = "") {
+    const contactField = document.querySelector(
+      '[data-contact-field="contact_id"]'
+    );
+    if (contactField) contactField.value = contactId || "";
+
+    if (label) {
+      const input = document.querySelector(
+        '[data-search-root="contact-individual"] [data-search-input]'
+      );
+      if (input) input.value = label;
+    }
+
+    this.clearEntitySelection();
+  }
+
+  setEntitySelection({
+    companyId = "",
+    primaryContactId = "",
+    name = "",
+  } = {}) {
+    const entityIdField = document.querySelector(
+      '[data-entity-id="entity-id"]'
+    );
+    if (entityIdField) entityIdField.value = companyId || "";
+
+    const entityPrimaryField = document.querySelector(
+      '[data-entity-id="entity-contact-id"]'
+    );
+    if (entityPrimaryField) entityPrimaryField.value = primaryContactId || "";
+
+    if (name) {
+      const entityInput = document.querySelector(
+        '[data-search-root="contact-entity"] [data-search-input]'
+      );
+      if (entityInput) entityInput.value = name;
+    }
+
+    this.clearIndividualSelection();
+  }
+
   getPropertyFormData() {
     const fields = document.querySelectorAll(
-      '#property-information [data-property-id]'
+      "#property-information [data-property-id]"
     );
     const data = {};
     fields.forEach((field) => {
@@ -2274,13 +2794,19 @@ export class JobDetailView {
     return data;
   }
 
-  handleSuccess(isUpdate) {
-    this.customModalHeader.innerText = "Successful";
-    this.customModalBody.innerText = isUpdate
-      ? "Contact updated successfully."
-      : "New contact created successfully.";
+  handleSuccess(status = false) {
+    const isBoolean = typeof status === "boolean";
+    const isUpdate = isBoolean && status;
+    const message = isBoolean
+      ? isUpdate
+        ? "Contact updated successfully."
+        : "New contact created successfully."
+      : status || "Operation completed successfully.";
 
-    if (!isUpdate) {
+    this.customModalHeader.innerText = "Successful";
+    this.customModalBody.innerText = message;
+
+    if (isBoolean && !isUpdate) {
       document
         .getElementById("addressDetailsModalWrapper")
         .classList.add("hidden");
@@ -2289,11 +2815,17 @@ export class JobDetailView {
     this.toggleModal("statusModal");
   }
 
-  handleFailure(isUpdate) {
+  handleFailure(status = false) {
+    const isBoolean = typeof status === "boolean";
+    const isUpdate = isBoolean && status;
+    const message = isBoolean
+      ? isUpdate
+        ? "Contact update failed."
+        : "Contact create failed."
+      : status || "Operation failed.";
+
     this.customModalHeader.innerText = "Failed";
-    this.customModalBody.innerText = isUpdate
-      ? "Contact update failed."
-      : "Contact create failed.";
+    this.customModalBody.innerText = message;
 
     this.toggleModal("statusModal");
   }
