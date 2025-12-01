@@ -59,18 +59,21 @@ export class JobDetailView {
       "hidden w-full h-full flex flex-row gap-4 p-4 bg-gray-50";
 
     wrapper.innerHTML = `
-      <div class="w-[440px] bg-white rounded-lg outline outline-1 outline-gray-300 p-4 flex flex-col gap-4">
-        <div class="flex items-center gap-2">
-          <input type="checkbox" class="w-4 h-4 border-gray-300 rounded" />
-          <div class="text-neutral-700 text-base font-semibold">Add New Activity</div>
+      <div class="w-[440px] bg-white rounded-lg border border-slate-200 p-5 flex flex-col gap-4 shadow-sm">
+        <div class="flex flex-col items-start gap-2">
+          <div class="text-neutral-800 text-base font-semibold">Add New Activity</div>
+          <label class="flex items-center gap-2 text-slate-600 text-sm">
+            <input type="checkbox" class="w-4 h-4 accent-[#0A3E8C]" />
+            <span>Invoice to client</span>
+          </label>
         </div>
 
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-2 gap-5">
           <div class="flex flex-col gap-1">
             <label class="text-neutral-700 text-sm font-medium">Task</label>
             <div class="relative">
-              <select class="appearance-none w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10"></select>
-              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+              <select data-activity-select="task" class="appearance-none w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10"></select>
+              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
                 <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"/></svg>
               </span>
             </div>
@@ -79,8 +82,8 @@ export class JobDetailView {
           <div class="flex flex-col gap-1">
             <label class="text-neutral-700 text-sm font-medium">Options</label>
             <div class="relative">
-              <select class="appearance-none w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10"></select>
-              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+              <select data-activity-select="option" class="appearance-none w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10"></select>
+              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
                 <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"/></svg>
               </span>
             </div>
@@ -89,8 +92,8 @@ export class JobDetailView {
           <div class="flex flex-col gap-1">
             <label class="text-neutral-700 text-sm font-medium">Service</label>
             <div class="relative">
-              <select class="appearance-none w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10"></select>
-              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+              <select data-activity-select="service" class="appearance-none w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10"></select>
+              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
                 <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"/></svg>
               </span>
             </div>
@@ -98,13 +101,13 @@ export class JobDetailView {
 
           <div class="flex flex-col gap-1">
             <label class="text-neutral-700 text-sm font-medium">Quantity</label>
-            <input type="text" class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700" />
+            <input type="number" value="0" class="w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700" />
           </div>
 
           <div class="flex flex-col gap-1">
             <label class="text-neutral-700 text-sm font-medium">Activity Price</label>
             <div class="relative">
-              <input type="text" class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10" />
+              <input type="text" placeholder="$ 0.00" class="w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10" />
               <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">$</span>
             </div>
           </div>
@@ -112,8 +115,8 @@ export class JobDetailView {
           <div class="flex flex-col gap-1">
             <label class="text-neutral-700 text-sm font-medium">Activity Text</label>
             <div class="relative">
-              <select class="appearance-none w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10"></select>
-              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+              <select data-activity-select="text" class="appearance-none w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10"></select>
+              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
                 <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"/></svg>
               </span>
             </div>
@@ -122,8 +125,10 @@ export class JobDetailView {
           <div class="flex flex-col gap-1">
             <label class="text-neutral-700 text-sm font-medium">Activity Status</label>
             <div class="relative">
-              <select class="appearance-none w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10"></select>
-              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+              <select data-activity-select="status" class="appearance-none w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10">
+                <option value="" disabled selected>Select One</option>
+              </select>
+              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
                 <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"/></svg>
               </span>
             </div>
@@ -132,7 +137,7 @@ export class JobDetailView {
           <div class="flex flex-col gap-1">
             <label class="text-neutral-700 text-sm font-medium">Date Required</label>
             <div class="relative">
-              <input type="text" placeholder="dd/mm/yyyy" class="w-full pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-500 placeholder:text-slate-400" />
+              <input type="text" placeholder="dd/mm/yyyy" class="w-full pr-10 pl-3 py-2 bg-white rounded border border-slate-300 text-slate-700 placeholder:text-slate-400" />
               <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 2.5V4.5M13 2.5V4.5M3.5 7.5H14.5M4 3.5H14C14.5523 3.5 15 3.94772 15 4.5V14C15 14.5523 14.5523 15 14 15H4C3.44772 15 3 14.5523 3 14V4.5C3 3.94772 3.44772 3.5 4 3.5Z" stroke="#94A3B8" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </span>
@@ -142,38 +147,38 @@ export class JobDetailView {
           <div class="flex flex-col gap-1">
             <label class="text-neutral-700 text-sm font-medium">Quoted Price</label>
             <div class="relative">
-              <input type="text" class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10" />
+              <input type="text" placeholder="$ 0.00" class="w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10" />
               <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">$</span>
             </div>
           </div>
 
-          <div class="flex flex-col gap-1">
+          <div class="flex flex-col gap-1 col-span-2">
             <label class="text-neutral-700 text-sm font-medium">Quoted Text</label>
-            <textarea rows="2" class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700"></textarea>
+            <textarea rows="2" class="w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700"></textarea>
           </div>
 
-          <div class="flex flex-col gap-1">
+          <div class="flex flex-col gap-1 col-span-2">
             <label class="text-neutral-700 text-sm font-medium">Warranty</label>
-            <textarea rows="2" class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700"></textarea>
+            <textarea rows="2" class="w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700"></textarea>
           </div>
 
-          <div class="flex flex-col gap-1">
+          <div class="flex flex-col gap-1 col-span-2">
             <label class="text-neutral-700 text-sm font-medium">Note</label>
-            <textarea rows="2" class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700"></textarea>
+            <textarea rows="2" class="w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700"></textarea>
           </div>
         </div>
 
-        <div class="flex items-center gap-6">
+        <div class="flex items-center gap-6 pt-2">
           <label class="flex items-center gap-2 text-neutral-700 text-sm">
-            <input type="checkbox" class="w-4 h-4 border-gray-300 rounded" /> Include in Quote
+            <input type="checkbox" class="w-4 h-4 accent-[#0A3E8C]" /> Include in Quote
           </label>
           <label class="flex items-center gap-2 text-neutral-700 text-sm">
-            <input type="checkbox" class="w-4 h-4 border-gray-300 rounded" /> Include in Quote Subtotal
+            <input type="checkbox" class="w-4 h-4 accent-[#0A3E8C]" /> Include in Quote Subtotal
           </label>
         </div>
 
-        <div class="flex justify-end items-center gap-3">
-          <button class="text-sky-700 text-sm font-medium px-3 py-2 rounded">Cancel</button>
+        <div class="flex justify-end items-center gap-3 border-t border-slate-200 pt-3">
+          <button class="text-slate-600 text-sm font-medium px-3 py-2 rounded">Cancel</button>
           <button class="text-white bg-sky-900 text-sm font-medium px-4 py-2 rounded">Add</button>
         </div>
       </div>
@@ -184,6 +189,62 @@ export class JobDetailView {
     `;
 
     document.getElementById("replaceable-section").appendChild(wrapper);
+    const activityStatuses = [
+      "Quoted",
+      "To Be Scheduled",
+      "Reschedule",
+      "Scheduled",
+      "Completed",
+      "Cancelled",
+    ];
+    const jobs = ["Job 1", "Job 2", "Job 3", "Job 4", "Job 5"];
+    const options = ["Option 1", "Option 2", "Option 3", "Option 4"];
+    const services = [
+      "Materials",
+      "Pigeon Removal",
+      "Pigeon Removal - Option 1",
+      "Pigeon Removal - Option 2",
+      "Pool Cleaning",
+      "Possum Roof",
+      "R3.5 POLYESTER to ceiling cavity",
+      "R4.1 ECOWOOL to ceiling cavity",
+      "R4.1 ECOWOOL to ceiling cavity.",
+      "Rat Roof",
+      "Vacuum, remove and dispose all dust and debris",
+      "Wasp Removal",
+      "Window Cleaning",
+    ];
+
+    const addOptions = (selectEl, values = [], placeholder = "Select") => {
+      if (!selectEl) return;
+      selectEl.innerHTML = "";
+      const placeholderOption = document.createElement("option");
+      placeholderOption.disabled = true;
+      placeholderOption.selected = true;
+      placeholderOption.value = "";
+      placeholderOption.textContent = placeholder;
+      selectEl.appendChild(placeholderOption);
+      values.forEach((val) => {
+        const opt = document.createElement("option");
+        opt.value = val;
+        opt.textContent = val;
+        selectEl.appendChild(opt);
+      });
+    };
+
+    const selectMap = {
+      task: wrapper.querySelector('[data-activity-select="task"]'),
+      option: wrapper.querySelector('[data-activity-select="option"]'),
+      service: wrapper.querySelector('[data-activity-select="service"]'),
+      text: wrapper.querySelector('[data-activity-select="text"]'),
+      status: wrapper.querySelector('[data-activity-select="status"]'),
+    };
+
+    addOptions(selectMap.task, jobs, "Select");
+    addOptions(selectMap.option, options, "Select");
+    addOptions(selectMap.service, services, "Select");
+    addOptions(selectMap.text, services, "Select");
+    addOptions(selectMap.status, activityStatuses, "Select");
   }
 
   createAddMaterialsSection() {
@@ -1693,7 +1754,7 @@ export class JobDetailView {
     labelEl.textContent = pretty;
   }
 
-  async goNextSection(e) {
+  async handleJobInformation() {
     let data = this.getJobInformationFieldValues(
       '[data-job-section="job-section-individual"] input:not(.hidden), [data-job-section="job-section-individual"] select'
     );
@@ -1725,18 +1786,38 @@ export class JobDetailView {
     try {
       let result = await this.model.createNewJob(data);
       if (!result.isCancelling) {
-        if (e) e.preventDefault();
-        const idx = this.sectionOrder.indexOf(this.currentSection);
-        const nextId = this.sectionOrder[idx + 1];
-        if (nextId) this.showSection(nextId);
+        return true;
       } else {
         alert("failed to create new job");
+        return false;
       }
     } catch (err) {
       console.error("Failed to create new job", err);
       alert("failed to create new job");
+      return false;
     } finally {
       this.stopLoading();
+    }
+  }
+
+  async handleAddActivities() {}
+
+  async goNextSection(e) {
+    let value = null;
+    if (this.currentSection == "job-information") {
+      value = this.handleJobInformation();
+    } else if (this.currentSection == "add-activities") {
+      this.renderActivitiesTable();
+    } else if (this.currentSection == "add-materials") {
+    } else if (this.currentSection == "uploads") {
+    } else if (this.currentSection == "invoice") {
+    }
+
+    if (value) {
+      if (e) e.preventDefault();
+      const idx = this.sectionOrder.indexOf(this.currentSection);
+      const nextId = this.sectionOrder[idx + 1];
+      if (nextId) this.showSection(nextId);
     }
   }
 
@@ -2843,5 +2924,167 @@ export class JobDetailView {
     return (
       document.querySelector("[data-contact-field='contact_id']")?.value || ""
     );
+  }
+
+  renderActivitiesTable(data) {
+    this.model.fetchActivities((activities) => {
+      if (!activities || !activities.length) {
+        document.getElementById("addActivitiesTable").innerHTML =
+          "<div class='text-sm text-slate-500'>No activities found.</div>";
+        return;
+      }
+
+      let mappedActivities = activities.map((item) => {
+        const serviceName =
+          item.Service_Service_Name ||
+          item.service_service_name ||
+          item.service_name ||
+          item.Service?.service_name ||
+          "";
+        return {
+          Id: item.ID || item.id || "",
+          Services: serviceName,
+          Status: item.Activity_Status || item.activity_status || "",
+          Price: item.Activity_Price || item.activity_price || "",
+          "Include in Quote":
+            item.Include_in_Quote ?? item.include_in_quote ?? "",
+          "Invoice to Client":
+            item.Invoice_to_Client ?? item.invoice_to_client ?? "",
+          Option: item.Option || item.option || "",
+          Task: item.Task || item.task || "",
+        };
+      });
+      const tableHTML = this.createTable(mappedActivities);
+      const target = document.getElementById("addActivitiesTable");
+      if (target) {
+        target.innerHTML = "";
+        target.appendChild(tableHTML);
+      }
+    });
+  }
+
+  createTable(data) {
+    if (!Array.isArray(data) || !data.length) {
+      const empty = document.createElement("div");
+      empty.className = "text-sm text-slate-500";
+      empty.textContent = "No activities found.";
+      return empty;
+    }
+    const table = document.createElement("table");
+    table.className =
+      "min-w-full border border-slate-200 rounded-lg overflow-hidden text-sm text-slate-700";
+
+    const thead = document.createElement("thead");
+    thead.className = "bg-slate-100";
+    const headerRow = document.createElement("tr");
+    const headers = [
+      "ID",
+      "Services",
+      "Status",
+      "Price",
+      "Include in Quote",
+      "Invoice to Client",
+      "Option",
+      "Task",
+    ];
+    headers.forEach((text) => {
+      const th = document.createElement("th");
+      th.className = "px-4 py-3 text-left font-normal text-slate-700";
+      th.textContent = text;
+      headerRow.appendChild(th);
+    });
+    thead.appendChild(headerRow);
+
+    const tbody = document.createElement("tbody");
+    data.forEach((item, idx) => {
+      const tr = document.createElement("tr");
+      tr.className = idx % 2 === 0 ? "bg-white" : "bg-slate-50";
+
+      const status = (item.Status || "").toLowerCase();
+      const statusStyles = {
+        quoted: "bg-purple-100 text-purple-700",
+        "to be scheduled": "bg-amber-100 text-amber-700",
+        reschedule: "bg-rose-100 text-rose-700",
+        scheduled: "bg-sky-100 text-sky-700",
+        completed: "bg-emerald-100 text-emerald-700",
+        cancelled: "bg-slate-200 text-slate-700",
+      };
+      const badgeClass = statusStyles[status] || "bg-slate-100 text-slate-600";
+
+      const cells = [
+        {
+          value: item.Id,
+          className: "text-sky-700 font-normal",
+        },
+        { value: item.Services, className: "text-slate-800" },
+        {
+          value: "",
+          className: "",
+          render: () => {
+            const span = document.createElement("span");
+            span.className =
+              "inline-flex px-3 py-1 rounded-full text-xs font-normal " +
+              badgeClass;
+            span.textContent = item.Status || "";
+            return span;
+          },
+        },
+        {
+          value: item.Price ? `$${item.Price}` : "",
+          className: "text-slate-800",
+        },
+        {
+          value: item["Include in Quote"],
+          render: () => this.renderCheckbox(item["Include in Quote"]),
+        },
+        {
+          value: item["Invoice to Client"],
+          render: () => this.renderCheckbox(item["Invoice to Client"]),
+        },
+        { value: item.Option },
+        { value: item.Task },
+      ];
+
+      cells.forEach((cell) => {
+        const td = document.createElement("td");
+        td.className = "px-4 py-3 align-middle";
+        if (typeof cell.render === "function") {
+          td.appendChild(cell.render());
+        } else {
+          td.textContent = cell.value ?? "";
+          if (cell.className) td.classList.add(...cell.className.split(" "));
+        }
+        tr.appendChild(td);
+      });
+
+      tbody.appendChild(tr);
+    });
+
+    table.appendChild(thead);
+    table.appendChild(tbody);
+    return table;
+  }
+
+  renderCheckbox(value) {
+    const wrapper = document.createElement("div");
+    wrapper.className = "flex justify-center";
+    const isChecked = value === true || value === "true" || value === 1;
+    const box = document.createElement("div");
+    box.className =
+      "w-5 h-5 rounded border flex items-center justify-center " +
+      (isChecked ? "bg-sky-900 border-sky-900" : "bg-white border-slate-400");
+
+    const check = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    check.setAttribute("width", "14");
+    check.setAttribute("height", "14");
+    check.setAttribute("viewBox", "0 0 24 24");
+    check.classList.add(isChecked ? "text-white" : "text-slate-500");
+    check.innerHTML =
+      '<path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>';
+    if (!isChecked) check.classList.add("opacity-80");
+
+    box.appendChild(check);
+    wrapper.appendChild(box);
+    return wrapper;
   }
 }

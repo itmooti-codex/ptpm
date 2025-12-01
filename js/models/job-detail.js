@@ -8,6 +8,10 @@ export class JobDetailModal {
     this.inquiryModel = plugin.switchTo("PeterpmDeal");
     this.jobModel = plugin.switchTo("PeterpmJob");
     this.appointmentModel = plugin.switchTo("PeterpmAppointment");
+    this.acitivityModel = plugin.switchTo("PeterpmActivity");
+
+    this.activityQuery = null;
+    this.activityCallback = null;
 
     this.contactQuery = null;
     this.contactCallback = null;
@@ -25,8 +29,11 @@ export class JobDetailModal {
     this.jobCallback = null;
 
     this.contacts = [];
+    this.properties = [];
+    this.activities = [];
     this.contactSub = null;
     this.propertySub = null;
+    this.activitySub = null;
     this.serviceProviderSub = null;
     this.inquirySub = null;
     this.jobSub = null;
@@ -529,5 +536,72 @@ export class JobDetailModal {
     query.update((q) => q.where("id", contactId).set(contactObj));
     let result = await query.execute(true).toPromise();
     return result;
+  }
+
+  async fetchActivities(callback) {
+    this.activityQuery = this.acitivityModel.query();
+    this.activityQuery
+      .deSelectAll()
+      .select([
+        "id",
+        "task",
+        "option",
+        "quantity",
+        "activity_price",
+        "activity_text",
+        "activity_status",
+        "date_required",
+        "quoted_price",
+        "quoted_text",
+        "note",
+        "include_in_quote_subtotal",
+        "include_in_quote",
+        "invoice_to_client",
+      ])
+      .include("Service", (q) => {
+        q.deSelectAll().select(["service_name"]);
+      })
+      .noDestroy();
+    this.activityQuery.getOrInitQueryCalc?.();
+    let result = await this.activityQuery.fetchDirect().toPromise();
+    this.activityCallback = callback;
+    this.activities = Array.isArray(result?.resp) ? result.resp : [];
+    this.subscribeToActivityChanges();
+    if (this.activityCallback) {
+      this.activityCallback(result.resp);
+    }
+    return result.resp;
+  }
+
+  subscribeToActivityChanges() {
+    this.activitySub?.unsubscribe?.();
+    let liveObs = null;
+    try {
+      if (typeof this.activityQuery.subscribe === "function")
+        liveObs = this.activityQuery.subscribe();
+    } catch (_) {}
+
+    if (!liveObs && typeof this.activityQuery.localSubscribe === "function") {
+      try {
+        liveObs = this.activityQuery.localSubscribe();
+      } catch (_) {}
+    }
+
+    if (liveObs) {
+      this.activitySub = liveObs
+        .pipe(window.toMainInstance?.(true) ?? ((x) => x))
+        .subscribe({
+          next: (payload) => {
+            const data = Array.isArray(payload?.records)
+              ? payload.records
+              : Array.isArray(payload)
+              ? payload
+              : [];
+            this.activities = data;
+            if (this.activityCallback) this.activityCallback(data);
+          },
+          error: () => {},
+        });
+    }
   }
 }
