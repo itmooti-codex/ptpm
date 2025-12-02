@@ -59,11 +59,11 @@ export class JobDetailView {
       "hidden w-full h-full flex flex-row gap-4 p-4 bg-gray-50";
 
     wrapper.innerHTML = `
-      <div class="w-[440px] bg-white rounded-lg border border-slate-200 p-5 flex flex-col gap-4 shadow-sm">
+      <div data-section="add-activities" class="w-[440px] bg-white rounded-lg border border-slate-200 p-5 flex flex-col gap-4 shadow-sm">
         <div class="flex flex-col items-start gap-2">
           <div class="text-neutral-800 text-base font-semibold">Add New Activity</div>
           <label class="flex items-center gap-2 text-slate-600 text-sm">
-            <input type="checkbox" class="w-4 h-4 accent-[#0A3E8C]" />
+            <input type="checkbox" data-field="invoice_to_client" class="w-4 h-4 accent-[#0A3E8C]" />
             <span>Invoice to client</span>
           </label>
         </div>
@@ -72,7 +72,7 @@ export class JobDetailView {
           <div class="flex flex-col gap-1">
             <label class="text-neutral-700 text-sm font-medium">Task</label>
             <div class="relative">
-              <select data-activity-select="task" class="appearance-none w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10"></select>
+              <select data-field="task" data-activity-select="task" class="appearance-none w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10"></select>
               <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
                 <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"/></svg>
               </span>
@@ -82,7 +82,7 @@ export class JobDetailView {
           <div class="flex flex-col gap-1">
             <label class="text-neutral-700 text-sm font-medium">Options</label>
             <div class="relative">
-              <select data-activity-select="option" class="appearance-none w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10"></select>
+              <select data-field="option" data-activity-select="option" class="appearance-none w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10"></select>
               <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
                 <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"/></svg>
               </span>
@@ -92,7 +92,7 @@ export class JobDetailView {
           <div class="flex flex-col gap-1">
             <label class="text-neutral-700 text-sm font-medium">Service</label>
             <div class="relative">
-              <select data-activity-select="service" class="appearance-none w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10"></select>
+              <select data-field="service_name" data-activity-select="service" class="appearance-none w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10"></select>
               <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
                 <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"/></svg>
               </span>
@@ -101,13 +101,13 @@ export class JobDetailView {
 
           <div class="flex flex-col gap-1">
             <label class="text-neutral-700 text-sm font-medium">Quantity</label>
-            <input type="number" value="0" class="w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700" />
+            <input type="number" data-field="quantity" value="0" class="w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700" />
           </div>
 
           <div class="flex flex-col gap-1">
             <label class="text-neutral-700 text-sm font-medium">Activity Price</label>
             <div class="relative">
-              <input type="text" placeholder="$ 0.00" class="w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10" />
+              <input type="text" data-field="activity_price" placeholder="$ 0.00" class="w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10" />
               <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">$</span>
             </div>
           </div>
@@ -115,7 +115,7 @@ export class JobDetailView {
           <div class="flex flex-col gap-1">
             <label class="text-neutral-700 text-sm font-medium">Activity Text</label>
             <div class="relative">
-              <select data-activity-select="text" class="appearance-none w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10"></select>
+              <select data-field="activity_text" data-activity-select="text" class="appearance-none w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10"></select>
               <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
                 <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"/></svg>
               </span>
@@ -125,7 +125,7 @@ export class JobDetailView {
           <div class="flex flex-col gap-1">
             <label class="text-neutral-700 text-sm font-medium">Activity Status</label>
             <div class="relative">
-              <select data-activity-select="status" class="appearance-none w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10">
+              <select data-field="activity_status" data-activity-select="status" class="appearance-none w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10">
                 <option value="" disabled selected>Select One</option>
               </select>
               <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
@@ -137,7 +137,7 @@ export class JobDetailView {
           <div class="flex flex-col gap-1">
             <label class="text-neutral-700 text-sm font-medium">Date Required</label>
             <div class="relative">
-              <input type="text" placeholder="dd/mm/yyyy" class="w-full pr-10 pl-3 py-2 bg-white rounded border border-slate-300 text-slate-700 placeholder:text-slate-400" />
+              <input type="text" data-field="date_required" placeholder="dd/mm/yyyy" class="flatpickr-input date-picker w-full pr-10 pl-3 py-2 bg-white rounded border border-slate-300 text-slate-700 placeholder:text-slate-400" />
               <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 2.5V4.5M13 2.5V4.5M3.5 7.5H14.5M4 3.5H14C14.5523 3.5 15 3.94772 15 4.5V14C15 14.5523 14.5523 15 14 15H4C3.44772 15 3 14.5523 3 14V4.5C3 3.94772 3.44772 3.5 4 3.5Z" stroke="#94A3B8" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </span>
@@ -147,33 +147,33 @@ export class JobDetailView {
           <div class="flex flex-col gap-1">
             <label class="text-neutral-700 text-sm font-medium">Quoted Price</label>
             <div class="relative">
-              <input type="text" placeholder="$ 0.00" class="w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10" />
+              <input type="text" data-field="quoted_price" placeholder="$ 0.00" class="w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10" />
               <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">$</span>
             </div>
           </div>
 
           <div class="flex flex-col gap-1 col-span-2">
             <label class="text-neutral-700 text-sm font-medium">Quoted Text</label>
-            <textarea rows="2" class="w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700"></textarea>
+            <textarea data-field="quoted_text" rows="2" class="w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700"></textarea>
           </div>
 
           <div class="flex flex-col gap-1 col-span-2">
             <label class="text-neutral-700 text-sm font-medium">Warranty</label>
-            <textarea rows="2" class="w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700"></textarea>
+            <textarea data-field="warranty" rows="2" class="w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700"></textarea>
           </div>
 
           <div class="flex flex-col gap-1 col-span-2">
             <label class="text-neutral-700 text-sm font-medium">Note</label>
-            <textarea rows="2" class="w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700"></textarea>
+            <textarea data-field="note" rows="2" class="w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700"></textarea>
           </div>
         </div>
 
         <div class="flex items-center gap-6 pt-2">
           <label class="flex items-center gap-2 text-neutral-700 text-sm">
-            <input type="checkbox" class="w-4 h-4 accent-[#0A3E8C]" /> Include in Quote
+            <input type="checkbox" data-field="include_in_quote" class="w-4 h-4 accent-[#0A3E8C]" /> Include in Quote
           </label>
           <label class="flex items-center gap-2 text-neutral-700 text-sm">
-            <input type="checkbox" class="w-4 h-4 accent-[#0A3E8C]" /> Include in Quote Subtotal
+            <input type="checkbox" data-field="include_in_quote_subtotal" class="w-4 h-4 accent-[#0A3E8C]" /> Include in Quote Subtotal
           </label>
         </div>
 
@@ -254,30 +254,34 @@ export class JobDetailView {
     wrapper.className =
       "hidden w-full h-full flex flex-row gap-4 p-4 bg-gray-50";
 
-    wrapper.innerHTML = `
-      <div class="w-[440px] bg-white rounded-lg outline outline-1 outline-gray-300 p-4 flex flex-col gap-4">
-        <div class="text-neutral-700 text-base font-semibold">Add Materials</div>
+    wrapper.innerHTML = `<div data-section="add-materials" class="w-full h-full flex flex-row gap-4 p-4 bg-gray-50">
+      <div class="flex flex-col gap-5"><div class="w-[440px] bg-white rounded-lg outline outline-1 outline-gray-300 p-4 flex flex-col gap-4">
+        <div class="text-neutral-700 text-base font-semibold">
+          Add Materials
+        </div>
 
         <div class="flex flex-col gap-3">
           <div class="flex flex-col gap-1">
             <label class="text-neutral-700 text-sm font-medium">Material Name</label>
-            <input type="text" placeholder="Enter material name" class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700" />
+            <input type="text" data-field="material_name" placeholder="Enter material name" class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700">
           </div>
 
           <div class="grid grid-cols-2 gap-3">
             <div class="flex flex-col gap-1">
               <label class="text-neutral-700 text-sm font-medium">Status</label>
               <div class="relative">
-                <select class="appearance-none w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10"></select>
+                <select data-field="status" class="appearance-none w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10"></select>
                 <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
-                  <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"/></svg>
+                  <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"></path>
+                  </svg>
                 </span>
               </div>
             </div>
             <div class="flex flex-col gap-1">
               <label class="text-neutral-700 text-sm font-medium">Total</label>
               <div class="relative">
-                <input type="text" value="$ 0.00" class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10" />
+                <input type="text" data-field="total" class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10">
                 <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">$</span>
               </div>
             </div>
@@ -285,59 +289,71 @@ export class JobDetailView {
 
           <div class="flex flex-col gap-1">
             <label class="text-neutral-700 text-sm font-medium">Description</label>
-            <textarea rows="2" class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700"></textarea>
+            <textarea data-field="description" rows="2" class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700"></textarea>
           </div>
 
           <div class="grid grid-cols-2 gap-3">
             <div class="flex flex-col gap-1">
               <label class="text-neutral-700 text-sm font-medium">Transaction Type</label>
               <div class="relative">
-                <select class="appearance-none w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10"></select>
+                <select data-field="transaction_type" class="appearance-none w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10">
+                  <option disabled="" value="">Select one</option>
+                  <option value="Reimburse">Reimburse</option>
+                  <option value="Deduct">Deduct</option>
+                </select>
                 <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
-                  <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"/></svg>
+                  <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"></path>
+                  </svg>
                 </span>
               </div>
             </div>
             <div class="flex flex-col gap-1">
               <label class="text-neutral-700 text-sm font-medium">Tax</label>
               <div class="relative">
-                <select class="appearance-none w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10"></select>
+                <select data-field="tax" class="appearance-none w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10">
+                  <option disabled="" value="">Select one</option>
+                  <option value="exemptexpenses">Exemptexpenses</option>
+                  <option value="input">Input</option>
+                </select>
                 <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
-                  <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"/></svg>
+                  <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"></path>
+                  </svg>
                 </span>
-              </div>
+              </div> 
             </div>
           </div>
+        <div class="flex flex-col gap-1">
+                <label class="text-neutral-700 text-sm font-medium">Receipt</label>
+                <div data-field="receipt" class="w-full h-20 border border-dashed border-gray-300 rounded bg-gray-50 flex items-center justify-center text-sky-700 text-sm">
+                  <!-- placeholder for upload control -->
+                  Click to upload or drag and drop
+                </div>
+              </div><div class="flex flex-col gap-1">
+                <label class="text-neutral-700 text-sm font-medium">Service Provider</label>
+                <div class="relative" data-material-sp-search="root">
+                  <input type="text" placeholder="Search by name, phone" class="w-full text-sm pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-500 placeholder:text-slate-500" data-material-sp-search="input">
+                  <input type="hidden" data-field="service_provider_id" data-material-sp-field="id">
+                  <span class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M16.3311 15.5156L12.7242 11.9095C13.7696 10.6544 14.2909 9.04453 14.1797 7.41486C14.0684 5.7852 13.3331 4.26116 12.1268 3.15979C10.9205 2.05843 9.33603 1.46453 7.70299 1.50164C6.06995 1.53875 4.51409 2.20402 3.35906 3.35906C2.20402 4.51409 1.53875 6.06995 1.50164 7.70299C1.46453 9.33603 2.05843 10.9205 3.15979 12.1268C4.26116 13.3331 5.7852 14.0684 7.41486 14.1797C9.04453 14.2909 10.6544 13.7696 11.9095 12.7242L15.5156 16.3311C15.5692 16.3847 15.6328 16.4271 15.7027 16.4561C15.7727 16.4851 15.8477 16.5 15.9234 16.5C15.9991 16.5 16.0741 16.4851 16.144 16.4561C16.214 16.4271 16.2776 16.3847 16.3311 16.3311C16.3847 16.2776 16.4271 16.214 16.4561 16.144C16.4851 16.0741 16.5 15.9991 16.5 15.9234C16.5 15.8477 16.4851 15.7727 16.4561 15.7027C16.4271 15.6328 16.3847 15.5692 16.3311 15.5156ZM2.66852 7.8552C2.66852 6.82937 2.97271 5.82658 3.54263 4.97364C4.11255 4.12069 4.9226 3.4559 5.87035 3.06333C6.81809 2.67076 7.86096 2.56805 8.86708 2.76818C9.87319 2.96831 10.7974 3.46229 11.5227 4.18766C12.2481 4.91303 12.7421 5.83721 12.9422 6.84333C13.1424 7.84945 13.0396 8.89232 12.6471 9.84006C12.2545 10.7878 11.5897 11.5979 10.7368 12.1678C9.88383 12.7377 8.88103 13.0419 7.8552 13.0419C6.48008 13.0404 5.16171 12.4934 4.18935 11.5211C3.21699 10.5487 2.67004 9.23033 2.66852 7.8552Z" fill="#78829D"></path>
+                    </svg>
+                  </span>
+                  <div data-material-sp-search="results" class="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded shadow hidden max-h-64 overflow-y-auto z-20"></div>
+                </div>
+              </div></div>
 
-          <div class="flex flex-col gap-1">
-            <label class="text-neutral-700 text-sm font-medium">Receipt</label>
-            <div class="w-full h-20 border border-dashed border-gray-300 rounded bg-gray-50 flex items-center justify-center text-sky-700 text-sm">
-              <!-- placeholder for upload control -->
-              Click to upload or drag and drop
-            </div>
-          </div>
-
-          <div class="flex flex-col gap-1">
-            <label class="text-neutral-700 text-sm font-medium">Service Provider</label>
-            <div class="relative">
-              <select class="appearance-none w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10"></select>
-              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
-                <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"/></svg>
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div class="flex flex-col gap-3 pt-2 border-t border-gray-200">
+      </div><div class="w-[440px] rounded-lg outline outline-1 outline-gray-300 p-4 bg-white"><div class="flex flex-col gap-3 pt-2">
           <div class="text-neutral-700 text-sm font-semibold">Payment</div>
           <div class="grid grid-cols-2 gap-3">
             <div class="flex flex-col gap-1">
               <label class="text-neutral-700 text-sm font-medium">Batch Code</label>
-              <input type="text" class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700" />
+              <input type="text" data-field="batch_code" class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700">
             </div>
             <div class="flex flex-col gap-1">
               <label class="text-neutral-700 text-sm font-medium">Xero Bill ID</label>
-              <input type="text" class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700" />
+              <input type="text" data-field="xero_bill_id" class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700">
             </div>
           </div>
 
@@ -345,36 +361,91 @@ export class JobDetailView {
             <div class="flex flex-col gap-1">
               <label class="text-neutral-700 text-sm font-medium">Date Scheduled</label>
               <div class="relative">
-                <input type="text" placeholder="dd/mm/yyyy" class="w-full pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-500 placeholder:text-slate-400" />
+                <input type="text" data-field="date_scheduled" placeholder="dd/mm/yyyy" class="date-picker flatpickr-input w-full pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-500 placeholder:text-slate-400">
                 <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
-                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 2.5V4.5M13 2.5V4.5M3.5 7.5H14.5M4 3.5H14C14.5523 3.5 15 3.94772 15 4.5V14C15 14.5523 14.5523 15 14 15H4C3.44772 15 3 14.5523 3 14V4.5C3 3.94772 3.44772 3.5 4 3.5Z" stroke="#94A3B8" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M5 2.5V4.5M13 2.5V4.5M3.5 7.5H14.5M4 3.5H14C14.5523 3.5 15 3.94772 15 4.5V14C15 14.5523 14.5523 15 14 15H4C3.44772 15 3 14.5523 3 14V4.5C3 3.94772 3.44772 3.5 4 3.5Z" stroke="#94A3B8" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"></path>
+                  </svg>
                 </span>
               </div>
             </div>
             <div class="flex flex-col gap-1">
               <label class="text-neutral-700 text-sm font-medium">Date Paid</label>
               <div class="relative">
-                <input type="text" placeholder="dd/mm/yyyy" class="w-full pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-500 placeholder:text-slate-400" />
+                <input type="text" data-field="date_paid" placeholder="dd/mm/yyyy" class="date-picker flatpickr-input w-full pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-500 placeholder:text-slate-400">
                 <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
-                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 2.5V4.5M13 2.5V4.5M3.5 7.5H14.5M4 3.5H14C14.5523 3.5 15 3.94772 15 4.5V14C15 14.5523 14.5523 15 14 15H4C3.44772 15 3 14.5523 3 14V4.5C3 3.94772 3.44772 3.5 4 3.5Z" stroke="#94A3B8" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M5 2.5V4.5M13 2.5V4.5M3.5 7.5H14.5M4 3.5H14C14.5523 3.5 15 3.94772 15 4.5V14C15 14.5523 14.5523 15 14 15H4C3.44772 15 3 14.5523 3 14V4.5C3 3.94772 3.44772 3.5 4 3.5Z" stroke="#94A3B8" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"></path>
+                  </svg>
                 </span>
               </div>
             </div>
           </div>
-        </div>
+        <div class="flex justify-end items-center gap-3 border-t border-gray-300 my-5 py-2">
+          <button id="cancel-material-btn" class="text-sky-700 text-sm font-medium px-3 py-2 rounded">
+            Cancel
+          </button>
+          <button id="add-material-btn" class="text-white bg-sky-900 text-sm font-medium px-4 py-2 rounded">
+            Add
+          </button>
+        </div></div></div></div>
 
-        <div class="flex justify-end items-center gap-3">
-          <button class="text-sky-700 text-sm font-medium px-3 py-2 rounded">Cancel</button>
-          <button class="text-white bg-sky-900 text-sm font-medium px-4 py-2 rounded">Add</button>
-        </div>
-      </div>
+
 
       <div class="flex-1 bg-white rounded-lg outline outline-1 outline-gray-300 p-4">
-        <div id="addMaterialsTable" class="w-full"></div>
+        <div id="addMaterialsTable" class="w-full">
+        </div>
       </div>
-    `;
+    </div>`;
 
     document.getElementById("replaceable-section").appendChild(wrapper);
+
+    const taxTypes = ["Exemptexpenses", "input"];
+    const transactionTypes = ["Reimburse", "Deduct"];
+    const materialStatuses = [
+      "New",
+      "In Progress",
+      "Pending Payment",
+      "Assigned to Job",
+      "Paid",
+    ];
+
+    const addOptions = (selectEl, values = [], placeholder = "Select one") => {
+      if (!selectEl) return;
+      selectEl.innerHTML = "";
+      const placeholderOption = document.createElement("option");
+      placeholderOption.disabled = true;
+      placeholderOption.selected = true;
+      placeholderOption.value = "";
+      placeholderOption.textContent = placeholder;
+      selectEl.appendChild(placeholderOption);
+      values.forEach((val) => {
+        const opt = document.createElement("option");
+        opt.value = val;
+        opt.textContent = val;
+        selectEl.appendChild(opt);
+      });
+    };
+
+    addOptions(
+      wrapper.querySelector('[data-field="transaction_type"]'),
+      transactionTypes
+    );
+    addOptions(wrapper.querySelector('[data-field="tax"]'), taxTypes);
+    addOptions(
+      wrapper.querySelector('[data-field="status"]'),
+      materialStatuses
+    );
+    this.initMaterialServiceProviderSearch(wrapper);
+
+    const addMaterialsBtn = document.getElementById("add-material-btn");
+    if (addMaterialsBtn) {
+      addMaterialsBtn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        await this.handleAddMaterials();
+      });
+    }
+    this.renderMaterialsTable();
   }
 
   createUploadsSection() {
@@ -406,7 +477,7 @@ export class JobDetailView {
         </div>
         <div class="flex justify-end items-center gap-3">
           <button class="text-sky-700 text-sm font-medium px-3 py-2 rounded">Cancel</button>
-          <button class="text-white bg-sky-900 text-sm font-medium px-4 py-2 rounded">Add</button>
+          <button data-materials-add class="text-white bg-sky-900 text-sm font-medium px-4 py-2 rounded">Add</button>
         </div>
       </div>
 
@@ -1755,7 +1826,7 @@ export class JobDetailView {
   }
 
   async handleJobInformation() {
-    let data = this.getJobInformationFieldValues(
+    let data = this.getFieldValues(
       '[data-job-section="job-section-individual"] input:not(.hidden), [data-job-section="job-section-individual"] select'
     );
 
@@ -1800,14 +1871,13 @@ export class JobDetailView {
     }
   }
 
-  async handleAddActivities() {}
-
   async goNextSection(e) {
     let value = null;
     if (this.currentSection == "job-information") {
       value = this.handleJobInformation();
     } else if (this.currentSection == "add-activities") {
-      this.renderActivitiesTable();
+      await this.renderActivitiesTable();
+      await this.handleAddActivities();
     } else if (this.currentSection == "add-materials") {
     } else if (this.currentSection == "uploads") {
     } else if (this.currentSection == "invoice") {
@@ -2154,14 +2224,148 @@ export class JobDetailView {
     });
   }
 
-  getJobInformationFieldValues(selector) {
+  async initMaterialServiceProviderSearch(wrapper) {
+    const root = wrapper.querySelector('[data-material-sp-search="root"]');
+    const input = wrapper.querySelector('[data-material-sp-search="input"]');
+    const results = wrapper.querySelector(
+      '[data-material-sp-search="results"]'
+    );
+    const hidden = wrapper.querySelector('[data-material-sp-field="id"]');
+    const addBtn = wrapper.querySelector("[data-material-sp-add]");
+    if (!root || !input || !results || !hidden) return;
+
+    const wire = (providers = []) =>
+      this.setupMaterialServiceProviderSearch(
+        { root, input, results, hidden },
+        providers
+      );
+
+    try {
+      await this.model.fetchServiceProviders((list) => wire(list || []));
+    } catch (_) {
+      wire([]);
+    }
+
+    if (addBtn) {
+      addBtn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        this.toggleModal?.("addressDetailsModalWrapper");
+        // refresh list after potential creation
+        setTimeout(
+          () => this.model.fetchServiceProviders((list) => wire(list || [])),
+          500
+        );
+      });
+    }
+  }
+
+  setupMaterialServiceProviderSearch(ctx, data = []) {
+    const { input, results, hidden, root } = ctx;
+    const state = { providers: data || [] };
+
+    const render = (providers, query = "") => {
+      const term = query.trim().toLowerCase();
+      const filtered = providers.filter((p) => {
+        const first =
+          p.Contact_Information_First_Name ||
+          p.contact_information_first_name ||
+          "";
+        const last =
+          p.Contact_Information_Last_Name ||
+          p.contact_information_last_name ||
+          "";
+        const phone =
+          p.Contact_Information_SMS_Number ||
+          p.contact_information_sms_number ||
+          "";
+
+        const image =
+          p.Contact_Information_Profile_Image ||
+          p.contact_information_profile_image ||
+          "";
+        return [first, last, phone, image].some((field) =>
+          String(field).toLowerCase().includes(term)
+        );
+      });
+
+      results.innerHTML = "";
+      if (!filtered.length) {
+        results.classList.add("hidden");
+        return;
+      }
+
+      filtered.forEach((item) => {
+        const option = document.createElement("div");
+        option.className =
+          "flex items-center gap-3 p-3 hover:bg-slate-50 cursor-pointer";
+        option.dataset.id = item.ID || item.id || "";
+
+        const avatar = document.createElement("img");
+        avatar.className = "h-9 w-9 rounded-full object-cover bg-slate-100";
+        avatar.src =
+          item.Contact_Information_Profile_Image ||
+          item.contact_information_profile_image ||
+          "https://via.placeholder.com/40";
+        avatar.alt = `${item.Contact_Information_First_Name || ""} ${
+          item.Contact_Information_Last_Name || ""
+        }`;
+
+        const infoWrap = document.createElement("div");
+        infoWrap.className = "flex flex-col";
+        const nameEl = document.createElement("div");
+        nameEl.className = "text-sm font-medium text-slate-800";
+        nameEl.textContent = `${item.Contact_Information_First_Name || ""} ${
+          item.Contact_Information_Last_Name || ""
+        }`.trim();
+        const phoneEl = document.createElement("div");
+        phoneEl.className = "text-xs text-slate-500";
+        phoneEl.textContent =
+          item.Contact_Information_SMS_Number ||
+          item.contact_information_sms_number ||
+          "";
+
+        infoWrap.appendChild(nameEl);
+        infoWrap.appendChild(phoneEl);
+
+        option.appendChild(avatar);
+        option.appendChild(infoWrap);
+
+        option.addEventListener("click", () => {
+          input.value = nameEl.textContent || "Selected provider";
+          hidden.value = option.dataset.id || "";
+          results.classList.add("hidden");
+        });
+
+        results.appendChild(option);
+      });
+      results.classList.remove("hidden");
+    };
+
+    input.addEventListener("focus", () => render(state.providers, input.value));
+    input.addEventListener("input", () => render(state.providers, input.value));
+
+    document.addEventListener("click", (e) => {
+      if (root.contains(e.target)) return;
+      results.classList.add("hidden");
+    });
+
+    this.updateMaterialServiceProviderSearch = (next = []) => {
+      state.providers = next;
+      render(state.providers, input.value);
+    };
+  }
+
+  getFieldValues(selector) {
     let jobObj = {};
     let elements = document.querySelectorAll(selector);
     elements.forEach((item) => {
       if (item.disabled) return;
       let key = item?.getAttribute("data-field")?.toLowerCase();
       let value;
-      if (key == "job_required_by") {
+      if (
+        item.classList.contains("date-picker") ||
+        item.classList.contains("flatpickr-input")
+      ) {
         value = this.dateToUnix(item.value);
       } else {
         if (item.type == "checkbox") {
@@ -2926,8 +3130,8 @@ export class JobDetailView {
     );
   }
 
-  renderActivitiesTable(data) {
-    this.model.fetchActivities((activities) => {
+  async renderActivitiesTable(data) {
+    await this.model.fetchActivities((activities) => {
       if (!activities || !activities.length) {
         document.getElementById("addActivitiesTable").innerHTML =
           "<div class='text-sm text-slate-500'>No activities found.</div>";
@@ -2954,7 +3158,7 @@ export class JobDetailView {
           Task: item.Task || item.task || "",
         };
       });
-      const tableHTML = this.createTable(mappedActivities);
+      const tableHTML = this.createActivitiesTable(mappedActivities);
       const target = document.getElementById("addActivitiesTable");
       if (target) {
         target.innerHTML = "";
@@ -2963,7 +3167,7 @@ export class JobDetailView {
     });
   }
 
-  createTable(data) {
+  createActivitiesTable(data) {
     if (!Array.isArray(data) || !data.length) {
       const empty = document.createElement("div");
       empty.className = "text-sm text-slate-500";
@@ -2972,7 +3176,7 @@ export class JobDetailView {
     }
     const table = document.createElement("table");
     table.className =
-      "min-w-full border border-slate-200 rounded-lg overflow-hidden text-sm text-slate-700";
+      "min-w-full border border-slate-200 rounded-lg overflow-hidden text-sm text-slate-700 leading-6";
 
     const thead = document.createElement("thead");
     thead.className = "bg-slate-100";
@@ -2987,15 +3191,37 @@ export class JobDetailView {
       "Option",
       "Task",
     ];
-    headers.forEach((text) => {
+    headers.forEach((text, idx) => {
       const th = document.createElement("th");
-      th.className = "px-4 py-3 text-left font-normal text-slate-700";
-      th.textContent = text;
+      th.className = "px-7 py-3 text-left font-normal text-slate-700 leading-6";
+      if (idx === 0) {
+        // Date Added with sort indicator
+        const wrap = document.createElement("div");
+        wrap.className = "flex items-center gap-1";
+        const span = document.createElement("span");
+        span.textContent = text;
+        const icon = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "svg"
+        );
+        icon.setAttribute("viewBox", "0 0 16 16");
+        icon.setAttribute("width", "14");
+        icon.setAttribute("height", "14");
+        icon.classList.add("text-slate-400");
+        icon.innerHTML =
+          '<path d="M4 6l4-4 4 4M4 10l4 4 4-4" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" fill="none"/>';
+        wrap.appendChild(span);
+        wrap.appendChild(icon);
+        th.appendChild(wrap);
+      } else {
+        th.textContent = text;
+      }
       headerRow.appendChild(th);
     });
     thead.appendChild(headerRow);
 
     const tbody = document.createElement("tbody");
+    const baseTdClass = "px-7 py-3 align-middle leading-6";
     data.forEach((item, idx) => {
       const tr = document.createElement("tr");
       tr.className = idx % 2 === 0 ? "bg-white" : "bg-slate-50";
@@ -3047,7 +3273,7 @@ export class JobDetailView {
 
       cells.forEach((cell) => {
         const td = document.createElement("td");
-        td.className = "px-4 py-3 align-middle";
+        td.className = baseTdClass;
         if (typeof cell.render === "function") {
           td.appendChild(cell.render());
         } else {
@@ -3063,6 +3289,164 @@ export class JobDetailView {
     table.appendChild(thead);
     table.appendChild(tbody);
     return table;
+  }
+
+  async renderMaterialsTable() {
+    await this.model.fetchMaterials((materials = []) => {
+      const target = document.getElementById("addMaterialsTable");
+      if (!target) return;
+
+      if (!materials.length) {
+        target.innerHTML =
+          "<div class='text-sm text-slate-500'>No materials found.</div>";
+        return;
+      }
+
+      const mapped = materials.map((item) => {
+        const firstName = item.Contact_First_Name || "";
+        const lastName = item.Contact_Last_Name || "";
+        const fullName = [firstName, lastName].filter(Boolean).join(" ") || "";
+
+        return {
+          DateAdded: item.Date_Added || item.date_added || "",
+          Status: item.Status || item.status || "",
+          MaterialName: item.Material_Name || item.material_name || "",
+          Total: item.Total || item.total || "",
+          TransactionType: item.Transaction_Type || item.transaction_type || "",
+          Tax: item.Tax || item.tax || "",
+          ServiceProvider: fullName,
+        };
+      });
+
+      const table = this.createMaterialTable(mapped);
+      target.innerHTML = "";
+      target.appendChild(table);
+    });
+  }
+
+  createMaterialTable(data) {
+    if (!Array.isArray(data) || !data.length) {
+      const empty = document.createElement("div");
+      empty.className = "text-sm text-slate-500";
+      empty.textContent = "No materials found.";
+      return empty;
+    }
+
+    const table = document.createElement("table");
+    table.className =
+      "min-w-full border border-slate-200 rounded-lg overflow-hidden text-sm text-slate-700 leading-6";
+
+    const thead = document.createElement("thead");
+    thead.className = "bg-slate-100";
+    const headerRow = document.createElement("tr");
+    const headers = [
+      "Date Added",
+      "Status",
+      "Material Name",
+      "Total",
+      "Transaction Type",
+      "Tax",
+      "Service Provider",
+    ];
+    headers.forEach((text) => {
+      const th = document.createElement("th");
+      th.className = "px-7 py-3 text-left font-normal text-slate-700 leading-6";
+      th.textContent = text;
+      headerRow.appendChild(th);
+    });
+    thead.appendChild(headerRow);
+
+    const tbody = document.createElement("tbody");
+    const baseTdClass = "px-7 py-3 align-middle leading-6";
+    data.forEach((item, idx) => {
+      const tr = document.createElement("tr");
+      tr.className = idx % 2 === 0 ? "bg-white" : "bg-slate-50";
+
+      const statusKey = (item.Status || "").toLowerCase();
+      const statusStyles = {
+        new: "bg-sky-100 text-sky-600",
+        "in progress": "bg-cyan-100 text-cyan-700",
+        "pending payment": "bg-amber-100 text-amber-700",
+        "assigned to job": "bg-green-600 text-white",
+        paid: "bg-slate-200 text-slate-700",
+      };
+      const badgeClass =
+        statusStyles[statusKey] || "bg-slate-100 text-slate-600";
+
+      const cells = [
+        { value: this.formatDate(item.DateAdded), className: "text-slate-800" },
+        {
+          render: () => {
+            const span = document.createElement("span");
+            span.className =
+              "inline-flex px-3 py-1 rounded-full text-xs font-normal " +
+              badgeClass;
+            span.textContent = item.Status || "";
+            return span;
+          },
+        },
+        { value: item.MaterialName || "-", className: "text-slate-800" },
+        {
+          value: this.formatCurrency(item.Total),
+          className: "text-slate-800",
+        },
+        { value: item.TransactionType || "-", className: "text-slate-800" },
+        { value: item.Tax || "-", className: "text-slate-800" },
+        { value: item.ServiceProvider || "-", className: "text-slate-800" },
+      ];
+
+      cells.forEach((cell) => {
+        const td = document.createElement("td");
+        td.className = baseTdClass;
+        if (typeof cell.render === "function") {
+          td.appendChild(cell.render());
+        } else {
+          td.textContent = cell.value ?? "";
+          if (cell.className) td.classList.add(...cell.className.split(" "));
+        }
+        tr.appendChild(td);
+      });
+
+      tbody.appendChild(tr);
+    });
+
+    table.appendChild(thead);
+    table.appendChild(tbody);
+    return table;
+  }
+
+  formatDate(value) {
+    if (!value) return "";
+    if (String(value).length === 10) {
+      value = value * 1000;
+    }
+
+    const date = new Date(value);
+    if (isNaN(date)) return value;
+
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  }
+
+  formatCurrency(value) {
+    if (value === null || value === undefined || value === "") return "";
+    const numeric = Number(String(value).replace(/[^0-9.-]+/g, ""));
+    if (Number.isNaN(numeric)) return value || "";
+    return numeric.toLocaleString("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 2,
+    });
+  }
+
+  async handleAddMaterials() {
+    const data = this.getFieldValues(
+      '[data-section="add-materials"] input, [data-section="add-materials"] select, [data-section="add-materials"] textarea'
+    );
+    await this.model.addNewMaterial(data);
   }
 
   renderCheckbox(value) {
@@ -3086,5 +3470,13 @@ export class JobDetailView {
     box.appendChild(check);
     wrapper.appendChild(box);
     return wrapper;
+  }
+
+  async handleAddActivities() {
+    let data = this.getFieldValues(
+      '[data-section="add-activities"] input, [data-section="add-activities"] select, [data-section="add-activities"] textarea'
+    );
+    let result = await this.model.addNewActivity(data);
+    return result;
   }
 }

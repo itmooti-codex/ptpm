@@ -9,6 +9,7 @@ export class JobDetailModal {
     this.jobModel = plugin.switchTo("PeterpmJob");
     this.appointmentModel = plugin.switchTo("PeterpmAppointment");
     this.acitivityModel = plugin.switchTo("PeterpmActivity");
+    this.materialModel = plugin.switchTo("PeterpmMaterial");
 
     this.activityQuery = null;
     this.activityCallback = null;
@@ -18,6 +19,9 @@ export class JobDetailModal {
 
     this.propertyQuery = null;
     this.propertyCallback = null;
+
+    this.materialQuery = null;
+    this.materialCallback = null;
 
     this.serviceProviderQuery = null;
     this.serviceProviderCallback = null;
@@ -31,9 +35,11 @@ export class JobDetailModal {
     this.contacts = [];
     this.properties = [];
     this.activities = [];
+    this.materials = [];
     this.contactSub = null;
     this.propertySub = null;
     this.activitySub = null;
+    this.materialSub = null;
     this.serviceProviderSub = null;
     this.inquirySub = null;
     this.jobSub = null;
@@ -387,6 +393,37 @@ export class JobDetailModal {
     return result.resp;
   }
 
+  async fetchMaterials(callback) {
+    this.materialQuery = this.materialModel.query();
+    this.materialQuery
+      .deSelectAll()
+      .select([
+        "id",
+        "material_name",
+        "status",
+        "total",
+        "tax",
+        "created_at",
+        "transaction_type",
+      ])
+      .include("Service_Provider", (q) =>
+        q
+          .deSelectAll()
+          .select(["id"])
+          .include("Contact_Information", (cq) =>
+            cq.deSelectAll().select(["first_name", "last_name"])
+          )
+      )
+      .noDestroy();
+    this.materialQuery.getOrInitQueryCalc?.();
+    const result = await this.materialQuery.fetchDirect().toPromise();
+    this.materialCallback = callback;
+    this.materials = Array.isArray(result?.resp) ? result.resp : [];
+    this.subscribeToMaterialChanges();
+    if (this.materialCallback) this.materialCallback(result.resp);
+    return result.resp;
+  }
+
   async fetchInquiries(callback) {
     this.inquiryQuery = this.inquiryModel
       .query()
@@ -603,5 +640,55 @@ export class JobDetailModal {
           error: () => {},
         });
     }
+  }
+
+  subscribeToMaterialChanges() {
+    this.materialSub?.unsubscribe?.();
+    let liveObs = null;
+    try {
+      if (typeof this.materialQuery.subscribe === "function")
+        liveObs = this.materialQuery.subscribe();
+    } catch (_) {}
+
+    if (!liveObs && typeof this.materialQuery.localSubscribe === "function") {
+      try {
+        liveObs = this.materialQuery.localSubscribe();
+      } catch (_) {}
+    }
+
+    if (liveObs) {
+      this.materialSub = liveObs
+        .pipe(window.toMainInstance?.(true) ?? ((x) => x))
+        .subscribe({
+          next: (payload) => {
+            const data = Array.isArray(payload?.records)
+              ? payload.records
+              : Array.isArray(payload)
+              ? payload
+              : [];
+            this.materials = data;
+            if (this.materialCallback) this.materialCallback(data);
+          },
+          error: () => {},
+        });
+    }
+  }
+
+  async addNewActivity(acitivityObj) {
+    acitivityObj["Service"] = {
+      service_name: acitivityObj["service_name"],
+    };
+    delete acitivityObj["service_name"];
+    let query = this.acitivityModel.mutation();
+    query.createOne(acitivityObj);
+    let result = await query.execute(true).toPromise();
+    return result;
+  }
+
+  async addNewMaterial(materialObj) {
+    let query = this.materialModel.mutation();
+    query.createOne(materialObj);
+    const result = await query.execute(true).toPromise();
+    return result;
   }
 }
