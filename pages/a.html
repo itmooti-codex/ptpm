@@ -1,622 +1,72 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-  </head>
-  <body>
-    <div
-      data-section="add-materials"
-      class="w-full h-full flex flex-row gap-4 p-4 bg-gray-50"
-    >
-      <div
-        class="w-[440px] bg-white rounded-lg outline outline-1 outline-gray-300 p-4 flex flex-col gap-4"
+<div class="bg-[#F5F6F8] p-3 rounded-lg">
+  <div class="flex flex-row justify-between items-center">
+    <!-- Left Side: Icon + Filename -->
+    <div class="flex flex-row items-center gap-3">
+      <!-- Eye Icon -->
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 20 20"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
       >
-        <div class="text-neutral-700 text-base font-semibold">
-          Add Materials
-        </div>
+        <path
+          d="M18.2848 9.49731C18.2605 9.44245 17.6723 8.13758 16.3646 6.82994C14.6223 5.08758 12.4216 4.16675 9.99935 4.16675C7.57712 4.16675 5.37643 5.08758 3.63407 6.82994C2.32643 8.13758 1.73545 9.44453 1.71393 9.49731C1.68234 9.56836 1.66602 9.64525 1.66602 9.723C1.66602 9.80076 1.68234 9.87765 1.71393 9.9487C1.73823 10.0036 2.32643 11.3077 3.63407 12.6154C5.37643 14.357 7.57712 15.2779 9.99935 15.2779C12.4216 15.2779 14.6223 14.357 16.3646 12.6154C17.6723 11.3077 18.2605 10.0036 18.2848 9.9487C18.3164 9.87765 18.3327 9.80076 18.3327 9.723C18.3327 9.64525 18.3164 9.56836 18.2848 9.49731ZM9.99935 12.5001C9.44996 12.5001 8.9129 12.3372 8.4561 12.0319C7.99929 11.7267 7.64326 11.2929 7.43301 10.7853C7.22277 10.2777 7.16776 9.71923 7.27494 9.18039C7.38212 8.64155 7.64668 8.1466 8.03516 7.75812C8.42364 7.36964 8.91859 7.10508 9.45743 6.9979C9.99627 6.89072 10.5548 6.94573 11.0624 7.15597C11.5699 7.36622 12.0038 7.72225 12.309 8.17906C12.6142 8.63586 12.7771 9.17291 12.7771 9.72231C12.7771 10.459 12.4845 11.1656 11.9635 11.6865C11.4426 12.2074 10.7361 12.5001 9.99935 12.5001Z"
+          fill="#0052CC"
+        ></path>
+      </svg>
 
-        <div class="flex flex-col gap-3">
-          <div class="flex flex-col gap-1">
-            <label class="text-neutral-700 text-sm font-medium"
-              >Material Name</label
-            >
-            <input
-              type="text"
-              data-field="material_name"
-              placeholder="Enter material name"
-              class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700"
-            />
-          </div>
-
-          <div class="grid grid-cols-2 gap-3">
-            <div class="flex flex-col gap-1">
-              <label class="text-neutral-700 text-sm font-medium">Status</label>
-              <div class="relative">
-                <select
-                  data-field="status"
-                  class="appearance-none w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10"
-                ></select>
-                <span
-                  class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
-                >
-                  <svg
-                    width="15"
-                    height="9"
-                    viewBox="0 0 15 9"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z"
-                      fill="#78829D"
-                    ></path>
-                  </svg>
-                </span>
-              </div>
-            </div>
-            <div class="flex flex-col gap-1">
-              <label class="text-neutral-700 text-sm font-medium">Total</label>
-              <div class="relative">
-                <input
-                  type="text"
-                  data-field="total"
-                  value="$ 0.00"
-                  class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10"
-                />
-                <span
-                  class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"
-                  >$</span
-                >
-              </div>
-            </div>
-          </div>
-
-          <div class="flex flex-col gap-1">
-            <label class="text-neutral-700 text-sm font-medium"
-              >Description</label
-            >
-            <textarea
-              data-field="description"
-              rows="2"
-              class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700"
-            ></textarea>
-          </div>
-
-          <div class="grid grid-cols-2 gap-3">
-            <div class="flex flex-col gap-1">
-              <label class="text-neutral-700 text-sm font-medium"
-                >Transaction Type</label
-              >
-              <div class="relative">
-                <select
-                  data-field="transaction_type"
-                  class="appearance-none w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10"
-                >
-                  <option disabled="" value="">Select one</option>
-                  <option value="Reimburse">Reimburse</option>
-                  <option value="Deduct">Deduct</option>
-                </select>
-                <span
-                  class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
-                >
-                  <svg
-                    width="15"
-                    height="9"
-                    viewBox="0 0 15 9"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z"
-                      fill="#78829D"
-                    ></path>
-                  </svg>
-                </span>
-              </div>
-            </div>
-            <div class="flex flex-col gap-1">
-              <label class="text-neutral-700 text-sm font-medium">Tax</label>
-              <div class="relative">
-                <select
-                  data-field="tax"
-                  class="appearance-none w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10"
-                >
-                  <option disabled="" value="">Select one</option>
-                  <option value="EXEMPTEXPENSES">EXEMPTEXPENSES</option>
-                  <option value="INPUT">INPUT</option>
-                </select>
-                <span
-                  class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
-                >
-                  <svg
-                    width="15"
-                    height="9"
-                    viewBox="0 0 15 9"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z"
-                      fill="#78829D"
-                    ></path>
-                  </svg>
-                </span>
-              </div>
-
-              <div class="flex flex-col gap-1">
-                <label class="text-neutral-700 text-sm font-medium"
-                  >Receipt</label
-                >
-                <div
-                  data-field="receipt"
-                  class="w-full h-20 border border-dashed border-gray-300 rounded bg-gray-50 flex items-center justify-center text-sky-700 text-sm"
-                >
-                  <!-- placeholder for upload control -->
-                  Click to upload or drag and drop
-                </div>
-              </div>
-
-              <div class="flex flex-col gap-1">
-                <label class="text-neutral-700 text-sm font-medium"
-                  >Service Provider</label
-                >
-                <div class="relative" data-material-sp-search="root">
-                  <input
-                    type="text"
-                    placeholder="Search by name, phone"
-                    class="w-full text-sm pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-500 placeholder:text-slate-500"
-                    data-material-sp-search="input"
-                  />
-                  <input
-                    type="hidden"
-                    data-field="service_provider_id"
-                    data-material-sp-field="id"
-                  />
-                  <span
-                    class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
-                  >
-                    <svg
-                      width="18"
-                      height="18"
-                      viewBox="0 0 18 18"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M16.3311 15.5156L12.7242 11.9095C13.7696 10.6544 14.2909 9.04453 14.1797 7.41486C14.0684 5.7852 13.3331 4.26116 12.1268 3.15979C10.9205 2.05843 9.33603 1.46453 7.70299 1.50164C6.06995 1.53875 4.51409 2.20402 3.35906 3.35906C2.20402 4.51409 1.53875 6.06995 1.50164 7.70299C1.46453 9.33603 2.05843 10.9205 3.15979 12.1268C4.26116 13.3331 5.7852 14.0684 7.41486 14.1797C9.04453 14.2909 10.6544 13.7696 11.9095 12.7242L15.5156 16.3311C15.5692 16.3847 15.6328 16.4271 15.7027 16.4561C15.7727 16.4851 15.8477 16.5 15.9234 16.5C15.9991 16.5 16.0741 16.4851 16.144 16.4561C16.214 16.4271 16.2776 16.3847 16.3311 16.3311C16.3847 16.2776 16.4271 16.214 16.4561 16.144C16.4851 16.0741 16.5 15.9991 16.5 15.9234C16.5 15.8477 16.4851 15.7727 16.4561 15.7027C16.4271 15.6328 16.3847 15.5692 16.3311 15.5156ZM2.66852 7.8552C2.66852 6.82937 2.97271 5.82658 3.54263 4.97364C4.11255 4.12069 4.9226 3.4559 5.87035 3.06333C6.81809 2.67076 7.86096 2.56805 8.86708 2.76818C9.87319 2.96831 10.7974 3.46229 11.5227 4.18766C12.2481 4.91303 12.7421 5.83721 12.9422 6.84333C13.1424 7.84945 13.0396 8.89232 12.6471 9.84006C12.2545 10.7878 11.5897 11.5979 10.7368 12.1678C9.88383 12.7377 8.88103 13.0419 7.8552 13.0419C6.48008 13.0404 5.16171 12.4934 4.18935 11.5211C3.21699 10.5487 2.67004 9.23033 2.66852 7.8552Z"
-                        fill="#78829D"
-                      ></path>
-                    </svg>
-                  </span>
-                  <div
-                    data-material-sp-search="results"
-                    class="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded shadow hidden max-h-64 overflow-y-auto z-20"
-                  ></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="flex flex-col gap-3 pt-2 border-t border-gray-200">
-          <div class="text-neutral-700 text-sm font-semibold">Payment</div>
-          <div class="grid grid-cols-2 gap-3">
-            <div class="flex flex-col gap-1">
-              <label class="text-neutral-700 text-sm font-medium"
-                >Batch Code</label
-              >
-              <input
-                type="text"
-                data-field="batch_code"
-                class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700"
-              />
-            </div>
-            <div class="flex flex-col gap-1">
-              <label class="text-neutral-700 text-sm font-medium"
-                >Xero Bill ID</label
-              >
-              <input
-                type="text"
-                data-field="xero_bill_id"
-                class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700"
-              />
-            </div>
-          </div>
-
-          <div class="grid grid-cols-2 gap-3">
-            <div class="flex flex-col gap-1">
-              <label class="text-neutral-700 text-sm font-medium"
-                >Date Scheduled</label
-              >
-              <div class="relative">
-                <input
-                  type="text"
-                  data-field="date_scheduled"
-                  placeholder="dd/mm/yyyy"
-                  class="w-full pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-500 placeholder:text-slate-400"
-                />
-                <span
-                  class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"
-                >
-                  <svg
-                    width="18"
-                    height="18"
-                    viewBox="0 0 18 18"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M5 2.5V4.5M13 2.5V4.5M3.5 7.5H14.5M4 3.5H14C14.5523 3.5 15 3.94772 15 4.5V14C15 14.5523 14.5523 15 14 15H4C3.44772 15 3 14.5523 3 14V4.5C3 3.94772 3.44772 3.5 4 3.5Z"
-                      stroke="#94A3B8"
-                      stroke-width="1.25"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    ></path>
-                  </svg>
-                </span>
-              </div>
-            </div>
-            <div class="flex flex-col gap-1">
-              <label class="text-neutral-700 text-sm font-medium"
-                >Date Paid</label
-              >
-              <div class="relative">
-                <input
-                  type="text"
-                  data-field="date_paid"
-                  placeholder="dd/mm/yyyy"
-                  class="w-full pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-500 placeholder:text-slate-400"
-                />
-                <span
-                  class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"
-                >
-                  <svg
-                    width="18"
-                    height="18"
-                    viewBox="0 0 18 18"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M5 2.5V4.5M13 2.5V4.5M3.5 7.5H14.5M4 3.5H14C14.5523 3.5 15 3.94772 15 4.5V14C15 14.5523 14.5523 15 14 15H4C3.44772 15 3 14.5523 3 14V4.5C3 3.94772 3.44772 3.5 4 3.5Z"
-                      stroke="#94A3B8"
-                      stroke-width="1.25"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    ></path>
-                  </svg>
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="flex justify-end items-center gap-3">
-          <button class="text-sky-700 text-sm font-medium px-3 py-2 rounded">
-            Cancel
-          </button>
-          <button
-            class="text-white bg-sky-900 text-sm font-medium px-4 py-2 rounded"
-          >
-            Add
-          </button>
-        </div>
-      </div>
-
-      <div
-        class="flex-1 bg-white rounded-lg outline outline-1 outline-gray-300 p-4"
-      >
-        <div id="addMaterialsTable" class="w-full">
-          <table
-            class="min-w-full border border-slate-200 rounded-lg overflow-hidden text-sm text-slate-700 leading-6"
-          >
-            <thead class="bg-slate-100">
-              <tr>
-                <th
-                  class="px-7 py-3 text-left font-normal text-slate-700 leading-6"
-                >
-                  Date Added
-                </th>
-                <th
-                  class="px-7 py-3 text-left font-normal text-slate-700 leading-6"
-                >
-                  Status
-                </th>
-                <th
-                  class="px-7 py-3 text-left font-normal text-slate-700 leading-6"
-                >
-                  Material Name
-                </th>
-                <th
-                  class="px-7 py-3 text-left font-normal text-slate-700 leading-6"
-                >
-                  Total
-                </th>
-                <th
-                  class="px-7 py-3 text-left font-normal text-slate-700 leading-6"
-                >
-                  Transaction Type
-                </th>
-                <th
-                  class="px-7 py-3 text-left font-normal text-slate-700 leading-6"
-                >
-                  Tax
-                </th>
-                <th
-                  class="px-7 py-3 text-left font-normal text-slate-700 leading-6"
-                >
-                  Service Provider
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr class="bg-white">
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  Jan 21, 1970
-                </td>
-                <td class="px-7 py-3 align-middle leading-6">
-                  <span
-                    class="inline-flex px-3 py-1 rounded-full text-xs font-normal bg-green-600 text-white"
-                    >Assigned to Job</span
-                  >
-                </td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  Wiring
-                </td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  $50.00
-                </td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  Reimburse
-                </td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  EXEMPTEXPENSES
-                </td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  -
-                </td>
-              </tr>
-              <tr class="bg-slate-50">
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  Jan 21, 1970
-                </td>
-                <td class="px-7 py-3 align-middle leading-6">
-                  <span
-                    class="inline-flex px-3 py-1 rounded-full text-xs font-normal bg-sky-100 text-sky-600"
-                    >New</span
-                  >
-                </td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  Squeegy
-                </td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  $40.00
-                </td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  Reimburse
-                </td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  EXEMPTEXPENSES
-                </td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  Anthony Dempsey
-                </td>
-              </tr>
-              <tr class="bg-white">
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  Jan 21, 1970
-                </td>
-                <td class="px-7 py-3 align-middle leading-6">
-                  <span
-                    class="inline-flex px-3 py-1 rounded-full text-xs font-normal bg-green-600 text-white"
-                    >Assigned to Job</span
-                  >
-                </td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  test material
-                </td>
-                <td
-                  class="px-7 py-3 align-middle leading-6 text-slate-800"
-                ></td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  -
-                </td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  -
-                </td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  -
-                </td>
-              </tr>
-              <tr class="bg-slate-50">
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  Jan 21, 1970
-                </td>
-                <td class="px-7 py-3 align-middle leading-6">
-                  <span
-                    class="inline-flex px-3 py-1 rounded-full text-xs font-normal bg-green-600 text-white"
-                    >Assigned to Job</span
-                  >
-                </td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  test material
-                </td>
-                <td
-                  class="px-7 py-3 align-middle leading-6 text-slate-800"
-                ></td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  -
-                </td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  -
-                </td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  -
-                </td>
-              </tr>
-              <tr class="bg-white">
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  Jan 21, 1970
-                </td>
-                <td class="px-7 py-3 align-middle leading-6">
-                  <span
-                    class="inline-flex px-3 py-1 rounded-full text-xs font-normal bg-green-600 text-white"
-                    >Assigned to Job</span
-                  >
-                </td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  test material 1
-                </td>
-                <td
-                  class="px-7 py-3 align-middle leading-6 text-slate-800"
-                ></td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  -
-                </td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  -
-                </td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  -
-                </td>
-              </tr>
-              <tr class="bg-slate-50">
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  Jan 21, 1970
-                </td>
-                <td class="px-7 py-3 align-middle leading-6">
-                  <span
-                    class="inline-flex px-3 py-1 rounded-full text-xs font-normal bg-green-600 text-white"
-                    >Assigned to Job</span
-                  >
-                </td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  -
-                </td>
-                <td
-                  class="px-7 py-3 align-middle leading-6 text-slate-800"
-                ></td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  -
-                </td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  -
-                </td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  -
-                </td>
-              </tr>
-              <tr class="bg-white">
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  Jan 21, 1970
-                </td>
-                <td class="px-7 py-3 align-middle leading-6">
-                  <span
-                    class="inline-flex px-3 py-1 rounded-full text-xs font-normal bg-green-600 text-white"
-                    >Assigned to Job</span
-                  >
-                </td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  Test Material
-                </td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  $10.00
-                </td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  Deduct
-                </td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  INPUT
-                </td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  Andrew Knights
-                </td>
-              </tr>
-              <tr class="bg-slate-50">
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  Jan 21, 1970
-                </td>
-                <td class="px-7 py-3 align-middle leading-6">
-                  <span
-                    class="inline-flex px-3 py-1 rounded-full text-xs font-normal bg-green-600 text-white"
-                    >Assigned to Job</span
-                  >
-                </td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  -
-                </td>
-                <td
-                  class="px-7 py-3 align-middle leading-6 text-slate-800"
-                ></td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  -
-                </td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  -
-                </td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  Andrew Knights
-                </td>
-              </tr>
-              <tr class="bg-white">
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  Jan 21, 1970
-                </td>
-                <td class="px-7 py-3 align-middle leading-6">
-                  <span
-                    class="inline-flex px-3 py-1 rounded-full text-xs font-normal bg-green-600 text-white"
-                    >Assigned to Job</span
-                  >
-                </td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  t
-                </td>
-                <td
-                  class="px-7 py-3 align-middle leading-6 text-slate-800"
-                ></td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  -
-                </td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  -
-                </td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  -
-                </td>
-              </tr>
-              <tr class="bg-slate-50">
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  Jan 21, 1970
-                </td>
-                <td class="px-7 py-3 align-middle leading-6">
-                  <span
-                    class="inline-flex px-3 py-1 rounded-full text-xs font-normal bg-green-600 text-white"
-                    >Assigned to Job</span
-                  >
-                </td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  Cement
-                </td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  $23.00
-                </td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  Reimburse
-                </td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  EXEMPTEXPENSES
-                </td>
-                <td class="px-7 py-3 align-middle leading-6 text-slate-800">
-                  Anthony Dempsey
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <p class="text-gray-800 text-sm">image1.jpg</p>
     </div>
-  </body>
-</html>
+
+    <!-- Right Side: Delete Icon -->
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M13.7949 3.38453H11.2308V2.87171C11.2308 2.46369 11.0687 2.07237 10.7802 1.78386C10.4916 1.49534 10.1003 1.33325 9.69231 1.33325H6.61539C6.20736 1.33325 5.81605 1.49534 5.52753 1.78386C5.23901 2.07237 5.07692 2.46369 5.07692 2.87171V3.38453H2.51282C2.37681 3.38453 2.24637 3.43856 2.1502 3.53474C2.05403 3.63091 2 3.76135 2 3.89735C2 4.03336 2.05403 4.1638 2.1502 4.25997C2.24637 4.35615 2.37681 4.41018 2.51282 4.41018H3.02564V13.6409C3.02564 13.913 3.1337 14.1738 3.32604 14.3662C3.51839 14.5585 3.77927 14.6666 4.05128 14.6666H12.2564C12.5284 14.6666 12.7893 14.5585 12.9816 14.3662C13.174 14.1738 13.2821 13.913 13.2821 13.6409V4.41018H13.7949C13.9309 4.41018 14.0613 4.35615 14.1575 4.25997C14.2537 4.1638 14.3077 4.03336 14.3077 3.89735C14.3077 3.76135 14.2537 3.63091 14.1575 3.53474C14.0613 3.43856 13.9309 3.38453 13.7949 3.38453Z"
+        fill="#0052CC"
+      ></path>
+    </svg>
+  </div>
+</div>
+<div class="bg-[#F5F6F8] p-3 rounded-lg">
+  <div class="flex flex-row justify-between items-center">
+    <!-- Left Side: Icon + Filename -->
+    <div class="flex flex-row items-center gap-3">
+      <!-- Eye Icon -->
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 20 20"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M18.2848 9.49731C18.2605 9.44245 17.6723 8.13758 16.3646 6.82994C14.6223 5.08758 12.4216 4.16675 9.99935 4.16675C7.57712 4.16675 5.37643 5.08758 3.63407 6.82994C2.32643 8.13758 1.73545 9.44453 1.71393 9.49731C1.68234 9.56836 1.66602 9.64525 1.66602 9.723C1.66602 9.80076 1.68234 9.87765 1.71393 9.9487C1.73823 10.0036 2.32643 11.3077 3.63407 12.6154C5.37643 14.357 7.57712 15.2779 9.99935 15.2779C12.4216 15.2779 14.6223 14.357 16.3646 12.6154C17.6723 11.3077 18.2605 10.0036 18.2848 9.9487C18.3164 9.87765 18.3327 9.80076 18.3327 9.723C18.3327 9.64525 18.3164 9.56836 18.2848 9.49731ZM9.99935 12.5001C9.44996 12.5001 8.9129 12.3372 8.4561 12.0319C7.99929 11.7267 7.64326 11.2929 7.43301 10.7853C7.22277 10.2777 7.16776 9.71923 7.27494 9.18039C7.38212 8.64155 7.64668 8.1466 8.03516 7.75812C8.42364 7.36964 8.91859 7.10508 9.45743 6.9979C9.99627 6.89072 10.5548 6.94573 11.0624 7.15597C11.5699 7.36622 12.0038 7.72225 12.309 8.17906C12.6142 8.63586 12.7771 9.17291 12.7771 9.72231C12.7771 10.459 12.4845 11.1656 11.9635 11.6865C11.4426 12.2074 10.7361 12.5001 9.99935 12.5001Z"
+          fill="#0052CC"
+        ></path>
+      </svg>
+
+      <p class="text-gray-800 text-sm">image1.jpg</p>
+    </div>
+
+    <!-- Right Side: Delete Icon -->
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M13.7949 3.38453H11.2308V2.87171C11.2308 2.46369 11.0687 2.07237 10.7802 1.78386C10.4916 1.49534 10.1003 1.33325 9.69231 1.33325H6.61539C6.20736 1.33325 5.81605 1.49534 5.52753 1.78386C5.23901 2.07237 5.07692 2.46369 5.07692 2.87171V3.38453H2.51282C2.37681 3.38453 2.24637 3.43856 2.1502 3.53474C2.05403 3.63091 2 3.76135 2 3.89735C2 4.03336 2.05403 4.1638 2.1502 4.25997C2.24637 4.35615 2.37681 4.41018 2.51282 4.41018H3.02564V13.6409C3.02564 13.913 3.1337 14.1738 3.32604 14.3662C3.51839 14.5585 3.77927 14.6666 4.05128 14.6666H12.2564C12.5284 14.6666 12.7893 14.5585 12.9816 14.3662C13.174 14.1738 13.2821 13.913 13.2821 13.6409V4.41018H13.7949C13.9309 4.41018 14.0613 4.35615 14.1575 4.25997C14.2537 4.1638 14.3077 4.03336 14.3077 3.89735C14.3077 3.76135 14.2537 3.63091 14.1575 3.53474C14.0613 3.43856 13.9309 3.38453 13.7949 3.38453Z"
+        fill="#0052CC"
+      ></path>
+    </svg>
+  </div>
+</div>

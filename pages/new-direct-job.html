@@ -124,6 +124,7 @@
             </div>
             <div
               class="justify-start text-slate-500 text-sm   leading-4"
+              data-nav-back-label
             >
               Back
             </div>
@@ -134,6 +135,7 @@
           >
             <div
               class="justify-start text-sky-900 text-sm   leading-4"
+              data-nav-next-label
             >
               Next: Add Activities
             </div>
@@ -152,11 +154,16 @@
       <div class="w-fit  flex flex-row gap-3">
         <div data-property-1="extendedStep1" class="flex flex-col gap-3 ">
           <div
-            class=" w-64 pl-4 pr-16 py-6 left-0 top-0 bg-white shadow-[0px_4px_6px_-4px_rgba(0,0,0,0.10)] shadow-lg flex gap-4 flex-col justify-start items-start gap-6 h-full overflow-hidden"
+            class=" w-64 pl-4 pr-16 py-6 left-0 top-0 bg-white shadow-[0px_4px_6px_-4px_rgba(0,0,0,0.10)] shadow-lg flex gap-4 flex-col justify-start items-start gap-6 h-full overflow-hidden transition-all"
+            data-sidebar-container
           >
               <div class="justify-start items-center gap-10">
                 <div
-                  class="p-3 bg-neutral-100 rounded-lg flex justify-start items-center gap-2"
+                  class="p-3 bg-neutral-100 rounded-lg flex justify-start items-center gap-2 cursor-pointer"
+                  data-sidebar-toggle
+                  role="button"
+                  tabindex="0"
+                  aria-label="Toggle sidebar labels"
                 >
                   <svg
                     width="24"
@@ -187,11 +194,12 @@
                 <div class="flex flex-col items-start">
                   <!-- STEP: Job Information -->
                   <div
-                    class="flex items-center gap-3 cursor-pointer"
+                    class="flex items-center gap-3 select-none"
                     data-section-target="job-information"
                   >
                     <div
                       class="p-3 bg-sky-100 rounded-[32px] flex items-center justify-center"
+                      data-section-icon="job-information"
                     >
                       <!-- icon bubble content -->
                       <svg
@@ -219,24 +227,25 @@
                       </svg>
                     </div>
 
-                    <div class="text-neutral-700 text-base ">
+                    <div class="text-neutral-700 text-base hidden" data-section-label="job-information">
                       Job Information
                     </div>
                   </div>
 
                   <!-- Connector under the icon -->
-                  <div class="ml-3 my-2">
+                  <div class="ml-3 my-2" data-section-connector-after="job-information">
                     <!-- height controls the gap between steps -->
                     <div class="h-8 border-l-2 border-sky-100"></div>
                   </div>
 
                   <!-- STEP: Add Activities -->
                   <div
-                    class="flex items-center gap-3 cursor-pointer"
+                    class="flex items-center gap-3 select-none"
                     data-section-target="add-activities"
                   >
                     <div
                       class="p-3 bg-neutral-100 rounded-[32px] flex items-center justify-center"
+                      data-section-icon="add-activities"
                     >
                       <svg
                         width="24"
@@ -266,23 +275,24 @@
                       </svg>
                     </div>
 
-                    <div class="text-neutral-700 text-base ">
+                    <div class="text-neutral-700 text-base hidden" data-section-label="add-activities">
                       Add Activities
                     </div>
                   </div>
 
                   <!-- Connector -->
-                  <div class="ml-3 my-2">
+                  <div class="ml-3 my-2" data-section-connector-after="add-activities">
                     <div class="h-8 border-l-2 border-neutral-100"></div>
                   </div>
 
                   <!-- STEP: Materials -->
                   <div
-                    class="flex items-center gap-3 cursor-pointer"
+                    class="flex items-center gap-3 select-none"
                     data-section-target="add-materials"
                   >
                     <div
                       class="p-3 bg-neutral-100 rounded-[32px] flex items-center justify-center"
+                      data-section-icon="add-materials"
                     >
                       <svg
                         width="24"
@@ -308,23 +318,24 @@
                       </svg>
                     </div>
 
-                    <div class="text-neutral-700 text-base ">
+                    <div class="text-neutral-700 text-base hidden" data-section-label="add-materials">
                       Materials
                     </div>
                   </div>
 
                   <!-- Connector -->
-                  <div class="ml-3 my-2">
+                  <div class="ml-3 my-2" data-section-connector-after="add-materials">
                     <div class="h-8 border-l-2 border-neutral-100"></div>
                   </div>
 
                   <!-- STEP: Uploads -->
                   <div
-                    class="flex items-center gap-3 cursor-pointer"
+                    class="flex items-center gap-3 select-none"
                     data-section-target="uploads"
                   >
                     <div
                       class="p-3 bg-neutral-100 rounded-[32px] flex items-center justify-center"
+                      data-section-icon="uploads"
                     >
                       <div class="w-6 h-6 flex items-center justify-center">
                         <svg
@@ -345,23 +356,24 @@
                       </div>
                     </div>
 
-                    <div class="text-neutral-700 text-base ">
+                    <div class="text-neutral-700 text-base hidden" data-section-label="uploads">
                       Uploads
                     </div>
                   </div>
 
                   <!-- Connector -->
-                  <div class="ml-3 my-2">
+                  <div class="ml-3 my-2" data-section-connector-after="uploads">
                     <div class="h-8 border-l-2 border-neutral-100"></div>
                   </div>
 
                   <!-- STEP: Invoice -->
                   <div
-                    class="flex items-center gap-3 cursor-pointer"
+                    class="flex items-center gap-3 select-none"
                     data-section-target="invoice"
                   >
                     <div
                       class="p-3 bg-neutral-100 rounded-[32px] flex items-center justify-center"
+                      data-section-icon="invoice"
                     >
                       <svg
                         width="24"
@@ -394,7 +406,7 @@
                       </svg>
                     </div>
 
-                    <div class="text-neutral-700 text-base ">
+                    <div class="text-neutral-700 text-base hidden" data-section-label="invoice">
                       Invoice
                     </div>
                   </div>

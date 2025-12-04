@@ -26,6 +26,8 @@ export class JobDetailView {
     this.customModalBody = customModal.bodyEl;
     this.customModalIcon = customModal.iconEl;
 
+    this.sidebarCollapsed = true;
+
     this.init();
   }
 
@@ -48,6 +50,7 @@ export class JobDetailView {
       .then((resp) => this.setupCompanySearch(resp?.resp || resp || []));
     this.setupAddButtons();
     this.setupSectionNavigation();
+    this.setupSidebarToggle();
     this.#createContactDetailsModalUI();
   }
 
@@ -456,37 +459,149 @@ export class JobDetailView {
       "hidden w-full h-full flex flex-row gap-4 p-4 bg-gray-50";
 
     wrapper.innerHTML = `
-      <div class="w-[440px] bg-white rounded-lg outline outline-1 outline-gray-300 p-4 flex flex-col gap-4">
+      <div class="w-[440px] h-fit bg-white rounded-lg outline outline-1 outline-gray-300 p-4 flex flex-col gap-4">
         <div class="text-neutral-700 text-base font-semibold">Uploads</div>
         <div class="flex flex-col gap-3">
           <div class="flex flex-col gap-1">
-            <label class="text-neutral-700 text-sm font-medium">Title</label>
-            <input type="text" class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700" />
-          </div>
-          <div class="flex flex-col gap-1">
-            <label class="text-neutral-700 text-sm font-medium">Description</label>
-            <textarea rows="3" class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700"></textarea>
-          </div>
-          <div class="flex flex-col gap-1">
-            <label class="text-neutral-700 text-sm font-medium">Upload</label>
-            <div class="w-full h-24 border border-dashed border-gray-300 rounded bg-gray-50 flex items-center justify-center text-sky-700 text-sm">
-              <!-- placeholder for upload control -->
-              Click to upload or drag and drop
+            <div class="w-full flex flex-col h-24 border border-dashed border-gray-300 rounded bg-gray-50 flex items-center justify-center text-sky-700 text-sm">
+              <label class="text-sky-900 text-sm font-medium  leading-4">
+              <input type="file" data-field="upload-file" class="hidden">
+              <span>Click to upload</span>
+              <span class="text-neutral-700 text-sm font-normal  leading-5">or drag and drop</span></label>
+              <p class="text-center justify-start text-slate-500 text-xs font-normal leading-3">SVG, PNG, JPG or GIF (max 800*400px)</p>
             </div>
+            <div class="flex flex-col gap-2 p-2" data-section="images-uploads">
+            <div>
           </div>
         </div>
         <div class="flex justify-end items-center gap-3">
           <button class="text-sky-700 text-sm font-medium px-3 py-2 rounded">Cancel</button>
-          <button data-materials-add class="text-white bg-sky-900 text-sm font-medium px-4 py-2 rounded">Add</button>
+          <button id="add-images-btn" class="text-white bg-sky-900 text-sm font-medium px-4 py-2 rounded">Add</button>
         </div>
-      </div>
-
-      <div class="flex-1 bg-white rounded-lg outline outline-1 outline-gray-300 p-4">
-        <div id="uploadsTable" class="w-full"></div>
       </div>
     `;
 
     document.getElementById("replaceable-section").appendChild(wrapper);
+    const uploadPreviewModal = document.createElement("div");
+    uploadPreviewModal.setAttribute("data-upload-preview-modal", "");
+    uploadPreviewModal.className =
+      "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden";
+    uploadPreviewModal.innerHTML = `
+      <div class="bg-white rounded-lg shadow-lg max-w-3xl w-full mx-4 relative">
+        <button type="button" data-upload-preview-close class="absolute top-3 right-3 text-slate-500 hover:text-slate-700">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="white" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15 5L5 15M5 5L15 15" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="flex flex-col gap-4">
+          <div class="text-lg p-3 bg-[#003882] font-semibold text-white" data-upload-preview-title>Image preview</div>
+          <div class="p-3 overflow-hidden flex items-center justify-center max-h-[70vh]">
+            <img data-upload-preview-img class="max-h-[70vh] object-contain" src="" alt="Uploaded file preview" />
+          </div>
+          <div class="p-3 flex justify-end gap-3">
+            <button type="button" data-upload-preview-cancel class="px-4 py-2 rounded border border-slate-300 text-slate-700">Cancel</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(uploadPreviewModal);
+    const previewImgEl = uploadPreviewModal.querySelector(
+      "[data-upload-preview-img]"
+    );
+    const hideUploadPreview = () => {
+      if (previewImgEl) previewImgEl.src = "";
+      uploadPreviewModal.classList.add("hidden");
+    };
+    const showUploadPreview = (src, name) => {
+      if (!src || !previewImgEl) return;
+      previewImgEl.src = src;
+      document.querySelector("[data-upload-preview-title]").textContent =
+        name || "Image preview";
+      uploadPreviewModal.classList.remove("hidden");
+    };
+
+    uploadPreviewModal.addEventListener("click", (e) => {
+      if (e.target === uploadPreviewModal) hideUploadPreview();
+    });
+    uploadPreviewModal
+      .querySelectorAll(
+        "[data-upload-preview-close], [data-upload-preview-cancel]"
+      )
+      .forEach((btn) =>
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          hideUploadPreview();
+        })
+      );
+
+    const bindUploadItemActions = (item) => {
+      const viewBtn = item.querySelector('[data-upload-action="view"]');
+      const deleteBtn = item.querySelector('[data-upload-action="delete"]');
+      if (viewBtn) {
+        viewBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const isImage = (item.getAttribute("file-type") || "").startsWith(
+            "image/"
+          );
+          const base64 = item.getAttribute("data-base64");
+          if (!isImage || !base64) return;
+          const fileName =
+            item.getAttribute("data-file-name") || "Image preview";
+          showUploadPreview(base64, fileName);
+        });
+      }
+      if (deleteBtn) {
+        deleteBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          item.remove();
+        });
+      }
+    };
+
+    let uploadResult = document.querySelector(
+      '[data-section="images-uploads"]'
+    );
+    let uploadSection = document.querySelector('[ data-field="upload-file"]');
+    uploadSection.addEventListener("change", async (e) => {
+      let file = e.target.files && e.target.files[0];
+      let base64 = await this.readFileAsBase64(file);
+      if (base64) {
+        let html = this.createPreviewImageHTML(file);
+        html.setAttribute("file-type", file.type);
+        html.setAttribute("data-base64", base64);
+        html.setAttribute("data-file-name", file.name || "Image preview");
+        uploadResult.appendChild(html);
+        bindUploadItemActions(html);
+      }
+    });
+
+    let addBtn = document.getElementById("add-images-btn");
+    addBtn.addEventListener("click", () => {
+      let images = uploadResult.querySelectorAll(
+        '[data-base64][file-type^="image/"]'
+      );
+      let imagesArray = [];
+      if (images) {
+        images.forEach((item) => {
+          let data64 = item.getAttribute("data-base64");
+          imagesArray.push(data64);
+        });
+      }
+
+      let files = uploadResult.querySelectorAll(
+        '[data-base64]:not([file-type^="image/"])'
+      );
+      let filesArray = [];
+      if (files) {
+        files.forEach((item) => {
+          let data64 = item.getAttribute("data-base64");
+          filesArray.push({});
+        });
+      }
+    });
   }
 
   createInvoiceSection() {
@@ -1463,11 +1578,9 @@ export class JobDetailView {
 
     const sidebarItems = document.querySelectorAll("[data-section-target]");
     sidebarItems.forEach((item) => {
-      item.addEventListener("click", (e) => {
-        e.preventDefault();
-        const target = item.getAttribute("data-section-target");
-        this.showSection(target);
-      });
+      item.style.pointerEvents = "none";
+      item.setAttribute("aria-disabled", "true");
+      item.classList.add("cursor-default", "select-none");
     });
 
     const nextBtn =
@@ -1797,6 +1910,7 @@ export class JobDetailView {
 
     this.updateSidebarState(sectionId);
     this.updateSectionLabel(sectionId);
+    this.updateNavButtons();
   }
 
   updateSidebarState(sectionId) {
@@ -1805,13 +1919,66 @@ export class JobDetailView {
     items.forEach((item) => {
       const target = item.getAttribute("data-section-target");
       const idx = this.sectionOrder.indexOf(target);
+      const icon = item.querySelector("[data-section-icon]");
+      const connector = document.querySelector(
+        `[data-section-connector-after="${target}"] .h-8`
+      );
+      const label = item.querySelector("[data-section-label]");
+      const isVisited = idx !== -1 && idx < currentIndex;
+      const isCurrent = target === sectionId;
+
       item.classList.remove("text-sky-900", "text-green-600");
-      if (target === sectionId) {
+      if (isCurrent) {
         item.classList.add("text-sky-900");
-      } else if (idx !== -1 && idx < currentIndex) {
+      } else if (isVisited) {
         item.classList.add("text-green-600");
       }
+
+      if (icon) {
+        icon.classList.remove(
+          "bg-sky-100",
+          "bg-neutral-100",
+          "bg-green-100",
+          "ring-2",
+          "ring-sky-300",
+          "ring-green-200"
+        );
+
+        if (isCurrent) {
+          icon.classList.add("bg-sky-100", "ring-2", "ring-sky-300");
+        } else if (isVisited) {
+          icon.classList.add("bg-green-100", "ring-2", "ring-green-200");
+        } else {
+          icon.classList.add("bg-neutral-100");
+        }
+      }
+
+      if (connector) {
+        connector.classList.remove(
+          "border-sky-100",
+          "border-neutral-100",
+          "border-green-400",
+          "border-green-300",
+          "border-slate-200"
+        );
+        if (isVisited) {
+          connector.classList.add("border-green-400");
+        } else {
+          connector.classList.add("border-slate-200");
+        }
+      }
+
+      if (label) {
+        label.classList.toggle("hidden", this.sidebarCollapsed);
+      }
     });
+  }
+
+  getSectionDisplayName(sectionId) {
+    if (!sectionId) return "";
+    return sectionId
+      .replace(/-/g, " ")
+      .replace(/\b\w/g, (c) => c.toUpperCase());
   }
 
   updateSectionLabel(sectionId) {
@@ -1819,10 +1986,76 @@ export class JobDetailView {
       document.querySelector("[data-current-section-label]") ||
       document.getElementById("currentSectionLabel");
     if (!labelEl) return;
-    const pretty = sectionId
-      .replace(/-/g, " ")
-      .replace(/\b\w/g, (c) => c.toUpperCase());
-    labelEl.textContent = pretty;
+    labelEl.textContent = this.getSectionDisplayName(sectionId);
+  }
+
+  updateNavButtons() {
+    const nextBtn = document.querySelector('[data-nav-action="next"]');
+    const backBtn = document.querySelector('[data-nav-action="back"]');
+    const nextLabelEl = document.querySelector("[data-nav-next-label]");
+    const backLabelEl = document.querySelector("[data-nav-back-label]");
+    const idx = this.sectionOrder.indexOf(this.currentSection);
+    if (idx === -1) return;
+    const nextId = this.sectionOrder[idx + 1];
+    const prevId = this.sectionOrder[idx - 1];
+
+    if (nextLabelEl) {
+      nextLabelEl.textContent = nextId
+        ? `Next: ${this.getSectionDisplayName(nextId)}`
+        : "Next";
+    }
+    if (backLabelEl) {
+      backLabelEl.textContent = prevId
+        ? `Back: ${this.getSectionDisplayName(prevId)}`
+        : "Back";
+    }
+
+    if (nextBtn) {
+      const disabled = !nextId;
+      nextBtn.classList.toggle("opacity-50", disabled);
+      nextBtn.classList.toggle("pointer-events-none", disabled);
+    }
+    if (backBtn) {
+      const disabled = !prevId;
+      backBtn.classList.toggle("opacity-50", disabled);
+      backBtn.classList.toggle("pointer-events-none", disabled);
+    }
+  }
+
+  updateSidebarLabels(collapsed = this.sidebarCollapsed) {
+    const labels = document.querySelectorAll("[data-section-label]");
+    labels.forEach((label) => label.classList.toggle("hidden", collapsed));
+  }
+
+  applySidebarCollapsedState(collapsed) {
+    this.sidebarCollapsed = collapsed;
+    const container = document.querySelector("[data-sidebar-container]");
+    if (container) {
+      container.style.width = collapsed ? "84px" : "256px";
+      container.style.paddingRight = collapsed ? "16px" : "64px";
+      container.classList.toggle("items-center", collapsed);
+    }
+    this.updateSidebarLabels(collapsed);
+    this.updateSidebarState(this.currentSection);
+  }
+
+  setupSidebarToggle() {
+    const toggle = document.querySelector("[data-sidebar-toggle]");
+    const container = document.querySelector("[data-sidebar-container]");
+    if (!toggle || !container) return;
+    const toggleHandler = () =>
+      this.applySidebarCollapsedState(!this.sidebarCollapsed);
+    toggle.addEventListener("click", (e) => {
+      e.preventDefault();
+      toggleHandler();
+    });
+    toggle.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        toggleHandler();
+      }
+    });
+    this.applySidebarCollapsedState(this.sidebarCollapsed);
   }
 
   async handleJobInformation() {
@@ -1872,9 +2105,9 @@ export class JobDetailView {
   }
 
   async goNextSection(e) {
-    let value = null;
+    let value = true;
     if (this.currentSection == "job-information") {
-      value = this.handleJobInformation();
+      value = await this.handleJobInformation();
     } else if (this.currentSection == "add-activities") {
       await this.renderActivitiesTable();
       await this.handleAddActivities();
@@ -3478,5 +3711,66 @@ export class JobDetailView {
     );
     let result = await this.model.addNewActivity(data);
     return result;
+  }
+
+  readFileAsBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onload = (event) => {
+        const fileData = event.target.result;
+        resolve(fileData);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  createPreviewImageHTML(file) {
+    let fileHTML = `
+          <div class="bg-[#F5F6F8] p-3 rounded-lg">
+            <div class="flex flex-row justify-between items-center">
+              <!-- Left Side: Icon + Filename -->
+              <div class="flex flex-row items-center gap-3">
+                <!-- Eye Icon -->
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  data-upload-action="view"
+                  class="cursor-pointer"
+                >
+                  <path
+                    d="M18.2848 9.49731C18.2605 9.44245 17.6723 8.13758 16.3646 6.82994C14.6223 5.08758 12.4216 4.16675 9.99935 4.16675C7.57712 4.16675 5.37643 5.08758 3.63407 6.82994C2.32643 8.13758 1.73545 9.44453 1.71393 9.49731C1.68234 9.56836 1.66602 9.64525 1.66602 9.723C1.66602 9.80076 1.68234 9.87765 1.71393 9.9487C1.73823 10.0036 2.32643 11.3077 3.63407 12.6154C5.37643 14.357 7.57712 15.2779 9.99935 15.2779C12.4216 15.2779 14.6223 14.357 16.3646 12.6154C17.6723 11.3077 18.2605 10.0036 18.2848 9.9487C18.3164 9.87765 18.3327 9.80076 18.3327 9.723C18.3327 9.64525 18.3164 9.56836 18.2848 9.49731ZM9.99935 12.5001C9.44996 12.5001 8.9129 12.3372 8.4561 12.0319C7.99929 11.7267 7.64326 11.2929 7.43301 10.7853C7.22277 10.2777 7.16776 9.71923 7.27494 9.18039C7.38212 8.64155 7.64668 8.1466 8.03516 7.75812C8.42364 7.36964 8.91859 7.10508 9.45743 6.9979C9.99627 6.89072 10.5548 6.94573 11.0624 7.15597C11.5699 7.36622 12.0038 7.72225 12.309 8.17906C12.6142 8.63586 12.7771 9.17291 12.7771 9.72231C12.7771 10.459 12.4845 11.1656 11.9635 11.6865C11.4426 12.2074 10.7361 12.5001 9.99935 12.5001Z"
+                    fill="#0052CC"
+                  ></path>
+                </svg>
+
+                <p class="text-gray-800 text-sm">${file.name}</p>
+              </div>
+
+              <!-- Right Side: Delete Icon -->
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                data-upload-action="delete"
+                class="cursor-pointer"
+              >
+                <path
+                  d="M13.7949 3.38453H11.2308V2.87171C11.2308 2.46369 11.0687 2.07237 10.7802 1.78386C10.4916 1.49534 10.1003 1.33325 9.69231 1.33325H6.61539C6.20736 1.33325 5.81605 1.49534 5.52753 1.78386C5.23901 2.07237 5.07692 2.46369 5.07692 2.87171V3.38453H2.51282C2.37681 3.38453 2.24637 3.43856 2.1502 3.53474C2.05403 3.63091 2 3.76135 2 3.89735C2 4.03336 2.05403 4.1638 2.1502 4.25997C2.24637 4.35615 2.37681 4.41018 2.51282 4.41018H3.02564V13.6409C3.02564 13.913 3.1337 14.1738 3.32604 14.3662C3.51839 14.5585 3.77927 14.6666 4.05128 14.6666H12.2564C12.5284 14.6666 12.7893 14.5585 12.9816 14.3662C13.174 14.1738 13.2821 13.913 13.2821 13.6409V4.41018H13.7949C13.9309 4.41018 14.0613 4.35615 14.1575 4.25997C14.2537 4.1638 14.3077 4.03336 14.3077 3.89735C14.3077 3.76135 14.2537 3.63091 14.1575 3.53474C14.0613 3.43856 13.9309 3.38453 13.7949 3.38453Z"
+                  fill="#0052CC"
+                ></path>
+              </svg>
+            </div>
+          </div>`;
+
+    let element = document.createElement("div");
+    element.innerHTML = fileHTML;
+    return element;
   }
 }
