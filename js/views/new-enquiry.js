@@ -2637,10 +2637,26 @@ export class NewInquiryView {
   }
 
   onSameAsContactCheckboxClicked(address = {}) {
-    for (const key in address) {
-      let field = document.querySelector(`[data-property-id=${key}]`);
-      field.value = address[key];
-    }
+    // Build a full address object from provided data or fall back to the modal fields.
+    const modalAddress = {
+      "address-1": document.getElementById("adTopLine1")?.value || "",
+      "address-2": document.getElementById("adTopLine2")?.value || "",
+      "suburb-town": document.getElementById("adTopCity")?.value || "",
+      state: document.getElementById("adTopState")?.value || "",
+      "postal-code": document.getElementById("adTopPostal")?.value || "",
+    };
+
+    const mergedAddress = { ...modalAddress, ...address };
+
+    Object.entries(mergedAddress).forEach(([key, value]) => {
+      if (value === undefined || value === null) return;
+      const field = document.querySelector(`[data-property-id=${key}]`);
+      if (field) {
+        field.value = value;
+        field.dispatchEvent(new Event("input", { bubbles: true }));
+        field.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+    });
   }
 
   createSwithcAccountTypeModal() {
@@ -2729,12 +2745,17 @@ export class NewInquiryView {
     if (!root || !input || !panel || !results) return;
 
     const filter = (q = "") => {
-      const term = q.trim().toLowerCase();
+      const term = (q || "").trim().toLowerCase();
       if (!term) return entities;
       return entities.filter((p) => {
-        const name = (p.Name || p.name || "").toLowerCase();
+        const name = String(p.Name || p.name || "").toLowerCase();
         const companyId = String(p.ID || p.id || "");
-        return name.includes(term) || companyId.includes(term);
+        const accountType = String(p.Account_Type || "").toLowerCase();
+        return (
+          name.includes(term) ||
+          companyId.includes(term) ||
+          accountType.includes(term)
+        );
       });
     };
 

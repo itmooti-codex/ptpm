@@ -659,14 +659,20 @@ export class NewInquiryController {
   }
 
   onSameAsContactCheckboxClicked() {
-    let checkbox = document.getElementById("same-as-contact");
+    const checkbox = document.getElementById("same-as-contact");
+    if (!checkbox) return;
     checkbox.addEventListener("change", () => {
-      if (checkbox.checked) {
-        let address = JSON.parse(
-          document.getElementById("contact-address").value
-        );
-        this.view.onSameAsContactCheckboxClicked(address);
+      if (!checkbox.checked) return;
+      let address = {};
+      const addressField = document.getElementById("contact-address");
+      if (addressField && addressField.value) {
+        try {
+          address = JSON.parse(addressField.value) || {};
+        } catch (err) {
+          console.warn("Unable to parse contact-address JSON", err);
+        }
       }
+      this.view.onSameAsContactCheckboxClicked(address);
     });
   }
 
@@ -807,17 +813,17 @@ export class NewInquiryController {
         const contactField = document.querySelector(
           "[data-contact-field='contact_id']"
         );
-      const entityField = document.querySelector(
-        "[data-contact-field='entity-id']"
-      );
+        const entityField = document.querySelector(
+          "[data-contact-field='entity-id']"
+        );
 
-      const contactId = contactField?.value || "";
-      const entityId = entityField?.value || "";
+        const contactId = contactField?.value || "";
+        const entityId = entityField?.value || "";
 
-      if (!contactId && !entityId) {
-        this.view.showContactRequiredModal();
-        return;
-      }
+        if (!contactId && !entityId) {
+          this.view.showContactRequiredModal();
+          return;
+        }
 
         const activeTab = this.view.getActiveTabs();
         let result = "";
