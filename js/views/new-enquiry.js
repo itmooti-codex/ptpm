@@ -3,6 +3,11 @@ import {
   initCustomModal,
   showLoader,
   hideLoader,
+  showUnsavedChangesModal,
+  showResetConfirmModal,
+  resetFormFields,
+  readFileAsBase64,
+  showAlertModal,
 } from "../helper.js";
 
 export class NewInquiryView {
@@ -123,6 +128,9 @@ export class NewInquiryView {
     this._propertyFooterInitialized = false;
     this._propertyPredictionRequestId = 0;
 
+    this.bindCancelPrompt();
+    this.bindResetPrompt();
+    this.bindContactActionGuards();
     this.checkInquiryId();
   }
 
@@ -255,6 +263,87 @@ export class NewInquiryView {
 
   hideFooter() {
     this.saveFooter?.classList.add("hidden");
+  }
+
+  bindCancelPrompt() {
+    const cancelBtn = document.querySelector(
+      '[data-nav-action="cancel"], #cancel-btn'
+    );
+    if (!cancelBtn || cancelBtn.dataset.boundCancelModal) return;
+    cancelBtn.dataset.boundCancelModal = "true";
+    cancelBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      showUnsavedChangesModal({
+        onDiscard: () => window.history.back(),
+        onSave: () => window.history.back(),
+      });
+    });
+  }
+
+  bindResetPrompt() {
+    const resetBtn = document.querySelector(
+      '[data-nav-action="reset"], #reset-btn'
+    );
+    if (!resetBtn || resetBtn.dataset.boundResetModal) return;
+    resetBtn.dataset.boundResetModal = "true";
+    resetBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      showResetConfirmModal({
+        onConfirm: () => resetFormFields(document),
+      });
+    });
+  }
+
+  hasSelectedContact() {
+    const contactId =
+      document.querySelector("[data-contact-field='contact_id']")?.value || "";
+    const entityId =
+      document.querySelector("[data-contact-field='entity-id']")?.value || "";
+    return Boolean(contactId || entityId);
+  }
+
+  showContactRequiredModal() {
+    showAlertModal({
+      title: "Select a Contact",
+      message: "Please select a contact first.",
+      buttonLabel: "OK",
+    });
+  }
+
+  bindContactActionGuards() {
+    const viewBtn = document.getElementById("view-contact-detail");
+    const addPropertyBtn = document.getElementById("add-property-btn");
+    const guard = (handler) => (e) => {
+      if (!this.hasSelectedContact()) {
+        e?.preventDefault?.();
+        e?.stopImmediatePropagation?.();
+        this.showContactRequiredModal();
+        return;
+      }
+      handler?.(e);
+    };
+
+    if (viewBtn && !viewBtn.dataset.boundContactGuard) {
+      viewBtn.dataset.boundContactGuard = "true";
+      viewBtn.addEventListener(
+        "click",
+        guard(() => {
+          // passthrough: actual logic handled in controller listener
+        }),
+        { capture: true }
+      );
+    }
+
+    if (addPropertyBtn && !addPropertyBtn.dataset.boundContactGuard) {
+      addPropertyBtn.dataset.boundContactGuard = "true";
+      addPropertyBtn.addEventListener(
+        "click",
+        guard(() => {
+          // passthrough; controller handles real action
+        }),
+        { capture: true }
+      );
+    }
   }
 
   setSaving(isSaving) {
@@ -2842,9 +2931,17 @@ export class NewInquiryView {
       const inquiryId = url.searchParams.get("inquiry");
       const accountType = url.searchParams.get("accountType");
 
-      const inquiryData = await this.getInquiryData(inquiryId);
-      if (!inquiryData) return;
+      let result = await this.model.filterEnquiries(inquiryId, accountType);
+      if (!Array.isArray(result.resp)) {
+        showAlertModal({
+          title: "Failed to Load",
+          message: "No such records exists",
+          buttonLabel: "OK",
+        });
+        return;
+      }
 
+      const inquiryData = await this.getInquiryData(inquiryId);
       const propertyData = await this.safeCall(() =>
         this.model.fetchPropertiesById(inquiryData.Property_ID)
       );

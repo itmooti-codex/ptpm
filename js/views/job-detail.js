@@ -3,6 +3,10 @@ import {
   initCustomModal,
   showLoader,
   hideLoader,
+  showUnsavedChangesModal,
+  showResetConfirmModal,
+  resetFormFields,
+  readFileAsBase64,
 } from "../helper.js";
 
 export class JobDetailView {
@@ -51,6 +55,8 @@ export class JobDetailView {
     this.setupAddButtons();
     this.setupSectionNavigation();
     this.setupSidebarToggle();
+    this.setupCancelButton();
+    this.setupResetButton();
     this.#createContactDetailsModalUI();
   }
 
@@ -182,7 +188,7 @@ export class JobDetailView {
 
         <div class="flex justify-end items-center gap-3 border-t border-slate-200 pt-3">
           <button class="text-slate-600 text-sm font-medium px-3 py-2 rounded">Cancel</button>
-          <button class="text-white bg-sky-900 text-sm font-medium px-4 py-2 rounded">Add</button>
+          <button class="text-white bg-[#003882] text-sm font-medium px-4 py-2 rounded">Add</button>
         </div>
       </div>
 
@@ -388,7 +394,7 @@ export class JobDetailView {
           <button id="cancel-material-btn" class="text-sky-700 text-sm font-medium px-3 py-2 rounded">
             Cancel
           </button>
-          <button id="add-material-btn" class="text-white bg-sky-900 text-sm font-medium px-4 py-2 rounded">
+          <button id="add-material-btn" class="text-white bg-[#003882] text-sm font-medium px-4 py-2 rounded">
             Add
           </button>
         </div></div></div></div>
@@ -476,7 +482,7 @@ export class JobDetailView {
         </div>
         <div class="flex justify-end items-center gap-3">
           <button class="text-sky-700 text-sm font-medium px-3 py-2 rounded">Cancel</button>
-          <button id="add-images-btn" class="text-white bg-sky-900 text-sm font-medium px-4 py-2 rounded">Add</button>
+          <button id="add-images-btn" class="text-white bg-[#003882] text-sm font-medium px-4 py-2 rounded">Add</button>
         </div>
       </div>
     `;
@@ -564,10 +570,10 @@ export class JobDetailView {
     let uploadResult = document.querySelector(
       '[data-section="images-uploads"]'
     );
-    let uploadSection = document.querySelector('[ data-field="upload-file"]');
+    let uploadSection = document.querySelector('[data-field="upload-file"]');
     uploadSection.addEventListener("change", async (e) => {
       let file = e.target.files && e.target.files[0];
-      let base64 = await this.readFileAsBase64(file);
+      let base64 = await readFileAsBase64(file);
       if (base64) {
         let html = this.createPreviewImageHTML(file);
         html.setAttribute("file-type", file.type);
@@ -613,7 +619,7 @@ export class JobDetailView {
 
     wrapper.innerHTML = `
       <div class="bg-white rounded-lg outline outline-1 outline-gray-300 w-full">
-        <div class="h-2 bg-sky-900 rounded-t-lg"></div>
+        <div class="h-2 bg-[#003882] rounded-t-lg"></div>
 
         <div class="p-4 flex flex-col gap-4">
           <div class="flex justify-between items-center">
@@ -648,7 +654,7 @@ export class JobDetailView {
               <!-- illustration placeholder -->
               No invoice has been generated yet.
             </div>
-            <button class="px-4 py-2 bg-sky-900 text-white text-sm font-medium rounded">Generate Invoice</button>
+            <button class="px-4 py-2 bg-[#003882] text-white text-sm font-medium rounded">Generate Invoice</button>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
@@ -696,7 +702,7 @@ export class JobDetailView {
           <button class="px-4 py-2 rounded outline outline-1 outline-gray-300 text-slate-500 text-sm" disabled>Download Invoice (PDF)</button>
           <button class="px-4 py-2 rounded outline outline-1 outline-gray-300 text-slate-500 text-sm" disabled>View Xero Invoice (Admin)</button>
           <button class="px-4 py-2 rounded outline outline-1 outline-gray-300 text-slate-500 text-sm" disabled>Send To Customer</button>
-          <button class="px-4 py-2 bg-sky-900 text-white text-sm font-medium rounded">Generate Invoice</button>
+          <button class="px-4 py-2 bg-[#003882] text-white text-sm font-medium rounded">Generate Invoice</button>
         </div>
       </div>
     `;
@@ -779,7 +785,7 @@ export class JobDetailView {
             class="px-4 py-3 rounded text-neutral-700 text-sm font-medium">Cancel</button>
   
           <button id="dealInformationSaveBtn"
-            class="px-4 py-3 bg-sky-900 rounded text-white text-sm font-medium">Save</button>
+            class="px-4 py-3 bg-[#003882] rounded text-white text-sm font-medium">Save</button>
         </div>
       </div>
     `;
@@ -857,7 +863,7 @@ export class JobDetailView {
             class="px-4 py-3 rounded text-neutral-700 text-sm font-medium">Cancel</button>
   
           <button id="createQuoteConfirmBtn"
-            class="px-4 py-3 bg-sky-900 rounded text-white text-sm font-medium">Create & Notify</button>
+            class="px-4 py-3 bg-[#003882] rounded text-white text-sm font-medium">Create & Notify</button>
         </div>
       </div>
     `;
@@ -935,7 +941,7 @@ export class JobDetailView {
             Cancel
           </button>
           <button id="editNotesSaveBtn" type="button"
-            class="rounded bg-sky-900 px-4 py-2 text-sm font-medium text-white hover:bg-sky-800">
+            class="rounded bg-[#003882] px-4 py-2 text-sm font-medium text-white hover:bg-sky-800">
             Save
           </button>
         </div>
@@ -1602,6 +1608,41 @@ export class JobDetailView {
       backBtn.addEventListener("click", (e) => this.goPrevSection(e));
   }
 
+  setupCancelButton() {
+    const cancelBtns = document.querySelectorAll(
+      '[data-nav-action="cancel"], #cancel-btn'
+    );
+    cancelBtns.forEach((btn) => {
+      if (btn.dataset.boundCancelModal) return;
+      btn.dataset.boundCancelModal = "true";
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        showUnsavedChangesModal({
+          onDiscard: () => window.history.back(),
+          onSave: () => window.history.back(),
+        });
+      });
+    });
+  }
+
+  setupResetButton() {
+    const resetBtns = document.querySelectorAll(
+      '[data-nav-action="reset"], #reset-btn'
+    );
+    resetBtns.forEach((btn) => {
+      if (btn.dataset.boundResetModal) return;
+      btn.dataset.boundResetModal = "true";
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        showResetConfirmModal({
+          onConfirm: () => {
+            resetFormFields(document);
+          },
+        });
+      });
+    });
+  }
+
   setupJobInformationTabs() {
     const jobInfo = document.querySelector('[data-section="job-information"]');
     if (!jobInfo) return;
@@ -1683,7 +1724,7 @@ export class JobDetailView {
 
     const applyTabStyles = (btn, isActive) => {
       if (!btn) return;
-      btn.classList.toggle("bg-sky-900", isActive);
+      btn.classList.toggle("bg-[#003882]", isActive);
       btn.classList.toggle("text-white", isActive);
       btn.classList.toggle("shadow-sm", isActive);
       btn.classList.toggle("bg-white", !isActive);
@@ -1909,7 +1950,6 @@ export class JobDetailView {
     });
 
     this.updateSidebarState(sectionId);
-    this.updateSectionLabel(sectionId);
     this.updateNavButtons();
   }
 
@@ -1926,12 +1966,22 @@ export class JobDetailView {
       const label = item.querySelector("[data-section-label]");
       const isVisited = idx !== -1 && idx < currentIndex;
       const isCurrent = target === sectionId;
+      const baseColor = "text-slate-400";
+      const currentColor = "text-sky-700";
+      const visitedColor = "text-green-600";
 
-      item.classList.remove("text-sky-900", "text-green-600");
+      item.classList.remove(
+        "text-sky-900",
+        "text-green-600",
+        "text-sky-700",
+        "text-slate-400"
+      );
       if (isCurrent) {
-        item.classList.add("text-sky-900");
+        item.classList.add(currentColor);
       } else if (isVisited) {
-        item.classList.add("text-green-600");
+        item.classList.add(visitedColor);
+      } else {
+        item.classList.add(baseColor);
       }
 
       if (icon) {
@@ -1939,17 +1989,32 @@ export class JobDetailView {
           "bg-sky-100",
           "bg-neutral-100",
           "bg-green-100",
-          "ring-2",
-          "ring-sky-300",
-          "ring-green-200"
+          "text-sky-700",
+          "text-green-600",
+          "text-slate-400"
+        );
+        const svg = icon.querySelector("svg");
+        svg?.classList.remove(
+          "text-blue-700",
+          "text-green-700",
+          "text-neutral-700",
+          "text-sky-700",
+          "text-green-600",
+          "text-slate-400"
         );
 
         if (isCurrent) {
-          icon.classList.add("bg-sky-100", "ring-2", "ring-sky-300");
+          icon.classList.add("bg-sky-100");
+          icon.classList.add(currentColor);
+          svg?.classList.add(currentColor);
         } else if (isVisited) {
-          icon.classList.add("bg-green-100", "ring-2", "ring-green-200");
+          icon.classList.add("bg-green-100");
+          icon.classList.add(visitedColor);
+          svg?.classList.add(visitedColor);
         } else {
           icon.classList.add("bg-neutral-100");
+          icon.classList.add(baseColor);
+          svg?.classList.add(baseColor);
         }
       }
 
@@ -1981,14 +2046,6 @@ export class JobDetailView {
       .replace(/\b\w/g, (c) => c.toUpperCase());
   }
 
-  updateSectionLabel(sectionId) {
-    const labelEl =
-      document.querySelector("[data-current-section-label]") ||
-      document.getElementById("currentSectionLabel");
-    if (!labelEl) return;
-    labelEl.textContent = this.getSectionDisplayName(sectionId);
-  }
-
   updateNavButtons() {
     const nextBtn = document.querySelector('[data-nav-action="next"]');
     const backBtn = document.querySelector('[data-nav-action="back"]');
@@ -2005,9 +2062,7 @@ export class JobDetailView {
         : "Next";
     }
     if (backLabelEl) {
-      backLabelEl.textContent = prevId
-        ? `Back: ${this.getSectionDisplayName(prevId)}`
-        : "Back";
+      backLabelEl.textContent = "Back";
     }
 
     if (nextBtn) {
@@ -3689,7 +3744,7 @@ export class JobDetailView {
     const box = document.createElement("div");
     box.className =
       "w-5 h-5 rounded border flex items-center justify-center " +
-      (isChecked ? "bg-sky-900 border-sky-900" : "bg-white border-slate-400");
+      (isChecked ? "bg-[#003882] border-sky-900" : "bg-white border-slate-400");
 
     const check = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     check.setAttribute("width", "14");
@@ -3711,19 +3766,6 @@ export class JobDetailView {
     );
     let result = await this.model.addNewActivity(data);
     return result;
-  }
-
-  readFileAsBase64(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-
-      reader.onload = (event) => {
-        const fileData = event.target.result;
-        resolve(fileData);
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
   }
 
   createPreviewImageHTML(file) {

@@ -627,6 +627,11 @@ export class NewInquiryController {
         "[data-contact-field='entity-id']"
       ).value;
 
+      if (!contactId && !entityContactId) {
+        this.view.showContactRequiredModal();
+        return;
+      }
+
       let activeTab = this.view.getActiveTabs();
       if (activeTab == "individual") {
         this.view.onViewDetailLinkClicked(contactId, "individual");
@@ -802,19 +807,17 @@ export class NewInquiryController {
         const contactField = document.querySelector(
           "[data-contact-field='contact_id']"
         );
-        const entityField = document.querySelector(
-          "[data-contact-field='entity-id']"
-        );
+      const entityField = document.querySelector(
+        "[data-contact-field='entity-id']"
+      );
 
-        const contactId = contactField?.value || "";
-        const entityId = entityField?.value || "";
+      const contactId = contactField?.value || "";
+      const entityId = entityField?.value || "";
 
-        if (!contactId && !entityId) {
-          this.view.customModalBody.innerText =
-            "Please select a contact or a company";
-          this.view.customModalHeader.innerText = "failed";
-          return;
-        }
+      if (!contactId && !entityId) {
+        this.view.showContactRequiredModal();
+        return;
+      }
 
         const activeTab = this.view.getActiveTabs();
         let result = "";

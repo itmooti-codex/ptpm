@@ -1720,4 +1720,19 @@ export class NewInquiryModel {
       });
     });
   }
+
+  async filterEnquiries(id, type) {
+    let query = this.dealModel.query();
+    if (type === "contact" && id) {
+      query = query.where("id", id).andWhere("account_type", "contact");
+    } else if (type === "company" && id) {
+      query = query.where("id", id).andWhere("account_type", "company");
+    } else {
+      return [];
+    }
+
+    query.deSelectAll().select(["id"]);
+    let result = await query.fetchDirect().toPromise();
+    return result;
+  }
 }

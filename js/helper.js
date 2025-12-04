@@ -270,3 +270,241 @@ export function initCustomModal({ id = "statusModal" } = {}) {
 
   return { modal, headerEl, bodyEl, iconEl, hide };
 }
+
+let unsavedModalCache = null;
+
+function buildUnsavedChangesModal() {
+  if (unsavedModalCache) return unsavedModalCache;
+
+  const modal = document.createElement("div");
+  modal.id = "ptpm-unsaved-modal";
+  modal.className =
+    "fixed inset-0 z-[9998] hidden items-center justify-center bg-black/40";
+  modal.innerHTML = `
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 overflow-hidden">
+      <div class="flex items-start justify-between px-4 py-3 border-b border-slate-200">
+        <h3 class="text-lg font-semibold text-slate-900">Unsaved Changes</h3>
+        <button type="button" data-unsaved-close class="text-slate-500 hover:text-slate-700">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+      <div class="px-4 py-5 space-y-4 text-left">
+        <p class="text-sm text-slate-700">You have unsaved changes. Do you want to discard them or save and exit?</p>
+        <div class="flex justify-end gap-3">
+          <button type="button" data-unsaved-discard class="px-4 py-2 rounded border border-red-500 text-red-600 hover:bg-red-50 text-sm font-semibold">Discard Changes</button>
+          <button type="button" data-unsaved-save class="px-4 py-2 rounded bg-[#003882] text-white hover:bg-[#0b4b9f] text-sm font-semibold">Save & Exit</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const closeBtn = modal.querySelector("[data-unsaved-close]");
+  const discardBtn = modal.querySelector("[data-unsaved-discard]");
+  const saveBtn = modal.querySelector("[data-unsaved-save]");
+
+  const hide = () => {
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+    document.body.style.overflow = "";
+  };
+
+  const show = ({ onDiscard, onSave } = {}) => {
+    modal._onDiscard = typeof onDiscard === "function" ? onDiscard : null;
+    modal._onSave = typeof onSave === "function" ? onSave : null;
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+    document.body.style.overflow = "hidden";
+  };
+
+  const handleDiscard = () => {
+    hide();
+    modal._onDiscard?.();
+  };
+
+  const handleSave = () => {
+    hide();
+    modal._onSave?.();
+  };
+
+  discardBtn?.addEventListener("click", handleDiscard);
+  saveBtn?.addEventListener("click", handleSave);
+  closeBtn?.addEventListener("click", hide);
+
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) hide();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !modal.classList.contains("hidden")) hide();
+  });
+
+  document.body.appendChild(modal);
+  unsavedModalCache = { modal, show, hide };
+  return unsavedModalCache;
+}
+
+export function showUnsavedChangesModal({ onDiscard, onSave } = {}) {
+  const inst = buildUnsavedChangesModal();
+  inst.show({ onDiscard, onSave });
+  return inst;
+}
+
+let resetModalCache = null;
+
+function buildResetConfirmModal() {
+  if (resetModalCache) return resetModalCache;
+
+  const modal = document.createElement("div");
+  modal.id = "ptpm-reset-modal";
+  modal.className =
+    "fixed inset-0 z-[9998] hidden items-center justify-center bg-black/40";
+  modal.innerHTML = `
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 overflow-hidden">
+      <div class="flex items-start justify-between px-4 py-3 border-b border-slate-200">
+        <h3 class="text-lg font-semibold text-slate-900">Reset Form</h3>
+        <button type="button" data-reset-close class="text-slate-500 hover:text-slate-700">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+      <div class="px-4 py-5 space-y-4 text-left">
+        <p class="text-sm text-slate-700">This will clear all entered information. This action cannot be undone.</p>
+      </div>
+      <div class="flex justify-end gap-3 px-4 py-3 border-t border-slate-200">
+          <button type="button" data-reset-cancel class="px-4 py-2 rounded text-slate-700 hover:bg-slate-50 text-sm font-semibold">Cancel</button>
+          <button type="button" data-reset-confirm class="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700 text-sm font-semibold">Reset</button>
+        </div>
+    </div>
+  `;
+
+  const closeBtn = modal.querySelector("[data-reset-close]");
+  const cancelBtn = modal.querySelector("[data-reset-cancel]");
+  const confirmBtn = modal.querySelector("[data-reset-confirm]");
+
+  const hide = () => {
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+    document.body.style.overflow = "";
+  };
+
+  const show = ({ onConfirm } = {}) => {
+    modal._onConfirm = typeof onConfirm === "function" ? onConfirm : null;
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+    document.body.style.overflow = "hidden";
+  };
+
+  const handleConfirm = () => {
+    hide();
+    modal._onConfirm?.();
+  };
+
+  [closeBtn, cancelBtn].forEach((btn) => btn?.addEventListener("click", hide));
+  confirmBtn?.addEventListener("click", handleConfirm);
+
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) hide();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !modal.classList.contains("hidden")) hide();
+  });
+
+  document.body.appendChild(modal);
+  resetModalCache = { modal, show, hide };
+  return resetModalCache;
+}
+
+export function showResetConfirmModal({ onConfirm } = {}) {
+  const inst = buildResetConfirmModal();
+  inst.show({ onConfirm });
+  return inst;
+}
+
+export function resetFormFields(container = document) {
+  if (!container) return;
+  const fields = container.querySelectorAll("input, select, textarea");
+  fields.forEach((field) => {
+    const type = (field.getAttribute("type") || "").toLowerCase();
+    if (type === "checkbox" || type === "radio") {
+      field.checked = false;
+    } else if (field.tagName === "SELECT") {
+      field.selectedIndex = 0;
+    } else {
+      field.value = "";
+    }
+    field.dispatchEvent(new Event("input", { bubbles: true }));
+    field.dispatchEvent(new Event("change", { bubbles: true }));
+  });
+}
+
+export function readFileAsBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (event) => resolve(event.target.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+export function showAlertModal({
+  title = "Notice",
+  message = "",
+  buttonLabel = "OK",
+} = {}) {
+  let modal = document.getElementById("ptpm-alert-modal");
+  if (!modal) {
+    modal = document.createElement("div");
+    modal.id = "ptpm-alert-modal";
+    modal.className =
+      "fixed inset-0 z-[9998] hidden items-center justify-center bg-black/40";
+    modal.innerHTML = `
+      <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 overflow-hidden">
+        <div class="flex items-start justify-between px-4 py-3 border-b border-slate-200">
+          <h3 class="text-lg font-semibold text-slate-900" data-alert-title>Notice</h3>
+          <button type="button" data-alert-close class="text-slate-500 hover:text-slate-700">
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+        <div class="px-4 py-5 space-y-4 text-left">
+          <p class="text-sm text-slate-700" data-alert-message></p>
+          <div class="flex justify-end gap-3">
+            <button type="button" data-alert-confirm class="px-4 py-2 rounded bg-[#003882] text-white hover:bg-[#0b4b9f] text-sm font-semibold">OK</button>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    const close = () => {
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+      document.body.style.overflow = "";
+    };
+    modal.querySelector("[data-alert-close]").addEventListener("click", close);
+    modal
+      .querySelector("[data-alert-confirm]")
+      .addEventListener("click", close);
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) close();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && !modal.classList.contains("hidden")) close();
+    });
+  }
+
+  const titleEl = modal.querySelector("[data-alert-title]");
+  const msgEl = modal.querySelector("[data-alert-message]");
+  const confirmEl = modal.querySelector("[data-alert-confirm]");
+  if (titleEl) titleEl.textContent = title;
+  if (msgEl) msgEl.textContent = message;
+  if (confirmEl) confirmEl.textContent = buttonLabel || "OK";
+
+  modal.classList.remove("hidden");
+  modal.classList.add("flex");
+  document.body.style.overflow = "hidden";
+  return modal;
+}

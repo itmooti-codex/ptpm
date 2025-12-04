@@ -11,6 +11,12 @@
       .pac-container {
         z-index: 10050 !important;
       }
+
+      /* Sidebar icons inherit JS-driven color */
+      [data-section-icon] svg *,
+      [data-sidebar-toggle] svg * {
+        stroke: currentColor;
+      }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
     <link
@@ -37,7 +43,7 @@
       class="w-full min-h-screen bg-gray-50 flex-col justify-start items-end overflow-hidden"
     >
       <div
-        class="px-6 py-4 flex flex-row bg-sky-900 border-b border-gray-300 justify-between items-center"
+        class="px-6 py-4 flex flex-row bg-[#003882] border-b border-gray-300 justify-between items-center"
       >
         <div class="flex justify-start items-center gap-28">
           <div class="flex justify-start items-center gap-3">
@@ -53,13 +59,15 @@
           </div>
         </div>
         <div class="flex justify-start items-center gap-4">
-          <div
+          <button
+            type="button"
             data-lead-icon="false"
             data-size="medium"
             data-state="Default"
             data-text="true"
             data-trail-icon="false"
             data-type="outline"
+            data-nav-action="cancel"
             class="px-4 py-3 rounded outline outline-1 outline-offset-[-1px] outline-white flex justify-center items-center gap-2 overflow-hidden"
           >
             <div
@@ -67,7 +75,7 @@
             >
               Cancel
             </div>
-          </div>
+          </button>
           <div
             data-lead-icon="true"
             data-size="medium"
@@ -76,9 +84,12 @@
             data-trail-icon="false"
             data-type="outline"
             class="px-4 py-3 rounded outline outline-1 outline-offset-[-1px] outline-white flex justify-center items-center gap-2 overflow-hidden"
+            data-nav-action="reset"
           >
             <div class="w-3.5 h-3.5 overflow-hidden">
-              <div class="w-3 h-3 left-[1.17px] top-[1.17px] bg-white"></div>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12.8327 2.022V4.93866C12.8327 5.06759 12.7815 5.19123 12.6903 5.2824C12.5991 5.37356 12.4755 5.42477 12.3466 5.42477H9.4299C9.30098 5.42477 9.17734 5.37356 9.08617 5.2824C8.99501 5.19123 8.94379 5.06759 8.94379 4.93866C8.94379 4.80974 8.99501 4.68609 9.08617 4.59493C9.17734 4.50377 9.30098 4.45255 9.4299 4.45255H11.1732L10.2842 3.56358C9.38079 2.65601 8.15415 2.14398 6.87357 2.13988H6.84622C5.57636 2.1369 4.35637 2.63394 3.45013 3.52347C3.3573 3.61013 3.23423 3.65703 3.10727 3.65411C2.9803 3.6512 2.85952 3.59872 2.77075 3.50789C2.68199 3.41706 2.6323 3.2951 2.6323 3.1681C2.63231 3.04111 2.68202 2.91915 2.77079 2.82833C3.86912 1.75488 5.34646 1.15786 6.88222 1.16685C8.41797 1.17584 9.88823 1.7901 10.9739 2.87634L11.8605 3.76531V2.022C11.8605 1.89307 11.9117 1.76943 12.0028 1.67826C12.094 1.5871 12.2176 1.53589 12.3466 1.53589C12.4755 1.53589 12.5991 1.5871 12.6903 1.67826C12.7815 1.76943 12.8327 1.89307 12.8327 2.022ZM10.5486 10.2427C9.63336 11.1367 8.40263 11.6339 7.12327 11.6264C5.84392 11.6189 4.6191 11.1073 3.71445 10.2026L2.82548 9.31366H4.56879C4.69772 9.31366 4.82136 9.26245 4.91253 9.17129C5.00369 9.08012 5.0549 8.95648 5.0549 8.82755C5.0549 8.69863 5.00369 8.57498 4.91253 8.48382C4.82136 8.39266 4.69772 8.34144 4.56879 8.34144H1.65213C1.5232 8.34144 1.39956 8.39266 1.30839 8.48382C1.21723 8.57498 1.16602 8.69863 1.16602 8.82755V11.7442C1.16602 11.8731 1.21723 11.9968 1.30839 12.088C1.39956 12.1791 1.5232 12.2303 1.65213 12.2303C1.78105 12.2303 1.9047 12.1791 1.99586 12.088C2.08702 11.9968 2.13824 11.8731 2.13824 11.7442V10.0009L3.02721 10.8899C4.11137 11.9795 5.58379 12.5941 7.12088 12.5986H7.15308C8.67709 12.6025 10.1413 12.0058 11.2285 10.9379C11.3173 10.8471 11.367 10.7251 11.367 10.5981C11.367 10.4711 11.3173 10.3492 11.2286 10.2583C11.1398 10.1675 11.019 10.115 10.892 10.1121C10.7651 10.1092 10.642 10.1561 10.5492 10.2427H10.5486Z" fill="white"/>
+                </svg>                
             </div>
             <div
               class="justify-start text-white text-sm   leading-4"
@@ -96,9 +107,10 @@
             class="px-4 py-3 rounded outline outline-1 outline-offset-[-1px] outline-white flex justify-center items-center gap-2 overflow-hidden"
           >
             <div class="w-3.5 overflow-hidden">
-              <div
-                class="w-2.5 h-2.5 left-[1.75px] top-[1.75px] bg-white"
-              ></div>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12.1231 4.06438L9.93562 1.87688C9.89474 1.83633 9.84626 1.80425 9.79296 1.78248C9.73966 1.76071 9.68258 1.74967 9.625 1.75001H2.625C2.39294 1.75001 2.17038 1.84219 2.00628 2.00629C1.84219 2.17038 1.75 2.39294 1.75 2.62501V11.375C1.75 11.6071 1.84219 11.8296 2.00628 11.9937C2.17038 12.1578 2.39294 12.25 2.625 12.25H11.375C11.6071 12.25 11.8296 12.1578 11.9937 11.9937C12.1578 11.8296 12.25 11.6071 12.25 11.375V4.37501C12.2503 4.31743 12.2393 4.26035 12.2175 4.20705C12.1958 4.15374 12.1637 4.10526 12.1231 4.06438ZM5.25 2.62501H8.75V4.37501H5.25V2.62501ZM8.75 11.375H5.25V7.87501H8.75V11.375ZM9.625 11.375V7.87501C9.625 7.64294 9.53281 7.42038 9.36872 7.25629C9.20462 7.09219 8.98206 7.00001 8.75 7.00001H5.25C5.01794 7.00001 4.79538 7.09219 4.63128 7.25629C4.46719 7.42038 4.375 7.64294 4.375 7.87501V11.375H2.625V2.62501H4.375V4.37501C4.375 4.60707 4.46719 4.82963 4.63128 4.99373C4.79538 5.15782 5.01794 5.25001 5.25 5.25001H8.75C8.98206 5.25001 9.20462 5.15782 9.36872 4.99373C9.53281 4.82963 9.625 4.60707 9.625 4.37501V2.80438L11.375 4.55438V11.375H9.625Z" fill="white"/>
+                </svg>
+                
             </div>
             <div
               class="justify-start text-white text-sm   leading-4"
@@ -116,12 +128,10 @@
             class="px-4 py-3 bg-gray-300 rounded outline outline-1 outline-offset-[-1px] outline-gray-300 flex justify-center items-center gap-2 overflow-hidden"
             data-nav-action="back"
           >
-            <div
-              data-property-1="expand arrow"
-              class="w-3.5 h-3.5 overflow-hidden"
-            >
-              <div class="w-3.5 h-2 left-0 top-[2.62px] bg-slate-500"></div>
-            </div>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M0 10.7188C0 10.8928 0.0691404 11.0597 0.192211 11.1828C0.315282 11.3059 0.482202 11.375 0.65625 11.375C0.830298 11.375 0.997218 11.3059 1.12029 11.1828C1.24336 11.0597 1.3125 10.8928 1.3125 10.7188V3.28125C1.3125 3.1072 1.24336 2.94028 1.12029 2.81721C0.997218 2.69414 0.830298 2.625 0.65625 2.625C0.482202 2.625 0.315282 2.69414 0.192211 2.81721C0.0691404 2.94028 0 3.1072 0 3.28125L0 10.7188ZM6.86088 3.6925C6.98377 3.81555 7.0528 3.98234 7.0528 4.15625C7.0528 4.33016 6.98377 4.49695 6.86088 4.62L5.13712 6.34375H13.3438C13.5178 6.34375 13.6847 6.41289 13.8078 6.53596C13.9309 6.65903 14 6.82595 14 7C14 7.17405 13.9309 7.34097 13.8078 7.46404C13.6847 7.58711 13.5178 7.65625 13.3438 7.65625H5.13712L6.86088 9.38C6.92535 9.44008 6.97707 9.51253 7.01293 9.59303C7.0488 9.67353 7.06809 9.76043 7.06964 9.84854C7.0712 9.93666 7.05499 10.0242 7.02198 10.1059C6.98898 10.1876 6.93985 10.2618 6.87753 10.3242C6.81522 10.3865 6.74099 10.4356 6.65927 10.4686C6.57756 10.5016 6.49003 10.5178 6.40192 10.5163C6.3138 10.5147 6.2269 10.4954 6.1464 10.4596C6.0659 10.4237 5.99345 10.372 5.93338 10.3075L3.08875 7.46375L2.625 7L3.08875 6.53625L5.9325 3.6925C5.99344 3.63152 6.06581 3.58314 6.14545 3.55013C6.2251 3.51713 6.31047 3.50014 6.39669 3.50014C6.4829 3.50014 6.56827 3.51713 6.64792 3.55013C6.72757 3.58314 6.79993 3.63152 6.86088 3.6925Z" fill="#003882"/>
+            </svg>
+            
             <div
               class="justify-start text-slate-500 text-sm   leading-4"
               data-nav-back-label
@@ -139,14 +149,10 @@
             >
               Next: Add Activities
             </div>
-            <div
-              data-property-1="expand arrow"
-              class="w-3.5 h-3.5 origin-top-left rotate-180 overflow-hidden"
-            >
-              <div
-                class="w-3.5 h-2 left-0 top-[2.62px] bg-white border border-sky-900"
-              ></div>
-            </div>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M13.3438 3.125C13.3023 3.125 13.2627 3.1416 13.2334 3.1709C13.2041 3.2002 13.1875 3.23981 13.1875 3.28125V10.7188C13.1875 10.7602 13.2041 10.7998 13.2334 10.8291C13.2627 10.8584 13.3023 10.875 13.3438 10.875C13.3852 10.875 13.4248 10.8584 13.4541 10.8291C13.4834 10.7998 13.5 10.7602 13.5 10.7188V3.28125C13.5 3.23981 13.4834 3.2002 13.4541 3.1709C13.4248 3.1416 13.3852 3.125 13.3438 3.125ZM7.60352 4C7.58317 4 7.56276 4.004 7.54395 4.01172L7.49316 4.0459C7.4639 4.07519 7.44727 4.11484 7.44727 4.15625C7.44727 4.17689 7.45127 4.19711 7.45898 4.21582L7.49316 4.2666L10.0703 6.84375H0.65625C0.61481 6.84375 0.575201 6.86035 0.545898 6.88965C0.516596 6.91895 0.5 6.95856 0.5 7C0.5 7.04144 0.516596 7.08105 0.545898 7.11035C0.575202 7.13965 0.614811 7.15625 0.65625 7.15625H10.0703L7.48047 9.74609C7.46512 9.7604 7.4519 9.77771 7.44336 9.79688C7.43495 9.81592 7.43103 9.8366 7.43066 9.85742C7.4303 9.87838 7.43355 9.89951 7.44141 9.91895C7.44923 9.93825 7.46087 9.95595 7.47559 9.9707C7.49043 9.98554 7.50887 9.99703 7.52832 10.0049C7.54759 10.0126 7.56811 10.0169 7.58887 10.0166C7.60985 10.0162 7.63123 10.0115 7.65039 10.0029C7.66947 9.99439 7.68692 9.98209 7.70117 9.9668L7.70703 9.95996L7.71289 9.9541L10.5576 7.11035L10.668 7L7.71387 4.0459C7.69936 4.03138 7.68205 4.01958 7.66309 4.01172C7.64423 4.00393 7.62392 4.00003 7.60352 4Z" fill="white" stroke="#003882"/>
+              </svg>
+              
           </div>
         </div>
       </div>
@@ -233,7 +239,7 @@
                   </div>
 
                   <!-- Connector under the icon -->
-                  <div class="ml-3 my-2" data-section-connector-after="job-information">
+                  <div class="ml-5 my-2" data-section-connector-after="job-information">
                     <!-- height controls the gap between steps -->
                     <div class="h-8 border-l-2 border-sky-100"></div>
                   </div>
@@ -281,7 +287,7 @@
                   </div>
 
                   <!-- Connector -->
-                  <div class="ml-3 my-2" data-section-connector-after="add-activities">
+                  <div class="ml-5 my-2" data-section-connector-after="add-activities">
                     <div class="h-8 border-l-2 border-neutral-100"></div>
                   </div>
 
@@ -324,7 +330,7 @@
                   </div>
 
                   <!-- Connector -->
-                  <div class="ml-3 my-2" data-section-connector-after="add-materials">
+                  <div class="ml-5 my-2" data-section-connector-after="add-materials">
                     <div class="h-8 border-l-2 border-neutral-100"></div>
                   </div>
 
@@ -362,7 +368,7 @@
                   </div>
 
                   <!-- Connector -->
-                  <div class="ml-3 my-2" data-section-connector-after="uploads">
+                  <div class="ml-5 my-2" data-section-connector-after="uploads">
                     <div class="h-8 border-l-2 border-neutral-100"></div>
                   </div>
 
@@ -453,7 +459,7 @@
                 <div class="text-neutral-700 text-sm font-medium">Appointment Status</div>
                 <div class="relative w-full">
                   <select
-                    class="appearance-none pr-10 px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 w-full text-slate-500"
+                    class="appearance-none pr-10 px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 w-full text-slate-500 text-sm"
                     data-field="status"
                   >
                     <option value="" disabled selected>Select</option>
@@ -486,7 +492,7 @@
                 <div class="text-neutral-700 text-sm font-medium">Job Status</div>
                 <div class="relative w-full">
                   <select
-                    class="appearance-none pr-10 px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 w-full text-slate-500"
+                    class="appearance-none pr-10 px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 w-full text-slate-500 text-sm"
                     data-field="type"
                   >
                     <option value="" disabled selected>Select</option>
@@ -517,9 +523,9 @@
                 <div class="text-neutral-700 text-sm font-medium">Title</div>
                 <input
                   type="text"
-                  class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700"
-                  data-field="title"
-                />
+                      class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 text-sm"
+                      data-field="title"
+                    />
               </div>
 
               <div class="flex flex-row gap-3">
@@ -529,7 +535,7 @@
                     <input
                       type="text"
                       placeholder="Select date & time"
-                      class="date-picker w-full pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-500 placeholder:text-slate-400"
+                      class="date-picker w-full pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-500 placeholder:text-slate-400 text-sm"
                       data-field="start_time"
                     />
                     <span
@@ -559,7 +565,7 @@
                     <input
                       type="text"
                       placeholder="Select date & time"
-                      class="date-picker w-full pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-500 placeholder:text-slate-400"
+                      class="date-picker w-full pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-500 placeholder:text-slate-400 text-sm"
                       data-field="end_time"
                     />
                     <span
@@ -598,7 +604,7 @@
                 <div class="text-neutral-700 text-sm font-medium">Location</div>
                 <div class="relative w-full">
                   <select
-                    class="appearance-none pr-10 px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 w-full text-slate-500"
+                    class="appearance-none pr-10 px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 w-full text-slate-500 text-sm"
                     data-field="location_id"
                   >
                     <option value="" disabled selected>Select</option>
@@ -626,7 +632,7 @@
                 <div class="text-neutral-700 text-sm font-medium">Host</div>
                 <div class="relative w-full">
                   <select
-                    class="appearance-none pr-10 px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 w-full text-slate-500"
+                    class="appearance-none pr-10 px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 w-full text-slate-500 text-sm"
                     data-field="host_id"
                   >
                     <option value="" disabled selected>Select</option>
@@ -656,7 +662,7 @@
                 </div>
                 <div class="relative w-full">
                   <select
-                    class="appearance-none pr-10 px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 w-full text-slate-500"
+                    class="appearance-none pr-10 px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 w-full text-slate-500 text-sm"
                     data-field="primary_guest_id"
                   >
                     <option value="" disabled selected>Select</option>
@@ -692,7 +698,7 @@
                 <div class="text-neutral-700 text-sm font-medium">Inquiry</div>
                 <div class="relative w-full">
                   <select
-                    class="appearance-none pr-10 px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 w-full text-slate-500"
+                    class="appearance-none pr-10 px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 w-full text-slate-500 text-sm"
                     data-field="inquiry_id"
                   >
                     <option value="" disabled selected>Select</option>
@@ -720,7 +726,7 @@
                 <div class="text-neutral-700 text-sm font-medium">Job</div>
                 <div class="relative w-full">
                   <select
-                    class="appearance-none pr-10 px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 w-full text-slate-500"
+                    class="appearance-none pr-10 px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 w-full text-slate-500 text-sm"
                     data-field="job_id"
                   >
                     <option value="" disabled selected>Select</option>
@@ -801,7 +807,7 @@
                     <button
                       type="button"
                       data-contact-toggle="individual"
-                      class="px-2 py-1 bg-blue-700 rounded-xl flex justify-center items-center gap-1 text-white text-xs"
+                      class="px-2 py-1 bg-[#003882] rounded-xl flex justify-center items-center gap-1 text-white text-xs"
                     >
                       Individual
                     </button>
@@ -1047,7 +1053,7 @@
                       </div>
                       <div class="relative w-full">
                         <select data-field="job_type"
-                          class="appearance-none pr-10 px-2.5 py-2 bg-white rounded outline outline-1 outline-gray-300 flex justify-between items-center w-full"
+                          class="appearance-none pr-10 px-2.5 py-2 bg-white rounded outline outline-1 outline-gray-300 flex justify-between items-center w-full text-sm"
                         >
                           <option value="" disabled selected>Select</option>
                           <option value="Select none">Select none</option>
@@ -1095,7 +1101,7 @@
                       <div class="text-neutral-700 text-sm ">
                         Priority
                       </div>
-                      <div class="relative w-full">
+                      <div class="text-sm relative w-full">
                         <select data-field="priority"
                           class="appearance-none pr-10 px-2.5 py-2 bg-white rounded outline outline-1 outline-gray-300 flex justify-between items-center w-full"
                         >
@@ -1129,7 +1135,7 @@
                       </div>
                       <div class="relative w-full">
                         <select data-field="job_status"
-                          class="appearance-none pr-10 px-2.5 py-2 bg-white rounded outline outline-1 outline-gray-300 flex justify-between items-center w-full"
+                          class="appearance-none pr-10 px-2.5 py-2 bg-white rounded outline outline-1 outline-gray-300 flex justify-between items-center w-full text-sm"
                         >
                           <option value="" disabled selected>Select</option>
                           <option value="Quote">Quote</option>
@@ -1168,7 +1174,7 @@
                       </div>
                       <div class="relative w-full">
                         <select data-field="payment_status"
-                          class="appearance-none pr-10 px-2.5 py-2 bg-white rounded outline outline-1 outline-gray-300 flex justify-between items-center w-full"
+                          class="appearance-none pr-10 px-2.5 py-2 bg-white rounded outline outline-1 outline-gray-300 flex justify-between items-center w-full text-sm"
                         >
                           <option value="" disabled selected>Select</option>
                           <option value="Invoice Required">Invoice Required</option>
