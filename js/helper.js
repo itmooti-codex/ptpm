@@ -1,3 +1,5 @@
+import { API_KEY, ACCOUNT_NAME } from "../sdk/config.js";
+
 export class DashboardHelper {
   constructor() {}
 
@@ -447,6 +449,53 @@ export function readFileAsBase64(file) {
     reader.onerror = reject;
     reader.readAsDataURL(file);
   });
+}
+
+const uploadApiBase = `https://${(ACCOUNT_NAME || "").toLowerCase()}.vitalstats.app`;
+
+function sanitizeFolderName(folderName) {
+  if (!folderName || typeof folderName !== "string") return "";
+  return folderName.replace(/^[\\/]+|[\\/]+$/g, "");
+}
+
+export async function requestUploadDetails(file, folderName = "") {
+  const safeFolder = sanitizeFolderName(folderName);
+  const name =
+    (safeFolder ? `${safeFolder}/` : "") + (file?.name || "upload");
+  const params = new URLSearchParams({
+    type: file?.type || "application/octet-stream",
+    name,
+    generateName: "1",
+  });
+  const res = await fetch(`${uploadApiBase}/api/v1/rest/upload?${params}`, {
+    headers: { "Api-Key": API_KEY },
+  });
+  const data = await res.json();
+  if (!res.ok || data.statusCode !== 200) {
+    throw new Error("Failed to obtain upload URL");
+  }
+  return data.data;
+}
+
+export async function uploadFileToS3(url, file) {
+  const res = await fetch(url, {
+    method: "PUT",
+    headers: { "Content-Type": file?.type || "application/octet-stream" },
+    body: file,
+  });
+  if (!res.ok) {
+    throw new Error("File upload failed");
+  }
+}
+
+export async function uploadAndGetFileLink(file, folderName = "") {
+  const { uploadUrl, url } = await requestUploadDetails(file, folderName);
+  await uploadFileToS3(uploadUrl, file);
+  return url;
+}
+
+export async function uploadImage(file, folderName = "uploads") {
+  return uploadAndGetFileLink(file, folderName);
 }
 
 export function showAlertModal({

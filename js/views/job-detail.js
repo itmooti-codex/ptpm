@@ -6,7 +6,7 @@ import {
   showUnsavedChangesModal,
   showResetConfirmModal,
   resetFormFields,
-  readFileAsBase64,
+  uploadImage,
 } from "../helper.js";
 
 export class JobDetailView {
@@ -510,6 +510,14 @@ export class JobDetailView {
       if (receiptInput) receiptInput.value = "";
     };
 
+    const toDataUrl = (src, type) => {
+      if (!src) return "";
+      if (src.startsWith("http")) return src;
+      return src.startsWith("data:")
+        ? src
+        : `data:${type || "image/*"};base64,${src}`;
+    };
+
     const handleReceiptFile = async (file) => {
       if (!file || !receiptList) return;
       const isImage = (file.type || "").startsWith("image/");
@@ -518,19 +526,31 @@ export class JobDetailView {
         resetReceiptUI();
         return;
       }
-      const base64 = await readFileAsBase64(file);
-      if (!base64) return;
-      // Only keep one receipt
-      receiptList.innerHTML = "";
-      const node = document.createElement("div");
-      node.className = "hidden";
-      node.setAttribute("file-type", file.type);
-      node.setAttribute("data-base64", base64);
-      node.setAttribute("data-file-name", file.name || "Receipt");
-      receiptList.appendChild(node);
-      if (receiptName) receiptName.textContent = file.name || "Receipt";
-      if (receiptPreviewBtn) receiptPreviewBtn.classList.remove("hidden");
-      if (receiptRemoveBtn) receiptRemoveBtn.classList.remove("hidden");
+      showLoader(
+        this.loaderElement,
+        this.loaderMessageEl,
+        this.loaderCounter,
+        "Uploading receipt..."
+      );
+      try {
+        const url = await uploadImage(file, "materials/receipts");
+        receiptList.innerHTML = "";
+        const node = document.createElement("div");
+        node.className = "hidden";
+        node.setAttribute("file-type", file.type);
+        node.setAttribute("data-upload-url", url);
+        node.setAttribute("data-file-name", file.name || "Receipt");
+        receiptList.appendChild(node);
+        if (receiptName) receiptName.textContent = file.name || "Receipt";
+        if (receiptPreviewBtn) receiptPreviewBtn.classList.remove("hidden");
+        if (receiptRemoveBtn) receiptRemoveBtn.classList.remove("hidden");
+      } catch (error) {
+        console.error("Receipt upload failed", error);
+        this.handleFailure("Failed to upload receipt. Please try again.");
+        resetReceiptUI();
+      } finally {
+        hideLoader(this.loaderElement, this.loaderCounter);
+      }
     };
 
     if (receiptTrigger && receiptInput) {
@@ -542,7 +562,6 @@ export class JobDetailView {
 
     if (receiptInput) {
       receiptInput.addEventListener("click", (e) => {
-        // Avoid double-open: reset value so change fires even if same file chosen.
         e.target.value = "";
       });
       receiptInput.addEventListener("change", async (e) => {
@@ -554,11 +573,12 @@ export class JobDetailView {
     if (receiptPreviewBtn) {
       receiptPreviewBtn.addEventListener("click", (e) => {
         e.preventDefault();
-        const item = receiptList?.querySelector("[data-base64]");
+        const item = receiptList?.querySelector("[data-upload-url]");
         if (!item) return;
-        const base64 = item.getAttribute("data-base64");
+        const url = item.getAttribute("data-upload-url");
         const name = item.getAttribute("data-file-name");
-        ensureReceiptPreviewModal().show(base64, name);
+        const type = item.getAttribute("file-type") || "image/*";
+        ensureReceiptPreviewModal().show(toDataUrl(url, type) || url, name);
       });
     }
 
@@ -711,11 +731,17 @@ export class JobDetailView {
           const isImage = (item.getAttribute("file-type") || "").startsWith(
             "image/"
           );
-          const base64 = item.getAttribute("data-base64");
-          if (!isImage || !base64) return;
+          const url = item.getAttribute("data-upload-url");
+          const type = item.getAttribute("file-type") || "image/*";
+          const src = url?.startsWith("http")
+            ? url
+            : url
+            ? `data:${type};base64,${url}`
+            : "";
+          if (!isImage || !src) return;
           const fileName =
             item.getAttribute("data-file-name") || "Image preview";
-          showUploadPreview(base64, fileName);
+          showUploadPreview(src, fileName);
         });
       }
       if (deleteBtn) {
@@ -740,21 +766,36 @@ export class JobDetailView {
         e.target.value = "";
         return;
       }
-      let base64 = await readFileAsBase64(file);
-      if (base64) {
+      showLoader(
+        this.loaderElement,
+        this.loaderMessageEl,
+        this.loaderCounter,
+        "Uploading image..."
+      );
+      try {
+        const url = await uploadImage(file, "uploads");
+        if (!url) {
+          this.handleFailure("Upload failed. Please try again.");
+          return;
+        }
         let html = this.createPreviewImageHTML(file);
         html.setAttribute("file-type", file.type);
-        html.setAttribute("data-base64", base64);
+        html.setAttribute("data-upload-url", url);
         html.setAttribute("data-file-name", file.name || "Image preview");
         uploadResult.appendChild(html);
         bindUploadItemActions(html);
+      } catch (error) {
+        console.error("Image upload failed", error);
+        this.handleFailure("Failed to upload image. Please try again.");
+      } finally {
+        hideLoader(this.loaderElement, this.loaderCounter);
       }
     });
 
     let addBtn = document.getElementById("add-images-btn");
     addBtn.addEventListener("click", () => {
       let images = uploadResult.querySelectorAll(
-        '[data-base64][file-type^="image/"]'
+        '[data-upload-url][file-type^="image/"]'
       );
 
       const propertyId =
@@ -777,8 +818,9 @@ export class JobDetailView {
       };
       if (images) {
         images.forEach(async (item) => {
-          let data64 = item.getAttribute("data-base64");
-          uploadObj.photo_upload = data64;
+          let imageUrl = item.getAttribute("data-upload-url");
+          if (!imageUrl) return;
+          uploadObj.photo_upload = imageUrl;
           await this.model.createNewUpload(uploadObj);
         });
       }
@@ -866,7 +908,6 @@ export class JobDetailView {
                   <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 2.5V4.5M13 2.5V4.5M3.5 7.5H14.5M4 3.5H14C14.5523 3.5 15 3.94772 15 4.5V14C15 14.5523 14.5523 15 14 15H4C3.44772 15 3 14.5523 3 14V4.5C3 3.94772 3.44772 3.5 4 3.5Z" stroke="#94A3B8" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"></path></svg>
                 </span>
               </div>
-              <span class="text-xs text-slate-600" data-field="invoice_date">--</span>
             </div><div class="flex flex-col gap-1">
               <label class="text-neutral-700 text-sm font-medium">Due Date</label>
               <div class="relative">
@@ -875,7 +916,6 @@ export class JobDetailView {
                   <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 2.5V4.5M13 2.5V4.5M3.5 7.5H14.5M4 3.5H14C14.5523 3.5 15 3.94772 15 4.5V14C15 14.5523 14.5523 15 14 15H4C3.44772 15 3 14.5523 3 14V4.5C3 3.94772 3.44772 3.5 4 3.5Z" stroke="#94A3B8" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"></path></svg>
                 </span>
               </div>
-              <span class="text-xs text-slate-600" data-field="due_date">--</span>
             </div></div>
 
           <button id="generate-invoice-btn" class="px-4 py-2 bg-[#003882] text-white text-sm font-medium rounded">Generate Invoice</button></div>
@@ -2380,6 +2420,7 @@ export class JobDetailView {
   async goNextSection(e) {
     let value = true;
     if (this.currentSection == "job-information") {
+      value = await this.handleJobInformation();
     } else if (this.currentSection == "add-activities") {
     } else if (this.currentSection == "add-materials") {
     } else if (this.currentSection == "uploads") {
@@ -3960,6 +4001,11 @@ export class JobDetailView {
     const data = this.getFieldValues(
       '[data-section="add-materials"] input, [data-section="add-materials"] select, [data-section="add-materials"] textarea'
     );
+    const receiptUrl =
+      document
+        .querySelector("[data-material-receipts] [data-upload-url]")
+        ?.getAttribute("data-upload-url") || "";
+    if (receiptUrl) data.receipt_url = receiptUrl;
     await this.model.addNewMaterial(data);
   }
 
