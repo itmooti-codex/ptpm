@@ -73,7 +73,7 @@ export class JobDetailView {
           <div class="text-neutral-800 text-base font-semibold">Add New Activity</div>
           <label class="flex items-center gap-2 text-slate-600 text-sm">
             <input type="checkbox" data-field="invoice_to_client" class="w-4 h-4 accent-[#0A3E8C]" />
-            <span>Invoice to client</span>
+            <span class="!pl-0">Invoice to client</span>
           </label>
         </div>
 
@@ -776,10 +776,10 @@ export class JobDetailView {
         job_id: this.jobId,
       };
       if (images) {
-        images.forEach((item) => {
+        images.forEach(async (item) => {
           let data64 = item.getAttribute("data-base64");
           uploadObj.photo_upload = data64;
-          this.model.createNewUpload(uploadObj);
+          await this.model.createNewUpload(uploadObj);
         });
       }
     });
