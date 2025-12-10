@@ -58,6 +58,25 @@ export class NewInquiryController {
       { value: "736", text: "7.30-10 pm" },
     ];
 
+    this.buildingFeatures = [
+      { value: "713", text: "Brick" },
+      { value: "712", text: "Concrete" },
+      { value: "711", text: "Flat Roof" },
+      { value: "710", text: "Highset" },
+      { value: "709", text: "Iron Roof" },
+      { value: "708", text: "Lowset" },
+      { value: "707", text: "PostWar" },
+      { value: "706", text: "Queenslander" },
+      { value: "705", text: "Raked Ceiling" },
+      { value: "704", text: "Sloping Block" },
+      { value: "703", text: "Super 6 / Fibro roof" },
+      { value: "702", text: "Tile Roof" },
+      { value: "701", text: "Town house" },
+      { value: "700", text: "Unit Block" },
+      { value: "699", text: "Warehouse" },
+      { value: "698", text: "Wood" },
+      { value: "697", text: "Wood & Brick" },
+    ];
     this.stateOptions = [
       { value: "NSW", displayValue: "New South Wales" },
       { value: "QLD", displayValue: "Queensland" },
@@ -136,16 +155,8 @@ export class NewInquiryController {
       "office_phone",
     ];
 
-    this.renderDropdownForStates();
-    this.onContactFieldChanges();
-    this.onAddAffiliationButtonClicked();
-    this.onAddPropertyContactButtonClicked();
-    this.onAddContactSaveButtonClicked();
-    this.onSubmitButtonClicked();
-    this.onViewDetailLinkClicked();
-    this.onEntityAddButtonClick();
+    this.services = null;
   }
-
   #bindLoaderHelpers() {
     // Cache the view's loader references so the controller can call helper-based loaders.
     this.loaderElement = this.view?.loaderElement || null;
@@ -166,8 +177,9 @@ export class NewInquiryController {
     hideLoader(this.loaderElement, this.loaderCounter, force);
   }
 
-  init() {
+  async init() {
     if (!this.view?.isActive?.()) return;
+    this.services = await this.fetchServices();
 
     this.view.onContactSelected((contact) => this.#handleSelection(contact));
     this.view.onManualAdd(() => {
@@ -183,9 +195,20 @@ export class NewInquiryController {
       "noises-card"
     );
     this.#renderDropdownOptionsForTab(
+      this.services,
+      "services-list",
+      "services-card"
+    );
+
+    this.#renderDropdownOptionsForTab(
       this.pestLocations,
       "location-list",
       "location-card"
+    );
+    this.#renderDropdownOptionsForTab(
+      this.buildingFeatures,
+      "property-building-list",
+      "property-building-card"
     );
 
     this.#renderDropdownOptionsForTab(this.times, "times-list", "times-card");
@@ -199,6 +222,15 @@ export class NewInquiryController {
     this.showHideAddAddressModal();
     this.onSameAsContactCheckboxClicked();
     this.onAddPropertyButtonClick();
+
+    this.renderDropdownForStates();
+    this.onContactFieldChanges();
+    this.onAddAffiliationButtonClicked();
+    this.onAddPropertyContactButtonClicked();
+    this.onAddContactSaveButtonClicked();
+    this.onSubmitButtonClicked();
+    this.onViewDetailLinkClicked();
+    this.onEntityAddButtonClick();
   }
 
   async #loadContacts() {
@@ -384,12 +416,26 @@ export class NewInquiryController {
         "location-all",
         'input[type="checkbox"]:not(#location-all)'
       );
+    } else if (listId == "property-building-list") {
+      this.#initDropdown(
+        "property-building-btn",
+        "property-building-card",
+        "property-building-all",
+        'input[type="checkbox"]:not(#property-building-all)'
+      );
     } else if (listId == "times-list") {
       this.#initDropdown(
         "times-btn",
         "times-card",
         "times-all",
         'input[type="checkbox"]:not(#times-all)'
+      );
+    } else if (listId == "services-list") {
+      this.#initDropdown(
+        "services-btn",
+        "services-card",
+        "services-all",
+        'input[type="checkbox"]:not(#services-all)'
       );
     }
   }
@@ -598,10 +644,24 @@ export class NewInquiryController {
       } else {
         dealsObj["company_id"] = companyId;
       }
+      const residentImages = this.view.getResidentFeedbackImages?.() || [];
       this.#showLoader("creating new enquiry...");
       let result = await this.model.createNewInquiry(dealsObj);
 
       if (!result.isCancelling) {
+        if (residentImages.length) {
+          const uploadObj = {
+            type: "photo",
+            property_name_id: selectedPropertyId,
+            customer_id: contactId,
+            company_id: companyId,
+            job_id: "",
+          };
+          for (const img of residentImages) {
+            uploadObj.photo_upload = img;
+            await this.model.createNewUpload(uploadObj);
+          }
+        }
         this.view.customModalHeader.innerText = "Successful";
         this.view.customModalBody.innerText =
           "New inquiry created successfully.";
@@ -708,16 +768,31 @@ export class NewInquiryController {
   }
 
   initAutocomplete() {
-    const input = document.querySelector('[placeholder="Search properties"]');
-    const autocomplete = new google.maps.places.Autocomplete(input, {
-      types: ["address"],
-      componentRestrictions: { country: "au" },
-    });
-    autocomplete.addListener("place_changed", () => {
-      const place = autocomplete.getPlace();
-      const parsed = this.parseAddressComponents(place);
-      this.view.setGoogleSearchAddress(parsed);
-      return parsed;
+    const inputs = document.querySelectorAll(
+      '[placeholder="Search properties"], [data-contact-field="bot_address_line1"], [data-contact-field="bot_address_line2"], [data-contact-field="top_address_line1"], [data-contact-field="top_address_line2"]'
+    );
+    if (!inputs.length || !window.google?.maps?.places?.Autocomplete) return;
+
+    inputs.forEach((input) => {
+      if (input.dataset.googlePlacesBound === "true") return;
+
+      const autocomplete = new google.maps.places.Autocomplete(input, {
+        types: ["address"],
+        componentRestrictions: { country: "au" },
+      });
+
+      autocomplete.addListener("place_changed", () => {
+        const place = autocomplete.getPlace();
+        input.value = place?.formatted_address || input.value;
+
+        if (input.matches('[placeholder="Search properties"]')) {
+          const parsed = this.parseAddressComponents(place);
+          this.view.setGoogleSearchAddress(parsed);
+          return parsed;
+        }
+      });
+
+      input.dataset.googlePlacesBound = "true";
     });
   }
 
@@ -859,5 +934,10 @@ export class NewInquiryController {
     });
   }
 
-  getAddressValue() {}
+  async fetchServices() {
+    let services = await this.model.fetchServices();
+    return services.resp.map((item) => {
+      return { value: item.id, text: item.service_name };
+    });
+  }
 }

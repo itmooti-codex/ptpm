@@ -6,6 +6,9 @@ export class NewInquiryModel {
     this.dealModel = plugin.switchTo("PeterpmDeal");
     this.companyModel = plugin.switchTo("PeterpmCompany");
     this.jobModel = plugin.switchTo("PeterpmJob");
+    this.serviceModel = plugin.switchTo("PeterpmService");
+    this.uploadModel = plugin.switchTo("PeterpmUpload");
+
     this.plugin = plugin;
     this.maxRecords = maxRecords;
     this.contactModel = null;
@@ -43,6 +46,14 @@ export class NewInquiryModel {
       console.warn("[NewInquiry] Failed to prime contacts", error);
     }
     return this.getContacts();
+  }
+
+  async createNewUpload(uploadObj) {
+    if (!this.uploadModel) return null;
+    const query = this.uploadModel.mutation();
+    query.createOne(uploadObj);
+    const result = await query.execute(true).toPromise();
+    return result;
   }
 
   getContacts() {
@@ -1732,6 +1743,22 @@ export class NewInquiryModel {
     }
 
     query.deSelectAll().select(["id"]);
+    let result = await query.fetchDirect().toPromise();
+    return result;
+  }
+
+  async fetchServices() {
+    let query = this.serviceModel.query();
+    query
+      .where("service_type", "Primary")
+      .deSelectAll()
+      .select([
+        "id",
+        "service_name",
+        "description",
+        "price",
+        "duration_minutes",
+      ]);
     let result = await query.fetchDirect().toPromise();
     return result;
   }

@@ -10,6 +10,7 @@ export class JobDetailModal {
     this.appointmentModel = plugin.switchTo("PeterpmAppointment");
     this.acitivityModel = plugin.switchTo("PeterpmActivity");
     this.materialModel = plugin.switchTo("PeterpmMaterial");
+    this.uploadObj = plugin.switchTo("PeterpmUpload");
 
     this.activityQuery = null;
     this.activityCallback = null;
@@ -689,6 +690,53 @@ export class JobDetailModal {
     let query = this.materialModel.mutation();
     query.createOne(materialObj);
     const result = await query.execute(true).toPromise();
+    return result;
+  }
+
+  async createNewJob(jobDeails) {
+    let query = this.jobModel.mutation();
+    query.createOne(jobDeails);
+    let result = await query.execute(true).toPromise();
+    return result;
+  }
+
+  async createNewUpload(uploadObj) {
+    let query = this.uploadObj.mutation();
+    query.createOne(uploadObj);
+    let result = await query.execute(true).toPromise();
+    return result;
+  }
+
+  async getInvoiceByJobId(jobID) {
+    let query = this.jobModel.query();
+    query = query
+      .where("id", jobID)
+      .deSelectAll()
+      .select([
+        "id",
+        "account_type",
+        "invoice_date",
+        "due_date",
+        "xero_invoice_status",
+        "invoice_number",
+        "invoice_id",
+      ])
+      .noDestroy();
+    query.getOrInitQueryCalc?.();
+    let result = await query.fetchDirect().toPromise();
+    return result;
+  }
+
+  async createInvoiceForJob(invoiceObj) {
+    let query = this.jobModel.mutation();
+    query.update((q) =>
+      q.where("id", invoiceObj.jobId).set({
+        invoice_date: invoiceObj.invoice_date,
+        due_date: invoiceObj.due_date,
+        xero_invoice_status: invoiceObj.xero_invoice_status,
+      })
+    );
+    let result = await query.execute(true).toPromise();
     return result;
   }
 }

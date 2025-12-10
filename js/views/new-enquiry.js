@@ -132,6 +132,7 @@ export class NewInquiryView {
     this.bindResetPrompt();
     this.bindContactActionGuards();
     this.checkInquiryId();
+    this.initResidentFeedbackUploads();
   }
 
   isActive() {
@@ -1170,7 +1171,7 @@ export class NewInquiryView {
           mappedValues[key] = data.manhole || "";
           break;
         case "building-features":
-          mappedValues[key] = ""; // If you don't have data, leave empty or map accordingly
+          mappedValues[key] = data.building_features || data.buildingFeatures || "";
           break;
         case "search-properties":
           mappedValues[key] = data.property_name || "";
@@ -2460,7 +2461,12 @@ export class NewInquiryView {
   clearPropertyFieldValues(section) {
     let fields = document.querySelectorAll(section);
     fields.forEach((item) => {
-      item.value = "";
+      // Reset selection state without wiping configured values (e.g., checkbox value attributes).
+      if (item.type === "checkbox" || item.type === "radio") {
+        item.checked = false;
+      } else {
+        item.value = "";
+      }
     });
   }
 
@@ -3249,5 +3255,110 @@ export class NewInquiryView {
     } catch (err) {
       console.error("Error in setValuesToResidentFeedbak:", err);
     }
+  }
+
+  initResidentFeedbackUploads() {
+    const inputs = document.querySelectorAll("[data-feedback-upload]");
+    inputs.forEach((input) => {
+      const key = input.dataset.feedbackUpload;
+      const list = document.querySelector(
+        `[data-feedback-upload-list="${key}"]`
+      );
+      if (!list) return;
+      input.addEventListener("change", async (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        const isImage = (file.type || "").startsWith("image/");
+        if (!isImage) {
+          this.showFeedback("Only image type can be selected.");
+          e.target.value = "";
+          return;
+        }
+        const base64 = await readFileAsBase64(file);
+        if (!base64) return;
+        const html = this.createPreviewImageHTML(file);
+        html.setAttribute("file-type", file.type);
+        html.setAttribute("data-base64", base64);
+        html.setAttribute("data-file-name", file.name || "Image preview");
+        list.appendChild(html);
+        this.bindResidentUploadItemActions(html);
+        e.target.value = "";
+      });
+    });
+  }
+
+  bindResidentUploadItemActions(item) {
+    const viewBtn = item.querySelector('[data-upload-action="view"]');
+    const deleteBtn = item.querySelector('[data-upload-action="delete"]');
+    if (viewBtn) {
+      viewBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const src = item.getAttribute("data-base64");
+        if (!src) return;
+        window.open(src, "_blank", "noopener,noreferrer");
+      });
+    }
+    if (deleteBtn) {
+      deleteBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        item.remove();
+      });
+    }
+  }
+
+  getResidentFeedbackImages() {
+    const nodes = document.querySelectorAll(
+      '[data-feedback-upload-list] [data-base64][file-type^="image/"]'
+    );
+    return Array.from(nodes)
+      .map((node) => node.getAttribute("data-base64"))
+      .filter(Boolean);
+  }
+
+  createPreviewImageHTML(file) {
+    const wrapper = document.createElement("div");
+    wrapper.className = "bg-[#F5F6F8] p-3 rounded-lg";
+    wrapper.innerHTML = `
+      <div class="flex flex-row justify-between items-center">
+        <div class="flex flex-row items-center gap-3">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 20 20"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            data-upload-action="view"
+            class="cursor-pointer"
+          >
+            <path
+              d="M18.2848 9.49731C18.2605 9.44245 17.6723 8.13758 16.3646 6.82994C14.6223 5.08758 12.4216 4.16675 9.99935 4.16675C7.57712 4.16675 5.37643 5.08758 3.63407 6.82994C2.32643 8.13758 1.73545 9.44453 1.71393 9.49731C1.68234 9.56836 1.66602 9.64525 1.66602 9.723C1.66602 9.80076 1.68234 9.87765 1.71393 9.9487C1.73823 10.0036 2.32643 11.3077 3.63407 12.6154C5.37643 14.357 7.57712 15.2779 9.99935 15.2779C12.4216 15.2779 14.6223 14.357 16.3646 12.6154C17.6723 11.3077 18.2605 10.0036 18.2848 9.9487C18.3164 9.87765 18.3327 9.80076 18.3327 9.723C18.3327 9.64525 18.3164 9.56836 18.2848 9.49731ZM9.99935 12.5001C9.44996 12.5001 8.9129 12.3372 8.4561 12.0319C7.99929 11.7267 7.64326 11.2929 7.43301 10.7853C7.22277 10.2777 7.16776 9.71923 7.27494 9.18039C7.38212 8.64155 7.64668 8.1466 8.03516 7.75812C8.42364 7.36964 8.91859 7.10508 9.45743 6.9979C9.99627 6.89072 10.5548 6.94573 11.0624 7.15597C11.5699 7.36622 12.0038 7.72225 12.309 8.17906C12.6142 8.63586 12.7771 9.17291 12.7771 9.72231C12.7771 10.459 12.4845 11.1656 11.9635 11.6865C11.4426 12.2074 10.7361 12.5001 9.99935 12.5001Z"
+              fill="#0052CC"
+            ></path>
+          </svg>
+          <p class="text-gray-800 text-sm">${file.name}</p>
+        </div>
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 16 16"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          data-upload-action="delete"
+          class="cursor-pointer"
+        >
+          <path
+            d="M13.7949 3.38453H11.2308V2.87171C11.2308 2.46369 11.0687 2.07237 10.7802 1.78386C10.4916 1.49534 10.1003 1.33325 9.69231 1.33325H6.61539C6.20736 1.33325 5.81605 1.49534 5.52753 1.78386C5.23901 2.07237 5.07692 2.46369 5.07692 2.87171V3.38453H2.51282C2.37681 3.38453 2.24637 3.43856 2.1502 3.53474C2.05403 3.63091 2 3.76135 2 3.89735C2 4.03336 2.05403 4.1638 2.1502 4.25997C2.24637 4.35615 2.37681 4.41018 2.51282 4.41018H3.02564V13.6409C3.02564 13.913 3.1337 14.1738 3.32604 14.3662C3.51839 14.5585 3.77927 14.6666 4.05128 14.6666H12.2564C12.5284 14.6666 12.7893 14.5585 12.9816 14.3662C13.174 14.1738 13.2821 13.913 13.2821 13.6409V4.41018H13.7949C13.9309 4.41018 14.0613 4.35615 14.1575 4.25997C14.2537 4.1638 14.3077 4.03336 14.3077 3.89735C14.3077 3.76135 14.2537 3.63091 14.1575 3.53474C14.0613 3.43856 13.9309 3.38453 13.7949 3.38453Z"
+            fill="#DB3559"
+          ></path>
+          <path
+            d="M6.82031 6.56445C6.96155 6.56445 7.10278 6.62207 7.21236 6.73164L9.00036 8.51965L10.7884 6.73164C11.0195 6.50052 11.3943 6.50052 11.6254 6.73164C11.8566 6.96277 11.8566 7.33755 11.6254 7.56868L9.38977 9.80429C9.15864 10.0354 8.78386 10.0354 8.55274 9.80429L6.31712 7.56868C6.08599 7.33755 6.08599 6.96277 6.31712 6.73164C6.4267 6.62207 6.56793 6.56445 6.82031 6.56445Z"
+            fill="#DB3559"
+          ></path>
+        </svg>
+      </div>
+    `;
+    return wrapper;
   }
 }

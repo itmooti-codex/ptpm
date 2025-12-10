@@ -892,27 +892,45 @@
                       >Building Features</label
                     >
                     <div class="relative mt-1">
-                      <select
-                        class="!block w-full appearance-none rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100"
-                        data-property-id="building-features"
+                      <button
+                        id="property-building-btn"
+                        type="button"
+                        class="flex w-full items-center justify-between rounded border border-slate-200 px-4 py-3 text-left text-sm font-medium transition"
                       >
-                        <option>Select</option>
-                      </select>
-                      <span
-                        class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400"
-                      >
+                        <span class="text-slate-500">Select</span>
                         <svg
-                          class="h-4 w-4"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          xmlns="http://www.w3.org/2000/svg"
+                          class="h-4 w-4 text-slate-400 transition-transform"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
                         >
-                          <path d="M6 9l6 6 6-6" />
+                          <path
+                            fill-rule="evenodd"
+                            d="M5.23 7.21a.75.75 0 011.06.02L10 11.21l3.71-3.98a.75.75 0 111.08 1.04l-4.25 4.56a.75.75 0 01-1.1 0L5.21 8.27a.75.75 0 01.02-1.06z"
+                            clip-rule="evenodd"
+                          />
                         </svg>
-                      </span>
+                      </button>
+
+                      <div
+                        id="property-building-card"
+                        class="hidden absolute left-0 right-0 z-20 mt-1 w-full rounded border border-slate-200 bg-white shadow-xl p-2"
+                      >
+                        <ul
+                          id="property-building-list"
+                          data-property-id="building_features_options_as_text"
+                          class="max-h-64 overflow-auto text-sm text-slate-700 space-y-1"
+                        >
+                          <li class="px-2 py-1 flex items-center gap-2">
+                            <input
+                              id="property-building-all"
+                              type="checkbox"
+                              class="h-4 w-4 accent-[#003882]"
+                            />
+                            <label for="property-building-all">All</label>
+                          </li>
+                        </ul>
+                      </div>
                     </div>
                   </div>
                   <div>
@@ -1523,11 +1541,11 @@
                   
                     <div class="relative">
                       <button
-                        id="noises-btn"
+                        id="services-btn"
                         type="button"
                         class="flex w-full items-center justify-between rounded border border-slate-200 px-4 py-3 text-left text-sm font-medium transition"
                       >
-                        <span class="text-slate-500">Animal</span>
+                        <span class="text-slate-500">Services</span>
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           class="h-4 w-4 text-slate-400 transition-transform"
@@ -1544,22 +1562,22 @@
 
                       <!-- Noise Dropdown Card -->
                       <div
-                        id="noises-card"
+                        id="services-card"
                         class="hidden absolute left-0 right-0 z-20 mt-1 w-full rounded border border-slate-200 bg-white shadow-xl p-2"
                       >
                         <ul
-                        data-feedback-id="noises"
-                          id="noises-list"
+                        data-feedback-id="services"
+                          id="services-list"
                           data-same-as-contact="noise-signs-options-as-text"
                           class="max-h-64 overflow-auto text-sm text-slate-700 space-y-1"
                         >
                           <li class="px-2 py-1 flex items-center gap-2">
                             <input
-                              id="noise-all"
+                              id="services-all"
                               type="checkbox"
                               class="h-4 w-4 accent-[#003882]"
                             />
-                            <label for="noise-all">All</label>
+                            <label for="services-all">All</label>
 
                             <!-- Add more items as needed -->
                           </li>
@@ -1590,7 +1608,6 @@
                       </svg>
                     </button>
 
-                    <!-- Noise Dropdown Card -->
                     <div
                       id="times-card"
                       class="hidden absolute left-0 right-0 z-20 mt-1 w-full rounded border border-slate-200 bg-white shadow-xl p-2"
@@ -1731,8 +1748,9 @@
                       <span class="text-xs text-slate-400"
                         >or drag and drop</span
                       >
-                      <input type="file" class="sr-only" />
+                      <input type="file" class="sr-only" data-feedback-upload="customer" accept="image/*" />
                     </label>
+                    <div class="mt-2 space-y-2" data-feedback-upload-list="customer"></div>
                   </div>
                   <div>
                     <div class="flex flex-inline gap-2">
@@ -1777,8 +1795,9 @@
                       <span class="text-xs text-slate-400"
                         >or drag and drop</span
                       >
-                      <input type="file" class="sr-only" />
+                      <input type="file" class="sr-only" data-feedback-upload="internal" accept="image/*" />
                     </label>
+                    <div class="mt-2 space-y-2" data-feedback-upload-list="internal"></div>
                   </div>
                 </div>
               </div>
