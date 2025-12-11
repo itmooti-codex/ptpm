@@ -11,6 +11,7 @@ export class JobDetailModal {
     this.acitivityModel = plugin.switchTo("PeterpmActivity");
     this.materialModel = plugin.switchTo("PeterpmMaterial");
     this.uploadObj = plugin.switchTo("PeterpmUpload");
+    this.serviceModel = plugin.switchTo("PeterpmService");
 
     this.activityQuery = null;
     this.activityCallback = null;
@@ -686,6 +687,24 @@ export class JobDetailModal {
     return result;
   }
 
+  async updateActivity(activityId, activityObj = {}) {
+    if (!activityId) throw new Error("Activity id is required");
+    const payload = { ...activityObj };
+    payload["Service"] = { service_name: payload["service_name"] };
+    delete payload["service_name"];
+
+    const query = this.acitivityModel.mutation();
+    query.update((q) => q.where("id", activityId).set(payload));
+    return await query.execute(true).toPromise();
+  }
+
+  async deleteActivity(activityId) {
+    if (!activityId) throw new Error("Activity id is required");
+    const query = this.acitivityModel.mutation();
+    query.delete((q) => q.where("id", activityId));
+    return await query.execute(true).toPromise();
+  }
+
   async addNewMaterial(materialObj) {
     let query = this.materialModel.mutation();
     query.createOne(materialObj);
@@ -737,6 +756,25 @@ export class JobDetailModal {
       })
     );
     let result = await query.execute(true).toPromise();
+    return result;
+  }
+
+  async fetchServices() {
+    let query = this.serviceModel.query();
+    query = query
+      .deSelectAll()
+      .select([
+        "id",
+        "service_name",
+        "description",
+        "service_price",
+        "standard_warranty",
+        "primary_service_id",
+        "service_type",
+      ])
+      .noDestroy();
+    query.getOrInitQueryCalc?.();
+    let result = await query.fetchDirect().toPromise();
     return result;
   }
 }

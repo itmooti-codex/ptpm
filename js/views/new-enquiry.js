@@ -6,8 +6,8 @@ import {
   showUnsavedChangesModal,
   showResetConfirmModal,
   resetFormFields,
-  readFileAsBase64,
   showAlertModal,
+  uploadImage,
 } from "../helper.js";
 
 export class NewInquiryView {
@@ -495,14 +495,20 @@ export class NewInquiryView {
   #bindSameAsContact() {
     if (!this.sameAsCheckbox) return;
 
-    this.sameAsCheckbox.addEventListener("change", () =>
-      this.#syncWorkRequested()
-    );
+    if (!this.sameAsCheckbox.dataset.boundSameAs) {
+      this.sameAsCheckbox.addEventListener("change", () =>
+        this.#syncWorkRequested()
+      );
+      this.sameAsCheckbox.dataset.boundSameAs = "true";
+    }
+
     [this.firstNameInput, this.lastNameInput]
       .filter(Boolean)
-      .forEach((input) =>
-        input.addEventListener("input", () => this.#syncWorkRequested())
-      );
+      .forEach((input) => {
+        if (input.dataset.boundSameAs) return;
+        input.addEventListener("input", () => this.#syncWorkRequested());
+        input.dataset.boundSameAs = "true";
+      });
   }
 
   #bindTabs() {
@@ -671,9 +677,32 @@ export class NewInquiryView {
       companySection.classList.toggle("hidden", isIndividual);
     }
 
-    if (isIndividual && this.sections.individual) {
-      this.section = this.sections.individual;
-    }
+    // Repoint section-scoped references to the active tab
+    this.section = this.sections[targetKey] || this.section;
+    this.contactIdInput = this.section?.querySelector(
+      '[data-contact-field="contact_id"]'
+    );
+    this.manualInputs = Array.from(
+      this.section?.querySelectorAll("[data-contact-field]") || []
+    ).filter(
+      (input) =>
+        input.dataset.contactField &&
+        input.dataset.contactField !== "contact_id"
+    );
+    this.sameAsCheckbox = this.section?.querySelector("[data-same-as-contact]");
+    this.firstNameInput = this.section?.querySelector(
+      '[data-contact-field="first_name"]'
+    );
+    this.lastNameInput = this.section?.querySelector(
+      '[data-contact-field="last_name"]'
+    );
+    this.workRequestedInput = this.section?.querySelector(
+      '[data-contact-field="work_requested_by"]'
+    );
+
+    // Ensure "Same as contact" binding is applied for the active tab
+    this.#bindSameAsContact();
+
     if (!isIndividual) {
       this.#closePanel();
     }
@@ -1128,22 +1157,22 @@ export class NewInquiryView {
 
     fieldIds.forEach((key) => {
       switch (key) {
-        case "lot-number":
+        case "lot_number":
           mappedValues[key] = data.lotNumber || "";
           break;
         case "unit-number":
           mappedValues[key] = data.unitNumber || "";
           break;
-        case "address-1":
+        case "address_1":
           mappedValues[key] = data.address_1 || "";
           break;
-        case "address-2":
+        case "address_2":
           mappedValues[key] = data.address_2 || "";
           break;
-        case "suburb-town":
+        case "suburb_town":
           mappedValues[key] = data.suburb_town || "";
           break;
-        case "postal-code":
+        case "postal_code":
           mappedValues[key] = data.postal_code || "";
           break;
         case "state":
@@ -1171,7 +1200,8 @@ export class NewInquiryView {
           mappedValues[key] = data.manhole || "";
           break;
         case "building-features":
-          mappedValues[key] = data.building_features || data.buildingFeatures || "";
+          mappedValues[key] =
+            data.building_features || data.buildingFeatures || "";
           break;
         case "search-properties":
           mappedValues[key] = data.property_name || "";
@@ -1512,6 +1542,7 @@ export class NewInquiryView {
                 <svg class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" viewBox="0 0 24 24" fill="currentColor"><path d="M21 20l-5.6-5.6a7.5 7.5 0 10-1.4 1.4L20 21l1-1Zm-13.5-5A5.5 5.5 0 1113 9.5 5.51 5.51 0 017.5 15Z"/></svg>
               </div>
             </div>
+            <div data-section="address">
             <div class="flex gap-3">
               <div class="flex-1">
                 <label class="block font-medium text-sm text-gray-700 mb-1">Address line 1</label>
@@ -1545,6 +1576,7 @@ export class NewInquiryView {
                 </select>
               </div>
             </div>
+            </div>
           </div>
   
           <div class="pt-2">
@@ -1564,7 +1596,7 @@ export class NewInquiryView {
 
             </div>
   
-            <div class="space-y-3">
+            <div class="space-y-3" data-section="postal-address">
               <div class="hidden">
                 <label class="block font-medium text-sm text-gray-700 mb-1">Address</label>
               <input id="adBotSearch" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
@@ -2645,11 +2677,11 @@ export class NewInquiryView {
   onSameAsContactCheckboxClicked(address = {}) {
     // Build a full address object from provided data or fall back to the modal fields.
     const modalAddress = {
-      "address-1": document.getElementById("adTopLine1")?.value || "",
-      "address-2": document.getElementById("adTopLine2")?.value || "",
-      "suburb-town": document.getElementById("adTopCity")?.value || "",
+      address_1: document.getElementById("adTopLine1")?.value || "",
+      address_2: document.getElementById("adTopLine2")?.value || "",
+      suburb_town: document.getElementById("adTopCity")?.value || "",
       state: document.getElementById("adTopState")?.value || "",
-      "postal-code": document.getElementById("adTopPostal")?.value || "",
+      postal_code: document.getElementById("adTopPostal")?.value || "",
     };
 
     const mergedAddress = { ...modalAddress, ...address };
@@ -3265,6 +3297,9 @@ export class NewInquiryView {
         `[data-feedback-upload-list="${key}"]`
       );
       if (!list) return;
+      input.addEventListener("click", (e) => {
+        e.target.value = "";
+      });
       input.addEventListener("change", async (e) => {
         const file = e.target.files && e.target.files[0];
         if (!file) return;
@@ -3274,15 +3309,27 @@ export class NewInquiryView {
           e.target.value = "";
           return;
         }
-        const base64 = await readFileAsBase64(file);
-        if (!base64) return;
-        const html = this.createPreviewImageHTML(file);
-        html.setAttribute("file-type", file.type);
-        html.setAttribute("data-base64", base64);
-        html.setAttribute("data-file-name", file.name || "Image preview");
-        list.appendChild(html);
-        this.bindResidentUploadItemActions(html);
-        e.target.value = "";
+        showLoader(
+          this.loaderElement,
+          this.loaderMessageEl,
+          this.loaderCounter,
+          "Uploading image..."
+        );
+        try {
+          const url = await uploadImage(file, "inquiries/resident-feedback");
+          const html = this.createPreviewImageHTML(file);
+          html.setAttribute("file-type", file.type);
+          html.setAttribute("data-upload-url", url);
+          html.setAttribute("data-file-name", file.name || "Image preview");
+          list.appendChild(html);
+          this.bindResidentUploadItemActions(html);
+        } catch (error) {
+          console.error("Resident feedback image upload failed", error);
+          this.showFeedback("Failed to upload image. Please try again.");
+        } finally {
+          hideLoader(this.loaderElement, this.loaderCounter);
+          e.target.value = "";
+        }
       });
     });
   }
@@ -3294,7 +3341,7 @@ export class NewInquiryView {
       viewBtn.addEventListener("click", (e) => {
         e.preventDefault();
         e.stopPropagation();
-        const src = item.getAttribute("data-base64");
+        const src = item.getAttribute("data-upload-url");
         if (!src) return;
         window.open(src, "_blank", "noopener,noreferrer");
       });
@@ -3310,10 +3357,10 @@ export class NewInquiryView {
 
   getResidentFeedbackImages() {
     const nodes = document.querySelectorAll(
-      '[data-feedback-upload-list] [data-base64][file-type^="image/"]'
+      '[data-feedback-upload-list] [data-upload-url][file-type^="image/"]'
     );
     return Array.from(nodes)
-      .map((node) => node.getAttribute("data-base64"))
+      .map((node) => node.getAttribute("data-upload-url"))
       .filter(Boolean);
   }
 

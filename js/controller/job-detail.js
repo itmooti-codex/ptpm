@@ -42,6 +42,7 @@ export class JobDetailController {
     this.showHideAddAddressModal();
     this.renderDropdownForStates();
     this.bindAddPropertyFlow();
+    this.renderServicesInActivitySection();
   }
 
   renderDropdownForStates() {
@@ -462,8 +463,19 @@ export class JobDetailController {
     let button = document.getElementById("create-appointment");
     button.addEventListener("click", async () => {
       let getFieldValues = this.view.getApointmentsFieldValues();
-      let result = await this.model.createAppointment(getFieldValues);
-      console.log(result);
+      this.view.startLoading?.("Creating appointment...");
+      try {
+        let result = await this.model.createAppointment(getFieldValues);
+        console.log(result);
+        this.view.handleSuccess?.("Appointment created successfully.");
+      } catch (err) {
+        console.error("Failed to create appointment", err);
+        this.view.handleFailure?.(
+          "Failed to create appointment. Please try again."
+        );
+      } finally {
+        this.view.stopLoading?.();
+      }
     });
   }
 
@@ -491,5 +503,10 @@ export class JobDetailController {
         .closest("div")
         .classList.add("hidden");
     });
+  }
+
+  async renderServicesInActivitySection() {
+    let services = await this.model.fetchServices();
+    this.view.renderAddActivitiesServices(services.resp);
   }
 }

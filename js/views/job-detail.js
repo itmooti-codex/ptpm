@@ -99,9 +99,19 @@ export class JobDetailView {
           </div>
 
           <div class="flex flex-col gap-1">
-            <label class="text-neutral-700 text-sm font-medium">Service</label>
+            <label class="text-neutral-700 text-sm font-medium">Primary Service</label>
             <div class="relative">
               <select data-field="service_name" data-activity-select="service" class="appearance-none w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10"></select>
+              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+                <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"/></svg>
+              </span>
+            </div>
+          </div>
+
+          <div data-element= "service_name_secondary" class="hidden flex flex-col gap-1">
+            <label class="text-neutral-700 text-sm font-medium">Secondary Service</label>
+            <div class="relative">
+              <select data-field="service_name" data-activity-select="service" class="hidden appearance-none w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10"></select>
               <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
                 <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"/></svg>
               </span>
@@ -124,10 +134,7 @@ export class JobDetailView {
           <div class="flex flex-col gap-1">
             <label class="text-neutral-700 text-sm font-medium">Activity Text</label>
             <div class="relative">
-              <select data-field="activity_text" data-activity-select="text" class="appearance-none w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10"></select>
-              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
-                <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"/></svg>
-              </span>
+              <input data-field="activity_text" data-activity-select="text" class="appearance-none w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10"></input>
             </div>
           </div>
 
@@ -153,17 +160,17 @@ export class JobDetailView {
             </div>
           </div>
 
-          <div class="flex flex-col gap-1">
+          <div class="hidden flex flex-col gap-1">
             <label class="text-neutral-700 text-sm font-medium">Quoted Price</label>
             <div class="relative">
-              <input type="text" data-field="quoted_price" placeholder="$ 0.00" class="w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10" />
+              <input type="text" data-field="quoted_price" placeholder="$ 0.00" class="hidden w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10" />
               <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">$</span>
             </div>
           </div>
 
-          <div class="flex flex-col gap-1 col-span-2">
+          <div class="hidden flex flex-col gap-1 col-span-2">
             <label class="text-neutral-700 text-sm font-medium">Quoted Text</label>
-            <textarea data-field="quoted_text" rows="2" class="w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700"></textarea>
+            <textarea data-field="quoted_text" rows="2" class="hidden w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700"></textarea>
           </div>
 
           <div class="flex flex-col gap-1 col-span-2">
@@ -201,9 +208,18 @@ export class JobDetailView {
     const addbutton = document.getElementById("add-activities");
     if (addbutton) {
       addbutton.addEventListener("click", async () => {
-        await this.handleAddActivities();
+        await this.handleAddOrUpdateActivity();
       });
     }
+    const cancelBtn = document.getElementById("cancel-activities");
+    if (cancelBtn) {
+      cancelBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        this.resetActivityForm();
+      });
+    }
+    this.editingActivityId = null;
+    this.activityRecordsById = new Map();
     const activityStatuses = [
       "Quoted",
       "To Be Scheduled",
@@ -214,21 +230,6 @@ export class JobDetailView {
     ];
     const jobs = ["Job 1", "Job 2", "Job 3", "Job 4", "Job 5"];
     const options = ["Option 1", "Option 2", "Option 3", "Option 4"];
-    const services = [
-      "Materials",
-      "Pigeon Removal",
-      "Pigeon Removal - Option 1",
-      "Pigeon Removal - Option 2",
-      "Pool Cleaning",
-      "Possum Roof",
-      "R3.5 POLYESTER to ceiling cavity",
-      "R4.1 ECOWOOL to ceiling cavity",
-      "R4.1 ECOWOOL to ceiling cavity.",
-      "Rat Roof",
-      "Vacuum, remove and dispose all dust and debris",
-      "Wasp Removal",
-      "Window Cleaning",
-    ];
 
     const addOptions = (selectEl, values = [], placeholder = "Select") => {
       if (!selectEl) return;
@@ -257,10 +258,97 @@ export class JobDetailView {
 
     addOptions(selectMap.task, jobs, "Select");
     addOptions(selectMap.option, options, "Select");
-    addOptions(selectMap.service, services, "Select");
-    addOptions(selectMap.text, services, "Select");
     addOptions(selectMap.status, activityStatuses, "Select");
     this.renderActivitiesTable();
+  }
+
+  renderAddActivitiesServices(data) {
+    // currentSecondaryList stores the active secondary services corresponding
+    // to the selected primary service. It allows the secondary select listener
+    // to reference the correct list without recalculating on every change.
+    let currentSecondaryList = [];
+
+    const servicesSelect = document.querySelector(
+      '[data-field="service_name"]'
+    );
+    const activityPrice = document.querySelector(
+      '[data-field="activity_price"]'
+    );
+    const warranty = document.querySelector('[data-field="warranty"]');
+    const activityText = document.querySelector('[data-field="activity_text"]');
+    const secondaryService = document.querySelector(
+      '[data-element="service_name_secondary"]'
+    );
+    const secondarySelect = secondaryService.querySelector("select");
+
+    const primaryServices = data.filter(
+      (item) => item.Service_Type === "Primary"
+    );
+
+    const secondaryMap = new Map();
+    for (const item of data) {
+      if (!secondaryMap.has(item.Primary_Service_ID)) {
+        secondaryMap.set(item.Primary_Service_ID, []);
+      }
+      secondaryMap.get(item.Primary_Service_ID).push(item);
+    }
+
+    servicesSelect.innerHTML = `<option value="" disabled selected hidden>Select</option>`;
+    for (const item of primaryServices) {
+      const opt = document.createElement("option");
+      opt.value = item.Service_Name;
+      opt.id = item.ID;
+      opt.textContent = item.Service_Name;
+      servicesSelect.appendChild(opt);
+    }
+
+    // SECONDARY SELECT EVENT LISTENER (only once)
+    secondarySelect.addEventListener("change", (e) => {
+      const value = e.target.value;
+      const selectedService = currentSecondaryList.find(
+        (s) => s.Service_Name === value
+      );
+
+      if (selectedService) {
+        activityPrice.value = selectedService.Service_Price || "";
+        warranty.value = selectedService.Standard_Warranty || "";
+        activityText.value = selectedService.Description || "";
+      }
+    });
+
+    // PRIMARY SELECT EVENT LISTENER
+    servicesSelect.addEventListener("change", () => {
+      activityText.value = "";
+      activityPrice.value = "";
+      warranty.value = "";
+
+      secondarySelect.classList.add("hidden");
+      secondaryService.classList.add("hidden");
+      const selectedName = servicesSelect.value;
+      const selectedPrimary = primaryServices.find(
+        (item) => item.Service_Name === selectedName
+      );
+      if (!selectedPrimary) return;
+
+      currentSecondaryList = secondaryMap.get(selectedPrimary.ID) || [];
+      secondarySelect.innerHTML = `<option value="" disabled selected hidden>Select</option>`;
+
+      if (currentSecondaryList.length > 0) {
+        currentSecondaryList.forEach((item) => {
+          const opt = document.createElement("option");
+          opt.value = item.Service_Name;
+          opt.id = item.ID;
+          opt.textContent = item.Service_Name;
+          secondarySelect.appendChild(opt);
+        });
+        secondaryService.classList.remove("hidden");
+        secondarySelect.classList.remove("hidden");
+      }
+
+      activityPrice.value = selectedPrimary.Service_Price || "";
+      warranty.value = selectedPrimary.Standard_Warranty || "";
+      activityText.value = selectedPrimary.Description || "";
+    });
   }
 
   createAddMaterialsSection() {
@@ -793,7 +881,7 @@ export class JobDetailView {
     });
 
     let addBtn = document.getElementById("add-images-btn");
-    addBtn.addEventListener("click", () => {
+    addBtn.addEventListener("click", async () => {
       let images = uploadResult.querySelectorAll(
         '[data-upload-url][file-type^="image/"]'
       );
@@ -816,13 +904,25 @@ export class JobDetailView {
         company_id: companyId,
         job_id: this.jobId,
       };
-      if (images) {
-        images.forEach(async (item) => {
+      if (!images || !images.length) {
+        this.handleFailure("Please upload at least one image.");
+        return;
+      }
+
+      this.startLoading("Saving uploads...");
+      try {
+        for (const item of images) {
           let imageUrl = item.getAttribute("data-upload-url");
-          if (!imageUrl) return;
+          if (!imageUrl) continue;
           uploadObj.photo_upload = imageUrl;
           await this.model.createNewUpload(uploadObj);
-        });
+        }
+        this.handleSuccess("Uploads saved successfully.");
+      } catch (error) {
+        console.error("Failed to save uploads", error);
+        this.handleFailure("Failed to save uploads. Please try again.");
+      } finally {
+        this.stopLoading();
       }
     });
   }
@@ -2903,7 +3003,7 @@ export class JobDetailView {
     let jobObj = {};
     let elements = document.querySelectorAll(selector);
     elements.forEach((item) => {
-      if (item.disabled) return;
+      if (item.disabled || item.classList.contains("hidden")) return;
       let key = item?.getAttribute("data-field")?.toLowerCase();
       let value;
       if (
@@ -3225,11 +3325,11 @@ export class JobDetailView {
 
     saveBtn.addEventListener("click", async () => {
       const addressObj = {
-        "address-1": $("adTopLine1")?.value || "",
-        "address-2": $("adTopLine2")?.value || "",
-        "suburb-town": $("adTopCity")?.value || "",
+        address_1: $("adTopLine1")?.value || "",
+        address_2: $("adTopLine2")?.value || "",
+        suburb_town: $("adTopCity")?.value || "",
         state: $("adTopState")?.value || "",
-        "postal-code": $("adTopPostal")?.value || "",
+        postal_code: $("adTopPostal")?.value || "",
       };
       const contactAddressField = document.getElementById("contact-address");
       if (contactAddressField) {
@@ -3687,11 +3787,19 @@ export class JobDetailView {
 
   async renderActivitiesTable() {
     await this.model.fetchActivities((activities) => {
+      this.activityRecordsById = new Map();
       if (!activities || !activities.length) {
-        document.getElementById("addActivitiesTable").innerHTML =
-          "<div class='text-sm text-slate-500'>No activities found.</div>";
+        const target = document.getElementById("addActivitiesTable");
+        if (target)
+          target.innerHTML =
+            "<div class='text-sm text-slate-500'>No activities found.</div>";
         return;
       }
+
+      activities.forEach((item) => {
+        const id = String(item.ID || item.id || "");
+        if (id) this.activityRecordsById.set(id, item);
+      });
 
       let mappedActivities = activities.map((item) => {
         const serviceName =
@@ -3718,6 +3826,7 @@ export class JobDetailView {
       if (target) {
         target.innerHTML = "";
         target.appendChild(tableHTML);
+        this.bindActivityRowActions();
       }
     });
   }
@@ -3737,40 +3846,18 @@ export class JobDetailView {
     thead.className = "bg-slate-100";
     const headerRow = document.createElement("tr");
     const headers = [
-      "ID",
       "Services",
       "Status",
       "Price",
-      "Include in Quote",
+      // "Include in Quote",
       "Invoice to Client",
-      "Option",
-      "Task",
+      // "Option",
+      "Actions",
     ];
     headers.forEach((text, idx) => {
       const th = document.createElement("th");
       th.className = "px-7 py-3 text-left font-normal text-slate-700 leading-6";
-      if (idx === 0) {
-        // Date Added with sort indicator
-        const wrap = document.createElement("div");
-        wrap.className = "flex items-center gap-1";
-        const span = document.createElement("span");
-        span.textContent = text;
-        const icon = document.createElementNS(
-          "http://www.w3.org/2000/svg",
-          "svg"
-        );
-        icon.setAttribute("viewBox", "0 0 16 16");
-        icon.setAttribute("width", "14");
-        icon.setAttribute("height", "14");
-        icon.classList.add("text-slate-400");
-        icon.innerHTML =
-          '<path d="M4 6l4-4 4 4M4 10l4 4 4-4" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" fill="none"/>';
-        wrap.appendChild(span);
-        wrap.appendChild(icon);
-        th.appendChild(wrap);
-      } else {
-        th.textContent = text;
-      }
+      th.textContent = text;
       headerRow.appendChild(th);
     });
     thead.appendChild(headerRow);
@@ -3780,6 +3867,7 @@ export class JobDetailView {
     data.forEach((item, idx) => {
       const tr = document.createElement("tr");
       tr.className = idx % 2 === 0 ? "bg-white" : "bg-slate-50";
+      tr.id = item.Id;
 
       const status = (item.Status || "").toLowerCase();
       const statusStyles = {
@@ -3793,10 +3881,6 @@ export class JobDetailView {
       const badgeClass = statusStyles[status] || "bg-slate-100 text-slate-600";
 
       const cells = [
-        {
-          value: item.Id,
-          className: "text-sky-700 font-normal",
-        },
         { value: item.Services, className: "text-slate-800" },
         {
           value: "",
@@ -3814,16 +3898,41 @@ export class JobDetailView {
           value: item.Price ? `$${item.Price}` : "",
           className: "text-slate-800",
         },
-        {
-          value: item["Include in Quote"],
-          render: () => this.renderCheckbox(item["Include in Quote"]),
-        },
+        ,
+        // {
+        //   value: item["Include in Quote"],
+        //   render: () => this.renderCheckbox(item["Include in Quote"]),
+        // }
         {
           value: item["Invoice to Client"],
           render: () => this.renderCheckbox(item["Invoice to Client"]),
         },
-        { value: item.Option },
-        { value: item.Task },
+        ,
+        // { value: item.Option }
+        {
+          render: () => {
+            const divElement = document.createElement("div");
+            divElement.className = "flex flex-wrap gap-2";
+            divElement.innerHTML = `<div class="flex items-center justify-end gap-3 text-slate-500">
+              <button type="button" class="edit-btn hover:text-sky-700" title="Edit">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4 12.5-12.5z"></path>
+                </svg>
+              </button>
+              <button type="button" class="delete-btn text-rose-600 hover:text-rose-700" title="Delete">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"></path>
+                  <path d="M10 11v6M14 11v6"></path>
+                  <path d="M9 6V4a2 2 0 012-2h2a2 2 0 012 2v2"></path>
+                </svg>
+              </button>
+            </div>`;
+
+            return divElement;
+          },
+        },
       ];
 
       cells.forEach((cell) => {
@@ -3844,6 +3953,47 @@ export class JobDetailView {
     table.appendChild(thead);
     table.appendChild(tbody);
     return table;
+  }
+
+  bindActivityRowActions() {
+    const container = document.getElementById("addActivitiesTable");
+    if (!container) return;
+    container.querySelectorAll(".edit-btn").forEach((btn) => {
+      if (btn.dataset.bound) return;
+      btn.dataset.bound = "true";
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        const row = btn.closest("tr");
+        const id = row?.id;
+        if (!id) return;
+        const record = this.activityRecordsById?.get(id);
+        if (!record) return;
+        this.editingActivityId = id;
+        this.populateActivityForm(record);
+      });
+    });
+
+    container.querySelectorAll(".delete-btn").forEach((btn) => {
+      if (btn.dataset.bound) return;
+      btn.dataset.bound = "true";
+      btn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        const row = btn.closest("tr");
+        const id = row?.id;
+        if (!id) return;
+        this.startLoading("Deleting activity...");
+        try {
+          await this.model.deleteActivity(id);
+          this.handleSuccess("Activity deleted successfully.");
+          if (this.editingActivityId === id) this.resetActivityForm();
+        } catch (err) {
+          console.error("Failed to delete activity", err);
+          this.handleFailure("Failed to delete activity. Please try again.");
+        } finally {
+          this.stopLoading();
+        }
+      });
+    });
   }
 
   async renderMaterialsTable() {
@@ -4006,7 +4156,16 @@ export class JobDetailView {
         .querySelector("[data-material-receipts] [data-upload-url]")
         ?.getAttribute("data-upload-url") || "";
     if (receiptUrl) data.receipt_url = receiptUrl;
-    await this.model.addNewMaterial(data);
+    this.startLoading("Adding material...");
+    try {
+      await this.model.addNewMaterial(data);
+      this.handleSuccess("Material added successfully.");
+    } catch (err) {
+      console.error("Failed to add material", err);
+      this.handleFailure("Failed to add material. Please try again.");
+    } finally {
+      this.stopLoading();
+    }
   }
 
   renderCheckbox(value) {
@@ -4032,12 +4191,129 @@ export class JobDetailView {
     return wrapper;
   }
 
-  async handleAddActivities() {
-    let data = this.getFieldValues(
+  async handleAddOrUpdateActivity() {
+    const data = this.getFieldValues(
       '[data-section="add-activities"] input, [data-section="add-activities"] select, [data-section="add-activities"] textarea'
     );
-    let result = await this.model.addNewActivity(data);
-    return result;
+    const isEditing = !!this.editingActivityId;
+    this.startLoading(
+      isEditing ? "Updating activity..." : "Adding activity..."
+    );
+    try {
+      if (isEditing) {
+        await this.model.updateActivity(this.editingActivityId, data);
+        this.handleSuccess("Activity updated successfully.");
+      } else {
+        await this.model.addNewActivity(data);
+        this.handleSuccess("Activity added successfully.");
+      }
+      this.resetActivityForm();
+      return true;
+    } catch (err) {
+      console.error(
+        isEditing ? "Failed to update activity" : "Failed to add activity",
+        err
+      );
+      this.handleFailure(
+        isEditing
+          ? "Failed to update activity. Please try again."
+          : "Failed to add activity. Please try again."
+      );
+      return false;
+    } finally {
+      this.stopLoading();
+    }
+  }
+
+  resetActivityForm() {
+    const fields = document.querySelectorAll(
+      '[data-section="add-activities"] input, [data-section="add-activities"] select, [data-section="add-activities"] textarea'
+    );
+    fields.forEach((el) => {
+      if (el.type === "checkbox") {
+        el.checked = false;
+      } else {
+        el.value = "";
+      }
+    });
+    const quantity = document.querySelector(
+      '[data-section="add-activities"] [data-field="quantity"]'
+    );
+    if (quantity) quantity.value = "0";
+    const addBtn = document.getElementById("add-activities");
+    if (addBtn) addBtn.textContent = "Add";
+    this.editingActivityId = null;
+  }
+
+  populateActivityForm(activity = {}) {
+    const mapField = (selector, value) => {
+      const el = document.querySelector(
+        `[data-section="add-activities"] [data-field="${selector}"]`
+      );
+      if (!el) return;
+      if (el.type === "checkbox") {
+        el.checked = !!value;
+      } else {
+        el.value = value ?? "";
+      }
+    };
+
+    mapField(
+      "service_name",
+      activity.Service?.service_name || activity.service_name || ""
+    );
+    mapField("task", activity.task || activity.Task || "");
+    mapField("option", activity.option || activity.Option || "");
+    mapField("quantity", activity.quantity || activity.Quantity || "");
+    mapField(
+      "activity_price",
+      activity.activity_price || activity.Activity_Price || ""
+    );
+    mapField(
+      "activity_text",
+      activity.activity_text || activity.Activity_Text || ""
+    );
+    mapField(
+      "activity_status",
+      activity.activity_status || activity.Activity_Status || ""
+    );
+
+    const dateRequired =
+      activity.date_required || activity.Date_Required || activity.date;
+    if (dateRequired) {
+      const el = document.querySelector(
+        '[data-section="add-activities"] [data-field="date_required"]'
+      );
+      if (el) {
+        const d = new Date(Number(dateRequired) * 1000);
+        const dd = String(d.getDate()).padStart(2, "0");
+        const mm = String(d.getMonth() + 1).padStart(2, "0");
+        const yyyy = d.getFullYear();
+        el.value = `${dd}/${mm}/${yyyy}`;
+      }
+    }
+
+    mapField(
+      "quoted_price",
+      activity.quoted_price || activity.Quoted_Price || ""
+    );
+    mapField("quoted_text", activity.quoted_text || activity.Quoted_Text || "");
+    mapField("note", activity.note || activity.Note || "");
+    mapField(
+      "include_in_quote_subtotal",
+      activity.include_in_quote_subtotal || activity.Include_in_Quote_Subtotal
+    );
+    mapField(
+      "include_in_quote",
+      activity.include_in_quote || activity.Include_in_Quote
+    );
+    mapField(
+      "invoice_to_client",
+      activity.invoice_to_client || activity.Invoice_to_Client
+    );
+
+    const addBtn = document.getElementById("add-activities");
+    if (addBtn) addBtn.textContent = "Update";
   }
 
   createPreviewImageHTML(file) {

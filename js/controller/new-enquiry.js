@@ -93,20 +93,15 @@ export class NewInquiryController {
         id: "service-inquiry",
         placeholder: "Select Service",
         options: [
-          "Insulation Installation",
-          "Lawn Maintenance",
-          "Materials",
-          "Pigeon Removal",
-          "Pigeon Removal - Option 1",
-          "Pigeon Removal - Option 2",
           "Pool Cleaning",
-          "Possum Roof",
-          "R3.5 POLYESTER to ceiling cavity",
-          "R4.1 ECOWOOL to ceiling cavity",
-          "Rat Roof",
+          "Pigeon Removal",
+          "Lawn Maintenance",
+          "Insulation Installation",
           "Vacuum, remove and dispose all dust and debris",
           "Wasp Removal",
           "Window Cleaning",
+          "Possum Roof",
+          "Rat Roof",
         ],
       },
       {
@@ -567,11 +562,11 @@ export class NewInquiryController {
     let saveBtn = document.getElementById("updateAddressDetailsBtn");
     saveBtn.addEventListener("click", () => {
       let addressobj = {
-        "address-1": document.getElementById("adTopLine1").value,
-        "address-2": document.getElementById("adTopLine2").value,
-        "suburb-town": document.getElementById("adTopCity").value,
+        address_1: document.getElementById("adTopLine1").value,
+        address_2: document.getElementById("adTopLine2").value,
+        suburb_town: document.getElementById("adTopCity").value,
         state: document.getElementById("adTopState").value,
-        "postal-code": document.getElementById("adTopPostal").value,
+        postal_code: document.getElementById("adTopPostal").value,
       };
       document.getElementById("contact-address").value =
         JSON.stringify(addressobj);
@@ -656,6 +651,9 @@ export class NewInquiryController {
             customer_id: contactId,
             company_id: companyId,
             job_id: "",
+            inquiry_id: Object.keys(
+              result.mutations.PeterpmDeal.managedData
+            )[0],
           };
           for (const img of residentImages) {
             uploadObj.photo_upload = img;
@@ -783,7 +781,22 @@ export class NewInquiryController {
 
       autocomplete.addListener("place_changed", () => {
         const place = autocomplete.getPlace();
+        // Fill input
         input.value = place?.formatted_address || input.value;
+        // Build property object
+        const parsed = this.parseAddressComponents(place);
+
+        if (
+          input.getAttribute("data-contact-id") == "address" ||
+          input.getAttribute("data-contact-id") == "address_2"
+        ) {
+          this.setAddressValuesToPopup(parsed);
+        } else if (
+          input.getAttribute("data-contact-id") == "postal_address" ||
+          input.getAttribute("data-contact-id") == "postal_address_2"
+        ) {
+          this.setPostalAddressValuesToPopup(parsed);
+        }
 
         if (input.matches('[placeholder="Search properties"]')) {
           const parsed = this.parseAddressComponents(place);
@@ -796,43 +809,85 @@ export class NewInquiryController {
     });
   }
 
+  setPostalAddressValuesToPopup(data) {
+    const fieldIdentifier = {
+      postal_address: "address_1",
+      postal_address_2: "address_2",
+      postal_city: "suburb_town",
+      country: "",
+      postal_state: "state",
+      postal_code: "postal_code",
+      postal_country: "country",
+    };
+
+    let elements = document.querySelectorAll(
+      '[data-section="postal-address"] input, [data-section="postal-address"] select'
+    );
+    elements.forEach((item) => {
+      let key = item.getAttribute("data-contact-id");
+      let val = data[fieldIdentifier[key]];
+      item.value = val;
+    });
+  }
+
+  setAddressValuesToPopup(data) {
+    const fieldIdentifier = {
+      address: "address_1",
+      address_2: "address_2",
+      city: "suburb_town",
+      country: "",
+      state: "state",
+      zip_code: "postal_code",
+      country: "country",
+    };
+
+    let elements = document.querySelectorAll(
+      '[data-section="address"] input, [data-section="address"] select'
+    );
+    elements.forEach((item) => {
+      let key = item.getAttribute("data-contact-id");
+      let val = data[fieldIdentifier[key]];
+      item.value = val;
+    });
+  }
+
   parseAddressComponents(place) {
     const components = place.address_components || [];
 
     const result = {
       "unit-number": "",
-      "lot-number": "",
-      "address-1": "",
-      "address-2": "",
-      "suburb-town": "",
-      "suburb-town": "",
+      lot_number: "",
+      address_1: "",
+      address_2: "",
+      suburb_town: "",
+      suburb_town: "",
       state: "",
-      "postal-code": "",
+      postal_code: "",
       street_number: "",
       street: "",
     };
 
     components.forEach((c) => {
       if (c.types.includes("subpremise")) result["unit-number"] = c.long_name;
-      if (c.types.includes("premise")) result["lot-number"] = c.long_name;
-      if (c.types.includes("lot_number")) result["lot-number"] = c.long_name;
+      if (c.types.includes("premise")) result["lot_number"] = c.long_name;
+      if (c.types.includes("lot_number")) result["lot_number"] = c.long_name;
 
       if (c.types.includes("street_number")) result.street_number = c.long_name;
       if (c.types.includes("route")) result.street = c.long_name;
 
-      if (c.types.includes("locality")) result["suburb-town"] = c.long_name;
+      if (c.types.includes("locality")) result["suburb_town"] = c.long_name;
 
       if (
         c.types.includes("sublocality") ||
         c.types.includes("sublocality_level_1")
       ) {
-        result["suburb-town"] = c.long_name;
+        result["suburb_town"] = c.long_name;
       }
 
       if (c.types.includes("administrative_area_level_1"))
         result.state = c.short_name;
 
-      if (c.types.includes("postal_code")) result["postal-code"] = c.long_name;
+      if (c.types.includes("postal_code")) result["postal_code"] = c.long_name;
     });
 
     const formatted = place.formatted_address || "";
@@ -848,12 +903,12 @@ export class NewInquiryController {
     const lotMatch =
       formatted.match(/Lot\s*([\w-]+)/i) || formatted.match(/\bL(\d+)\b/i);
 
-    if (!result["lot-number"] && lotMatch) {
-      result["lot-number"] = lotMatch[1];
+    if (!result["lot_number"] && lotMatch) {
+      result["lot_number"] = lotMatch[1];
     }
 
-    result["address-1"] = `${result.street_number} ${result.street}`.trim();
-    result["address-2"] = result["unit-number"]
+    result["address_1"] = `${result.street_number} ${result.street}`.trim();
+    result["address_2"] = result["unit-number"]
       ? `Unit ${result["unit-number"]}`
       : "";
 
@@ -862,11 +917,11 @@ export class NewInquiryController {
 
   mapAddressToFields(parsed) {
     return {
-      "lot-number": parsed.lot_number || "",
+      lot_number: parsed.lot_number || "",
       "unit-number": parsed.unit_number || "",
-      "address-1": `${parsed.street_number} ${parsed.street}`.trim(),
-      "suburb-town": parsed.city || parsed.suburb || "",
-      "postal-code": parsed.postcode || "",
+      address_1: `${parsed.street_number} ${parsed.street}`.trim(),
+      suburb_town: parsed.city || parsed.suburb || "",
+      postal_code: parsed.postcode || "",
       state: parsed.state || "",
     };
   }

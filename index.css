@@ -22,5 +22,5 @@
 
 /* Keep Google Places suggestions above modal overlays */
 .pac-container {
-  z-index: 10050 !important;
+  z-index: 10100 !important;
 }
