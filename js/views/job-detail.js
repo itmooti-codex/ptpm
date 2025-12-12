@@ -7,6 +7,9 @@ import {
   showResetConfirmModal,
   resetFormFields,
   uploadImage,
+  initFileUploadArea,
+  ensureFilePreviewModal,
+  buildUploadCard,
 } from "../helper.js";
 
 export class JobDetailView {
@@ -32,6 +35,10 @@ export class JobDetailView {
 
     this.sidebarCollapsed = true;
     this.jobId = "433";
+    this.editingActivityId = null;
+    this.activityRecordsById = new Map();
+    this.editingMaterialId = null;
+    this.materialRecordsById = new Map();
     this.init();
   }
 
@@ -120,7 +127,7 @@ export class JobDetailView {
 
           <div class="flex flex-col gap-1">
             <label class="text-neutral-700 text-sm font-medium">Quantity</label>
-            <input type="number" data-field="quantity" value="0" class="w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700" />
+            <input type="number" data-field="quantity" value="1" class="w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700" />
           </div>
 
           <div class="flex flex-col gap-1">
@@ -184,15 +191,6 @@ export class JobDetailView {
           </div>
         </div>
 
-        <div class="flex items-center gap-6 pt-2">
-          <label class="flex items-center gap-2 text-neutral-700 text-sm">
-            <input type="checkbox" data-field="include_in_quote" class="w-4 h-4 accent-[#0A3E8C]" /> Include in Quote
-          </label>
-          <label class="flex items-center gap-2 text-neutral-700 text-sm">
-            <input type="checkbox" data-field="include_in_quote_subtotal" class="w-4 h-4 accent-[#0A3E8C]" /> Include in Quote Subtotal
-          </label>
-        </div>
-
         <div class="flex justify-end items-center gap-3 border-t border-slate-200 pt-3">
           <button id="cancel-activities" class="text-slate-600 text-sm font-medium px-3 py-2 rounded">Cancel</button>
           <button id="add-activities" class="text-white bg-[#003882] text-sm font-medium px-4 py-2 rounded">Add</button>
@@ -220,6 +218,8 @@ export class JobDetailView {
     }
     this.editingActivityId = null;
     this.activityRecordsById = new Map();
+    this.editingMaterialId = null;
+    this.materialRecordsById = new Map();
     const activityStatuses = [
       "Quoted",
       "To Be Scheduled",
@@ -371,324 +371,249 @@ export class JobDetailView {
     wrapper.className =
       "hidden w-full h-full flex flex-row gap-4 p-4 bg-gray-50";
 
-    wrapper.innerHTML = `<div data-section="add-materials" class="w-full h-full flex flex-row gap-4 p-4 bg-gray-50">
-      <div class="flex flex-col gap-5"><div class="w-[440px] bg-white rounded-lg outline outline-1 outline-gray-300 p-4 flex flex-col gap-4">
-        <div class="text-neutral-700 text-base font-semibold">
-          Add Materials
-        </div>
+    wrapper.innerHTML = `<div
+        data-section="add-materials"
+        class="w-full h-full flex flex-row gap-4 p-4 bg-gray-50"
+      >
+        <div class="flex flex-col gap-5">
+          <div
+            class="w-[440px] bg-white rounded-lg outline outline-1 outline-gray-300 p-4 flex flex-col gap-4"
+          >
+            <div class="text-neutral-700 text-base font-semibold">Add Materials</div>
 
-        <div class="flex flex-col gap-3">
-          <div class="flex flex-col gap-1">
-            <label class="text-neutral-700 text-sm font-medium">Material Name</label>
-            <input type="text" data-field="material_name" placeholder="Enter material name" class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700">
-          </div>
-
-          <div class="grid grid-cols-2 gap-3">
-            <div class="flex flex-col gap-1">
-              <label class="text-neutral-700 text-sm font-medium">Status</label>
-              <div class="relative">
-                <select data-field="status" class="appearance-none w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10"></select>
-                <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
-                  <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"></path>
-                  </svg>
-                </span>
+            <div class="flex flex-col gap-5">
+              <div class="flex flex-col gap-1">
+                <label class="text-neutral-700 text-sm font-medium"
+                  >Material Name</label
+                >
+                <input
+                  type="text"
+                  data-field="material_name"
+                  placeholder="Enter material name"
+                  class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700"
+                />
               </div>
-            </div>
-            <div class="flex flex-col gap-1">
-              <label class="text-neutral-700 text-sm font-medium">Total</label>
-              <div class="relative">
-                <input type="text" data-field="total" class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10">
-                <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">$</span>
-              </div>
-            </div>
-          </div>
 
-          <div class="flex flex-col gap-1">
-            <label class="text-neutral-700 text-sm font-medium">Description</label>
-            <textarea data-field="description" rows="2" class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700"></textarea>
-          </div>
-
-          <div class="grid grid-cols-2 gap-3">
-            <div class="flex flex-col gap-1">
-              <label class="text-neutral-700 text-sm font-medium">Transaction Type</label>
-              <div class="relative">
-                <select data-field="transaction_type" class="appearance-none w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10">
-                  <option disabled="" value="">Select one</option>
-                  <option value="Reimburse">Reimburse</option>
-                  <option value="Deduct">Deduct</option>
-                </select>
-                <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
-                  <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"></path>
-                  </svg>
-                </span>
+              <div class="flex flex-col gap-1">
+                <label class="text-neutral-700 text-sm font-medium">Total</label>
+                <div class="relative">
+                  <input
+                    type="text"
+                    data-field="total"
+                    class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10"
+                  />
+                  <span
+                    class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"
+                    >$</span
+                  >
+                </div>
               </div>
-            </div>
-            <div class="flex flex-col gap-1">
-              <label class="text-neutral-700 text-sm font-medium">Tax</label>
-              <div class="relative">
-                <select data-field="tax" class="appearance-none w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10">
-                  <option disabled="" value="">Select one</option>
-                  <option value="exemptexpenses">Exemptexpenses</option>
-                  <option value="input">Input</option>
-                </select>
-                <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
-                  <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"></path>
-                  </svg>
-                </span>
-              </div> 
-            </div>
-          </div>
-        <div class="flex flex-col gap-1">
+
+              <div class="flex flex-col gap-1">
+                <label class="text-neutral-700 text-sm font-medium"
+                  >Description</label
+                >
+                <textarea
+                  data-field="description"
+                  rows="2"
+                  class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700"
+                ></textarea>
+              </div>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div class="flex flex-col gap-1">
+                  <label class="text-neutral-700 text-sm font-medium"
+                    >Transaction Type</label
+                  >
+                  <div class="relative">
+                    <select
+                      data-field="transaction_type"
+                      class="appearance-none w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10"
+                    >
+                      <option disabled="" value="">Select one</option>
+                      <option value="Reimburse">Reimburse</option>
+                      <option value="Deduct">Deduct</option>
+                    </select>
+                    <span
+                      class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
+                    >
+                      <svg
+                        width="15"
+                        height="9"
+                        viewBox="0 0 15 9"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z"
+                          fill="#78829D"
+                        ></path>
+                      </svg>
+                    </span>
+                  </div>
+                </div>
+                <div class="flex flex-col gap-1">
+                  <label class="text-neutral-700 text-sm font-medium">Tax</label>
+                  <div class="relative">
+                    <select
+                      data-field="tax"
+                      class="appearance-none w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10"
+                    >
+                      <option disabled="" value="">Select one</option>
+                      <option value="exemptexpenses">Exemptexpenses</option>
+                      <option value="input">Input</option>
+                    </select>
+                    <span
+                      class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
+                    >
+                      <svg
+                        width="15"
+                        height="9"
+                        viewBox="0 0 15 9"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z"
+                          fill="#78829D"
+                        ></path>
+                      </svg>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="flex flex-col gap-1">
                 <label class="text-neutral-700 text-sm font-medium">Receipt</label>
                 <div class="flex flex-col gap-2">
-                  <label
+                  <div
                     data-material-receipt-trigger
                     class="cursor-pointer w-full h-20 border border-dashed border-gray-300 rounded bg-gray-50 flex items-center justify-center text-sky-700 text-sm text-center px-4"
                   >
-                    <span class="font-medium text-sky-900">Click to upload receipt</span>
-                  </label>
-                  <div class="flex items-center gap-3 text-xs text-slate-600" data-material-receipt-meta>
-                    <span data-material-receipt-filename>No file selected</span>
-                    <button type="button" class="hidden text-sky-700 hover:text-sky-900" data-material-receipt-preview>Preview</button>
-                    <button type="button" class="hidden text-rose-600 hover:text-rose-700" data-material-receipt-remove>Remove</button>
+                    <span class="font-medium text-sky-900"
+                      >Click to upload receipt</span
+                    >
                   </div>
-                  <input type="file" accept="image/*" class="hidden" data-material-receipt-input />
+                  <input
+                    type="file"
+                    multiple
+                    class="hidden"
+                    data-material-receipt-input
+                  />
                   <div class="hidden" data-material-receipts></div>
                 </div>
-              </div><div class="flex flex-col gap-1">
-                <label class="text-neutral-700 text-sm font-medium">Service Provider</label>
+              </div>
+              <div class="flex flex-col gap-1">
+                <label class="text-neutral-700 text-sm font-medium"
+                  >Service Provider</label
+                >
                 <div class="relative" data-material-sp-search="root">
-                  <input type="text" placeholder="Search by name, phone" class="w-full text-sm pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-500 placeholder:text-slate-500" data-material-sp-search="input">
-                  <input type="hidden" data-field="service_provider_id" data-material-sp-field="id">
-                  <span class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M16.3311 15.5156L12.7242 11.9095C13.7696 10.6544 14.2909 9.04453 14.1797 7.41486C14.0684 5.7852 13.3331 4.26116 12.1268 3.15979C10.9205 2.05843 9.33603 1.46453 7.70299 1.50164C6.06995 1.53875 4.51409 2.20402 3.35906 3.35906C2.20402 4.51409 1.53875 6.06995 1.50164 7.70299C1.46453 9.33603 2.05843 10.9205 3.15979 12.1268C4.26116 13.3331 5.7852 14.0684 7.41486 14.1797C9.04453 14.2909 10.6544 13.7696 11.9095 12.7242L15.5156 16.3311C15.5692 16.3847 15.6328 16.4271 15.7027 16.4561C15.7727 16.4851 15.8477 16.5 15.9234 16.5C15.9991 16.5 16.0741 16.4851 16.144 16.4561C16.214 16.4271 16.2776 16.3847 16.3311 16.3311C16.3847 16.2776 16.4271 16.214 16.4561 16.144C16.4851 16.0741 16.5 15.9991 16.5 15.9234C16.5 15.8477 16.4851 15.7727 16.4561 15.7027C16.4271 15.6328 16.3847 15.5692 16.3311 15.5156ZM2.66852 7.8552C2.66852 6.82937 2.97271 5.82658 3.54263 4.97364C4.11255 4.12069 4.9226 3.4559 5.87035 3.06333C6.81809 2.67076 7.86096 2.56805 8.86708 2.76818C9.87319 2.96831 10.7974 3.46229 11.5227 4.18766C12.2481 4.91303 12.7421 5.83721 12.9422 6.84333C13.1424 7.84945 13.0396 8.89232 12.6471 9.84006C12.2545 10.7878 11.5897 11.5979 10.7368 12.1678C9.88383 12.7377 8.88103 13.0419 7.8552 13.0419C6.48008 13.0404 5.16171 12.4934 4.18935 11.5211C3.21699 10.5487 2.67004 9.23033 2.66852 7.8552Z" fill="#78829D"></path>
+                  <input
+                    type="text"
+                    placeholder="Search by name, phone"
+                    class="w-full text-sm pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-500 placeholder:text-slate-500"
+                    data-material-sp-search="input"
+                  />
+                  <input
+                    type="hidden"
+                    data-field="service_provider_id"
+                    data-material-sp-field="id"
+                  />
+                  <span
+                    class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                  >
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 18 18"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M16.3311 15.5156L12.7242 11.9095C13.7696 10.6544 14.2909 9.04453 14.1797 7.41486C14.0684 5.7852 13.3331 4.26116 12.1268 3.15979C10.9205 2.05843 9.33603 1.46453 7.70299 1.50164C6.06995 1.53875 4.51409 2.20402 3.35906 3.35906C2.20402 4.51409 1.53875 6.06995 1.50164 7.70299C1.46453 9.33603 2.05843 10.9205 3.15979 12.1268C4.26116 13.3331 5.7852 14.0684 7.41486 14.1797C9.04453 14.2909 10.6544 13.7696 11.9095 12.7242L15.5156 16.3311C15.5692 16.3847 15.6328 16.4271 15.7027 16.4561C15.7727 16.4851 15.8477 16.5 15.9234 16.5C15.9991 16.5 16.0741 16.4851 16.144 16.4561C16.214 16.4271 16.2776 16.3847 16.3311 16.3311C16.3847 16.2776 16.4271 16.214 16.4561 16.144C16.4851 16.0741 16.5 15.9991 16.5 15.9234C16.5 15.8477 16.4851 15.7727 16.4561 15.7027C16.4271 15.6328 16.3847 15.5692 16.3311 15.5156ZM2.66852 7.8552C2.66852 6.82937 2.97271 5.82658 3.54263 4.97364C4.11255 4.12069 4.9226 3.4559 5.87035 3.06333C6.81809 2.67076 7.86096 2.56805 8.86708 2.76818C9.87319 2.96831 10.7974 3.46229 11.5227 4.18766C12.2481 4.91303 12.7421 5.83721 12.9422 6.84333C13.1424 7.84945 13.0396 8.89232 12.6471 9.84006C12.2545 10.7878 11.5897 11.5979 10.7368 12.1678C9.88383 12.7377 8.88103 13.0419 7.8552 13.0419C6.48008 13.0404 5.16171 12.4934 4.18935 11.5211C3.21699 10.5487 2.67004 9.23033 2.66852 7.8552Z"
+                        fill="#78829D"
+                      ></path>
                     </svg>
                   </span>
-                  <div data-material-sp-search="results" class="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded shadow hidden max-h-64 overflow-y-auto z-20"></div>
+                  <div
+                    data-material-sp-search="results"
+                    class="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded shadow hidden max-h-64 overflow-y-auto z-20"
+                  ></div>
                 </div>
-              </div></div>
-
-      </div><div class="w-[440px] rounded-lg outline outline-1 outline-gray-300 p-4 bg-white"><div class="flex flex-col gap-3 pt-2">
-          <div class="text-neutral-700 text-sm font-semibold">Payment</div>
-          <div class="grid grid-cols-2 gap-3">
-            <div class="flex flex-col gap-1">
-              <label class="text-neutral-700 text-sm font-medium">Batch Code</label>
-              <input type="text" data-field="batch_code" class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700">
-            </div>
-            <div class="flex flex-col gap-1">
-              <label class="text-neutral-700 text-sm font-medium">Xero Bill ID</label>
-              <input type="text" data-field="xero_bill_id" class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700">
-            </div>
-          </div>
-
-          <div class="grid grid-cols-2 gap-3">
-            <div class="flex flex-col gap-1">
-              <label class="text-neutral-700 text-sm font-medium">Date Scheduled</label>
-              <div class="relative">
-                <input type="text" data-field="date_scheduled" placeholder="dd/mm/yyyy" class="date-picker flatpickr-input w-full pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-500 placeholder:text-slate-400">
-                <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
-                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M5 2.5V4.5M13 2.5V4.5M3.5 7.5H14.5M4 3.5H14C14.5523 3.5 15 3.94772 15 4.5V14C15 14.5523 14.5523 15 14 15H4C3.44772 15 3 14.5523 3 14V4.5C3 3.94772 3.44772 3.5 4 3.5Z" stroke="#94A3B8" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"></path>
-                  </svg>
-                </span>
               </div>
-            </div>
-            <div class="flex flex-col gap-1">
-              <label class="text-neutral-700 text-sm font-medium">Date Paid</label>
-              <div class="relative">
-                <input type="text" data-field="date_paid" placeholder="dd/mm/yyyy" class="date-picker flatpickr-input w-full pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-500 placeholder:text-slate-400">
-                <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
-                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M5 2.5V4.5M13 2.5V4.5M3.5 7.5H14.5M4 3.5H14C14.5523 3.5 15 3.94772 15 4.5V14C15 14.5523 14.5523 15 14 15H4C3.44772 15 3 14.5523 3 14V4.5C3 3.94772 3.44772 3.5 4 3.5Z" stroke="#94A3B8" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"></path>
-                  </svg>
-                </span>
+
+              <div class="flex flex-col gap-3 pt-2">
+                <div
+                  class="flex justify-end items-center gap-3 border-t border-gray-300 mt-6 mb-4 py-2"
+                >
+                  <button
+                    id="cancel-material-btn"
+                    class="text-sky-700 text-sm font-medium px-3 py-2 rounded"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    id="add-material-btn"
+                    class="text-white bg-[#003882] text-sm font-medium px-4 py-2 rounded"
+                  >
+                    Add
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        <div class="flex justify-end items-center gap-3 border-t border-gray-300 my-5 py-2">
-          <button id="cancel-material-btn" class="text-sky-700 text-sm font-medium px-3 py-2 rounded">
-            Cancel
-          </button>
-          <button id="add-material-btn" class="text-white bg-[#003882] text-sm font-medium px-4 py-2 rounded">
-            Add
-          </button>
-        </div></div></div></div>
+        </div>
 
-      <div class="flex-1 bg-white rounded-lg outline outline-1 outline-gray-300 p-4">
-        <div id="addMaterialsTable" class="w-full">
+        <div
+          class="flex-1 bg-white rounded-lg outline outline-1 outline-gray-300 p-4"
+        >
+          <div id="addMaterialsTable" class="w-full"></div>
         </div>
       </div>
-    </div>`;
+
+  `;
 
     document.getElementById("replaceable-section").appendChild(wrapper);
 
-    // Receipt upload (materials only) - single file, filename display
-    const receiptInput = wrapper.querySelector("[data-material-receipt-input]");
-    const receiptTrigger = wrapper.querySelector(
-      "[data-material-receipt-trigger]"
-    );
-    const receiptName = wrapper.querySelector(
-      "[data-material-receipt-filename]"
-    );
-    const receiptPreviewBtn = wrapper.querySelector(
-      "[data-material-receipt-preview]"
-    );
-    const receiptRemoveBtn = wrapper.querySelector(
-      "[data-material-receipt-remove]"
-    );
-    const receiptList = wrapper.querySelector("[data-material-receipts]");
-
-    const ensureReceiptPreviewModal = () => {
-      let modal = document.querySelector("[data-receipt-preview-modal]");
-      if (!modal) {
-        modal = document.createElement("div");
-        modal.setAttribute("data-receipt-preview-modal", "");
-        modal.className =
-          "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden";
-        modal.innerHTML = `
-          <div class="bg-white rounded-lg shadow-lg max-w-3xl w-full mx-4 relative">
-            <button type="button" data-receipt-preview-close class="absolute top-3 right-3 text-slate-500 hover:text-slate-700">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="white" xmlns="http://www.w3.org/2000/svg">
-                <path d="M15 5L5 15M5 5L15 15" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </button>
-            <div class="flex flex-col gap-4">
-              <div class="text-lg p-3 bg-[#003882] font-semibold text-white" data-receipt-preview-title>Receipt preview</div>
-              <div class="p-3 overflow-hidden flex items-center justify-center max-h-[70vh]">
-                <img data-receipt-preview-img class="max-h-[70vh] object-contain" src="" alt="Receipt preview" />
-              </div>
-              <div class="p-3 flex justify-end gap-3">
-                <button type="button" data-receipt-preview-cancel class="px-4 py-2 rounded border border-slate-300 text-slate-700">Close</button>
-              </div>
-            </div>
-          </div>
-        `;
-        document.body.appendChild(modal);
-      }
-
-      const imgEl = modal.querySelector("[data-receipt-preview-img]");
-      const titleEl = modal.querySelector("[data-receipt-preview-title]");
-      const show = (src, name) => {
-        if (!imgEl || !src) return;
-        imgEl.src = src;
-        if (titleEl) titleEl.textContent = name || "Receipt preview";
-        modal.classList.remove("hidden");
-      };
-      const hide = () => {
-        if (imgEl) imgEl.src = "";
-        modal.classList.add("hidden");
-      };
-
-      if (!modal.dataset.boundReceiptPreview) {
-        modal.dataset.boundReceiptPreview = "true";
-        modal.addEventListener("click", (e) => {
-          if (e.target === modal) hide();
+    this.materialUploadHandler = initFileUploadArea({
+      triggerEl: wrapper.querySelector("[data-material-receipt-trigger]"),
+      inputEl: wrapper.querySelector("[data-material-receipt-input]"),
+      listEl: wrapper.querySelector("[data-material-receipts]"),
+      nameEl: wrapper.querySelector("[data-material-receipt-filename]"),
+      previewBtn: wrapper.querySelector("[data-material-receipt-preview]"),
+      removeBtn: wrapper.querySelector("[data-material-receipt-remove]"),
+      uploadPath: "materials/receipts",
+      loaderElement: this.loaderElement,
+      loaderMessageEl: this.loaderMessageEl,
+      loaderCounter: this.loaderCounter,
+      acceptRegex: /^(image\/|application\/pdf)/,
+      multiple: true,
+      replaceExisting: true,
+      renderItem: (meta) => {
+        const previewModal = ensureFilePreviewModal();
+        const card = buildUploadCard(meta, {
+          onView: () => {
+            const type = meta.type || "";
+            const src = meta.url?.startsWith("http")
+              ? meta.url
+              : `data:${type || "application/octet-stream"};base64,${meta.url}`;
+            previewModal.show({
+              src,
+              name: meta.name || "Preview",
+              type,
+            });
+          },
+          onDelete: () => card.remove(),
         });
-        modal
-          .querySelectorAll(
-            "[data-receipt-preview-close], [data-receipt-preview-cancel]"
-          )
-          .forEach((btn) =>
-            btn.addEventListener("click", (e) => {
-              e.preventDefault();
-              hide();
-            })
-          );
-      }
-
-      return { show, hide };
-    };
-
-    const resetReceiptUI = () => {
-      if (receiptName) receiptName.textContent = "No file selected";
-      if (receiptPreviewBtn) receiptPreviewBtn.classList.add("hidden");
-      if (receiptRemoveBtn) receiptRemoveBtn.classList.add("hidden");
-      if (receiptList) receiptList.innerHTML = "";
-      if (receiptInput) receiptInput.value = "";
-    };
-
-    const toDataUrl = (src, type) => {
-      if (!src) return "";
-      if (src.startsWith("http")) return src;
-      return src.startsWith("data:")
-        ? src
-        : `data:${type || "image/*"};base64,${src}`;
-    };
-
-    const handleReceiptFile = async (file) => {
-      if (!file || !receiptList) return;
-      const isImage = (file.type || "").startsWith("image/");
-      if (!isImage) {
-        this.handleFailure("Only image type can be selected.");
-        resetReceiptUI();
-        return;
-      }
-      showLoader(
-        this.loaderElement,
-        this.loaderMessageEl,
-        this.loaderCounter,
-        "Uploading receipt..."
-      );
-      try {
-        const url = await uploadImage(file, "materials/receipts");
-        receiptList.innerHTML = "";
-        const node = document.createElement("div");
-        node.className = "hidden";
-        node.setAttribute("file-type", file.type);
-        node.setAttribute("data-upload-url", url);
-        node.setAttribute("data-file-name", file.name || "Receipt");
-        receiptList.appendChild(node);
-        if (receiptName) receiptName.textContent = file.name || "Receipt";
-        if (receiptPreviewBtn) receiptPreviewBtn.classList.remove("hidden");
-        if (receiptRemoveBtn) receiptRemoveBtn.classList.remove("hidden");
-      } catch (error) {
-        console.error("Receipt upload failed", error);
-        this.handleFailure("Failed to upload receipt. Please try again.");
-        resetReceiptUI();
-      } finally {
-        hideLoader(this.loaderElement, this.loaderCounter);
-      }
-    };
-
-    if (receiptTrigger && receiptInput) {
-      receiptTrigger.addEventListener("click", (e) => {
-        e.preventDefault();
-        receiptInput.click();
-      });
-    }
-
-    if (receiptInput) {
-      receiptInput.addEventListener("click", (e) => {
-        e.target.value = "";
-      });
-      receiptInput.addEventListener("change", async (e) => {
-        const file = e.target.files && e.target.files[0];
-        await handleReceiptFile(file);
-      });
-    }
-
-    if (receiptPreviewBtn) {
-      receiptPreviewBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        const item = receiptList?.querySelector("[data-upload-url]");
-        if (!item) return;
-        const url = item.getAttribute("data-upload-url");
-        const name = item.getAttribute("data-file-name");
-        const type = item.getAttribute("file-type") || "image/*";
-        ensureReceiptPreviewModal().show(toDataUrl(url, type) || url, name);
-      });
-    }
-
-    if (receiptRemoveBtn) {
-      receiptRemoveBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        resetReceiptUI();
-      });
-    }
+        card.setAttribute("data-upload-url", meta.url);
+        card.setAttribute("data-file-name", meta.name || "Upload");
+        card.setAttribute("file-type", meta.type || "");
+        card.classList.remove("hidden");
+        wrapper
+          .querySelector("[data-material-receipts]")
+          ?.classList.remove("hidden");
+        return card;
+      },
+    });
 
     const taxTypes = ["Exemptexpenses", "input"];
     const transactionTypes = ["Reimburse", "Deduct"];
@@ -735,6 +660,13 @@ export class JobDetailView {
         await this.handleAddMaterials();
       });
     }
+    const cancelMaterialBtn = document.getElementById("cancel-material-btn");
+    if (cancelMaterialBtn) {
+      cancelMaterialBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        this.resetMaterialForm();
+      });
+    }
     this.renderMaterialsTable();
   }
 
@@ -750,15 +682,24 @@ export class JobDetailView {
         <div class="text-neutral-700 text-base font-semibold">Uploads</div>
         <div class="flex flex-col gap-3">
           <div class="flex flex-col gap-1">
-            <div class="w-full flex flex-col h-24 border border-dashed border-gray-300 rounded bg-gray-50 flex items-center justify-center text-sky-700 text-sm">
-              <label class="text-sky-900 text-sm font-medium  leading-4">
-              <input type="file" data-field="upload-file" class="hidden">
-              <span>Click to upload</span>
-              <span class="text-neutral-700 text-sm font-normal  leading-5">or drag and drop</span></label>
-              <p class="text-center justify-start text-slate-500 text-xs font-normal leading-3">SVG, PNG, JPG or GIF (max 800*400px)</p>
+            <div
+              data-upload-trigger
+              class="relative cursor-pointer w-full flex flex-col h-24 border border-dashed border-gray-300 rounded bg-gray-50 items-center justify-center text-sky-700 text-sm"
+            >
+              <span class="text-sky-900 text-sm font-medium leading-4"
+                >Click to upload</span
+              >
+              <span class="text-neutral-700 text-sm font-normal leading-5"
+                >or drag and drop</span
+              >
             </div>
-            <div class="flex flex-col gap-2 p-2" data-section="images-uploads">
-            <div>
+            <input type="file" data-field="upload-file" class="hidden" multiple />
+            <p
+              class="text-center justify-start text-slate-500 text-xs font-normal leading-3"
+            >
+              SVG, PNG, JPG or GIF (max 800*400px)
+            </p>
+            <div class="flex flex-col gap-2 p-2" data-section="images-uploads"></div>
           </div>
         </div>
         <div class="flex justify-end items-center gap-3">
@@ -769,135 +710,55 @@ export class JobDetailView {
     `;
 
     document.getElementById("replaceable-section").appendChild(wrapper);
-    const uploadPreviewModal = document.createElement("div");
-    uploadPreviewModal.setAttribute("data-upload-preview-modal", "");
-    uploadPreviewModal.className =
-      "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden";
-    uploadPreviewModal.innerHTML = `
-      <div class="bg-white rounded-lg shadow-lg max-w-3xl w-full mx-4 relative">
-        <button type="button" data-upload-preview-close class="absolute top-3 right-3 text-slate-500 hover:text-slate-700">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="white" xmlns="http://www.w3.org/2000/svg">
-            <path d="M15 5L5 15M5 5L15 15" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-        <div class="flex flex-col gap-4">
-          <div class="text-lg p-3 bg-[#003882] font-semibold text-white" data-upload-preview-title>Image preview</div>
-          <div class="p-3 overflow-hidden flex items-center justify-center max-h-[70vh]">
-            <img data-upload-preview-img class="max-h-[70vh] object-contain" src="" alt="Uploaded file preview" />
-          </div>
-          <div class="p-3 flex justify-end gap-3">
-            <button type="button" data-upload-preview-cancel class="px-4 py-2 rounded border border-slate-300 text-slate-700">Cancel</button>
-          </div>
-        </div>
-      </div>
-    `;
+    const uploadPreviewModal = ensureFilePreviewModal();
 
-    document.body.appendChild(uploadPreviewModal);
-    const previewImgEl = uploadPreviewModal.querySelector(
-      "[data-upload-preview-img]"
-    );
-    const hideUploadPreview = () => {
-      if (previewImgEl) previewImgEl.src = "";
-      uploadPreviewModal.classList.add("hidden");
-    };
-    const showUploadPreview = (src, name) => {
-      if (!src || !previewImgEl) return;
-      previewImgEl.src = src;
-      document.querySelector("[data-upload-preview-title]").textContent =
-        name || "Image preview";
-      uploadPreviewModal.classList.remove("hidden");
-    };
-
-    uploadPreviewModal.addEventListener("click", (e) => {
-      if (e.target === uploadPreviewModal) hideUploadPreview();
-    });
-    uploadPreviewModal
-      .querySelectorAll(
-        "[data-upload-preview-close], [data-upload-preview-cancel]"
-      )
-      .forEach((btn) =>
-        btn.addEventListener("click", (e) => {
-          e.preventDefault();
-          hideUploadPreview();
-        })
-      );
-
-    const bindUploadItemActions = (item) => {
-      const viewBtn = item.querySelector('[data-upload-action="view"]');
-      const deleteBtn = item.querySelector('[data-upload-action="delete"]');
-      if (viewBtn) {
-        viewBtn.addEventListener("click", (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          const isImage = (item.getAttribute("file-type") || "").startsWith(
-            "image/"
-          );
-          const url = item.getAttribute("data-upload-url");
-          const type = item.getAttribute("file-type") || "image/*";
-          const src = url?.startsWith("http")
-            ? url
-            : url
-            ? `data:${type};base64,${url}`
-            : "";
-          if (!isImage || !src) return;
-          const fileName =
-            item.getAttribute("data-file-name") || "Image preview";
-          showUploadPreview(src, fileName);
-        });
-      }
-      if (deleteBtn) {
-        deleteBtn.addEventListener("click", (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          item.remove();
-        });
-      }
-    };
-
-    let uploadResult = document.querySelector(
+    const uploadResult = wrapper.querySelector(
       '[data-section="images-uploads"]'
     );
-    let uploadSection = document.querySelector('[data-field="upload-file"]');
-    uploadSection.addEventListener("change", async (e) => {
-      const file = e.target.files && e.target.files[0];
-      if (!file) return;
-      const isImage = (file.type || "").startsWith("image/");
-      if (!isImage) {
-        this.handleFailure("Only image type can be selected.");
-        e.target.value = "";
-        return;
-      }
-      showLoader(
-        this.loaderElement,
-        this.loaderMessageEl,
-        this.loaderCounter,
-        "Uploading image..."
-      );
-      try {
-        const url = await uploadImage(file, "uploads");
-        if (!url) {
-          this.handleFailure("Upload failed. Please try again.");
-          return;
-        }
-        let html = this.createPreviewImageHTML(file);
-        html.setAttribute("file-type", file.type);
-        html.setAttribute("data-upload-url", url);
-        html.setAttribute("data-file-name", file.name || "Image preview");
-        uploadResult.appendChild(html);
-        bindUploadItemActions(html);
-      } catch (error) {
-        console.error("Image upload failed", error);
-        this.handleFailure("Failed to upload image. Please try again.");
-      } finally {
-        hideLoader(this.loaderElement, this.loaderCounter);
-      }
+    const uploadSection = wrapper.querySelector('[data-field="upload-file"]');
+    const uploadTrigger =
+      wrapper.querySelector("[data-upload-trigger]") ||
+      uploadSection?.parentElement;
+
+    this.uploadsHandler = initFileUploadArea({
+      triggerEl: uploadTrigger,
+      inputEl: uploadSection,
+      listEl: uploadResult,
+      nameEl: null,
+      previewBtn: null,
+      removeBtn: null,
+      uploadPath: "uploads",
+      loaderElement: this.loaderElement,
+      loaderMessageEl: this.loaderMessageEl,
+      loaderCounter: this.loaderCounter,
+      acceptRegex: /^(image\/|application\/pdf)/,
+      multiple: true,
+      replaceExisting: false,
+      renderItem: (meta) => {
+        const card = buildUploadCard(meta, {
+          onView: () => {
+            const type = meta.type || "";
+            const src = meta.url?.startsWith("http")
+              ? meta.url
+              : `data:${type || "application/octet-stream"};base64,${meta.url}`;
+            uploadPreviewModal.show({
+              src,
+              name: meta.name || "Preview",
+              type,
+            });
+          },
+          onDelete: () => card.remove(),
+        });
+        card.setAttribute("data-upload-url", meta.url);
+        card.setAttribute("data-file-name", meta.name || "Upload");
+        card.setAttribute("file-type", meta.type || "");
+        return card;
+      },
     });
 
     let addBtn = document.getElementById("add-images-btn");
     addBtn.addEventListener("click", async () => {
-      let images = uploadResult.querySelectorAll(
-        '[data-upload-url][file-type^="image/"]'
-      );
+      let images = uploadResult.querySelectorAll("[data-upload-url]");
 
       const propertyId =
         document.querySelector('[data-field="property_id"]')?.value?.trim() ||
@@ -910,21 +771,22 @@ export class JobDetailView {
         document.querySelector('[data-entity-id="entity-id"]')?.value?.trim() ||
         "";
 
-      let uploadObj = {
-        type: "photo",
-        property_name_id: propertyId,
-        customer_id: customerId,
-        company_id: companyId,
-        job_id: this.jobId,
-      };
       if (!images || !images.length) {
-        this.handleFailure("Please upload at least one image.");
+        this.handleFailure("Please upload at least one file.");
         return;
       }
 
       this.startLoading("Saving uploads...");
       try {
         for (const item of images) {
+          let uploadObj = {
+            type: "photo",
+            property_name_id: propertyId,
+            customer_id: customerId,
+            company_id: companyId,
+            job_id: this.jobId,
+          };
+
           let imageUrl = item.getAttribute("data-upload-url");
           if (!imageUrl) continue;
           uploadObj.photo_upload = imageUrl;
@@ -3801,20 +3663,13 @@ export class JobDetailView {
   async renderActivitiesTable() {
     await this.model.fetchActivities((activities) => {
       this.activityRecordsById = new Map();
-      if (!activities || !activities.length) {
-        const target = document.getElementById("addActivitiesTable");
-        if (target)
-          target.innerHTML =
-            "<div class='text-sm text-slate-500'>No activities found.</div>";
-        return;
-      }
-
-      activities.forEach((item) => {
+      const safeActivities = Array.isArray(activities) ? activities : [];
+      safeActivities.forEach((item) => {
         const id = String(item.ID || item.id || "");
         if (id) this.activityRecordsById.set(id, item);
       });
 
-      let mappedActivities = activities.map((item) => {
+      let mappedActivities = safeActivities.map((item) => {
         const serviceName =
           item.Service_Service_Name ||
           item.service_service_name ||
@@ -3826,8 +3681,6 @@ export class JobDetailView {
           Services: serviceName,
           Status: item.Activity_Status || item.activity_status || "",
           Price: item.Activity_Price || item.activity_price || "",
-          "Include in Quote":
-            item.Include_in_Quote ?? item.include_in_quote ?? "",
           "Invoice to Client":
             item.Invoice_to_Client ?? item.invoice_to_client ?? "",
           Option: item.Option || item.option || "",
@@ -3845,12 +3698,7 @@ export class JobDetailView {
   }
 
   createActivitiesTable(data) {
-    if (!Array.isArray(data) || !data.length) {
-      const empty = document.createElement("div");
-      empty.className = "text-sm text-slate-500";
-      empty.textContent = "No activities found.";
-      return empty;
-    }
+    const rows = Array.isArray(data) ? data : [];
     const table = document.createElement("table");
     table.className =
       "min-w-full border border-slate-200 rounded-lg overflow-hidden text-sm text-slate-700 leading-6";
@@ -3877,7 +3725,7 @@ export class JobDetailView {
 
     const tbody = document.createElement("tbody");
     const baseTdClass = "px-7 py-3 align-middle leading-6";
-    data.forEach((item, idx) => {
+    rows.forEach((item, idx) => {
       const tr = document.createElement("tr");
       tr.className = idx % 2 === 0 ? "bg-white" : "bg-slate-50";
       tr.id = item.Id;
@@ -3912,10 +3760,6 @@ export class JobDetailView {
           className: "text-slate-800",
         },
         ,
-        // {
-        //   value: item["Include in Quote"],
-        //   render: () => this.renderCheckbox(item["Include in Quote"]),
-        // }
         {
           value: item["Invoice to Client"],
           render: () => this.renderCheckbox(item["Invoice to Client"]),
@@ -3963,13 +3807,23 @@ export class JobDetailView {
       tbody.appendChild(tr);
     });
 
+    if (!rows.length) {
+      const tr = document.createElement("tr");
+      const td = document.createElement("td");
+      td.colSpan = headers.length;
+      td.className = baseTdClass + " text-center text-slate-500";
+      td.textContent = "No activities found.";
+      tr.appendChild(td);
+      tbody.appendChild(tr);
+    }
+
     table.appendChild(thead);
     table.appendChild(tbody);
     return table;
   }
 
-  bindActivityRowActions() {
-    const container = document.getElementById("addActivitiesTable");
+  bindRowActions(containerId, recordsMap, { onEdit, onDelete } = {}) {
+    const container = document.getElementById(containerId);
     if (!container) return;
     container.querySelectorAll(".edit-btn").forEach((btn) => {
       if (btn.dataset.bound) return;
@@ -3979,10 +3833,9 @@ export class JobDetailView {
         const row = btn.closest("tr");
         const id = row?.id;
         if (!id) return;
-        const record = this.activityRecordsById?.get(id);
+        const record = recordsMap?.get(id);
         if (!record) return;
-        this.editingActivityId = id;
-        this.populateActivityForm(record);
+        onEdit?.(id, record);
       });
     });
 
@@ -3994,6 +3847,20 @@ export class JobDetailView {
         const row = btn.closest("tr");
         const id = row?.id;
         if (!id) return;
+        const record = recordsMap?.get(id);
+        if (!record) return;
+        await onDelete?.(id, record);
+      });
+    });
+  }
+
+  bindActivityRowActions() {
+    this.bindRowActions("addActivitiesTable", this.activityRecordsById, {
+      onEdit: (id, record) => {
+        this.editingActivityId = id;
+        this.populateActivityForm(record);
+      },
+      onDelete: async (id) => {
         this.startLoading("Deleting activity...");
         try {
           await this.model.deleteActivity(id);
@@ -4005,7 +3872,29 @@ export class JobDetailView {
         } finally {
           this.stopLoading();
         }
-      });
+      },
+    });
+  }
+
+  bindMaterialRowActions() {
+    this.bindRowActions("addMaterialsTable", this.materialRecordsById, {
+      onEdit: (id, record) => {
+        this.editingMaterialId = id;
+        this.populateMaterialForm(record);
+      },
+      onDelete: async (id) => {
+        this.startLoading("Deleting material...");
+        try {
+          await this.model.deleteMaterial(id);
+          this.handleSuccess("Material deleted successfully.");
+          if (this.editingMaterialId === id) this.resetMaterialForm();
+        } catch (err) {
+          console.error("Failed to delete material", err);
+          this.handleFailure("Failed to delete material. Please try again.");
+        } finally {
+          this.stopLoading();
+        }
+      },
     });
   }
 
@@ -4014,19 +3903,34 @@ export class JobDetailView {
       const target = document.getElementById("addMaterialsTable");
       if (!target) return;
 
-      if (!materials.length) {
-        target.innerHTML =
-          "<div class='text-sm text-slate-500'>No materials found.</div>";
-        return;
-      }
+      this.materialRecordsById = new Map();
+      materials.forEach((item) => {
+        const id = String(item.ID || item.id || "");
+        if (id) this.materialRecordsById.set(id, item);
+      });
 
       const mapped = materials.map((item) => {
-        const firstName = item.Contact_First_Name || "";
-        const lastName = item.Contact_Last_Name || "";
+        const spContact = item.Service_Provider?.Contact_Information || {};
+        const firstName =
+          item.Contact_First_Name ||
+          spContact.first_name ||
+          item.Contact_Information_First_Name ||
+          "";
+        const lastName =
+          item.Contact_Last_Name ||
+          spContact.last_name ||
+          item.Contact_Information_Last_Name ||
+          "";
         const fullName = [firstName, lastName].filter(Boolean).join(" ") || "";
 
         return {
-          DateAdded: item.Date_Added || item.date_added || "",
+          Id: item.ID || item.id || "",
+          DateAdded:
+            item.Date_Added ||
+            item.date_added ||
+            item.created_at ||
+            item.Created_At ||
+            "",
           Status: item.Status || item.status || "",
           MaterialName: item.Material_Name || item.material_name || "",
           Total: item.Total || item.total || "",
@@ -4039,16 +3943,12 @@ export class JobDetailView {
       const table = this.createMaterialTable(mapped);
       target.innerHTML = "";
       target.appendChild(table);
+      this.bindMaterialRowActions();
     });
   }
 
   createMaterialTable(data) {
-    if (!Array.isArray(data) || !data.length) {
-      const empty = document.createElement("div");
-      empty.className = "text-sm text-slate-500";
-      empty.textContent = "No materials found.";
-      return empty;
-    }
+    const rows = Array.isArray(data) ? data : [];
 
     const table = document.createElement("table");
     table.className =
@@ -4065,6 +3965,7 @@ export class JobDetailView {
       "Transaction Type",
       "Tax",
       "Service Provider",
+      "Actions",
     ];
     headers.forEach((text) => {
       const th = document.createElement("th");
@@ -4076,9 +3977,10 @@ export class JobDetailView {
 
     const tbody = document.createElement("tbody");
     const baseTdClass = "px-7 py-3 align-middle leading-6";
-    data.forEach((item, idx) => {
+    rows.forEach((item, idx) => {
       const tr = document.createElement("tr");
       tr.className = idx % 2 === 0 ? "bg-white" : "bg-slate-50";
+      tr.id = item.Id;
 
       const statusKey = (item.Status || "").toLowerCase();
       const statusStyles = {
@@ -4111,6 +4013,28 @@ export class JobDetailView {
         { value: item.TransactionType || "-", className: "text-slate-800" },
         { value: item.Tax || "-", className: "text-slate-800" },
         { value: item.ServiceProvider || "-", className: "text-slate-800" },
+        {
+          render: () => {
+            const divElement = document.createElement("div");
+            divElement.className =
+              "flex items-center justify-end gap-3 text-slate-500";
+            divElement.innerHTML = `<button type="button" class="edit-btn hover:text-sky-700" title="Edit">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4 12.5-12.5z"></path>
+                </svg>
+              </button>
+              <button type="button" class="delete-btn text-rose-600 hover:text-rose-700" title="Delete">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"></path>
+                  <path d="M10 11v6M14 11v6"></path>
+                  <path d="M9 6V4a2 2 0 012-2h2a2 2 0 012 2v2"></path>
+                </svg>
+              </button>`;
+            return divElement;
+          },
+        },
       ];
 
       cells.forEach((cell) => {
@@ -4127,6 +4051,16 @@ export class JobDetailView {
 
       tbody.appendChild(tr);
     });
+
+    if (!rows.length) {
+      const tr = document.createElement("tr");
+      const td = document.createElement("td");
+      td.colSpan = headers.length;
+      td.className = baseTdClass + " text-center text-slate-500";
+      td.textContent = "No materials found.";
+      tr.appendChild(td);
+      tbody.appendChild(tr);
+    }
 
     table.appendChild(thead);
     table.appendChild(tbody);
@@ -4168,14 +4102,30 @@ export class JobDetailView {
       document
         .querySelector("[data-material-receipts] [data-upload-url]")
         ?.getAttribute("data-upload-url") || "";
-    if (receiptUrl) data.receipt_url = receiptUrl;
-    this.startLoading("Adding material...");
+    if (receiptUrl) data.receipt = receiptUrl;
+    const isEditing = !!this.editingMaterialId;
+    this.startLoading(
+      isEditing ? "Updating material..." : "Adding material..."
+    );
     try {
-      await this.model.addNewMaterial(data);
-      this.handleSuccess("Material added successfully.");
+      if (isEditing) {
+        await this.model.updateMaterial(this.editingMaterialId, data);
+        this.handleSuccess("Material updated successfully.");
+      } else {
+        await this.model.addNewMaterial(data);
+        this.handleSuccess("Material added successfully.");
+      }
+      this.resetMaterialForm();
     } catch (err) {
-      console.error("Failed to add material", err);
-      this.handleFailure("Failed to add material. Please try again.");
+      console.error(
+        isEditing ? "Failed to update material" : "Failed to add material",
+        err
+      );
+      this.handleFailure(
+        isEditing
+          ? "Failed to update material. Please try again."
+          : "Failed to add material. Please try again."
+      );
     } finally {
       this.stopLoading();
     }
@@ -4281,9 +4231,9 @@ export class JobDetailView {
       '[data-section="add-activities"] [data-field="service_id"]'
     );
     const serviceId =
-      activity.service_id || activity.Service?.id || activity.Service?.ID || "";
+      activity.Service_ID || activity.Service?.id || activity.Service?.ID || "";
     const serviceName =
-      activity.Service?.service_name || activity.service_name || "";
+      activity.Service_Service_Name || activity.service_name || "";
     const servicesData = this.activitiesServices || [];
 
     const matchedService = servicesData.find(
@@ -4293,7 +4243,7 @@ export class JobDetailView {
     );
 
     if (primaryServiceSelect) {
-      if (matchedService && matchedService.Service_Type === "Secondary") {
+      if (matchedService && matchedService.Service_Type === "Option") {
         const parentPrimary = servicesData.find(
           (s) => String(s.ID) === String(matchedService.Primary_Service_ID)
         );
@@ -4371,51 +4321,80 @@ export class JobDetailView {
     if (addBtn) addBtn.textContent = "Update";
   }
 
-  createPreviewImageHTML(file) {
-    let fileHTML = `
-          <div class="bg-[#F5F6F8] p-3 rounded-lg">
-            <div class="flex flex-row justify-between items-center">
-              <!-- Left Side: Icon + Filename -->
-              <div class="flex flex-row items-center gap-3">
-                <!-- Eye Icon -->
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  data-upload-action="view"
-                  class="cursor-pointer"
-                >
-                  <path
-                    d="M18.2848 9.49731C18.2605 9.44245 17.6723 8.13758 16.3646 6.82994C14.6223 5.08758 12.4216 4.16675 9.99935 4.16675C7.57712 4.16675 5.37643 5.08758 3.63407 6.82994C2.32643 8.13758 1.73545 9.44453 1.71393 9.49731C1.68234 9.56836 1.66602 9.64525 1.66602 9.723C1.66602 9.80076 1.68234 9.87765 1.71393 9.9487C1.73823 10.0036 2.32643 11.3077 3.63407 12.6154C5.37643 14.357 7.57712 15.2779 9.99935 15.2779C12.4216 15.2779 14.6223 14.357 16.3646 12.6154C17.6723 11.3077 18.2605 10.0036 18.2848 9.9487C18.3164 9.87765 18.3327 9.80076 18.3327 9.723C18.3327 9.64525 18.3164 9.56836 18.2848 9.49731ZM9.99935 12.5001C9.44996 12.5001 8.9129 12.3372 8.4561 12.0319C7.99929 11.7267 7.64326 11.2929 7.43301 10.7853C7.22277 10.2777 7.16776 9.71923 7.27494 9.18039C7.38212 8.64155 7.64668 8.1466 8.03516 7.75812C8.42364 7.36964 8.91859 7.10508 9.45743 6.9979C9.99627 6.89072 10.5548 6.94573 11.0624 7.15597C11.5699 7.36622 12.0038 7.72225 12.309 8.17906C12.6142 8.63586 12.7771 9.17291 12.7771 9.72231C12.7771 10.459 12.4845 11.1656 11.9635 11.6865C11.4426 12.2074 10.7361 12.5001 9.99935 12.5001Z"
-                    fill="#0052CC"
-                  ></path>
-                </svg>
+  resetMaterialForm() {
+    const fields = document.querySelectorAll(
+      '[data-section="add-materials"] input, [data-section="add-materials"] select, [data-section="add-materials"] textarea'
+    );
+    fields.forEach((el) => {
+      if (el.type === "checkbox") {
+        el.checked = false;
+      } else {
+        el.value = "";
+      }
+    });
+    const addBtn = document.getElementById("add-material-btn");
+    if (addBtn) addBtn.textContent = "Add";
+    const providerInput = document.querySelector(
+      '[data-material-sp-search="input"]'
+    );
+    if (providerInput) providerInput.value = "";
+    this.materialUploadHandler?.reset?.();
+    this.editingMaterialId = null;
+  }
 
-                <p class="text-gray-800 text-sm">${file.name}</p>
-              </div>
+  populateMaterialForm(material = {}) {
+    const mapField = (selector, value) => {
+      const el = document.querySelector(
+        `[data-section="add-materials"] [data-field="${selector}"]`
+      );
+      if (!el) return;
+      el.value = value ?? "";
+    };
 
-              <!-- Right Side: Delete Icon -->
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 16 16"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                data-upload-action="delete"
-                class="cursor-pointer"
-              >
-                <path
-                  d="M13.7949 3.38453H11.2308V2.87171C11.2308 2.46369 11.0687 2.07237 10.7802 1.78386C10.4916 1.49534 10.1003 1.33325 9.69231 1.33325H6.61539C6.20736 1.33325 5.81605 1.49534 5.52753 1.78386C5.23901 2.07237 5.07692 2.46369 5.07692 2.87171V3.38453H2.51282C2.37681 3.38453 2.24637 3.43856 2.1502 3.53474C2.05403 3.63091 2 3.76135 2 3.89735C2 4.03336 2.05403 4.1638 2.1502 4.25997C2.24637 4.35615 2.37681 4.41018 2.51282 4.41018H3.02564V13.6409C3.02564 13.913 3.1337 14.1738 3.32604 14.3662C3.51839 14.5585 3.77927 14.6666 4.05128 14.6666H12.2564C12.5284 14.6666 12.7893 14.5585 12.9816 14.3662C13.174 14.1738 13.2821 13.913 13.2821 13.6409V4.41018H13.7949C13.9309 4.41018 14.0613 4.35615 14.1575 4.25997C14.2537 4.1638 14.3077 4.03336 14.3077 3.89735C14.3077 3.76135 14.2537 3.63091 14.1575 3.53474C14.0613 3.43856 13.9309 3.38453 13.7949 3.38453Z"
-                  fill="#0052CC"
-                ></path>
-              </svg>
-            </div>
-          </div>`;
+    mapField(
+      "material_name",
+      material.material_name || material.Material_Name || ""
+    );
+    mapField("status", material.status || material.Status || "");
+    mapField("total", material.total || material.Total || "");
+    mapField(
+      "transaction_type",
+      material.transaction_type || material.Transaction_Type || ""
+    );
+    mapField("tax", material.tax || material.Tax || "");
+    mapField("description", material.description || material.Description || "");
 
-    let element = document.createElement("div");
-    element.innerHTML = fileHTML;
-    return element;
+    const providerId =
+      material.service_provider_id ||
+      material.Service_Provider?.id ||
+      material.Service_Provider?.ID ||
+      "";
+    mapField("service_provider_id", providerId);
+    const spContact = material.Service_Provider?.Contact_Information || {};
+    const providerName =
+      [
+        material.Contact_First_Name ||
+          spContact.first_name ||
+          material.Contact_Information_First_Name ||
+          "",
+        material.Contact_Last_Name ||
+          spContact.last_name ||
+          material.Contact_Information_Last_Name ||
+          "",
+      ]
+        .filter(Boolean)
+        .join(" ") || "";
+
+    const providerInput = document.querySelector(
+      '[data-material-sp-search="input"]'
+    );
+    const providerHidden = document.querySelector(
+      '[data-material-sp-field="id"]'
+    );
+    if (providerHidden) providerHidden.value = providerId || "";
+    if (providerInput) providerInput.value = providerName;
+
+    const addBtn = document.getElementById("add-material-btn");
+    if (addBtn) addBtn.textContent = "Update";
   }
 }

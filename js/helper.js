@@ -273,6 +273,87 @@ export function initCustomModal({ id = "statusModal" } = {}) {
   return { modal, headerEl, bodyEl, iconEl, hide };
 }
 
+function getFilesFromEvent(e) {
+  const dt = e?.dataTransfer;
+  if (!dt) return [];
+  const directFiles = Array.from(dt.files || []).filter(Boolean);
+  if (directFiles.length) return directFiles;
+  if (dt.items) {
+    return Array.from(dt.items || [])
+      .filter((item) => item.kind === "file")
+      .map((item) => item.getAsFile())
+      .filter(Boolean);
+  }
+  return [];
+}
+
+export function ensureFilePreviewModal(id = "ptpm-file-preview-modal") {
+  let modal = document.getElementById(id);
+  if (!modal) {
+    modal = document.createElement("div");
+    modal.id = id;
+    modal.className =
+      "flex fixed inset-0 z-[9999] hidden items-center justify-center bg-black/50";
+    modal.innerHTML = `
+      <div class="bg-white rounded-lg shadow-lg max-w-4xl w-[95vw] max-h-[90vh] overflow-hidden relative">
+        <button type="button" data-file-preview-close class="absolute top-3 right-3 text-slate-500 hover:text-slate-700">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="p-4 flex flex-col gap-4">
+          <div class="text-base font-semibold text-slate-800" data-file-preview-title>Preview</div>
+          <div class="flex-1 overflow-auto max-h-[70vh]">
+            <img data-file-preview-img class="max-h-[70vh] mx-auto object-contain hidden" alt="File preview" />
+            <iframe data-file-preview-frame class="w-full h-[70vh] hidden" frameborder="0"></iframe>
+          </div>
+          <div class="flex justify-end">
+            <button type="button" data-file-preview-close class="px-4 py-2 rounded border border-slate-300 text-slate-700">Close</button>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  }
+
+  const hide = () => modal.classList.add("hidden");
+  const closeEls = modal.querySelectorAll("[data-file-preview-close]");
+  closeEls.forEach((btn) => {
+    if (btn.dataset.boundPreviewClose) return;
+    btn.dataset.boundPreviewClose = "true";
+    btn.addEventListener("click", hide);
+  });
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) hide();
+  });
+
+  const imgEl = modal.querySelector("[data-file-preview-img]");
+  const frameEl = modal.querySelector("[data-file-preview-frame]");
+  const titleEl = modal.querySelector("[data-file-preview-title]");
+
+  const show = ({ src, name = "Preview", type = "" } = {}) => {
+    if (!src) return;
+    const isImage = (type || "").startsWith("image/");
+    if (titleEl) titleEl.textContent = name || "Preview";
+    if (imgEl && frameEl) {
+      if (isImage) {
+        imgEl.src = src;
+        imgEl.classList.remove("hidden");
+        frameEl.classList.add("hidden");
+        frameEl.src = "";
+      } else {
+        frameEl.src = src;
+        frameEl.classList.remove("hidden");
+        imgEl.classList.add("hidden");
+        imgEl.src = "";
+      }
+    }
+    modal.classList.remove("hidden");
+  };
+
+  return { show, hide, modal };
+}
+
 let unsavedModalCache = null;
 
 function buildUnsavedChangesModal() {
@@ -451,7 +532,9 @@ export function readFileAsBase64(file) {
   });
 }
 
-const uploadApiBase = `https://${(ACCOUNT_NAME || "").toLowerCase()}.vitalstats.app`;
+const uploadApiBase = `https://${(
+  ACCOUNT_NAME || ""
+).toLowerCase()}.vitalstats.app`;
 
 function sanitizeFolderName(folderName) {
   if (!folderName || typeof folderName !== "string") return "";
@@ -460,8 +543,7 @@ function sanitizeFolderName(folderName) {
 
 export async function requestUploadDetails(file, folderName = "") {
   const safeFolder = sanitizeFolderName(folderName);
-  const name =
-    (safeFolder ? `${safeFolder}/` : "") + (file?.name || "upload");
+  const name = (safeFolder ? `${safeFolder}/` : "") + (file?.name || "upload");
   const params = new URLSearchParams({
     type: file?.type || "application/octet-stream",
     name,
@@ -496,6 +578,205 @@ export async function uploadAndGetFileLink(file, folderName = "") {
 
 export async function uploadImage(file, folderName = "uploads") {
   return uploadAndGetFileLink(file, folderName);
+}
+
+export function initFileUploadArea({
+  triggerEl,
+  inputEl,
+  listEl,
+  nameEl,
+  previewBtn,
+  removeBtn,
+  uploadPath = "uploads",
+  loaderElement,
+  loaderMessageEl,
+  loaderCounter,
+  acceptRegex = /^(image\/|application\/pdf)/,
+  multiple = true,
+  replaceExisting = true,
+  renderItem,
+  onClear,
+  dropHighlightClass = ["ring-2", "ring-sky-500"],
+} = {}) {
+  if (!triggerEl || !inputEl) return;
+  if (multiple) inputEl.multiple = true;
+
+  const previewModal = ensureFilePreviewModal();
+
+  const resetUI = () => {
+    if (nameEl) nameEl.textContent = "No file selected";
+    if (previewBtn) previewBtn.classList.add("hidden");
+    if (removeBtn) removeBtn.classList.add("hidden");
+    if (listEl && replaceExisting) listEl.innerHTML = "";
+    if (inputEl) inputEl.value = "";
+    if (typeof onClear === "function") onClear();
+  };
+
+  const defaultRender = (meta) => {
+    const node = document.createElement("div");
+    node.className = "hidden";
+    node.setAttribute("data-upload-url", meta.url);
+    node.setAttribute("data-file-name", meta.name || "Upload");
+    node.setAttribute("file-type", meta.type || "");
+    return node;
+  };
+
+  const handleFiles = async (fileLike) => {
+    const files = Array.from(fileLike || []).filter((f) =>
+      (f?.type || "").match(acceptRegex)
+    );
+    if (!files.length) {
+      resetUI();
+      return;
+    }
+    showLoader(loaderElement, loaderMessageEl, loaderCounter, "Uploading...");
+    try {
+      const metas = [];
+      for (const file of files) {
+        const url = await uploadImage(file, uploadPath);
+        metas.push({ url, type: file.type, name: file.name, file });
+      }
+      if (listEl && replaceExisting) listEl.innerHTML = "";
+      metas.forEach((meta) => {
+        const node = (renderItem || defaultRender)(meta);
+        if (node && listEl) listEl.appendChild(node);
+      });
+      if (nameEl && metas.length) {
+        const extra = metas.length > 1 ? ` (+${metas.length - 1} more)` : "";
+        nameEl.textContent = (metas[0].name || "Upload") + extra;
+      }
+      if (previewBtn) previewBtn.classList.remove("hidden");
+      if (removeBtn) removeBtn.classList.remove("hidden");
+      return metas;
+    } catch (err) {
+      console.error("File upload failed", err);
+      resetUI();
+    } finally {
+      hideLoader(loaderElement, loaderCounter);
+    }
+  };
+
+  const previewFromList = () => {
+    const item = listEl?.querySelector("[data-upload-url]");
+    if (!item) return;
+    const url = item.getAttribute("data-upload-url");
+    const name = item.getAttribute("data-file-name") || "Preview";
+    const type = item.getAttribute("file-type") || "";
+    if (!url) return;
+    const src = url.startsWith("http")
+      ? url
+      : url.startsWith("data:")
+      ? url
+      : `data:${type || "application/octet-stream"};base64,${url}`;
+    previewModal.show({ src, name, type });
+  };
+
+  inputEl.addEventListener("click", (e) => {
+    e.target.value = "";
+  });
+  inputEl.addEventListener("change", async (e) => {
+    await handleFiles(e.target.files);
+  });
+
+  triggerEl.addEventListener("click", (e) => {
+    e.preventDefault();
+    inputEl.click();
+  });
+
+  const stop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+  ["dragenter", "dragover"].forEach((evt) => {
+    triggerEl.addEventListener(evt, (e) => {
+      stop(e);
+      dropHighlightClass.forEach((c) => triggerEl.classList.add(c));
+    });
+  });
+  ["dragleave", "drop"].forEach((evt) => {
+    triggerEl.addEventListener(evt, (e) => {
+      stop(e);
+      dropHighlightClass.forEach((c) => triggerEl.classList.remove(c));
+    });
+  });
+  triggerEl.addEventListener("drop", async (e) => {
+    stop(e);
+    const files = getFilesFromEvent(e);
+    if (files.length) await handleFiles(files);
+  });
+
+  if (previewBtn) {
+    previewBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      previewFromList();
+    });
+  }
+  if (removeBtn) {
+    removeBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      resetUI();
+    });
+  }
+
+  return {
+    reset: resetUI,
+    upload: handleFiles,
+    preview: previewFromList,
+    modal: previewModal,
+  };
+}
+
+export function buildUploadCard(
+  { name = "Upload", type = "", url = "" } = {},
+  { onView, onDelete } = {}
+) {
+  const isPdf = (type || "").toLowerCase().includes("pdf");
+  const isImage = (type || "").startsWith("image/");
+  const icon = isImage && url
+    ? `<img src="${url}" class="w-10 h-10 object-cover rounded-md" />`
+    : `<div class="w-10 h-10 rounded-md bg-slate-200 flex items-center justify-center text-slate-600 text-xs font-semibold">
+        ${isPdf ? "PDF" : "FILE"}
+      </div>`;
+
+  const card = document.createElement("div");
+  card.className = "bg-[#F5F6F8] p-3 rounded-lg";
+  card.innerHTML = `
+    <div class="flex flex-row justify-between items-center">
+      <div class="flex flex-row items-center gap-3">
+        ${icon}
+        <p class="text-gray-800 text-sm break-all">${name}</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <button type="button" data-upload-action="view" class="text-sky-700 hover:text-sky-900" title="Preview">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18.2848 9.49731C18.2605 9.44245 17.6723 8.13758 16.3646 6.82994C14.6223 5.08758 12.4216 4.16675 9.99935 4.16675C7.57712 4.16675 5.37643 5.08758 3.63407 6.82994C2.32643 8.13758 1.73545 9.44453 1.71393 9.49731C1.68234 9.56836 1.66602 9.64525 1.66602 9.723C1.66602 9.80076 1.68234 9.87765 1.71393 9.9487C1.73823 10.0036 2.32643 11.3077 3.63407 12.6154C5.37643 14.357 7.57712 15.2779 9.99935 15.2779C12.4216 15.2779 14.6223 14.357 16.3646 12.6154C17.6723 11.3077 18.2605 10.0036 18.2848 9.9487C18.3164 9.87765 18.3327 9.80076 18.3327 9.723C18.3327 9.64525 18.3164 9.56836 18.2848 9.49731ZM9.99935 12.5001C9.44996 12.5001 8.9129 12.3372 8.4561 12.0319C7.99929 11.7267 7.64326 11.2929 7.43301 10.7853C7.22277 10.2777 7.16776 9.71923 7.27494 9.18039C7.38212 8.64155 7.64668 8.1466 8.03516 7.75812C8.42364 7.36964 8.91859 7.10508 9.45743 6.9979C9.99627 6.89072 10.5548 6.94573 11.0624 7.15597C11.5699 7.36622 12.0038 7.72225 12.309 8.17906C12.6142 8.63586 12.7771 9.17291 12.7771 9.72231C12.7771 10.459 12.4845 11.1656 11.9635 11.6865C11.4426 12.2074 10.7361 12.5001 9.99935 12.5001Z" fill="#0052CC"></path>
+          </svg>
+        </button>
+        <button type="button" data-upload-action="delete" class="text-rose-600 hover:text-rose-700" title="Delete">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M13.7949 3.38453H11.2308V2.87171C11.2308 2.46369 11.0687 2.07237 10.7802 1.78386C10.4916 1.49534 10.1003 1.33325 9.69231 1.33325H6.61539C6.20736 1.33325 5.81605 1.49534 5.52753 1.78386C5.23901 2.07237 5.07692 2.46369 5.07692 2.87171V3.38453H2.51282C2.37681 3.38453 2.24637 3.43856 2.1502 3.53474C2.05403 3.63091 2 3.76135 2 3.89735C2 4.03336 2.05403 4.1638 2.1502 4.25997C2.24637 4.35615 2.37681 4.41018 2.51282 4.41018H3.02564V13.6409C3.02564 13.913 3.1337 14.1738 3.32604 14.3662C3.51839 14.5585 3.77927 14.6666 4.05128 14.6666H12.2564C12.5284 14.6666 12.7893 14.5585 12.9816 14.3662C13.174 14.1738 13.2821 13.913 13.2821 13.6409V4.41018H13.7949C13.9309 4.41018 14.0613 4.35615 14.1575 4.25997C14.2537 4.1638 14.3077 4.03336 14.3077 3.89735C14.3077 3.76135 14.2537 3.63091 14.1575 3.53474C14.0613 3.43856 13.9309 3.38453 13.7949 3.38453Z" fill="#0052CC"></path>
+          </svg>
+        </button>
+      </div>
+    </div>`;
+
+  const viewBtn = card.querySelector('[data-upload-action="view"]');
+  if (viewBtn) {
+    viewBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      onView?.();
+    });
+  }
+  const deleteBtn = card.querySelector('[data-upload-action="delete"]');
+  if (deleteBtn) {
+    deleteBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      onDelete?.();
+    });
+  }
+  return card;
 }
 
 export function showAlertModal({

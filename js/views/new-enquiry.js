@@ -8,6 +8,9 @@ import {
   resetFormFields,
   showAlertModal,
   uploadImage,
+  initFileUploadArea,
+  buildUploadCard,
+  ensureFilePreviewModal,
 } from "../helper.js";
 
 export class NewInquiryView {
@@ -3297,63 +3300,47 @@ export class NewInquiryView {
         `[data-feedback-upload-list="${key}"]`
       );
       if (!list) return;
-      input.addEventListener("click", (e) => {
-        e.target.value = "";
-      });
-      input.addEventListener("change", async (e) => {
-        const file = e.target.files && e.target.files[0];
-        if (!file) return;
-        const isImage = (file.type || "").startsWith("image/");
-        if (!isImage) {
-          this.showFeedback("Only image type can be selected.");
-          e.target.value = "";
-          return;
-        }
-        showLoader(
-          this.loaderElement,
-          this.loaderMessageEl,
-          this.loaderCounter,
-          "Uploading image..."
-        );
-        try {
-          const url = await uploadImage(file, "inquiries/resident-feedback");
-          const html = this.createPreviewImageHTML(file);
-          html.setAttribute("file-type", file.type);
-          html.setAttribute("data-upload-url", url);
-          html.setAttribute("data-file-name", file.name || "Image preview");
-          list.appendChild(html);
-          this.bindResidentUploadItemActions(html);
-        } catch (error) {
-          console.error("Resident feedback image upload failed", error);
-          this.showFeedback("Failed to upload image. Please try again.");
-        } finally {
-          hideLoader(this.loaderElement, this.loaderCounter);
-          e.target.value = "";
-        }
+
+      const previewModal = ensureFilePreviewModal();
+      initFileUploadArea({
+        triggerEl: input.closest("label") || input.parentElement,
+        inputEl: input,
+        listEl: list,
+        nameEl: null,
+        previewBtn: null,
+        removeBtn: null,
+        uploadPath: "inquiries/resident-feedback",
+        loaderElement: this.loaderElement,
+        loaderMessageEl: this.loaderMessageEl,
+        loaderCounter: this.loaderCounter,
+        acceptRegex: /^(image\/|application\/pdf)/,
+        multiple: true,
+        replaceExisting: false,
+        renderItem: (meta) => {
+          const card = buildUploadCard(meta, {
+            onView: () => {
+              const type = meta.type || "";
+              const src = meta.url?.startsWith("http")
+                ? meta.url
+                : `data:${type || "application/octet-stream"};base64,${meta.url}`;
+              previewModal.show({
+                src,
+                name: meta.name || "Preview",
+                type,
+              });
+            },
+            onDelete: () => card.remove(),
+          });
+          card.setAttribute("data-upload-url", meta.url);
+          card.setAttribute("data-file-name", meta.name || "Upload");
+          card.setAttribute("file-type", meta.type || "");
+          return card;
+        },
       });
     });
   }
 
-  bindResidentUploadItemActions(item) {
-    const viewBtn = item.querySelector('[data-upload-action="view"]');
-    const deleteBtn = item.querySelector('[data-upload-action="delete"]');
-    if (viewBtn) {
-      viewBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        const src = item.getAttribute("data-upload-url");
-        if (!src) return;
-        window.open(src, "_blank", "noopener,noreferrer");
-      });
-    }
-    if (deleteBtn) {
-      deleteBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        item.remove();
-      });
-    }
-  }
+  bindResidentUploadItemActions() {}
 
   getResidentFeedbackImages() {
     const nodes = document.querySelectorAll(

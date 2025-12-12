@@ -10,7 +10,7 @@ export class JobDetailModal {
     this.appointmentModel = plugin.switchTo("PeterpmAppointment");
     this.acitivityModel = plugin.switchTo("PeterpmActivity");
     this.materialModel = plugin.switchTo("PeterpmMaterial");
-    this.uploadObj = plugin.switchTo("PeterpmUpload");
+    this.uploadModel = plugin.switchTo("PeterpmUpload");
     this.serviceModel = plugin.switchTo("PeterpmService");
 
     this.activityQuery = null;
@@ -38,6 +38,7 @@ export class JobDetailModal {
     this.properties = [];
     this.activities = [];
     this.materials = [];
+    this.materialRecordsById = new Map();
     this.contactSub = null;
     this.propertySub = null;
     this.activitySub = null;
@@ -405,8 +406,10 @@ export class JobDetailModal {
         "status",
         "total",
         "tax",
+        "description",
         "created_at",
         "transaction_type",
+        "service_provider_id",
       ])
       .include("Service_Provider", (q) =>
         q
@@ -696,7 +699,6 @@ export class JobDetailModal {
   async updateActivity(activityId, activityObj = {}) {
     if (!activityId) throw new Error("Activity id is required");
     const payload = { ...activityObj };
-
     const query = this.acitivityModel.mutation();
     query.update((q) => q.where("id", activityId).set(payload));
     return await query.execute(true).toPromise();
@@ -716,6 +718,22 @@ export class JobDetailModal {
     return result;
   }
 
+  async updateMaterial(materialId, materialObj = {}) {
+    if (!materialId) throw new Error("Material id is required");
+    const query = this.materialModel.mutation();
+    query.update((q) => q.where("id", materialId).set(materialObj));
+    const result = await query.execute(true).toPromise();
+    return result;
+  }
+
+  async deleteMaterial(materialId) {
+    if (!materialId) throw new Error("Material id is required");
+    const query = this.materialModel.mutation();
+    query.delete((q) => q.where("id", materialId));
+    const result = await query.execute(true).toPromise();
+    return result;
+  }
+
   async createNewJob(jobDeails) {
     let query = this.jobModel.mutation();
     query.createOne(jobDeails);
@@ -724,7 +742,7 @@ export class JobDetailModal {
   }
 
   async createNewUpload(uploadObj) {
-    let query = this.uploadObj.mutation();
+    let query = this.uploadModel.mutation();
     query.createOne(uploadObj);
     let result = await query.execute(true).toPromise();
     return result;
