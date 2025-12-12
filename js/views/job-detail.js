@@ -267,6 +267,7 @@ export class JobDetailView {
     // to the selected primary service. It allows the secondary select listener
     // to reference the correct list without recalculating on every change.
     let currentSecondaryList = [];
+    this.activitiesServices = Array.isArray(data) ? data : [];
 
     const servicesSelect = document.querySelector(
       '[data-field="service_name"]'
@@ -280,6 +281,15 @@ export class JobDetailView {
       '[data-element="service_name_secondary"]'
     );
     const secondarySelect = secondaryService.querySelector("select");
+    let serviceIdInput = document.querySelector(
+      '[data-section="add-activities"] [data-field="service_id"]'
+    );
+    if (!serviceIdInput) {
+      serviceIdInput = document.createElement("input");
+      serviceIdInput.type = "hidden";
+      serviceIdInput.setAttribute("data-field", "service_id");
+      servicesSelect?.parentElement?.appendChild(serviceIdInput);
+    }
 
     const primaryServices = data.filter(
       (item) => item.Service_Type === "Primary"
@@ -310,6 +320,7 @@ export class JobDetailView {
       );
 
       if (selectedService) {
+        serviceIdInput.value = selectedService.ID || "";
         activityPrice.value = selectedService.Service_Price || "";
         warranty.value = selectedService.Standard_Warranty || "";
         activityText.value = selectedService.Description || "";
@@ -321,6 +332,7 @@ export class JobDetailView {
       activityText.value = "";
       activityPrice.value = "";
       warranty.value = "";
+      serviceIdInput.value = "";
 
       secondarySelect.classList.add("hidden");
       secondaryService.classList.add("hidden");
@@ -330,6 +342,7 @@ export class JobDetailView {
       );
       if (!selectedPrimary) return;
 
+      serviceIdInput.value = selectedPrimary.ID || "";
       currentSecondaryList = secondaryMap.get(selectedPrimary.ID) || [];
       secondarySelect.innerHTML = `<option value="" disabled selected hidden>Select</option>`;
 
@@ -4258,10 +4271,52 @@ export class JobDetailView {
       }
     };
 
-    mapField(
-      "service_name",
-      activity.Service?.service_name || activity.service_name || ""
+    const primaryServiceSelect = document.querySelector(
+      '[data-section="add-activities"] [data-field="service_name"]'
     );
+    const secondaryServiceSelect = document.querySelector(
+      '[data-element="service_name_secondary"] select'
+    );
+    const serviceIdInput = document.querySelector(
+      '[data-section="add-activities"] [data-field="service_id"]'
+    );
+    const serviceId =
+      activity.service_id || activity.Service?.id || activity.Service?.ID || "";
+    const serviceName =
+      activity.Service?.service_name || activity.service_name || "";
+    const servicesData = this.activitiesServices || [];
+
+    const matchedService = servicesData.find(
+      (s) =>
+        String(s.ID) === String(serviceId) ||
+        (serviceName && s.Service_Name === serviceName)
+    );
+
+    if (primaryServiceSelect) {
+      if (matchedService && matchedService.Service_Type === "Secondary") {
+        const parentPrimary = servicesData.find(
+          (s) => String(s.ID) === String(matchedService.Primary_Service_ID)
+        );
+        if (parentPrimary) {
+          primaryServiceSelect.value = parentPrimary.Service_Name;
+          primaryServiceSelect.dispatchEvent(new Event("change"));
+          if (secondaryServiceSelect) {
+            secondaryServiceSelect.value = matchedService.Service_Name;
+            secondaryServiceSelect.dispatchEvent(new Event("change"));
+          }
+        }
+      } else if (matchedService) {
+        primaryServiceSelect.value = matchedService.Service_Name;
+        primaryServiceSelect.dispatchEvent(new Event("change"));
+      } else {
+        primaryServiceSelect.value = serviceName;
+        primaryServiceSelect.dispatchEvent(new Event("change"));
+      }
+
+      if (serviceIdInput && serviceId) {
+        serviceIdInput.value = serviceId;
+      }
+    }
     mapField("task", activity.task || activity.Task || "");
     mapField("option", activity.option || activity.Option || "");
     mapField("quantity", activity.quantity || activity.Quantity || "");

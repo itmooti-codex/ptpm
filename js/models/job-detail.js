@@ -583,6 +583,7 @@ export class JobDetailModal {
       .deSelectAll()
       .select([
         "id",
+        "service_id",
         "task",
         "option",
         "quantity",
@@ -598,7 +599,7 @@ export class JobDetailModal {
         "invoice_to_client",
       ])
       .include("Service", (q) => {
-        q.deSelectAll().select(["service_name"]);
+        q.deSelectAll().select(["id", "service_name"]);
       })
       .noDestroy();
     this.activityQuery.getOrInitQueryCalc?.();
@@ -677,10 +678,15 @@ export class JobDetailModal {
   }
 
   async addNewActivity(acitivityObj) {
-    acitivityObj["Service"] = {
-      service_name: acitivityObj["service_name"],
-    };
-    delete acitivityObj["service_name"];
+    if (acitivityObj.service_id) {
+      acitivityObj["Service"] = { id: acitivityObj["service_id"] };
+      delete acitivityObj["service_id"];
+    } else {
+      acitivityObj["Service"] = {
+        service_name: acitivityObj["service_name"],
+      };
+      delete acitivityObj["service_name"];
+    }
     let query = this.acitivityModel.mutation();
     query.createOne(acitivityObj);
     let result = await query.execute(true).toPromise();
@@ -690,8 +696,6 @@ export class JobDetailModal {
   async updateActivity(activityId, activityObj = {}) {
     if (!activityId) throw new Error("Activity id is required");
     const payload = { ...activityObj };
-    payload["Service"] = { service_name: payload["service_name"] };
-    delete payload["service_name"];
 
     const query = this.acitivityModel.mutation();
     query.update((q) => q.where("id", activityId).set(payload));
