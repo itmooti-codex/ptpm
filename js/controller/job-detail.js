@@ -464,6 +464,7 @@ export class JobDetailController {
     button.addEventListener("click", async () => {
       let getFieldValues = this.view.getApointmentsFieldValues();
       this.view.startLoading?.("Creating appointment...");
+      getFieldValues.job_id = this.model.getJobId();
       try {
         let result = await this.model.createAppointment(getFieldValues);
         console.log(result);

@@ -46,6 +46,8 @@ export class JobDetailModal {
     this.serviceProviderSub = null;
     this.inquirySub = null;
     this.jobSub = null;
+    this.uploadSub = null;
+    this.jobDetailSub = null;
     window.jobModel = this.jobModel;
   }
 
@@ -403,8 +405,9 @@ export class JobDetailModal {
     return result.resp;
   }
 
-  async fetchMaterials(callback) {
-    this.materialQuery = this.materialModel.query();
+  async fetchMaterials(jobId, callback) {
+    if (!jobId) return [];
+    this.materialQuery = this.materialModel.query().where("job_id", jobId);
     this.materialQuery
       .deSelectAll()
       .select([
@@ -436,6 +439,54 @@ export class JobDetailModal {
     return result.resp;
   }
 
+  async fetchUploads(jobId, callback) {
+    if (!jobId) return [];
+    this.uploadQuery = this.uploadModel
+      .query()
+      .where("job_id", jobId)
+      .deSelectAll()
+      .select(["id", "photo_upload", "type", "created_at"])
+      .noDestroy();
+    this.uploadQuery.getOrInitQueryCalc?.();
+    const result = await this.uploadQuery.fetchDirect().toPromise();
+    this.uploadCallback = callback;
+    this.subscribeToUploadChanges();
+    if (this.uploadCallback) this.uploadCallback(result?.resp ?? []);
+    return result?.resp ?? [];
+  }
+
+  subscribeToUploadChanges() {
+    this.uploadSub?.unsubscribe?.();
+    let liveObs = null;
+    try {
+      if (typeof this.uploadQuery?.subscribe === "function") {
+        liveObs = this.uploadQuery.subscribe();
+      }
+    } catch (_) {}
+
+    if (!liveObs && typeof this.uploadQuery?.localSubscribe === "function") {
+      try {
+        liveObs = this.uploadQuery.localSubscribe();
+      } catch (_) {}
+    }
+
+    if (!liveObs) return;
+
+    this.uploadSub = liveObs
+      .pipe(window.toMainInstance?.(true) ?? ((x) => x))
+      .subscribe({
+        next: (payload) => {
+          const data = Array.isArray(payload?.records)
+            ? payload.records
+            : Array.isArray(payload)
+            ? payload
+            : [];
+          if (this.uploadCallback) this.uploadCallback(data);
+        },
+        error: () => {},
+      });
+  }
+
   async fetchInquiries(callback) {
     this.inquiryQuery = this.inquiryModel
       .query()
@@ -465,6 +516,79 @@ export class JobDetailModal {
     if (this.jobCallback) {
       this.jobCallback(result.resp);
     }
+  }
+
+  async fetchJobDetail(jobId, callback) {
+    if (!jobId) return null;
+    this.jobDetailQuery = this.jobModel
+      .query()
+      .where("id", jobId)
+      .deSelectAll()
+      .select([
+        "id",
+        "unique_id",
+        "job_status",
+        "date_started",
+        "date_booked",
+        "date_job_required_by",
+        "payment_status",
+        "job_total",
+      ])
+      .include("Property", (q) =>
+        q.deSelectAll().select(["id", "property_name", "address_1"])
+      )
+      .include("Client_Individual", (q) =>
+        q.deSelectAll().select(["id", "first_name", "last_name", "email"])
+      )
+      .include("Primary_Service_Provider", (q) =>
+        q
+          .deSelectAll()
+          .select(["id"])
+          .include("Contact_Information", (cq) =>
+            cq.deSelectAll().select(["first_name", "last_name", "sms_number"])
+          )
+      )
+      .noDestroy();
+    this.jobDetailQuery.getOrInitQueryCalc?.();
+    const result = await this.jobDetailQuery.fetchDirect().toPromise();
+    this.jobDetailCallback = callback;
+    this.subscribeToJobDetailChanges();
+    if (this.jobDetailCallback) {
+      this.jobDetailCallback(result?.resp?.[0] ?? null);
+    }
+    return result?.resp?.[0] ?? null;
+  }
+
+  subscribeToJobDetailChanges() {
+    this.jobDetailSub?.unsubscribe?.();
+    let liveObs = null;
+    try {
+      if (typeof this.jobDetailQuery?.subscribe === "function") {
+        liveObs = this.jobDetailQuery.subscribe();
+      }
+    } catch (_) {}
+
+    if (!liveObs && typeof this.jobDetailQuery?.localSubscribe === "function") {
+      try {
+        liveObs = this.jobDetailQuery.localSubscribe();
+      } catch (_) {}
+    }
+
+    if (!liveObs) return;
+
+    this.jobDetailSub = liveObs
+      .pipe(window.toMainInstance?.(true) ?? ((x) => x))
+      .subscribe({
+        next: (payload) => {
+          const record = Array.isArray(payload?.records)
+            ? payload.records[0]
+            : Array.isArray(payload)
+            ? payload[0]
+            : payload ?? null;
+          if (this.jobDetailCallback) this.jobDetailCallback(record ?? null);
+        },
+        error: () => {},
+      });
   }
 
   subscribeToPropertyChanges() {
@@ -587,8 +711,9 @@ export class JobDetailModal {
     return result;
   }
 
-  async fetchActivities(callback) {
-    this.activityQuery = this.acitivityModel.query();
+  async fetchActivities(jobId, callback) {
+    if (!jobId) return [];
+    this.activityQuery = this.acitivityModel.query().where("job_id", jobId);
     this.activityQuery
       .deSelectAll()
       .select([

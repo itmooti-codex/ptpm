@@ -3690,7 +3690,12 @@ export class JobDetailView {
   }
 
   async renderActivitiesTable() {
-    await this.model.fetchActivities((activities) => {
+    const jobId = this.getJobId();
+    if (!jobId) {
+      this.handleFailure("Missing job id. Reload and try again.");
+      return;
+    }
+    await this.model.fetchActivities(jobId, (activities) => {
       this.activityRecordsById = new Map();
       const safeActivities = Array.isArray(activities) ? activities : [];
       safeActivities.forEach((item) => {
@@ -3878,7 +3883,7 @@ export class JobDetailView {
         if (!id) return;
         const record = recordsMap?.get(id);
         if (!record) return;
-        await onDelete?.(id, record);
+        await this.confirmAndDelete(() => onDelete?.(id, record));
       });
     });
   }
@@ -3927,8 +3932,65 @@ export class JobDetailView {
     });
   }
 
+  async confirmAndDelete(action) {
+    const ok = await this.showConfirmModal(
+      "Delete record?",
+      "This will permanently remove the record. Continue?",
+      "Delete",
+      "Cancel"
+    );
+    if (!ok) return;
+    await action?.();
+  }
+
+  async showConfirmModal(
+    title = "Confirm",
+    message = "Are you sure?",
+    confirmLabel = "Confirm",
+    cancelLabel = "Cancel"
+  ) {
+    return new Promise((resolve) => {
+      const modal = document.createElement("div");
+      modal.className =
+        "fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 backdrop-blur-sm";
+      modal.innerHTML = `
+        <div class="bg-white rounded-xl shadow-lg w-full max-w-sm p-5 space-y-4">
+          <div class="space-y-1">
+            <h3 class="text-base font-semibold text-slate-900">${title}</h3>
+            <p class="text-sm text-slate-600">${message}</p>
+          </div>
+          <div class="flex justify-end gap-2">
+            <button data-confirm-cancel class="px-3 py-2 text-sm font-medium text-slate-600 rounded-lg hover:bg-slate-100">${cancelLabel}</button>
+            <button data-confirm-ok class="px-3 py-2 text-sm font-semibold text-white bg-rose-600 rounded-lg hover:bg-rose-700">${confirmLabel}</button>
+          </div>
+        </div>
+      `;
+      const cleanup = () => modal.remove();
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) {
+          cleanup();
+          resolve(false);
+        }
+      });
+      modal.querySelector("[data-confirm-cancel]")?.addEventListener("click", () => {
+        cleanup();
+        resolve(false);
+      });
+      modal.querySelector("[data-confirm-ok]")?.addEventListener("click", () => {
+        cleanup();
+        resolve(true);
+      });
+      document.body.appendChild(modal);
+    });
+  }
+
   async renderMaterialsTable() {
-    await this.model.fetchMaterials((materials = []) => {
+    const jobId = this.getJobId();
+    if (!jobId) {
+      this.handleFailure("Missing job id. Reload and try again.");
+      return;
+    }
+    await this.model.fetchMaterials(jobId, (materials = []) => {
       const target = document.getElementById("addMaterialsTable");
       if (!target) return;
 

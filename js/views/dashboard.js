@@ -1266,7 +1266,7 @@ export class DashboardView {
     let popup = document.createElement("div");
     popup.id = "create-button-Popup";
     popup.className =
-      "absolute hidden z-50 w-48 bg-white rounded-lg shadow-xl border border-slate-200";
+      "mt-3 absolute hidden z-50 w-48 bg-white rounded-lg shadow-xl border border-slate-200";
 
     popup.innerHTML = `
       <div class="flex flex-col text-sm text-slate-700">
