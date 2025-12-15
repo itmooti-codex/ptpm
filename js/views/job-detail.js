@@ -3972,14 +3972,18 @@ export class JobDetailView {
           resolve(false);
         }
       });
-      modal.querySelector("[data-confirm-cancel]")?.addEventListener("click", () => {
-        cleanup();
-        resolve(false);
-      });
-      modal.querySelector("[data-confirm-ok]")?.addEventListener("click", () => {
-        cleanup();
-        resolve(true);
-      });
+      modal
+        .querySelector("[data-confirm-cancel]")
+        ?.addEventListener("click", () => {
+          cleanup();
+          resolve(false);
+        });
+      modal
+        .querySelector("[data-confirm-ok]")
+        ?.addEventListener("click", () => {
+          cleanup();
+          resolve(true);
+        });
       document.body.appendChild(modal);
     });
   }
@@ -4305,7 +4309,7 @@ export class JobDetailView {
     const quantity = document.querySelector(
       '[data-section="add-activities"] [data-field="quantity"]'
     );
-    if (quantity) quantity.value = "0";
+    if (quantity) quantity.value = "1";
     const addBtn = document.getElementById("add-activities");
     if (addBtn) addBtn.textContent = "Add";
     this.editingActivityId = null;
