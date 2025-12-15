@@ -311,6 +311,16 @@ export class DashboardController {
     if (resetBtn) {
       resetBtn.addEventListener("click", () => this.clearAllFilters());
     }
+
+    let createButton = document.getElementById("create-btn");
+    createButton.addEventListener("click", () => {
+      let element = document.getElementById("create-button-Popup");
+      element.classList.toggle("hidden");
+    });
+
+    ["new-inquiry", "new-quote", "new-job"].forEach((item) => {
+      this.attchCreateButtonListners(item);
+    });
   }
 
   destroy() {
@@ -1308,5 +1318,27 @@ export class DashboardController {
     }
 
     syncAllCheckbox();
+  }
+
+  attchCreateButtonListners(buttonId) {
+    let element = document.getElementById(buttonId);
+    if (element) {
+      element.addEventListener("click", async () => {
+        if (buttonId == "new-job") {
+          let result = await this.model.createEmptyJob();
+          if (!result.isCancelling) {
+            let jobId = Object.keys(result.mutations.PeterpmJob.managedData)[0];
+            if (jobId) {
+              const result = await this.model.fetchJobUniqueID(jobId);
+              let uniqueURL = result.resp[0].field;
+              if (uniqueURL) {
+                window.location.replace(uniqueURL);
+              }
+            }
+          }
+          return result;
+        }
+      });
+    }
   }
 }

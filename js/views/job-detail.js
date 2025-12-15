@@ -34,12 +34,25 @@ export class JobDetailView {
     this.customModalIcon = customModal.iconEl;
 
     this.sidebarCollapsed = true;
-    this.jobId = "433";
+    this.jobId = this.#resolveJobId();
     this.editingActivityId = null;
     this.activityRecordsById = new Map();
     this.editingMaterialId = null;
     this.materialRecordsById = new Map();
     this.init();
+  }
+
+  #resolveJobId() {
+    const body = document?.body;
+    const fromDataset = body?.dataset?.jobId ?? body?.dataset?.JobId ?? "";
+    return (fromDataset || "").toString().trim();
+  }
+
+  getJobId() {
+    if (!this.jobId) {
+      this.jobId = this.#resolveJobId();
+    }
+    return this.jobId;
   }
 
   init() {
@@ -770,9 +783,14 @@ export class JobDetailView {
       const companyId =
         document.querySelector('[data-entity-id="entity-id"]')?.value?.trim() ||
         "";
+      const jobId = this.getJobId();
 
       if (!images || !images.length) {
         this.handleFailure("Please upload at least one file.");
+        return;
+      }
+      if (!jobId) {
+        this.handleFailure("Missing job id. Reload and try again.");
         return;
       }
 
@@ -784,7 +802,7 @@ export class JobDetailView {
             property_name_id: propertyId,
             customer_id: customerId,
             company_id: companyId,
-            job_id: this.jobId,
+            job_id: jobId,
           };
 
           let imageUrl = item.getAttribute("data-upload-url");
@@ -931,11 +949,16 @@ export class JobDetailView {
     let generateInvoiceBtn = document.getElementById("generate-invoice-btn");
     if (generateInvoiceBtn) {
       generateInvoiceBtn.addEventListener("click", async () => {
-        await this.model.getInvoiceByJobId("450");
+        const jobId = this.getJobId();
+        if (!jobId) {
+          this.handleFailure("Missing job id. Reload and try again.");
+          return;
+        }
+        await this.model.getInvoiceByJobId(jobId);
         let invoiceDataObj = this.getFieldValues(
           '[field-section="invoice-input"] input'
         );
-        invoiceDataObj.jobId = "453";
+        invoiceDataObj.jobId = jobId;
         invoiceDataObj.xero_invoice_status = "create invoice";
         let invoiceData = await this.model.createInvoiceForJob(invoiceDataObj);
         return;
@@ -2374,18 +2397,24 @@ export class JobDetailView {
       data.contact_id = "";
     }
 
-    this.startLoading("Creating job...");
+    const jobId = this.getJobId();
+    this.startLoading(jobId ? "Saving job..." : "Creating job...");
     try {
-      let result = await this.model.createNewJob(data);
-      if (!result.isCancelling) {
+      if (jobId) {
+        await this.model.updateJob(jobId, data);
         return true;
-      } else {
-        alert("failed to create new job");
-        return false;
       }
-    } catch (err) {
-      console.error("Failed to create new job", err);
+      let result = await this.model.createNewJob(data);
+      if (!result.isCancelling) return true;
+
       alert("failed to create new job");
+      return false;
+    } catch (err) {
+      console.error(
+        jobId ? "Failed to update job" : "Failed to create new job",
+        err
+      );
+      alert(jobId ? "Failed to update job" : "failed to create new job");
       return false;
     } finally {
       this.stopLoading();
@@ -4098,6 +4127,12 @@ export class JobDetailView {
     const data = this.getFieldValues(
       '[data-section="add-materials"] input, [data-section="add-materials"] select, [data-section="add-materials"] textarea'
     );
+    const jobId = this.getJobId();
+    if (!jobId) {
+      this.handleFailure("Missing job id. Reload and try again.");
+      return;
+    }
+    data.job_id = jobId;
     const receiptUrl =
       document
         .querySelector("[data-material-receipts] [data-upload-url]")
@@ -4158,6 +4193,12 @@ export class JobDetailView {
     const data = this.getFieldValues(
       '[data-section="add-activities"] input, [data-section="add-activities"] select, [data-section="add-activities"] textarea'
     );
+    const jobId = this.getJobId();
+    if (!jobId) {
+      this.handleFailure("Missing job id. Reload and try again.");
+      return false;
+    }
+    data.job_id = jobId;
     const isEditing = !!this.editingActivityId;
     this.startLoading(
       isEditing ? "Updating activity..." : "Adding activity..."

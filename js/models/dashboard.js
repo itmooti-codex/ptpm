@@ -1018,4 +1018,23 @@ export class DashboardModel {
       }
     }
   }
+
+  async createEmptyJob() {
+    let query = window.ptpmJobModel.mutation();
+    query.createOne({});
+    let result = await query.execute(true).toPromise();
+    return result;
+  }
+
+  async fetchJobUniqueID(id) {
+    let query = ptpmJobModel
+      .query()
+      .where("id", id)
+      .deSelectAll()
+      .select(["new_direct_job_url"])
+      .noDestroy();
+    query.getOrInitQueryCalc?.();
+    let result = await query.fetchDirect().toPromise();
+    return result;
+  }
 }

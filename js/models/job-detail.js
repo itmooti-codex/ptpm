@@ -321,6 +321,13 @@ export class JobDetailModal {
     return result;
   }
 
+  async updateJob(jobId, payload = {}) {
+    if (!jobId) throw new Error("Job id is required");
+    const query = this.jobModel.mutation();
+    query.update((q) => q.where("id", jobId).set(payload));
+    return await query.execute(true).toPromise();
+  }
+
   async fetchCompanyById(id) {
     let query = this.companyModel.query();
     if (id) {
