@@ -24,6 +24,26 @@ export class JobDetailController {
       { value: "NT", displayValue: "Northern Territory" },
       { value: "WA", displayValue: "Western Australia" },
     ];
+
+    this.buildingFeatures = [
+      { value: "713", text: "Brick" },
+      { value: "712", text: "Concrete" },
+      { value: "711", text: "Flat Roof" },
+      { value: "710", text: "Highset" },
+      { value: "709", text: "Iron Roof" },
+      { value: "708", text: "Lowset" },
+      { value: "707", text: "PostWar" },
+      { value: "706", text: "Queenslander" },
+      { value: "705", text: "Raked Ceiling" },
+      { value: "704", text: "Sloping Block" },
+      { value: "703", text: "Super 6 / Fibro roof" },
+      { value: "702", text: "Tile Roof" },
+      { value: "701", text: "Town house" },
+      { value: "700", text: "Unit Block" },
+      { value: "699", text: "Warehouse" },
+      { value: "698", text: "Wood" },
+      { value: "697", text: "Wood & Brick" },
+    ];
   }
 
   async init() {
@@ -40,6 +60,7 @@ export class JobDetailController {
     this.setupSearches();
     this.handlePropertySearch();
     this.showHideAddAddressModal();
+    this.view.renderBuildingFeaturesDropdown?.(this.buildingFeatures);
     this.renderDropdownForStates();
     this.bindAddPropertyFlow();
     this.renderServicesInActivitySection();
@@ -464,7 +485,7 @@ export class JobDetailController {
     button.addEventListener("click", async () => {
       let getFieldValues = this.view.getApointmentsFieldValues();
       this.view.startLoading?.("Creating appointment...");
-      getFieldValues.job_id = this.model.getJobId();
+      getFieldValues.job_id = this.view.getJobId();
       try {
         let result = await this.model.createAppointment(getFieldValues);
         console.log(result);

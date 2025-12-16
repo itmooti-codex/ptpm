@@ -2941,7 +2941,7 @@ export class JobDetailView {
     let addBtn = root.querySelector('[data-property-search="add"]');
 
     const normalize = (items = []) =>
-      items.map((p) => {
+      items?.map((p) => {
         const name =
           p.property_name ||
           p.Property_Name ||
@@ -2965,7 +2965,7 @@ export class JobDetailView {
       const filtered = state.items.filter((item) =>
         item.label.toLowerCase().includes(term)
       );
-      state.filtered = filtered;
+      state.filtered = filtered ? filtered : [];
       results.innerHTML = "";
 
       if (!filtered.length) {
@@ -3610,6 +3610,103 @@ export class JobDetailView {
     this.clearIndividualSelection();
   }
 
+  renderBuildingFeaturesDropdown(options = []) {
+    const btn = document.getElementById("property-building-btn");
+    const card = document.getElementById("property-building-card");
+    const list = document.getElementById("property-building-list");
+    if (!btn || !card || !list) return;
+
+    Array.from(list.querySelectorAll("[data-dynamic='true']")).forEach((el) =>
+      el.remove()
+    );
+
+    const frag = document.createDocumentFragment();
+    options.forEach((opt) => {
+      const text = opt.text || opt.value || "";
+      const value = opt.value || opt.text || "";
+      const slug = String(text)
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+      const id = `property-building-${slug || value}`;
+
+      const li = document.createElement("li");
+      li.className = "px-2 py-1 flex items-center gap-2";
+      li.dataset.dynamic = "true";
+      li.innerHTML = `
+        <input
+          id="${id}"
+          type="checkbox"
+          value="${value}"
+          class="h-4 w-4 accent-[#003882]"
+        />
+        <label for="${id}">${text}</label>
+      `;
+      frag.appendChild(li);
+    });
+
+    list.appendChild(frag);
+
+    const icon = btn.querySelector("svg");
+    const allToggle = document.getElementById("property-building-all");
+    const itemBoxes = Array.from(
+      list.querySelectorAll(
+        'input[type="checkbox"]:not(#property-building-all)'
+      )
+    );
+
+    const updateLabel = () => {
+      const label = btn.querySelector("span");
+      if (!label) return;
+      const selected = itemBoxes.filter((c) => c.checked).length;
+      label.textContent = selected ? `${selected} selected` : "Select";
+    };
+
+    const syncAllCheckbox = () => {
+      if (allToggle) {
+        allToggle.checked = itemBoxes.every((c) => c.checked);
+      }
+      updateLabel();
+    };
+
+    itemBoxes.forEach((box) => {
+      box.addEventListener("change", syncAllCheckbox);
+    });
+
+    if (allToggle && allToggle.dataset.bound !== "true") {
+      allToggle.dataset.bound = "true";
+      allToggle.addEventListener("change", () => {
+        const next = !!allToggle.checked;
+        itemBoxes.forEach((c) => (c.checked = next));
+        updateLabel();
+      });
+    }
+
+    if (btn.dataset.dropdownBound !== "true") {
+      btn.dataset.dropdownBound = "true";
+
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        card.classList.toggle("hidden");
+        if (icon) icon.classList.toggle("rotate-180");
+      });
+
+      document.addEventListener("click", (e) => {
+        if (
+          card.classList.contains("hidden") ||
+          card.contains(e.target) ||
+          btn.contains(e.target)
+        ) {
+          return;
+        }
+        card.classList.add("hidden");
+        if (icon) icon.classList.remove("rotate-180");
+      });
+    }
+
+    syncAllCheckbox();
+  }
+
   getPropertyFormData() {
     const fields = document.querySelectorAll(
       "#property-information [data-property-id]"
@@ -3623,7 +3720,9 @@ export class JobDetailView {
         const propValKey = field.dataset.propertyValue;
         const checkedItems = Array.from(
           field.querySelectorAll("li input:checked")
-        ).map((liInput) => liInput.value || "on");
+        )
+          .map((liInput) => liInput.value || "")
+          .filter((val) => val && val !== "on");
         if (checkedItems.length) {
           const joined = checkedItems.map((v) => `*/*${v}*/*`).join("");
           data[key] = joined;
@@ -4054,7 +4153,6 @@ export class JobDetailView {
     const headerRow = document.createElement("tr");
     const headers = [
       "Date Added",
-      "Status",
       "Material Name",
       "Total",
       "Transaction Type",
@@ -4090,16 +4188,16 @@ export class JobDetailView {
 
       const cells = [
         { value: this.formatDate(item.DateAdded), className: "text-slate-800" },
-        {
-          render: () => {
-            const span = document.createElement("span");
-            span.className =
-              "inline-flex px-3 py-1 rounded-full text-xs font-normal " +
-              badgeClass;
-            span.textContent = item.Status || "";
-            return span;
-          },
-        },
+        // {
+        //   render: () => {
+        //     const span = document.createElement("span");
+        //     span.className =
+        //       "inline-flex px-3 py-1 rounded-full text-xs font-normal " +
+        //       badgeClass;
+        //     span.textContent = item.Status || "";
+        //     return span;
+        //   },
+        // },
         { value: item.MaterialName || "-", className: "text-slate-800" },
         {
           value: this.formatCurrency(item.Total),
