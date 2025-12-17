@@ -946,4 +946,15 @@ export class JobDetailModal {
     let result = await query.fetchDirect().toPromise();
     return result;
   }
+
+  async fetchJobById(jobId) {
+    let query = this.jobModel.query();
+    if (jobId) {
+      query = query.where("id", jobId);
+    }
+
+    query = await query
+      .deSelectAll()
+      .select(["id", "unique_id", "job_status", "job_total"]);
+  }
 }

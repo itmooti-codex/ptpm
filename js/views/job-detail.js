@@ -915,7 +915,7 @@ export class JobDetailView {
 
           <button id="generate-invoice-btn" class="px-4 py-2 bg-[#003882] text-white text-sm font-medium rounded">Generate Invoice</button></div>
 
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+          <div class="hidden grid grid-cols-1 md:grid-cols-4 gap-3">
             <div class="flex flex-col gap-1">
               <label class="text-neutral-700 text-sm font-medium">Payment ID</label>
               <input data-field="payment_id" type="text" class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700" />
@@ -960,6 +960,7 @@ export class JobDetailView {
         let invoiceDataObj = this.getFieldValues(
           '[field-section="invoice-input"] input'
         );
+        invoiceDataObj.accounts_contact_id = this.getContactId();
         invoiceDataObj.jobId = jobId;
         invoiceDataObj.xero_invoice_status = "Create Invoice";
         let invoiceData = await this.model.createInvoiceForJob(invoiceDataObj);
