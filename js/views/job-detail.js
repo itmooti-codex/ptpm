@@ -50,7 +50,8 @@ export class JobDetailView {
 
   getJobId() {
     if (!this.jobId) {
-      this.jobId = this.#resolveJobId();
+      // this.jobId = this.#resolveJobId();
+      this.jobId = "658";
     }
     return this.jobId;
   }
@@ -2607,6 +2608,9 @@ export class JobDetailView {
     } else if (this.currentSection == "add-activities") {
     } else if (this.currentSection == "add-materials") {
     } else if (this.currentSection == "uploads") {
+      await this.model.updateJob(this.getJobId(), {
+        calculate_job_price: true,
+      });
     } else if (this.currentSection == "invoice") {
     }
 
