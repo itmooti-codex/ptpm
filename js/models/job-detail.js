@@ -33,6 +33,8 @@ export class JobDetailModal {
 
     this.jobQuery = null;
     this.jobCallback = null;
+    this.jobInvoiceQuery = null;
+    this.jobInvoiceCallback = null;
 
     this.contacts = [];
     this.properties = [];
@@ -48,6 +50,7 @@ export class JobDetailModal {
     this.jobSub = null;
     this.uploadSub = null;
     this.jobDetailSub = null;
+    this.jobInvoiceSub = null;
     window.jobModel = this.jobModel;
   }
 
@@ -947,14 +950,75 @@ export class JobDetailModal {
     return result;
   }
 
-  async fetchJobById(jobId) {
-    let query = this.jobModel.query();
-    if (jobId) {
-      query = query.where("id", jobId);
+  async fetchJobById(jobId, callback) {
+    if (!jobId) return null;
+
+    this.jobInvoiceQuery = this.jobModel
+      .query()
+      .where("id", jobId)
+      .deSelectAll()
+      .select([
+        "id",
+        "invoice_total",
+        "invoice_url_client",
+        "invoice_number",
+        "accounts_contact_id",
+        "xero_invoice_status",
+        "invoice_id",
+        "invoice_date",
+        "due_date",
+        "xero_invoice_pdf",
+      ])
+      .noDestroy();
+    this.jobInvoiceQuery.getOrInitQueryCalc?.();
+    const result = await this.jobInvoiceQuery.fetchDirect().toPromise();
+    const record = Array.isArray(result?.resp)
+      ? result.resp?.[0] ?? null
+      : Array.isArray(result)
+      ? result?.[0] ?? null
+      : result?.resp ?? result ?? null;
+    this.jobInvoiceCallback = callback;
+    this.subscribeToJobInvoiceChanges();
+    if (this.jobInvoiceCallback) {
+      this.jobInvoiceCallback(record);
+    }
+    return record;
+  }
+
+  subscribeToJobInvoiceChanges() {
+    this.jobInvoiceSub?.unsubscribe?.();
+    let liveObs = null;
+    try {
+      if (typeof this.jobInvoiceQuery?.subscribe === "function") {
+        liveObs = this.jobInvoiceQuery.subscribe();
+      }
+    } catch (_) {}
+
+    if (
+      !liveObs &&
+      typeof this.jobInvoiceQuery?.localSubscribe === "function"
+    ) {
+      try {
+        liveObs = this.jobInvoiceQuery.localSubscribe();
+      } catch (_) {}
     }
 
-    query = await query
-      .deSelectAll()
-      .select(["id", "unique_id", "job_status", "job_total"]);
+    if (!liveObs) return;
+
+    this.jobInvoiceSub = liveObs
+      .pipe(window.toMainInstance?.(true) ?? ((x) => x))
+      .subscribe({
+        next: (payload) => {
+          const record = Array.isArray(payload?.records)
+            ? payload.records?.[0]
+            : Array.isArray(payload)
+            ? payload[0]
+            : payload ?? null;
+          if (this.jobInvoiceCallback) {
+            this.jobInvoiceCallback(record ?? null);
+          }
+        },
+        error: () => {},
+      });
   }
 }

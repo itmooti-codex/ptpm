@@ -50,7 +50,8 @@ export class JobDetailView {
 
   getJobId() {
     if (!this.jobId) {
-      this.jobId = this.#resolveJobId();
+      // this.jobId = this.#resolveJobId();
+      this.jobId = "658";
     }
     return this.jobId;
   }
@@ -847,7 +848,7 @@ export class JobDetailView {
             </div>
           </div>
 
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 items-start">
+          <div class="hidden grid grid-cols-1 lg:grid-cols-3 gap-3 items-start">
             <div class="flex flex-col gap-2">
               <div class="text-neutral-700 text-sm font-semibold">Xero Entity Info</div>
               <div class="flex items-center gap-2 text-sky-700 text-sm"><span>◆</span><span>Contact Xero ID</span></div>
@@ -861,7 +862,7 @@ export class JobDetailView {
           </div>
 
           <div class="border-t border-gray-200 pt-6 pb-4 flex flex-col items-center gap-4">
-            <div class="w-64 h-32 bg-slate-100 rounded-md flex items-center justify-center text-neutral-500 text-sm">
+            <div data-invoice-placeholder class="flex flex-col w-fit w-fit gap-7 py-5 bg-slate-100 rounded-md flex items-center justify-center text-neutral-500 text-sm">
               <svg width="251" height="106" viewBox="0 0 251 106" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M78.3667 0.122178C80.3453 -0.0320611 82.3803 0.0548375 84.366 0.0652463L94.118 0.0994683L129.088 0.0750237L141.494 0.083066C143.384 0.0808581 145.584 -0.156493 147.427 0.181319C148.232 0.328618 149.053 0.763894 149.621 1.35357C149.903 1.64738 150.203 2.06546 150.203 2.48733C150.203 2.57549 150.192 2.65829 150.168 2.74282C150.561 3.16658 151.039 8.98256 150.985 9.89049C150.973 10.1065 150.935 10.2846 150.853 10.4839C151.312 11.0583 151.55 15.9896 151.454 16.8957C151.433 17.0861 151.381 17.2265 151.293 17.3947L166.411 17.3842C168.601 17.3824 171.177 17.1049 173.318 17.4767C173.951 17.5867 174.517 17.8915 174.966 18.3519C175.526 18.9251 175.689 19.6295 175.782 20.4059C176.122 23.2195 175.843 26.8618 175.834 29.7539C175.817 34.6107 175.951 39.482 175.824 44.3367C175.813 44.7482 175.828 45.1074 175.616 45.473C176.848 45.6127 180.228 45.15 181.472 44.8311C181.522 44.7469 181.567 44.6618 181.604 44.5703C181.948 43.7098 182.014 39.3995 181.675 38.6469C185.016 38.9319 188.236 39.482 191.611 39.5408C191.674 40.9573 191.928 43.6848 191.592 44.9698C199.159 45.852 207.727 47.906 212.705 54.187C214.343 56.2544 215.318 58.675 216.135 61.1608C217.54 65.4293 218.451 69.9686 219.483 74.3408L223.56 91.1852L225.884 101C226.16 102.209 226.684 103.747 226.704 104.976L226.731 105.235C232.175 105.395 237.654 105.272 243.101 105.266C245.361 105.263 248.525 104.902 250.654 105.47L250.752 105.641C250.624 105.712 250.499 105.762 250.357 105.797C248.886 106.163 246.847 105.883 245.322 105.881L235.161 105.893L193.772 105.951L4.10973 105.934C3.28128 105.938 0.584468 106.143 0.0499938 105.808L0 105.55C0.274886 105.329 0.533055 105.292 0.874021 105.267C3.19281 105.103 5.66584 105.286 8.00245 105.284L23.8195 105.29C24.8796 105.277 25.9398 105.272 27 105.276L34.7344 105.298C34.4997 103.248 32.8518 90.516 33.2841 89.5612C34.6576 89.173 40.1876 89.4863 42.0388 89.5079C41.9807 88.9636 41.9108 88.4208 41.8292 87.8796C41.7475 87.3383 41.6542 86.7991 41.5493 86.2618C41.4442 85.7246 41.3276 85.1899 41.1995 84.6578C41.0713 84.1255 40.9317 83.5964 40.7808 83.0703C40.6297 82.544 40.4673 82.0214 40.2936 81.5023C40.12 80.9833 39.9352 80.4682 39.7393 79.9571C39.5433 79.446 39.3363 78.9394 39.1184 78.4373C38.9004 77.9351 38.6717 77.4379 38.4323 76.9456C37.6387 77.2286 36.8174 77.4128 35.9749 77.4579C31.3805 77.703 26.5411 74.8073 23.274 71.8152C20.0448 68.858 17.3689 65.064 17.1942 60.5425C17.1175 58.5622 17.7094 56.5514 19.0946 55.0921C20.3126 53.8089 21.9451 53.2909 23.6833 53.2659C27.4515 53.2115 30.7221 55.2139 33.3246 57.7787C36.6076 61.0142 40.7405 67.0498 40.7379 71.8373C40.7369 73.7156 40.1477 75.2484 38.8272 76.5796C40.9571 80.4477 42.1047 85.1593 42.548 89.5291C43.6342 89.5488 45.4914 89.8039 46.4997 89.4144L46.6343 89.0195C47.0812 83.7527 47.7808 78.5997 48.6665 73.3887C47.7411 72.8889 46.9051 72.3601 46.1987 71.5616C44.6287 69.7873 44.2764 67.1116 44.4107 64.8169C44.7216 59.5054 47.9396 50.0505 52.0752 46.4366C53.4468 45.238 54.8375 44.626 56.6615 44.761C56.6002 39.1983 56.6715 33.637 56.6473 28.0743C56.6371 25.7206 56.3486 21.7273 56.6731 19.5511C56.7617 18.9559 57.053 18.4301 57.4764 18.0046C57.8975 17.5815 58.3836 17.3011 58.9717 17.1891C60.5368 16.8909 62.3972 17.093 63.9992 17.1083L73.3747 17.2055C73.349 14.0068 73.3516 10.8082 73.3827 7.60971C73.3528 6.53697 73.2916 5.44973 73.3263 4.37716C73.3654 3.1617 73.7046 1.9363 74.6285 1.09272C75.6993 0.114924 76.9987 0.0559403 78.3667 0.122178ZM111.789 70.6354L111.787 70.3451L113.042 70.3274C113.633 68.5519 114.595 67.0845 115.684 65.5813L115.92 65.1995C114.45 65.1377 112.961 65.1809 111.489 65.1744L111.571 64.9447C109.393 64.3334 106.786 63.2097 105.056 61.708C104.921 61.4047 104.881 61.3505 104.928 61.009C105.178 60.8272 105.432 60.6592 105.693 60.4954C105.773 60.1016 105.637 59.9723 105.459 59.6363C105.47 59.2542 105.547 59.1766 105.762 58.8522C107.3 58.8686 108.85 58.9257 110.387 58.8904C111.296 58.8194 112.203 58.8353 113.114 58.8428C112.486 58.4102 111.616 57.7897 111.406 57.0006C111.319 56.6749 111.43 56.5517 111.594 56.2942C112.21 55.9181 112.808 55.8799 113.496 56.0475C115.326 56.4924 117.935 58.8079 119.496 58.8874L139.312 58.8883C143.01 58.8857 146.793 58.7052 150.476 58.9804C149.87 59.4408 140.736 59.2116 139.241 59.2162C139.259 61.2523 139.287 63.2883 139.325 65.3241L150.107 65.318C150.85 64.8579 153.87 61.3863 154.078 60.6033L154.039 60.4107C154.225 59.7624 150.528 11.2059 150.342 10.6197L150.853 10.4839C150.935 10.2846 150.973 10.1065 150.985 9.89049C151.039 8.98256 150.561 3.16658 150.168 2.74282C150.192 2.65829 150.203 2.57549 150.203 2.48733C150.203 2.06546 149.903 1.64738 149.621 1.35357C149.053 0.763894 148.232 0.328618 147.427 0.181319C145.584 -0.156493 143.384 0.0808581 141.494 0.083066L129.088 0.0750237L94.118 0.0994683L84.366 0.0652463C82.3803 0.0548375 80.3453 -0.0320611 78.3667 0.122178C76.9987 0.0559403 75.6993 0.114924 74.6285 1.09272C73.7046 1.9363 73.3654 3.1617 73.3263 4.37716C73.2916 5.44973 73.3528 6.53697 73.3827 7.60971C73.3516 10.8082 73.349 14.0068 73.3747 17.2055L63.9992 17.1083C62.3972 17.093 60.5368 16.8909 58.9717 17.1891C58.3836 17.3011 57.8975 17.5815 57.4764 18.0046C57.053 18.4301 56.7617 18.9559 56.6731 19.5511C56.3486 21.7273 56.6371 25.7206 56.6473 28.0743C56.6715 33.637 56.6002 39.1983 56.6615 44.761C54.8375 44.626 53.4468 45.238 52.0752 46.4366C47.9396 50.0505 44.7216 59.5054 44.4107 64.8169C44.2764 67.1116 44.6287 69.7873 46.1987 71.5616C46.9051 72.3601 47.7411 72.8889 48.6665 73.3887C47.7808 78.5997 47.0812 83.7527 46.6343 89.0195L46.4997 89.4144C45.4914 89.8039 43.6342 89.5488 42.548 89.5291C42.1047 85.1593 40.9571 80.4477 38.8272 76.5796C40.1477 75.2484 40.7369 73.7156 40.7379 71.8373C40.7405 67.0498 36.6076 61.0142 33.3246 57.7787C30.7221 55.2139 27.4515 53.2115 23.6833 53.2659C21.9451 53.2909 20.3126 53.8089 19.0946 55.0921C17.7094 56.5514 17.1175 58.5622 17.1942 60.5425C17.3689 65.064 20.0448 68.858 23.274 71.8152C26.5411 74.8073 31.3805 77.703 35.9749 77.4579C36.8174 77.4128 37.6387 77.2286 38.4323 76.9456C38.6717 77.4379 38.9004 77.9351 39.1184 78.4373C39.3363 78.9394 39.5433 79.446 39.7393 79.9571C39.9352 80.4682 40.12 80.9833 40.2936 81.5023C40.4673 82.0214 40.6297 82.544 40.7808 83.0703C40.9317 83.5964 41.0713 84.1255 41.1995 84.6578C41.3276 85.1899 41.4442 85.7246 41.5493 86.2618C41.6542 86.7991 41.7475 87.3383 41.8292 87.8796C41.9108 88.4208 41.9807 88.9636 42.0388 89.5079C40.1876 89.4863 34.6576 89.173 33.2841 89.5612L33.3959 89.9096C33.9651 90.1097 54.3076 90.1791 55.4003 89.9697C55.359 93.7971 54.5886 97.9135 54.1833 101.745C54.0593 102.917 53.8195 104.202 53.8545 105.378C58.0475 105.252 89.5379 105.58 90.3183 105.253C90.0128 104.999 89.6671 104.604 89.6053 104.195C89.5629 103.916 89.6168 103.705 89.7982 103.483C90.1025 103.109 90.8857 102.956 91.3431 102.899C92.3415 102.776 93.4171 102.855 94.4264 102.863C97.1068 102.884 99.8688 103.042 102.539 102.899C102.906 102.88 103.069 102.903 103.319 102.616L103.413 102.95C104.297 103.17 108.886 102.948 110.147 102.95C118.868 102.907 127.588 102.964 136.308 103.122C138.771 103.177 141.354 102.924 143.794 103.136C144.144 103.167 144.403 103.262 144.644 103.524C144.843 103.957 144.828 104.239 144.743 104.7L144.655 105.178C144.992 105.411 145.391 105.31 145.795 105.299L157.32 105.286C159.278 105.29 161.361 105.43 163.309 105.251C163.447 105.101 163.526 104.904 163.559 104.702C163.794 103.228 163.731 101.586 163.829 100.085C163.985 97.7152 164.331 95.2045 164.283 92.837C164.279 92.5978 164.206 92.4268 164.07 92.2306C161.064 92.1117 158.036 92.1994 155.027 92.1918C154.818 92.1842 154.65 92.2156 154.464 92.3166C153.778 92.6872 153.129 93.3587 152.521 93.8523C152.031 94.2458 151.522 94.6112 150.992 94.9486C150.462 95.2858 149.915 95.5931 149.351 95.8702C149.155 95.9645 148.956 96.0535 148.754 96.1372C148.552 96.2209 148.348 96.2992 148.143 96.3722C147.937 96.4451 147.73 96.5125 147.52 96.5744C147.311 96.6363 147.1 96.6926 146.888 96.7433C146.676 96.794 146.462 96.839 146.248 96.8784C146.032 96.9179 145.816 96.9516 145.6 96.9795C145.384 97.0075 145.167 97.0297 144.95 97.0462C144.732 97.0626 144.514 97.0733 144.295 97.0783C139.827 97.189 136.833 95.0787 133.74 92.1202L121.791 80.2514L111.248 80.2793C108.729 80.2905 106.183 80.3823 103.668 80.2698L62.1544 80.3058C62.1386 79.1359 62.1033 77.9614 62.1705 76.7928L84.0254 76.8092C84.0833 77.583 84.1528 78.3579 84.1907 79.1329L99.7038 79.1443C102.388 79.1459 105.101 79.2271 107.782 79.1375C112.107 79.148 116.437 79.2055 120.762 79.1681L120.308 78.601C118.65 77.0214 115.378 74.2277 114.077 72.6044C113.651 72.0732 113.33 71.3748 113.015 70.7693C112.699 70.5368 112.169 70.6282 111.789 70.6354ZM119.848 59.2755C120.458 59.7594 121.058 60.2662 121.696 60.7119C122.529 60.3041 123.394 59.9633 124.25 59.6078C126.953 61.6874 130.003 63.4742 132.863 65.3418L138.982 65.334L138.978 59.2192C132.602 59.2648 126.225 59.1628 119.848 59.2755ZM133.35 65.6376C134.89 67.1597 137.17 68.3791 138.988 69.5699L138.981 65.6272L133.35 65.6376ZM140.348 70.4794C142.132 70.481 143.918 70.5063 145.7 70.4746C146.218 70.1766 147.478 68.9609 147.601 68.3821C147.606 68.3575 147.604 68.3319 147.606 68.3069C148.118 67.9787 149.665 66.3155 149.773 65.7424C149.779 65.7105 149.776 65.6777 149.777 65.6454C146.29 65.6008 142.803 65.5919 139.316 65.6187L139.312 69.7787C139.65 70.0139 139.988 70.2806 140.348 70.4794ZM165.23 27.7958C163.255 27.6247 161.148 27.7598 159.161 27.751C156.972 27.7414 154.376 27.4685 152.23 27.8519C152.531 28.7147 153.089 34.206 152.748 34.9092C152.731 34.9456 152.709 34.9803 152.69 35.016C154.004 35.0136 161.135 34.7991 161.774 35.1284L161.817 35.3743C161.154 35.8047 154.169 35.5864 152.747 35.5943C153.058 36.1198 153.193 36.9277 153.047 37.5275C153.018 37.6412 152.969 37.7287 152.913 37.8295C154.395 37.8251 162.873 37.5808 163.6 38.0235C163.318 38.2932 162.924 38.36 162.536 38.3992C161.41 38.5127 160.205 38.4023 159.069 38.3955L152.968 38.4056C153.364 39.0117 153.099 39.7375 153.472 40.303C153.944 40.3189 154.513 40.2402 154.9 40.506L154.889 40.8089C154.39 41.0236 153.906 40.7944 153.439 41.0569C153.125 44.2031 155.108 57.949 154.521 59.5808L154.814 59.7713C155.762 59.401 157.713 56.5514 158.478 55.6791C160.027 53.9122 161.918 52.19 163.861 50.8652C164.674 50.3115 166.753 49.273 167.206 48.6215C167.25 48.537 167.294 48.4476 167.321 48.3556C167.572 47.498 167.499 33.1024 167.384 31.3215C167.368 31.0901 167.299 30.8858 167.201 30.6765L165.204 30.6711C165.26 30.5837 165.293 30.5424 165.329 30.4511C165.603 29.7738 165.532 28.4496 165.23 27.7958Z" fill="#274E82"></path>
               <path d="M85.9609 29.0964L146.73 29.1161C146.742 29.1373 146.753 29.1584 146.766 29.1792C146.821 29.2724 146.87 29.3639 146.911 29.4644C147.225 30.2296 147.434 33.0322 147.165 33.7195C147.007 33.7955 146.892 33.8443 146.714 33.8479C140.7 33.9698 134.646 33.7723 128.627 33.7725L86.3505 33.7995C86.2513 32.2298 86.1734 30.6559 85.9609 29.0964Z" fill="#C0C9D5"></path>
@@ -893,8 +894,9 @@ export class JobDetailView {
               <path d="M177.911 25.0884C177.919 25.0633 177.926 25.0384 177.933 25.013C178.157 24.1743 177.925 22.9155 177.889 22.0325C177.737 18.4821 179.373 15.6461 182.377 13.8162C183.741 12.9858 186.242 12.0062 187.857 12.3941C188.551 12.561 189.001 12.9994 189.359 13.5933C189.376 13.623 189.393 13.6533 189.411 13.6831C192.667 13.5328 195.992 14.0387 198.495 16.3255C200.912 18.5342 200.278 21.8476 202.039 24.4058C203.297 26.2357 206.694 26.7182 206.778 28.6553C206.82 29.6112 206.344 30.5177 205.866 31.3151C206.429 31.9252 206.67 32.8357 206.625 33.6553C206.565 34.7752 205.888 35.8222 205.059 36.5374C201.72 39.4123 195.746 39.485 191.611 39.5407C188.236 39.4818 185.015 38.9317 181.675 38.6468C180.904 38.0834 178.874 37.8538 177.844 37.4042C177.266 37.1515 176.636 36.7631 176.433 36.1274C175.741 33.9682 178.751 34.5758 179.28 33.3104C179.295 33.2728 179.306 33.2334 179.319 33.1949C179.382 32.4293 178.261 31.1949 178.038 30.345C177.603 28.686 178.619 26.78 177.911 25.0884Z" fill="#263238"></path>
               <path d="M177.91 25.0884C178.391 25.5647 178.481 26.7386 178.476 27.4012C178.476 27.4641 178.472 27.5269 178.467 27.5896L178.554 27.5412C179.394 27.0643 179.869 26.4672 180.957 26.7442C181.578 26.9025 182.093 27.3223 182.41 27.8764C182.705 28.3932 182.799 29.0387 182.637 29.6143C182.514 30.0518 182.225 30.5263 181.813 30.7403C181.135 31.0931 180.541 30.9764 180.255 31.8003C180.064 32.3545 179.941 32.8618 179.382 33.1672C179.361 33.178 179.339 33.1858 179.319 33.1949C179.382 32.4292 178.26 31.1949 178.038 30.345C177.603 28.686 178.618 26.78 177.91 25.0884Z" fill="#F4958D"></path>
               </svg>
+              <h5>No invoice has been generated yet.</h5>
             </div>
-            <h5>No invoice has been generated yet.</h5>
+            
             <div field-section="invoice-input" class="flex gap-2"><div class="flex flex-col gap-1">
               <label class="text-neutral-700 text-sm font-medium">Invoice Date</label>
               <div class="relative">
@@ -912,7 +914,11 @@ export class JobDetailView {
                 </span>
               </div>
             </div></div>
-
+            <div data-invoice-activity-table class="hidden w-full"></div>
+              <div id="invoice-total" class="flex justify-end gap-8 w-full items-center hidden">
+                  <div class="text-neutral-700 text-sm font-semibold">Invoice Total</div>
+                  <div class="text-neutral-700 text-base font-bold" data-field="invoice_total">$ 0.00</div>
+              </div>
           <button id="generate-invoice-btn" class="px-4 py-2 bg-[#003882] text-white text-sm font-medium rounded">Generate Invoice</button></div>
 
           <div class="hidden grid grid-cols-1 md:grid-cols-4 gap-3">
@@ -934,21 +940,24 @@ export class JobDetailView {
       </div>
 
       <div class="bg-white rounded-lg outline outline-1 outline-gray-300 w-full flex flex-col gap-4 p-4">
-        <div class="flex justify-between items-center">
-          <div class="text-neutral-700 text-sm font-semibold">Invoice Total</div>
-          <div class="text-neutral-700 text-base font-bold">$ X.XX</div>
-        </div>
         <div class="flex flex-wrap justify-end gap-3">
-          <button class="px-4 py-2 rounded outline outline-1 outline-gray-300 text-slate-500 text-sm" disabled>Download Invoice (PDF)</button>
-          <button class="px-4 py-2 rounded outline outline-1 outline-gray-300 text-slate-500 text-sm" disabled>View Xero Invoice (Admin)</button>
-          <button class="px-4 py-2 rounded outline outline-1 outline-gray-300 text-slate-500 text-sm" disabled>Send To Customer</button>
-          <button class="px-4 py-2 bg-[#003882] text-white text-sm font-medium rounded">Generate Invoice</button>
+          <a target="_blank" data-field= "Xero_Invoice_PDF" class="px-4 py-2 rounded outline outline-1 outline-gray-300 text-slate-500 text-sm" disabled>Download Invoice (PDF)</a>
+          <a target="_blank" data-field= "" class="px-4 py-2 rounded outline outline-1 outline-gray-300 text-slate-500 text-sm" disabled>View Xero Invoice (Admin)</a>
+          <a target="_blank" data-field= "Invoice_URL_Client" class="px-4 py-2 rounded outline outline-1 outline-gray-300 text-slate-500 text-sm" disabled>Send To Customer</a>
+          <button data-field= "" class="hidden px-4 py-2 bg-[#003882] text-white text-sm font-medium rounded">Generate Invoice</button>
         </div>
       </div>
     `;
 
     document.getElementById("replaceable-section").appendChild(wrapper);
-    let generateInvoiceBtn = document.getElementById("generate-invoice-btn");
+    const jobIdForInvoice = this.getJobId();
+    if (jobIdForInvoice) {
+      this.model.fetchJobById(jobIdForInvoice, (jobRecord) =>
+        this.renderInvoiceDetails(jobRecord)
+      );
+    }
+
+    const generateInvoiceBtn = document.getElementById("generate-invoice-btn");
     if (generateInvoiceBtn) {
       generateInvoiceBtn.addEventListener("click", async () => {
         const jobId = this.getJobId();
@@ -956,17 +965,185 @@ export class JobDetailView {
           this.handleFailure("Missing job id. Reload and try again.");
           return;
         }
-        await this.model.getInvoiceByJobId(jobId);
-        let invoiceDataObj = this.getFieldValues(
+
+        const invoiceDataObj = this.getFieldValues(
           '[field-section="invoice-input"] input'
         );
         invoiceDataObj.accounts_contact_id = this.getContactId();
         invoiceDataObj.jobId = jobId;
         invoiceDataObj.xero_invoice_status = "Create Invoice";
-        let invoiceData = await this.model.createInvoiceForJob(invoiceDataObj);
-        return;
+
+        this.startLoading("Generating invoice...");
+        try {
+          await this.model.createInvoiceForJob(invoiceDataObj);
+          await this.model.fetchJobById(jobId, (jobRecord) => {
+            this.renderInvoiceDetails(jobRecord);
+            this.renderInvoiceActivitiesTable(this.getInvoiceActivities());
+          });
+
+          this.handleSuccess("Invoice generated successfully.");
+        } catch (error) {
+          console.error("Failed to generate invoice", error);
+          this.handleFailure("Failed to generate invoice. Please try again.");
+        } finally {
+          this.stopLoading();
+        }
       });
     }
+  }
+
+  renderInvoiceDetails(records) {
+    let elements = document.querySelectorAll(
+      '[data-section="invoice"] [data-field]'
+    );
+    elements.forEach((el) => {
+      let field = el.getAttribute("data-field").toLowerCase();
+      let value = records[field] || records[this.toPascalCase(field)] || "";
+      if (field.includes("date")) {
+        value = this.formatDateForInput(value);
+      } else if (
+        field.includes("total") ||
+        field.includes("amount") ||
+        field.includes("price")
+      ) {
+        value = this.formatCurrency(value);
+      } else if (field == "invoice_url_client") {
+        el.href = records["Invoice_URL_Client"];
+        return;
+      } else if (field == "xero_invoice_pdf") {
+        el.href = records["Xero_Invoice_PDF"];
+        return;
+      } else if (field == "") {
+      }
+
+      if (el.tagName.toLowerCase() === "input") {
+        el.value = value || "";
+      } else {
+        el.textContent = value || "--";
+      }
+    });
+
+    document.getElementById("invoice-total").classList.remove("hidden");
+  }
+
+  toPascalCase(str) {
+    return str
+      .split("_")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join("_");
+  }
+
+  renderInvoiceActivitiesTable(records = []) {
+    const placeholder = document.querySelector("[data-invoice-placeholder]");
+    const tableWrapper = document.querySelector(
+      "[data-invoice-activity-table]"
+    );
+    if (!tableWrapper) return;
+
+    const activities = Array.isArray(records) ? records.filter(Boolean) : [];
+    tableWrapper.innerHTML = "";
+
+    if (!activities.length) {
+      tableWrapper.classList.add("hidden");
+      placeholder?.classList.remove("hidden");
+      return;
+    }
+
+    placeholder?.classList.add("hidden");
+    tableWrapper.classList.remove("hidden");
+
+    const table = document.createElement("table");
+    table.className =
+      "w-full border border-slate-200 rounded-lg overflow-hidden text-sm text-slate-800";
+
+    const headers = [
+      "Task",
+      "Description",
+      "Quantity",
+      "Unit Price",
+      "GST",
+      "Amount",
+    ];
+
+    const thead = document.createElement("thead");
+    thead.className =
+      "bg-slate-50 text-xs font-semibold uppercase text-slate-500";
+    const headerRow = document.createElement("tr");
+    headers.forEach((label, idx) => {
+      const th = document.createElement("th");
+      th.className =
+        "px-4 py-3 text-left border-b border-slate-200" +
+        (idx === headers.length - 1 ? " text-right" : "");
+      th.textContent = label;
+      headerRow.appendChild(th);
+    });
+    thead.appendChild(headerRow);
+
+    const tbody = document.createElement("tbody");
+    tbody.className = "bg-white";
+
+    const normalizeNumber = (value) => {
+      if (value === null || value === undefined || value === "") return 0;
+      const numeric = Number(value);
+      return Number.isFinite(numeric) ? numeric : 0;
+    };
+    let count = 0;
+
+    activities.forEach((activity) => {
+      const row = document.createElement("tr");
+      row.className = "border-b border-slate-100 last:border-0";
+
+      const qty = normalizeNumber(activity.quantity || activity.Quantity);
+      const unitPrice = normalizeNumber(
+        activity.activity_price || activity.Activity_Price
+      );
+      const amount = qty * unitPrice;
+      const gstRaw =
+        activity.gst_rate ||
+        activity.gst ||
+        activity.GST ||
+        activity.tax_rate ||
+        activity.tax ||
+        "";
+      const gstValue =
+        typeof gstRaw === "number"
+          ? `${gstRaw}${gstRaw > 1 ? "" : "%"}`
+          : typeof gstRaw === "string" && gstRaw.trim()
+          ? gstRaw
+          : "--";
+
+      const cells = [
+        count++,
+        activity.activity_text ||
+          activity.Service_Service_Name ||
+          activity.note ||
+          activity.Note ||
+          "--",
+        qty.toFixed(2),
+        this.formatCurrency(unitPrice) || "$0.00",
+        gstValue,
+        this.formatCurrency(amount) || "$0.00",
+      ];
+
+      cells.forEach((value, idx) => {
+        const td = document.createElement("td");
+        td.className =
+          "px-4 py-3 text-sm text-slate-800" +
+          (idx === cells.length - 1
+            ? " text-right font-semibold"
+            : idx === 2
+            ? " text-left"
+            : "");
+        td.textContent = value;
+        row.appendChild(td);
+      });
+
+      tbody.appendChild(row);
+    });
+
+    table.appendChild(thead);
+    table.appendChild(tbody);
+    tableWrapper.appendChild(table);
   }
 
   createDealInformationModal() {
@@ -2427,7 +2604,7 @@ export class JobDetailView {
   async goNextSection(e) {
     let value = true;
     if (this.currentSection == "job-information") {
-      value = await this.handleJobInformation();
+      // value = await this.handleJobInformation();
     } else if (this.currentSection == "add-activities") {
     } else if (this.currentSection == "add-materials") {
     } else if (this.currentSection == "uploads") {
@@ -3058,6 +3235,25 @@ export class JobDetailView {
     const date = new Date(yyyy, mm - 1, dd);
 
     return Math.floor(date.getTime() / 1000);
+  }
+
+  formatDateForInput(value) {
+    if (!value) return "";
+    if (typeof value === "string" && value.includes("/")) return value;
+
+    let numeric = Number(value);
+    if (Number.isNaN(numeric)) return "";
+    if (String(Math.trunc(numeric)).length === 10) {
+      numeric *= 1000;
+    }
+
+    const date = new Date(numeric);
+    if (Number.isNaN(date.getTime())) return "";
+
+    const dd = String(date.getDate()).padStart(2, "0");
+    const mm = String(date.getMonth() + 1).padStart(2, "0");
+    const yyyy = date.getFullYear();
+    return `${dd}/${mm}/${yyyy}`;
   }
 
   setupLocationOptions() {
@@ -3790,6 +3986,10 @@ export class JobDetailView {
     return (
       document.querySelector("[data-contact-field='contact_id']")?.value || ""
     );
+  }
+
+  getInvoiceActivities() {
+    return Array.from(this.activityRecordsById?.values?.() || []);
   }
 
   async renderActivitiesTable() {
@@ -4609,5 +4809,14 @@ export class JobDetailView {
 
     const addBtn = document.getElementById("add-material-btn");
     if (addBtn) addBtn.textContent = "Update";
+  }
+
+  attachInvoiceButtonsHandler(id) {
+    let element = document.getElementById(id);
+    element.addEventListener("click", (e) => {
+      e.preventDefault();
+      let url = e.currentTarget.dataset.url;
+      if (url) window.open(url, "_blank");
+    });
   }
 }
