@@ -50,8 +50,7 @@ export class JobDetailView {
 
   getJobId() {
     if (!this.jobId) {
-      // this.jobId = this.#resolveJobId();
-      this.jobId = "658";
+      this.jobId = this.#resolveJobId();
     }
     return this.jobId;
   }
