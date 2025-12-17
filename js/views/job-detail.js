@@ -2603,7 +2603,7 @@ export class JobDetailView {
   async goNextSection(e) {
     let value = true;
     if (this.currentSection == "job-information") {
-      // value = await this.handleJobInformation();
+      value = await this.handleJobInformation();
     } else if (this.currentSection == "add-activities") {
     } else if (this.currentSection == "add-materials") {
     } else if (this.currentSection == "uploads") {
