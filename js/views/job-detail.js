@@ -867,7 +867,8 @@ export class JobDetailView {
       thumb.className =
         "h-10 w-10 rounded bg-white border border-slate-200 flex items-center justify-center overflow-hidden";
       const resolvedSrc =
-        meta.url && (meta.url.startsWith("http") || meta.url.startsWith("data:"))
+        meta.url &&
+        (meta.url.startsWith("http") || meta.url.startsWith("data:"))
           ? meta.url
           : meta.url
           ? `data:${meta.type || "application/octet-stream"};base64,${meta.url}`
