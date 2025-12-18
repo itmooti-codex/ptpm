@@ -551,7 +551,31 @@ export class JobDetailController {
 
   populateJobDetails() {
     let jobId = this.view.getJobId();
+    if (!jobId) return;
+
+    this.view.startLoading?.("Loading job details...");
+    let hasStoppedLoader = false;
+    const stopLoader = () => {
+      if (hasStoppedLoader) return;
+      hasStoppedLoader = true;
+      this.view.stopLoading?.();
+    };
+
     this.model.fetchJobById(jobId, (data) => {
+      if (!data) {
+        stopLoader();
+        return;
+      }
+
+      const accountType = (data?.Account_Type || "").toLowerCase();
+      const initialType = accountType === "contact" ? "individual" : "entity";
+
+      const targetToggle = document.querySelector(
+        `[data-contact-toggle="${initialType}"]`
+      );
+      // Drive the same UI/state changes the user would trigger
+      targetToggle?.click();
+
       const section = document.querySelector(
         '[data-job-section="job-section-individual"]'
       );
@@ -600,6 +624,8 @@ export class JobDetailController {
           entityIDElement.value = data.Client_Entity_ID || "";
         }
       }
+
+      stopLoader();
     });
   }
 }
