@@ -65,6 +65,16 @@ export class JobDetailController {
     this.bindAddPropertyFlow();
     this.renderServicesInActivitySection();
     this.populateJobDetails();
+    const existingJobId = this.view.getJobId?.();
+    if (existingJobId) {
+      this.loadExistingUploads(existingJobId);
+    }
+  }
+
+  loadExistingUploads(jobid) {
+    this.model.fetchUploads(jobid, (data) => {
+      this.view.renderExistingUploads(data);
+    });
   }
 
   handleSubmitButtonClicked() {

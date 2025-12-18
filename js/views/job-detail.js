@@ -722,7 +722,7 @@ export class JobDetailView {
           <button id="add-images-btn" class="text-white bg-[#003882] text-sm font-medium px-4 py-2 rounded">Add</button>
         </div>
       </div>
-      <div class="flex-1 h-full p-4 bg-blue-200 rounded-lg overflow-auto">
+      <div class="flex-1 h-fit p-4 rounded-lg overflow-auto">
         <div class="text-slate-800 text-base font-semibold mb-3">Existing uploads</div>
         <div class="flex flex-col gap-2" data-section="existing-uploads"></div>
       </div>
@@ -919,7 +919,20 @@ export class JobDetailView {
           <path d="M9 3h6a1 1 0 0 1 1 1v1h4v2h-1v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V7H4V5h4V4a1 1 0 0 1 1-1Zm6 3V5H9v1h6Zm-7 2v10h2V8H8Zm4 0v10h2V8h-2Z"/>
         </svg>
       `;
-      deleteBtn.addEventListener("click", () => card.remove());
+      deleteBtn.addEventListener("click", async (el) => {
+        const deleteBtn = el.target.closest("button"); // or add a specific class
+        if (!deleteBtn) return;
+
+        const parent = deleteBtn.closest('[data-field="id"]');
+        if (!parent) return;
+        if (parent.id) {
+          showLoader(this.loaderElement, "Deleting upload...");
+          let result = await this.model.deleteUpload(parent.id);
+          if (result.isCancelling) {
+            this.hideLoader(this.loaderElement);
+          }
+        }
+      });
 
       actions.appendChild(viewBtn);
       actions.appendChild(deleteBtn);
@@ -927,7 +940,7 @@ export class JobDetailView {
       card.appendChild(thumb);
       card.appendChild(name);
       card.appendChild(actions);
-
+      card.id = meta.id;
       frag.appendChild(card);
     });
 

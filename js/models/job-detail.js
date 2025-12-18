@@ -500,6 +500,13 @@ export class JobDetailModal {
       });
   }
 
+  async deleteUpload(uploadId) {
+    let query = this.uploadModel.mutation();
+    query.delete((q) => q.where("id", uploadId));
+    let result = await query.execute(true).toPromise();
+    return result;
+  }
+
   async fetchInquiries(callback) {
     this.inquiryQuery = this.inquiryModel
       .query()
