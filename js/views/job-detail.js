@@ -722,13 +722,21 @@ export class JobDetailView {
           <button id="add-images-btn" class="text-white bg-[#003882] text-sm font-medium px-4 py-2 rounded">Add</button>
         </div>
       </div>
+      <div class="flex-1 h-full p-4 bg-blue-200 rounded-lg overflow-auto">
+        <div class="text-slate-800 text-base font-semibold mb-3">Existing uploads</div>
+        <div class="flex flex-col gap-2" data-section="existing-uploads"></div>
+      </div>
     `;
 
     document.getElementById("replaceable-section").appendChild(wrapper);
-    const uploadPreviewModal = ensureFilePreviewModal();
+    this.uploadPreviewModal = ensureFilePreviewModal();
 
     const uploadResult = wrapper.querySelector(
       '[data-section="images-uploads"]'
+    );
+    this.uploadListEl = uploadResult;
+    this.existingUploadsEl = wrapper.querySelector(
+      '[data-section="existing-uploads"]'
     );
     const uploadSection = wrapper.querySelector('[data-field="upload-file"]');
     const uploadTrigger =
@@ -756,7 +764,7 @@ export class JobDetailView {
             const src = meta.url?.startsWith("http")
               ? meta.url
               : `data:${type || "application/octet-stream"};base64,${meta.url}`;
-            uploadPreviewModal.show({
+            this.uploadPreviewModal.show({
               src,
               name: meta.name || "Preview",
               type,
@@ -820,6 +828,109 @@ export class JobDetailView {
         this.stopLoading();
       }
     });
+  }
+
+  renderExistingUploads(items = []) {
+    if (!this.existingUploadsEl) {
+      this.existingUploadsEl = document.querySelector(
+        '[data-section="existing-uploads"]'
+      );
+    }
+    if (!this.existingUploadsEl) return;
+
+    this.existingUploadsEl.innerHTML = "";
+    if (!Array.isArray(items) || !items.length) {
+      const empty = document.createElement("p");
+      empty.className = "text-sm text-slate-600";
+      empty.textContent = "No uploads yet.";
+      this.existingUploadsEl.appendChild(empty);
+      return;
+    }
+
+    const frag = document.createDocumentFragment();
+    items.forEach((item) => {
+      const meta = {
+        id: item.id || item.ID,
+        url: item.photo_upload || item.photo || "",
+        name: item.file_name || item.name || "Upload",
+        type: item.type || "",
+      };
+
+      const card = document.createElement("div");
+      card.className =
+        "flex items-center gap-3 bg-slate-50 rounded-lg px-3 py-2 shadow-sm border border-slate-100";
+      card.setAttribute("data-upload-url", meta.url);
+      card.setAttribute("data-file-name", meta.name || "Upload");
+      card.setAttribute("file-type", meta.type || "");
+
+      const thumb = document.createElement("div");
+      thumb.className =
+        "h-10 w-10 rounded bg-white border border-slate-200 flex items-center justify-center overflow-hidden";
+      const resolvedSrc =
+        meta.url && (meta.url.startsWith("http") || meta.url.startsWith("data:"))
+          ? meta.url
+          : meta.url
+          ? `data:${meta.type || "application/octet-stream"};base64,${meta.url}`
+          : "";
+      if (resolvedSrc) {
+        const img = document.createElement("img");
+        img.src = resolvedSrc;
+        img.alt = meta.name || "Upload";
+        img.className = "h-full w-full object-cover";
+        thumb.appendChild(img);
+      } else {
+        thumb.textContent = "—";
+        thumb.classList.add("text-slate-400", "text-xs");
+      }
+
+      const name = document.createElement("div");
+      name.className = "flex-1 text-sm text-slate-700";
+      name.textContent = meta.name || "Upload";
+
+      const actions = document.createElement("div");
+      actions.className = "flex items-center gap-3 text-sky-700";
+
+      const viewBtn = document.createElement("button");
+      viewBtn.type = "button";
+      viewBtn.className = "hover:text-sky-900";
+      viewBtn.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 5c-7 0-10 7-10 7s3 7 10 7 10-7 10-7-3-7-10-7Zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10Zm0-8a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"/>
+        </svg>
+      `;
+      viewBtn.addEventListener("click", () => {
+        const type = meta.type || "";
+        const src =
+          resolvedSrc ||
+          `data:${type || "application/octet-stream"};base64,${meta.url}`;
+        this.uploadPreviewModal?.show?.({
+          src,
+          name: meta.name || "Preview",
+          type,
+        });
+      });
+
+      const deleteBtn = document.createElement("button");
+      deleteBtn.type = "button";
+      deleteBtn.className = "text-blue-700 hover:text-blue-900";
+      deleteBtn.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M9 3h6a1 1 0 0 1 1 1v1h4v2h-1v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V7H4V5h4V4a1 1 0 0 1 1-1Zm6 3V5H9v1h6Zm-7 2v10h2V8H8Zm4 0v10h2V8h-2Z"/>
+        </svg>
+      `;
+      deleteBtn.addEventListener("click", () => card.remove());
+
+      actions.appendChild(viewBtn);
+      actions.appendChild(deleteBtn);
+
+      card.appendChild(thumb);
+      card.appendChild(name);
+      card.appendChild(actions);
+
+      frag.appendChild(card);
+    });
+
+    this.existingUploadsEl.appendChild(frag);
   }
 
   async createInvoiceSection() {
