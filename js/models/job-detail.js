@@ -968,7 +968,24 @@ export class JobDetailModal {
         "invoice_date",
         "due_date",
         "xero_invoice_pdf",
+        "account_type",
+        "priority",
+        "date_job_required_by",
       ])
+      .include("Client_Entity", (q) => {
+        q.select(["name", "id"]);
+      })
+      .include("Client_Individual", (q) => {
+        q.select(["first_name", "last_name", "id"]);
+      })
+      .include("Primary_Service_Provider", (q) => {
+        q.include("Contact_Information", (c) => {
+          c.select(["first_name", "last_name", "id", "status"]);
+        });
+      })
+      .include("Property", (q) => {
+        q.select(["property_name", "id"]);
+      })
       .noDestroy();
     this.jobInvoiceQuery.getOrInitQueryCalc?.();
     const result = await this.jobInvoiceQuery.fetchDirect().toPromise();

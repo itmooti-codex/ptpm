@@ -941,7 +941,7 @@ export class JobDetailView {
       <div class="bg-white rounded-lg outline outline-1 outline-gray-300 w-full flex flex-col gap-4 p-4">
         <div class="flex flex-wrap justify-end gap-3">
           <a target="_blank" data-field= "Xero_Invoice_PDF" class="px-4 py-2 rounded outline outline-1 outline-gray-300 text-slate-500 text-sm" disabled>Download Invoice (PDF)</a>
-          <a target="_blank" data-field= "" class="px-4 py-2 rounded outline outline-1 outline-gray-300 text-slate-500 text-sm" disabled>View Xero Invoice (Admin)</a>
+          <a target="_blank" data-field= "View_Xero_Invoice_(Admin)" class="px-4 py-2 rounded outline outline-1 outline-gray-300 text-slate-500 text-sm" disabled>View Xero Invoice (Admin)</a>
           <a target="_blank" data-field= "Invoice_URL_Client" class="px-4 py-2 rounded outline outline-1 outline-gray-300 text-slate-500 text-sm" disabled>Send To Customer</a>
           <button data-field= "" class="hidden px-4 py-2 bg-[#003882] text-white text-sm font-medium rounded">Generate Invoice</button>
         </div>
@@ -1012,7 +1012,8 @@ export class JobDetailView {
       } else if (field == "xero_invoice_pdf") {
         el.href = records["Xero_Invoice_PDF"];
         return;
-      } else if (field == "") {
+      } else if (field == "view_xero_invoice_(admin)") {
+        return;
       }
 
       if (el.tagName.toLowerCase() === "input") {
@@ -2603,7 +2604,6 @@ export class JobDetailView {
   async goNextSection(e) {
     let value = true;
     if (this.currentSection == "job-information") {
-      value = await this.handleJobInformation();
     } else if (this.currentSection == "add-activities") {
     } else if (this.currentSection == "add-materials") {
     } else if (this.currentSection == "uploads") {
@@ -4819,6 +4819,15 @@ export class JobDetailView {
       e.preventDefault();
       let url = e.currentTarget.dataset.url;
       if (url) window.open(url, "_blank");
+    });
+  }
+
+  populateFieldsWithData(fields, data) {
+    fields.forEach((item) => {
+      const field = item.getAttribute(`data-field`);
+      if (field && data[field] !== undefined) {
+        item.value = data[field];
+      }
     });
   }
 }

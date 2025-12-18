@@ -64,6 +64,14 @@ export class JobDetailController {
     this.renderDropdownForStates();
     this.bindAddPropertyFlow();
     this.renderServicesInActivitySection();
+    this.populateJobDetails();
+  }
+
+  handleSubmitButtonClicked() {
+    let element = document.getElementById("submit-information-btn");
+    element.addEventListener("click", async () => {
+      await this.handleJobInformation();
+    });
   }
 
   renderDropdownForStates() {
@@ -539,5 +547,59 @@ export class JobDetailController {
   async renderServicesInActivitySection() {
     let services = await this.model.fetchServices();
     this.view.renderAddActivitiesServices(services.resp);
+  }
+
+  populateJobDetails() {
+    let jobId = this.view.getJobId();
+    this.model.fetchJobById(jobId, (data) => {
+      const section = document.querySelector(
+        '[data-job-section="job-section-individual"]'
+      );
+
+      const fields = [...section.querySelectorAll("input, select")].filter(
+        (el) => !el.disabled && el.offsetParent !== null
+      );
+
+      let JobDetailObj = {
+        priority: data.Priority || "",
+        job_required_by: data.date_job_required_by || "",
+        properties: data.Property_Property_Name || "",
+        serviceman:
+          data.Contact_First_Name + " " + data.Contact_Last_Name || "",
+      };
+
+      this.view.populateFieldsWithData(fields, JobDetailObj);
+
+      if (data["Account_Type"] == "Contact") {
+        let contactIdElement = document.querySelector(
+          '[data-field="client_id"]'
+        );
+        let contactNameElement = document.querySelector(
+          '[data-field="client"]'
+        );
+        if (contactNameElement) {
+          contactNameElement.value =
+            data.Client_Individual_First_Name +
+              " " +
+              data.Client_Individual_Last_Name || "";
+        }
+        if (contactIdElement) {
+          contactIdElement.value = data.Client_Individual_Contact_ID || "";
+        }
+      } else {
+        let entityIDElement = document.querySelector(
+          '[data-field="company_id"]'
+        );
+        let entityNameElement = document.querySelector(
+          '[data-field="entity_name"]'
+        );
+        if (entityNameElement) {
+          entityNameElement.value = data.Client_Entity_Name || "";
+        }
+        if (entityIDElement) {
+          entityIDElement.value = data.Client_Entity_ID || "";
+        }
+      }
+    });
   }
 }

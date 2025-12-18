@@ -119,7 +119,7 @@ export class NewInquiryView {
     this.loaderElement = initOperationLoader();
     this.loaderMessageEl =
       this.loaderElement?.querySelector("[data-loader-message]") || null;
-    this.createSwithcAccountTypeModal();
+    this.createSwitchAccountTypeModal();
     this.companyId = null;
     this.entityContactId = null;
     this.entityRelatedRequestId = 0;
@@ -2700,7 +2700,7 @@ export class NewInquiryView {
     });
   }
 
-  createSwithcAccountTypeModal() {
+  createSwitchAccountTypeModal() {
     let modalWrapper = document.createElement("div");
     modalWrapper.id = "switchAccountTypeModalWrapper";
     modalWrapper.classList =
@@ -3322,7 +3322,9 @@ export class NewInquiryView {
               const type = meta.type || "";
               const src = meta.url?.startsWith("http")
                 ? meta.url
-                : `data:${type || "application/octet-stream"};base64,${meta.url}`;
+                : `data:${type || "application/octet-stream"};base64,${
+                    meta.url
+                  }`;
               previewModal.show({
                 src,
                 name: meta.name || "Preview",
