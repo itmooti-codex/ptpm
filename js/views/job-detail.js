@@ -816,8 +816,15 @@ export class JobDetailView {
           };
 
           let imageUrl = item.getAttribute("data-upload-url");
+          const fileType = item.getAttribute("file-type") || "";
+          const fileName = item.getAttribute("data-file-name") || "";
           if (!imageUrl) continue;
           uploadObj.photo_upload = imageUrl;
+          if (fileType.startsWith("image/")) {
+            uploadObj.photo_name = fileName;
+          } else {
+            uploadObj.file_name = fileName;
+          }
           await this.model.createNewUpload(uploadObj);
         }
         this.handleSuccess("Uploads saved successfully.");
@@ -851,8 +858,8 @@ export class JobDetailView {
     items.forEach((item) => {
       const meta = {
         id: item.id || item.ID,
-        url: item.photo_upload || item.photo || "",
-        name: item.file_name || item.name || "Upload",
+        url: item.Photo_Upload || item.photo || "",
+        name: item.File_Name || item.Photo_Name || item.name || "Upload",
         type: item.type || "",
       };
 
@@ -932,8 +939,9 @@ export class JobDetailView {
             this.loaderCounter,
             "Deleting upload..."
           );
+          card.remove();
           await this.model.deleteUpload(parent.id);
-          this.hideLoader(this.loaderElement);
+          hideLoader(this.loaderElement, this.loaderCounter);
         }
       });
 
