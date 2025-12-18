@@ -926,11 +926,14 @@ export class JobDetailView {
         const parent = deleteBtn.closest('[data-field="id"]');
         if (!parent) return;
         if (parent.id) {
-          showLoader(this.loaderElement, "Deleting upload...");
-          let result = await this.model.deleteUpload(parent.id);
-          if (result.isCancelling) {
-            this.hideLoader(this.loaderElement);
-          }
+          showLoader(
+            this.loaderElement,
+            this.loaderMessageEl,
+            this.loaderCounter,
+            "Deleting upload..."
+          );
+          await this.model.deleteUpload(parent.id);
+          this.hideLoader(this.loaderElement);
         }
       });
 
@@ -940,6 +943,7 @@ export class JobDetailView {
       card.appendChild(thumb);
       card.appendChild(name);
       card.appendChild(actions);
+      card.setAttribute("data-field", "id");
       card.id = meta.id;
       frag.appendChild(card);
     });
