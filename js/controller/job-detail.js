@@ -81,7 +81,7 @@ export class JobDetailController {
   handleInfoSubmit() {
     let element = document.getElementById("submit-information-btn");
     element.addEventListener("click", async () => {
-      await this.handleJobInformation();
+      await this.view.handleJobInformation();
     });
   }
 

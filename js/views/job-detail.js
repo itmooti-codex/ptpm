@@ -1113,6 +1113,32 @@ export class JobDetailView {
           return;
         }
 
+        const invoiceDateInput = document.querySelector(
+          '[field-section="invoice-input"] [data-field="invoice_date"]'
+        );
+        const dueDateInput = document.querySelector(
+          '[field-section="invoice-input"] [data-field="due_date"]'
+        );
+        const entityId =
+          document.querySelector('[data-field="company_id"]')?.value || "";
+        const contactId = this.getContactId();
+
+        const missing = [];
+        if (!invoiceDateInput?.value) missing.push("Invoice Date");
+        if (!dueDateInput?.value) missing.push("Due Date");
+        if (!contactId && !entityId) missing.push("Contact/Entity");
+
+        if (missing.length) {
+          this.handleFailure(
+            `Please fill the following before generating an invoice: ${missing.join(
+              ", "
+            )}.`
+          );
+          return;
+        }
+
+        generateInvoiceBtn.classList.add("hidden");
+
         const invoiceDataObj = this.getFieldValues(
           '[field-section="invoice-input"] input'
         );
@@ -1126,11 +1152,19 @@ export class JobDetailView {
           await this.model.fetchJobById(jobId, (jobRecord) => {
             this.renderInvoiceDetails(jobRecord);
             this.renderInvoiceActivitiesTable(this.getInvoiceActivities());
+            const status =
+              (jobRecord?.xero_invoice_status || "").toString().toLowerCase();
+            const isFailed = status.includes("fail");
+            if (isFailed) {
+              generateInvoiceBtn.classList.remove("hidden");
+              this.handleFailure("Invoice generation failed. Please retry.");
+            } else {
+              this.handleSuccess("Invoice generated successfully.");
+            }
           });
-
-          this.handleSuccess("Invoice generated successfully.");
         } catch (error) {
           console.error("Failed to generate invoice", error);
+          generateInvoiceBtn.classList.remove("hidden");
           this.handleFailure("Failed to generate invoice. Please try again.");
         } finally {
           this.stopLoading();
