@@ -2250,7 +2250,9 @@ export class JobDetailView {
       btn.addEventListener("click", (e) => {
         e.preventDefault();
         showUnsavedChangesModal({
-          onDiscard: () => window.history.back(),
+          onDiscard: () => {
+            window.location.href = "https://my.awesomate.pro/portal/new/inquiries";
+          },
           onSave: () => window.history.back(),
         });
       });
