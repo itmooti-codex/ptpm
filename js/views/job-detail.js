@@ -878,14 +878,25 @@ export class JobDetailView {
         (meta.url.startsWith("http") || meta.url.startsWith("data:"))
           ? meta.url
           : meta.url
-          ? `data:${meta.type || "application/octet-stream"};base64,${meta.url}`
+          ? `data:application/octet-stream;base64,${meta.url}`
           : "";
+
       if (resolvedSrc) {
-        const img = document.createElement("img");
-        img.src = resolvedSrc;
-        img.alt = meta.name || "Upload";
-        img.className = "h-full w-full object-cover";
-        thumb.appendChild(img);
+        if (item.Photo_Name) {
+          // IMAGE
+          const img = document.createElement("img");
+          img.src = resolvedSrc;
+          img.alt = item.Photo_Name || "Photo";
+          img.className = "h-full w-full object-cover";
+          thumb.appendChild(img);
+        } else {
+          // FILE (PDF / other)
+          const file = document.createElement("div");
+          file.className =
+            "flex h-full w-full items-center justify-center bg-slate-50 text-xs font-medium text-slate-600";
+          file.textContent = "FILE";
+          thumb.appendChild(file);
+        }
       } else {
         thumb.textContent = "—";
         thumb.classList.add("text-slate-400", "text-xs");

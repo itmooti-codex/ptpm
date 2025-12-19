@@ -69,6 +69,7 @@ export class JobDetailController {
     if (existingJobId) {
       this.loadExistingUploads(existingJobId);
     }
+    this.handleInfoSubmit();
   }
 
   loadExistingUploads(jobid) {
@@ -77,7 +78,7 @@ export class JobDetailController {
     });
   }
 
-  handleSubmitButtonClicked() {
+  handleInfoSubmit() {
     let element = document.getElementById("submit-information-btn");
     element.addEventListener("click", async () => {
       await this.handleJobInformation();
