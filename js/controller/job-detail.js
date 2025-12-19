@@ -598,8 +598,9 @@ export class JobDetailController {
         priority: data.Priority || "",
         job_required_by: data.date_job_required_by || "",
         properties: data.Property_Property_Name || "",
-        serviceman:
-          data.Contact_First_Name + " " + data.Contact_Last_Name || "",
+        serviceman: [data.Contact_First_Name, data.Contact_Last_Name]
+          .filter(Boolean)
+          .join(" "),
       };
 
       this.view.populateFieldsWithData(fields, JobDetailObj);
@@ -612,10 +613,12 @@ export class JobDetailController {
           '[data-field="client"]'
         );
         if (contactNameElement) {
-          contactNameElement.value =
-            data.Client_Individual_First_Name +
-              " " +
-              data.Client_Individual_Last_Name || "";
+          contactNameElement.value = [
+            data.Client_Individual_First_Name,
+            data.Client_Individual_Last_Name,
+          ]
+            .filter(Boolean)
+            .join(" ");
         }
         if (contactIdElement) {
           contactIdElement.value = data.Client_Individual_Contact_ID || "";
