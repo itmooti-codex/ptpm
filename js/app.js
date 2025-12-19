@@ -44,7 +44,7 @@ import { VitalStatsSDK } from "../sdk/init.js";
       const page = document.body?.dataset?.page || "";
 
       // Always-available controllers (if DOM present)
-      await this.maybeInitDashboard();
+      // await this.maybeInitDashboard();
 
       // Page-specific
       if (page == "new-inquiry") this.initNewInquiry();

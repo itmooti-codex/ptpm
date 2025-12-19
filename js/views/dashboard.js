@@ -1,22 +1,3 @@
-// views/DashboardView.js
-
-/**
- * Generic table renderer that accepts header definitions and row data.
- * @param {Object} config
- * @param {HTMLElement|string} config.container - Element (or selector) to render the table into.
- * @param {Array} config.headers - Array of header definitions. Each header can be a string or an object with { key, label, headerClass, cellClass, render }.
- * @param {Array} config.rows - Array of rows. Each row can be an object (matched by header.key) or an array (matched by index).
- * @param {string|Function} [config.emptyState] - Message or function returning markup when there are no rows.
- * @param {boolean} [config.zebra=false] - Whether to apply alternating background colors.
- * @param {Function} [config.getRowClass] - Returns extra class names per row.
- * @param {string} [config.tableClass] - Class list for the table element.
- * @param {string} [config.theadClass] - Class list for the thead element.
- * @param {string} [config.tbodyClass] - Class list for the tbody element.
- * @param {string} [config.defaultHeaderClass] - Default class for each header cell.
- * @param {string} [config.defaultCellClass] - Default class for each data cell.
- * @param {string} [config.emptyCellClass] - Class for the empty-state cell.
- * @returns {{table: HTMLTableElement, thead: HTMLTableSectionElement, tbody: HTMLTableSectionElement}|null}
- */
 export function renderDynamicTable({
   container,
   headers = [],
@@ -114,6 +95,7 @@ export function renderDynamicTable({
   } else {
     rows.forEach((row, rowIndex) => {
       const tr = document.createElement("tr");
+      tr.setAttribute("data-unique-id", row.id);
       const zebraClass = zebra
         ? rowIndex % 2 === 0
           ? "bg-white"
@@ -158,11 +140,6 @@ export function renderDynamicTable({
 }
 
 export class DashboardView {
-  /**
-   * @param {object} [overrides]
-   * @param {string} [overrides.iconButtonGroup] - Custom HTML for the client action icons.
-   * @param {string} [overrides.actionButtons] - Custom HTML for the row action icons.
-   */
   constructor(overrides = {}) {
     this.iconButtonGroup =
       overrides.iconButtonGroup ??
@@ -263,6 +240,7 @@ export class DashboardView {
       ],
       "urgent-calls": ["job-filters", "task-filters"],
     };
+    this.handleActionButtonClick();
   }
 
   buildClientContactIcons(meta = {}) {
@@ -1327,5 +1305,23 @@ export class DashboardView {
 
     let baseElement = document.getElementById("create-popup-base");
     baseElement?.appendChild(popup);
+  }
+
+  handleActionButtonClick() {
+    const tableElement = document.getElementById("inquiry-table-container");
+    if (!tableElement) return;
+
+    tableElement.addEventListener("click", (e) => {
+      const svgIcon = e.target.closest("svg#view-icon");
+      if (!svgIcon) return;
+
+      const row = svgIcon.closest("tr");
+      if (!row) return;
+
+      const rowId = row.dataset.uniqueId?.slice(1);
+      if (!rowId) return;
+
+      window.location.href = `https://awesomate.pro/${rowId}`;
+    });
   }
 }

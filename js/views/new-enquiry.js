@@ -2988,10 +2988,8 @@ export class NewInquiryView {
 
   async checkInquiryId() {
     try {
-      const url = new URL(window.location.href);
-
-      const inquiryId = url.searchParams.get("inquiry");
-      const accountType = url.searchParams.get("accountType");
+      const inquiryId = document.body.dataset.id;
+      const accountType = document.body.dataset.accountType;
 
       let result = await this.model.filterEnquiries(inquiryId, accountType);
       if (!Array.isArray(result.resp)) {
