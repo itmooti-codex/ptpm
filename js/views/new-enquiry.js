@@ -2988,7 +2988,7 @@ export class NewInquiryView {
 
   async checkInquiryId() {
     try {
-      const inquiryId = document.body.dataset.id;
+      const inquiryId = document.body.dataset.inquiryId;
       const accountType = document.body.dataset.accountType;
 
       let result = await this.model.filterEnquiries(inquiryId, accountType);
@@ -3006,7 +3006,7 @@ export class NewInquiryView {
         this.model.fetchPropertiesById(inquiryData.Property_ID)
       );
 
-      if (accountType === "company") {
+      if (accountType === "Company") {
         await this.handleCompanyAccount(inquiryData, propertyData);
       } else {
         await this.handleContactAccount(inquiryData, propertyData);
