@@ -458,7 +458,14 @@ export class JobDetailModal {
       .query()
       .where("job_id", jobId)
       .deSelectAll()
-      .select(["id", "photo_upload", "type", "created_at"])
+      .select([
+        "id",
+        "photo_upload",
+        "type",
+        "created_at",
+        "photo_name",
+        "file_name",
+      ])
       .noDestroy();
     this.uploadQuery.getOrInitQueryCalc?.();
     const result = await this.uploadQuery.fetchDirect().toPromise();

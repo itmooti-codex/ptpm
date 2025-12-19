@@ -1129,6 +1129,12 @@ export class JobDetailView {
   }
 
   renderInvoiceDetails(records) {
+    const invoiceNumber =
+      records.invoice_number ||
+      records.Invoice_Number ||
+      records.invoiceNumber ||
+      records.InvoiceNumber;
+
     let elements = document.querySelectorAll(
       '[data-section="invoice"] [data-field]'
     );
@@ -1159,6 +1165,14 @@ export class JobDetailView {
         el.textContent = value || "--";
       }
     });
+
+    const generateInvoiceBtn = document.getElementById("generate-invoice-btn");
+    if (invoiceNumber) {
+      generateInvoiceBtn?.classList.add("hidden");
+      this.renderInvoiceActivitiesTable(this.getInvoiceActivities());
+    } else {
+      generateInvoiceBtn?.classList.remove("hidden");
+    }
 
     document.getElementById("invoice-total").classList.remove("hidden");
   }
