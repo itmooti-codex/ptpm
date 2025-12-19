@@ -22,6 +22,9 @@ export class JobDetailModal {
     this.propertyQuery = null;
     this.propertyCallback = null;
 
+    this.appointmentQuery = null;
+    this.appointmentCallback = null;
+
     this.materialQuery = null;
     this.materialCallback = null;
 
@@ -43,6 +46,7 @@ export class JobDetailModal {
     this.materialRecordsById = new Map();
     this.contactSub = null;
     this.propertySub = null;
+    this.appointmentSub = null;
     this.activitySub = null;
     this.materialSub = null;
     this.serviceProviderSub = null;
@@ -726,6 +730,93 @@ export class JobDetailModal {
     query.createOne(appointmentObj);
     let result = await query.execute(true).toPromise();
     return result;
+  }
+
+  async fetchAppointmentByJobId(jobId, callback) {
+    if (!jobId) return null;
+
+    this.appointmentQuery = this.appointmentModel
+      .query()
+      .where("job_id", jobId)
+      .deSelectAll()
+      .select([
+        "status",
+        "title",
+        "start_time",
+        "end_time",
+        "description",
+        "inquiry_id",
+        "job_id",
+        "location_id",
+        "host_id",
+        "type",
+      ])
+      .include("Location", (q) => {
+        q.select(["id", "property_name"]);
+      })
+      .include("Job", (q) => {
+        q.select(["job_status"]);
+      })
+      .include("Host", (q) => {
+        q.include("Contact_Information", (c) => {
+          c.select(["id", "first_name", "last_name"]);
+        });
+      })
+      .include("Primary_Guest", (q) => {
+        q.select(["id", "first_name", "last_name"]);
+      })
+      .noDestroy();
+
+    this.appointmentQuery.getOrInitQueryCalc?.();
+    const result = await this.appointmentQuery.fetchDirect().toPromise();
+    const appointment = Array.isArray(result?.resp)
+      ? result.resp?.[0] ?? null
+      : Array.isArray(result)
+      ? result?.[0] ?? null
+      : result?.resp ?? result ?? null;
+
+    this.appointmentCallback = callback;
+    this.subscribeToAppointmentChanges();
+    if (typeof this.appointmentCallback === "function")
+      this.appointmentCallback(appointment);
+    return appointment;
+  }
+
+  subscribeToAppointmentChanges() {
+    this.appointmentSub?.unsubscribe?.();
+    let liveObs = null;
+    try {
+      if (typeof this.appointmentQuery?.subscribe === "function") {
+        liveObs = this.appointmentQuery.subscribe();
+      }
+    } catch (_) {}
+
+    if (
+      !liveObs &&
+      typeof this.appointmentQuery?.localSubscribe === "function"
+    ) {
+      try {
+        liveObs = this.appointmentQuery.localSubscribe();
+      } catch (_) {}
+    }
+
+    if (!liveObs) return;
+
+    this.appointmentSub = liveObs
+      .pipe(window.toMainInstance?.(true) ?? ((x) => x))
+      .subscribe({
+        next: (payload) => {
+          const appointment = Array.isArray(payload?.records)
+            ? payload.records?.[0] ?? null
+            : Array.isArray(payload)
+            ? payload?.[0] ?? null
+            : payload?.records ?? payload ?? null;
+          if (typeof this.appointmentCallback === "function") {
+            this.appointmentCallback(appointment);
+          }
+        },
+        error: () => {},
+      });
   }
 
   async createContact(contactObj) {

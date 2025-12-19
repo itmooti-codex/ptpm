@@ -70,6 +70,7 @@ export class JobDetailController {
       this.loadExistingUploads(existingJobId);
     }
     this.handleInfoSubmit();
+    this.renderAppointment();
   }
 
   loadExistingUploads(jobid) {
@@ -434,6 +435,7 @@ export class JobDetailController {
           '[data-field="primary_guest_id"]'
         );
 
+        const previous = guestElement?.value || "";
         this.resetSelectOptions(guestElement);
         let mappedData = this.contacts.map((item) => {
           const first = item.First_Name || item.first_name || "";
@@ -444,12 +446,14 @@ export class JobDetailController {
           };
         });
         this.view.createOptionsForSelectBox(guestElement, mappedData);
+        if (previous) guestElement.value = previous;
       } catch (e) {}
     } else if (element == "properties") {
       try {
         let locationElement = document.querySelector(
           '[data-field="location_id"]'
         );
+        const previous = locationElement?.value || "";
         this.resetSelectOptions(locationElement);
         const mappedData = this.properties.map((item) => {
           return {
@@ -459,10 +463,12 @@ export class JobDetailController {
         });
 
         this.view.createOptionsForSelectBox(locationElement, mappedData);
+        if (previous) locationElement.value = previous;
       } catch (c) {}
     } else if (element == "serviceProvider") {
       try {
         let hostElement = document.querySelector('[data-field="host_id"]');
+        const previous = hostElement?.value || "";
         this.resetSelectOptions(hostElement);
         const mappedData = this.serviceProvider.map((item) => {
           const contactInfo = item.Contact_Information || {};
@@ -477,12 +483,14 @@ export class JobDetailController {
         });
 
         this.view.createOptionsForSelectBox(hostElement, mappedData);
+        if (previous) hostElement.value = previous;
       } catch (c) {}
     } else if (element == "inquiry") {
       try {
         const inquiryElement = document.querySelector(
           '[data-field="inquiry_id"]'
         );
+        const previous = inquiryElement?.value || "";
         this.resetSelectOptions(inquiryElement);
         const mappedData = this.inquiries.map((item) => {
           return {
@@ -491,10 +499,12 @@ export class JobDetailController {
           };
         });
         this.view.createOptionsForSelectBox(inquiryElement, mappedData);
+        if (previous) inquiryElement.value = previous;
       } catch (e) {}
     } else if (element == "job") {
       try {
         const jobElement = document.querySelector('[data-field="job_id"]');
+        const previous = jobElement?.value || "";
         this.resetSelectOptions(jobElement);
         const mappedData = this.jobs.map((item) => {
           return {
@@ -503,6 +513,7 @@ export class JobDetailController {
           };
         });
         this.view.createOptionsForSelectBox(jobElement, mappedData);
+        if (previous) jobElement.value = previous;
       } catch (e) {}
     }
   }
@@ -640,6 +651,13 @@ export class JobDetailController {
       }
 
       stopLoader();
+    });
+  }
+
+  renderAppointment() {
+    let jobId = this.view.getJobId();
+    this.model.fetchAppointmentByJobId(jobId, (appointment) => {
+      this.view.populateAppointmentFields?.(appointment);
     });
   }
 }

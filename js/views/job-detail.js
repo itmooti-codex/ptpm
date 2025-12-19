@@ -1152,14 +1152,17 @@ export class JobDetailView {
           await this.model.fetchJobById(jobId, (jobRecord) => {
             this.renderInvoiceDetails(jobRecord);
             this.renderInvoiceActivitiesTable(this.getInvoiceActivities());
-            const status =
-              (jobRecord?.xero_invoice_status || "").toString().toLowerCase();
+            const status = (jobRecord?.xero_invoice_status || "")
+              .toString()
+              .toLowerCase();
             const isFailed = status.includes("fail");
             if (isFailed) {
               generateInvoiceBtn.classList.remove("hidden");
               this.handleFailure("Invoice generation failed. Please retry.");
             } else {
-              this.handleSuccess("Invoice generated successfully.");
+              if (status != "Create invoice") {
+                this.handleSuccess("Invoice generated successfully.");
+              }
             }
           });
         } catch (error) {
@@ -2251,7 +2254,8 @@ export class JobDetailView {
         e.preventDefault();
         showUnsavedChangesModal({
           onDiscard: () => {
-            window.location.href = "https://my.awesomate.pro/portal/new/inquiries";
+            window.location.href =
+              "https://my.awesomate.pro/portal/new/inquiries";
           },
           onSave: () => window.history.back(),
         });
@@ -3490,6 +3494,47 @@ export class JobDetailView {
     });
     delete dataObj[null];
     return dataObj;
+  }
+
+  populateAppointmentFields(appointment = {}) {
+    if (!appointment || typeof appointment !== "object") return;
+
+    const mappedValues = {
+      status: appointment.Status ?? "",
+      title: appointment.Title ?? "",
+      start_time: this.formatDateForInput(appointment.Start_Time),
+      end_time: this.formatDateForInput(appointment.End_Time),
+      description: appointment.Description ?? "",
+      inquiry_id: appointment.Inquiry_ID ?? "",
+      job_id: appointment.Job_ID ?? "",
+      type: appointment.Type ?? "",
+      location_id:
+        appointment.Location_ID ??
+        appointment.Location?.id ??
+        appointment.Location?.ID ??
+        "",
+      host_id:
+        appointment.Host_ID ??
+        appointment?.Host?.Contact_Information?.id ??
+        appointment?.Host?.Contact_Information?.ID ??
+        "",
+      primary_guest_id: appointment.Primary_Guest_Contact_ID,
+    };
+
+    const fields = document.querySelectorAll(
+      '[data-job-section="job-section-appointment"] input, [data-job-section="job-section-appointment"] select, [data-job-section="job-section-appointment"] textarea'
+    );
+
+    fields?.forEach((field) => {
+      const key = field.getAttribute("data-field");
+      if (!key) return;
+      const value = mappedValues[key] ?? "";
+      if (field.type === "checkbox") {
+        field.checked = Boolean(value);
+      } else {
+        field.value = value;
+      }
+    });
   }
 
   toggleModal(id) {
