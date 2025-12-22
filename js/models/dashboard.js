@@ -37,11 +37,17 @@ export class DashboardModel {
     window.plugin = plugin;
     window.ptpmDealModel = plugin.switchTo("PeterpmDeal");
     window.ptpmJobModel = plugin.switchTo("PeterpmJob");
+    window.pptmAnnouncementModel = plugin.switchTo("PeterpmAnnouncement");
+
     this.dealQuery = null;
     this.quoteQuery = null;
     this.jobQuery = null;
     this.paymentQuery = null;
     this.activeJobsQuery = null;
+    this.announcementQuery = null;
+
+    this.announcementSub = null;
+
     this.statusClasses = overrides.statusClasses || DASHBOARD_STATUS_CLASSES;
     this.dayCount = overrides.dayCount || DASHBOARD_DEFAULTS.dayCount;
     this.startDate = overrides.startDate || DASHBOARD_DEFAULTS.startDate;
@@ -1036,5 +1042,63 @@ export class DashboardModel {
     query.getOrInitQueryCalc?.();
     let result = await query.fetchDirect().toPromise();
     return result;
+  }
+
+  async fetchNotification(callback) {
+    this.announcementQuery = pptmAnnouncementModel
+      .query()
+      .deSelectAll()
+      .select(["id", "publish_date_time", "title", "unique_id", "type"])
+      .noDestroy();
+    this.announcementQuery = this.announcementQuery.orderBy(
+      "publish_date_time",
+      "desc"
+    );
+    this.announcementQuery.getOrInitQueryCalc();
+
+    let result = "";
+    try {
+      result = await this.announcementQuery.fetchDirect().toPromise();
+    } catch (e) {
+      console.log("Fetch announcement error", e);
+    }
+
+    this.subscribeToannouncementChanges();
+    this.announcementCallback = callback;
+    if (typeof this.announcementCallback === "function")
+      this.announcementCallback(result.resp);
+    return result.resp;
+  }
+
+  subscribeToannouncementChanges() {
+    this.announcementSub?.unsubscribe?.();
+    let liveObs = null;
+    try {
+      if (typeof this.announcementQuery?.subscribe === "function") {
+        liveObs = this.announcementQuery?.subscribe();
+      }
+    } catch (_) {}
+
+    if (
+      !liveObs &&
+      typeof this.announcementQuery?.localSubscribe === "function"
+    ) {
+      try {
+        liveObs = this.announcementQuery?.localSubscribe();
+      } catch (_) {}
+    }
+
+    if (!liveObs) return;
+
+    this.announcementSub = liveObs
+      .pipe(window.toMainInstance?.(true) ?? ((x) => x))
+      .subscribe({
+        next: (payload) => {
+          if (typeof this.announcementCallback === "function") {
+            this.announcementCallback(payload);
+          }
+        },
+        error: () => {},
+      });
   }
 }

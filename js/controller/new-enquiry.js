@@ -560,7 +560,9 @@ export class NewInquiryController {
 
   onAddContactSaveButtonClicked() {
     let saveBtn = document.getElementById("updateAddressDetailsBtn");
-    saveBtn.addEventListener("click", () => {
+    if (!saveBtn) return;
+
+    saveBtn.addEventListener("click", async () => {
       let addressobj = {
         address_1: document.getElementById("adTopLine1").value,
         address_2: document.getElementById("adTopLine2").value,
@@ -574,10 +576,30 @@ export class NewInquiryController {
         "#addressDetailsModalWrapper [data-contact-id]"
       );
 
-      if (this.view.getActiveTabs() === "individual") {
-        this.view.getValuesFromContactDetailModal(elements);
-      } else {
-        this.view.getEntityValuesFromContactDetailModal(elements);
+      const isIndividual = this.view.getActiveTabs() === "individual";
+      const contactId =
+        typeof this.view.getContactId === "function"
+          ? this.view.getContactId()
+          : "";
+      const loaderMessage = contactId
+        ? "Updating contact..."
+        : "Creating contact...";
+
+      this.#showLoader(loaderMessage);
+      try {
+        if (isIndividual) {
+          await this.view.getValuesFromContactDetailModal(elements, {
+            skipLoader: true,
+          });
+        } else {
+          await this.view.getEntityValuesFromContactDetailModal(elements, {
+            skipLoader: true,
+          });
+        }
+      } catch (error) {
+        console.error("[NewInquiry] Failed to save contact from modal", error);
+      } finally {
+        this.#hideLoader();
       }
     });
   }

@@ -1882,11 +1882,12 @@ export class NewInquiryView {
     });
 
     saveBtn.addEventListener("click", async () => {
+      const isUpdatingContact = Boolean(this.contactId);
       showLoader(
         this.loaderElement,
         this.loaderMessageEl,
         this.loaderCounter,
-        "Saving contact..."
+        isUpdatingContact ? "Updating contact..." : "Creating contact..."
       );
       try {
         const contact = {
@@ -2142,17 +2143,19 @@ export class NewInquiryView {
     });
   }
 
-  async getValuesFromContactDetailModal(elements) {
+  async getValuesFromContactDetailModal(elements, { skipLoader = false } = {}) {
     const formElements = Array.from(elements);
     const contactData = this.buildContactData(formElements);
     const contactId = this.getContactId();
 
-    showLoader(
-      this.loaderElement,
-      this.loaderMessageEl,
-      this.loaderCounter,
-      contactId ? "Updating contact..." : "Creating contact..."
-    );
+    if (!skipLoader) {
+      showLoader(
+        this.loaderElement,
+        this.loaderMessageEl,
+        this.loaderCounter,
+        contactId ? "Updating contact..." : "Creating contact..."
+      );
+    }
 
     try {
       const result = await this.saveContact(contactId, contactData);
@@ -2169,7 +2172,9 @@ export class NewInquiryView {
       console.error("[NewInquiry] Contact modal save failed", error);
       this.showFeedback("Unable to save contact right now.");
     } finally {
-      hideLoader(this.loaderElement, this.loaderCounter);
+      if (!skipLoader) {
+        hideLoader(this.loaderElement, this.loaderCounter);
+      }
     }
   }
 
@@ -2224,26 +2229,30 @@ export class NewInquiryView {
     this.toggleModal("statusModal");
   }
 
-  async getEntityValuesFromContactDetailModal(elements) {
+  async getEntityValuesFromContactDetailModal(
+    elements,
+    { skipLoader = false } = {}
+  ) {
     const element = Array.from(elements);
     const entityDetailObj = {};
     element.forEach((item) => {
-      const key = item.item.dataset.contactId;
+      const key = item.dataset.contactId;
       const value = item.value;
       if (key) entityDetailObj[key] = value;
-      0;
     });
 
     let primaryContactPersonId = document.querySelector(
       "[data-contact-field='contact_id']"
     ).value;
 
-    showLoader(
-      this.loaderElement,
-      this.loaderMessageEl,
-      this.loaderCounter,
-      primaryContactPersonId ? "Updating contact..." : "Creating contact..."
-    );
+    if (!skipLoader) {
+      showLoader(
+        this.loaderElement,
+        this.loaderMessageEl,
+        this.loaderCounter,
+        primaryContactPersonId ? "Updating contact..." : "Creating contact..."
+      );
+    }
     try {
       if (primaryContactPersonId) {
         entityDetailObj["Companies"] = {
@@ -2327,7 +2336,9 @@ export class NewInquiryView {
       console.error("[NewInquiry] Contact modal save failed", error);
       this.showFeedback("Unable to save contact right now.");
     } finally {
-      hideLoader(this.loaderElement, this.loaderCounter);
+      if (!skipLoader) {
+        hideLoader(this.loaderElement, this.loaderCounter);
+      }
     }
   }
 

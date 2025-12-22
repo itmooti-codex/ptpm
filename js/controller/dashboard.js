@@ -95,6 +95,8 @@ export class DashboardController {
       dateFrom: null,
       dateTo: null,
     };
+    this.latestNotifications = [];
+    this.notificationListeners = new Set();
     this.renderSourceOptionsForTab(this.sources || []);
   }
 
@@ -298,6 +300,7 @@ export class DashboardController {
     }
     this.calendarEl.addEventListener("click", this.onCalendarClick);
     this.onNotificationIconClick();
+    this.loadNotifications();
     this.initGlobalSearch();
     this.bindApplyFilters();
     this.view.initTopTabs({
@@ -574,11 +577,11 @@ export class DashboardController {
     this.hidePageLoader();
   }
 
-  onNotificationIconClick() {
+  async onNotificationIconClick() {
     const btn = document.getElementById("notification-btn");
     if (!btn) return;
     if (!document.getElementById("notificationPopover")) {
-      this.view.createNotificationModal();
+      await this.view.createNotificationModal();
     }
     const pop = document.getElementById("notificationPopover");
     const toggle = () => {
@@ -596,6 +599,90 @@ export class DashboardController {
       if (pop.contains(target) || btn.contains(target)) return;
       this.view.toggleNotificationPopover(false);
     });
+  }
+
+  mapNotificationsForView(list = []) {
+    if (list.length == 0) return;
+    if (!Array.isArray(list)) list = [list];
+    return list
+      .map((n) => {
+        const tab = this.normalizeNotificationType(n?.type);
+        const label = n?.Unique_ID
+          ? `#${n.Unique_ID}`
+          : n?.Title || "Notification";
+        return {
+          id: label,
+          text: n?.Title || "Notification",
+          when: this.formatNotificationDate(n?.Publish_Date_Time),
+          tab,
+          read: false,
+        };
+      })
+      .filter((n) => n.text || n.when || n.id);
+  }
+
+  formatNotificationDate(value) {
+    const d = window.dayjs ? window.dayjs(value) : null;
+    if (d?.isValid?.()) {
+      return d.format("DD MMM · h:mma");
+    }
+    return value || "";
+  }
+
+  normalizeNotificationType(type) {
+    const t = (type || "").toLowerCase();
+    if (t.includes("action")) return "Action Required";
+    return "General Updates";
+  }
+
+  async loadNotifications() {
+    if (typeof this.model.fetchNotification !== "function") return;
+    const mergeReadState = (incoming = []) => {
+      const previous = new Map(
+        (this.latestNotifications || []).map((n) => [n.id, n.read])
+      );
+      return (incoming || []).map((n) => ({
+        ...n,
+        read: previous.has(n.id) ? previous.get(n.id) : n.read ?? false,
+      }));
+    };
+    const handleUpdate = (records = []) => {
+      const mapped = this.mapNotificationsForView(records) || [];
+      this.latestNotifications = mergeReadState(mapped);
+      this.updateNotificationBadge();
+      if (document.getElementById("notificationPopover")) {
+        this.view.updateNotificationPopover?.(this.latestNotifications);
+      } else {
+        this.view.createNotificationModal?.(this.latestNotifications);
+      }
+      this.notifyNotificationListeners();
+    };
+
+    try {
+      const initial = await this.model.fetchNotification(handleUpdate);
+      handleUpdate(initial || []);
+    } catch (error) {
+      console.error("[Dashboard] Failed to load notifications", error);
+    }
+  }
+
+  notifyNotificationListeners() {
+    this.notificationListeners.forEach((fn) => {
+      try {
+        fn(this.latestNotifications);
+      } catch (e) {
+        console.warn("Notification listener failed", e);
+      }
+    });
+  }
+
+  updateNotificationBadge() {
+    const badge = document.getElementById("notification-count");
+    if (!badge) return;
+    const unread =
+      (this.latestNotifications || []).filter((n) => !n.read).length;
+    badge.textContent = String(unread);
+    badge.classList.toggle("hidden", unread <= 0);
   }
 
   async fetchDealsAndRenderTable() {

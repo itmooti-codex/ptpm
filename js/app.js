@@ -8,6 +8,9 @@ import { initOperationLoader, showLoader, hideLoader } from "./helper.js";
 import { JobDetailView } from "./views/job-detail.js";
 import { JobDetailController } from "../js/controller/job-detail.js";
 import { JobDetailModal } from "../js/models/job-detail.js";
+import { NotificationModel } from "./models/notification.js";
+import { NotificationView } from "./views/notification.js";
+import { NotificationController } from "./controller/notification.js";
 
 import { config } from "../sdk/config.js";
 import { VitalStatsSDK } from "../sdk/init.js";
@@ -50,6 +53,7 @@ import { VitalStatsSDK } from "../sdk/init.js";
       if (page == "new-inquiry") this.initNewInquiry();
       if (page === "dashboard") await this.maybeInitDashboard();
       if (page == "new-direct-job") this.initDirectJob();
+      if (page === "notification") this.initNotification();
     },
 
     async maybeInitDashboard() {
@@ -60,7 +64,7 @@ import { VitalStatsSDK } from "../sdk/init.js";
       // if (typeof dayjs === "undefined") return;
       // if (this.controllers.dashboard) return; // already initialized
       const model = new DashboardModel(tempPlugin);
-      const view = new DashboardView();
+      const view = new DashboardView("", model);
       const ctrl = new DashboardController(model, view, {
         loaderElement: this.loaderElement,
         loaderCounter: this.loaderCounter,
@@ -89,6 +93,19 @@ import { VitalStatsSDK } from "../sdk/init.js";
       controller.init();
       // Google Places callback for property search
       window.initAutocomplete = controller.initAutocomplete.bind(controller);
+    },
+
+    initNotification() {
+      if (this.controllers.notification) return;
+      const model = new NotificationModel(tempPlugin);
+      const view = new NotificationView(model);
+      const controller = new NotificationController(model, view, {
+        loaderElement: this.loaderElement,
+        loaderCounter: this.loaderCounter,
+        loaderMessageEl: this.loaderMessageEl,
+      });
+      controller.init();
+      this.controllers.notification = controller;
     },
   };
 

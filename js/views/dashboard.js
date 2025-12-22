@@ -140,7 +140,8 @@ export function renderDynamicTable({
 }
 
 export class DashboardView {
-  constructor(overrides = {}) {
+  constructor(overrides = {}, model) {
+    this.model = model;
     this.iconButtonGroup =
       overrides.iconButtonGroup ??
       `
@@ -304,7 +305,6 @@ export class DashboardView {
   }
 
   init() {
-    this.createNotificationModal();
     this.createCreateButtonPopup();
     // lightweight toast container
     if (!document.getElementById("dashboardToast")) {
@@ -881,55 +881,23 @@ export class DashboardView {
     });
   }
 
-  createNotificationModal(notifications) {
-    const demo = [
-      {
-        id: "#132132",
-        text: "Inquiry declined by service provider.",
-        when: "20 Sep · 4:56pm",
-        tab: "Action Required",
-        read: false,
-      },
-      {
-        id: "#3582203",
-        text: "Quote declined by the client.",
-        when: "20 Sep · 4:56pm",
-        tab: "Action Required",
-        read: false,
-      },
-      {
-        id: "#3582203",
-        text: "Quote accepted by client .",
-        when: "20 Sep · 4:56pm",
-        tab: "General Updates",
-        read: true,
-      },
-      {
-        id: "#3582203",
-        text: "Bill approved by the service provider.",
-        when: "20 Sep · 4:56pm",
-        tab: "General Updates",
-        read: true,
-      },
-      {
-        id: "#3582203",
-        text: "Payment failed.",
-        when: "20 Sep · 4:56pm",
-        tab: "General Updates",
-        read: true,
-      },
-    ];
-    const data =
-      Array.isArray(notifications) && notifications.length
-        ? notifications
-        : demo;
+  async createNotificationModal() {
+    await this.model.fetchNotification((records) => {
+      let mappedNotification = records.map((record) => {
+        return {
+          dateTime: record.Publish_Date_Time,
+          title: record.Title,
+          uniqueId: record.Unique_ID,
+          type: record.Type,
+        };
+      });
 
-    const wrap = document.createElement("div");
-    wrap.id = "notificationPopover";
-    wrap.className =
-      "hidden fixed top-16 right-6 z-50 w-[420px] max-w-sm bg-white rounded-lg shadow-xl border border-slate-200";
+      const wrap = document.createElement("div");
+      wrap.id = "notificationPopover";
+      wrap.className =
+        "hidden fixed top-16 right-6 z-50 w-[420px] max-w-sm bg-white rounded-lg shadow-xl border border-slate-200";
 
-    wrap.innerHTML = `
+      wrap.innerHTML = `
       <!-- Header -->
       <div class="flex items-center justify-between px-4 py-3 border-b rounded-t-lg bg-white">
           <!-- Title -->
@@ -983,21 +951,21 @@ export class DashboardView {
       </div>
     `;
 
-    document.body.appendChild(wrap);
+      document.body.appendChild(wrap);
 
-    // ----- State -----
-    let currentTab = "Action Required";
-    let onlyUnread = false;
-    let markAllOn = false;
-    let selectedIndex = 0;
+      // ----- State -----
+      let currentTab = "Action Required";
+      let onlyUnread = false;
+      let markAllOn = false;
+      let selectedIndex = 0;
 
-    // ----- Rendering -----
-    const listEl = document.getElementById("notifList");
-    function rowTemplate(item, active) {
-      const unreadDot = !item.read
-        ? `<span class="ml-2 w-2.5 h-2.5 rounded-full bg-red-600"></span>`
-        : "";
-      return `
+      // ----- Rendering -----
+      const listEl = document.getElementById("notifList");
+      function rowTemplate(item, active) {
+        const unreadDot = !item.read
+          ? `<span class="ml-2 w-2.5 h-2.5 rounded-full bg-red-600"></span>`
+          : "";
+        return `
         <div class="px-4 py-3 ${
           active ? "bg-blue-50" : "bg-white"
         } border-b last:border-b-0">
@@ -1024,113 +992,114 @@ export class DashboardView {
             </div>
           </div>
         </div>`;
-    }
+      }
 
-    function render() {
-      // update tab button styles
-      const tabAction = document.getElementById("notifTabAction");
-      const tabGeneral = document.getElementById("notifTabGeneral");
-      const activeCls =
-        "px-3 py-1.5 rounded-full text-sm font-semibold bg-blue-600 text-white shadow-sm";
-      const inactiveCls =
-        "px-3 py-1.5 rounded-full text-sm font-semibold text-gray-700 hover:bg-gray-100";
-      tabAction.className =
-        currentTab === "Action Required" ? activeCls : inactiveCls;
-      tabGeneral.className =
-        currentTab === "General Updates" ? activeCls : inactiveCls;
+      function render() {
+        // update tab button styles
+        const tabAction = document.getElementById("notifTabAction");
+        const tabGeneral = document.getElementById("notifTabGeneral");
+        const activeCls =
+          "px-3 py-1.5 rounded-full text-sm font-semibold bg-blue-600 text-white shadow-sm";
+        const inactiveCls =
+          "px-3 py-1.5 rounded-full text-sm font-semibold text-gray-700 hover:bg-gray-100";
+        tabAction.className =
+          currentTab === "Action Required" ? activeCls : inactiveCls;
+        tabGeneral.className =
+          currentTab === "General Updates" ? activeCls : inactiveCls;
 
-      // sync unread toggle visuals deterministically
-      const unreadBtn = document.getElementById("notifUnreadToggle");
-      if (unreadBtn) {
-        unreadBtn.setAttribute("aria-pressed", String(onlyUnread));
-        unreadBtn.classList.toggle("bg-blue-600", onlyUnread);
-        unreadBtn.classList.toggle("bg-gray-300", !onlyUnread);
-        const knob = unreadBtn.querySelector(".knob");
-        if (knob) {
-          knob.classList.toggle("translate-x-0", !onlyUnread);
-          knob.classList.toggle("translate-x-5", onlyUnread);
+        // sync unread toggle visuals deterministically
+        const unreadBtn = document.getElementById("notifUnreadToggle");
+        if (unreadBtn) {
+          unreadBtn.setAttribute("aria-pressed", String(onlyUnread));
+          unreadBtn.classList.toggle("bg-blue-600", onlyUnread);
+          unreadBtn.classList.toggle("bg-gray-300", !onlyUnread);
+          const knob = unreadBtn.querySelector(".knob");
+          if (knob) {
+            knob.classList.toggle("translate-x-0", !onlyUnread);
+            knob.classList.toggle("translate-x-5", onlyUnread);
+          }
         }
-      }
 
-      const items = data
-        .map((x, i) => ({ ...x, _idx: i }))
-        .filter((x) => x.tab === currentTab && (!onlyUnread || !x.read));
+        const items = mappedNotification
+          .map((x, i) => ({ ...x, _idx: i }))
+          .filter((x) => x.tab === currentTab && (!onlyUnread || !x.read));
 
-      // keep selectedIndex within bounds
-      if (selectedIndex >= items.length) selectedIndex = items.length - 1;
-      if (selectedIndex < 0) selectedIndex = 0;
+        // keep selectedIndex within bounds
+        if (selectedIndex >= items.length) selectedIndex = items.length - 1;
+        if (selectedIndex < 0) selectedIndex = 0;
 
-      listEl.innerHTML = items
-        .map((item, i) => rowTemplate(item, i === selectedIndex))
-        .join("");
+        listEl.innerHTML = items
+          .map((item, i) => rowTemplate(item, i === selectedIndex))
+          .join("");
 
-      // click to select & mark as read
-      Array.from(listEl.children).forEach((el, i) => {
-        el.addEventListener("click", () => {
-          selectedIndex = i;
-          // mark as read on click (optional)
-          const originalIndex = items[i]?._idx;
-          if (originalIndex != null) data[originalIndex].read = true;
-          render();
+        // click to select & mark as read
+        Array.from(listEl.children).forEach((el, i) => {
+          el.addEventListener("click", () => {
+            selectedIndex = i;
+            // mark as read on click (optional)
+            const originalIndex = items[i]?._idx;
+            if (originalIndex != null) data[originalIndex].read = true;
+            render();
+          });
         });
-      });
-    }
-
-    // ----- Controls -----
-    const unreadToggle = document.getElementById("notifUnreadToggle");
-    const markAll = document.getElementById("notifMarkAll");
-    const tabActionBtn = document.getElementById("notifTabAction");
-    const tabGeneralBtn = document.getElementById("notifTabGeneral");
-
-    // Toggle-style button (no native checkbox) for Only show unread
-    unreadToggle.addEventListener("click", () => {
-      onlyUnread = !onlyUnread;
-      render();
-    });
-
-    tabActionBtn.addEventListener("click", () => {
-      currentTab = "Action Required";
-      selectedIndex = 0;
-      render();
-    });
-
-    tabGeneralBtn.addEventListener("click", () => {
-      currentTab = "General Updates";
-      selectedIndex = 0;
-      render();
-    });
-
-    // Button for Mark all as read with visual check icon (toggle)
-    markAll.addEventListener("click", () => {
-      const icon = markAll.querySelector("svg");
-      markAllOn = !markAllOn;
-      if (markAllOn) {
-        data.forEach((n) => (n.read = true));
-        if (icon) icon.classList.remove("hidden");
-      } else {
-        // toggle off: mark items in current tab as unread again
-        data
-          .filter((n) => n.tab === currentTab)
-          .forEach((n) => (n.read = false));
-        if (icon) icon.classList.add("hidden");
       }
+
+      // ----- Controls -----
+      const unreadToggle = document.getElementById("notifUnreadToggle");
+      const markAll = document.getElementById("notifMarkAll");
+      const tabActionBtn = document.getElementById("notifTabAction");
+      const tabGeneralBtn = document.getElementById("notifTabGeneral");
+
+      // Toggle-style button (no native checkbox) for Only show unread
+      unreadToggle.addEventListener("click", () => {
+        onlyUnread = !onlyUnread;
+        render();
+      });
+
+      tabActionBtn.addEventListener("click", () => {
+        currentTab = "Action Required";
+        selectedIndex = 0;
+        render();
+      });
+
+      tabGeneralBtn.addEventListener("click", () => {
+        currentTab = "General Updates";
+        selectedIndex = 0;
+        render();
+      });
+
+      // Button for Mark all as read with visual check icon (toggle)
+      markAll.addEventListener("click", () => {
+        const icon = markAll.querySelector("svg");
+        markAllOn = !markAllOn;
+        if (markAllOn) {
+          mappedNotification.forEach((n) => (n.read = true));
+          if (icon) icon.classList.remove("hidden");
+        } else {
+          // toggle off: mark items in current tab as unread again
+          mappedNotification
+            .filter((n) => n.tab === currentTab)
+            .forEach((n) => (n.read = false));
+          if (icon) icon.classList.add("hidden");
+        }
+        render();
+      });
+
+      // ----- API -----
+      this.toggleNotificationPopover = (show = true) => {
+        wrap.classList.toggle("hidden", !show);
+      };
+      this.updateNotificationPopover = (next = []) => {
+        // replace data array with next and re-render
+        mappedNotification.length = 0;
+        next.forEach((n) => mappedNotification.push(n));
+        selectedIndex = 0;
+        render();
+      };
+
+      // initial render
       render();
     });
-
-    // ----- API -----
-    this.toggleNotificationPopover = (show = true) => {
-      wrap.classList.toggle("hidden", !show);
-    };
-    this.updateNotificationPopover = (next = []) => {
-      // replace data array with next and re-render
-      data.length = 0;
-      next.forEach((n) => data.push(n));
-      selectedIndex = 0;
-      render();
-    };
-
-    // initial render
-    render();
   }
 
   deriveInitialTab(nav, defaultTab) {
@@ -1321,7 +1290,7 @@ export class DashboardView {
       const rowId = row.dataset.uniqueId?.slice(1);
       if (!rowId) return;
 
-      window.location.href = `https://awesomate.pro/${rowId}`;
+      window.location.href = `https://my.awesomate.pro/${rowId}`;
     });
   }
 }
