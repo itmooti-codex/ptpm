@@ -1290,7 +1290,7 @@ export class DashboardView {
       const rowId = row.dataset.uniqueId?.slice(1);
       if (!rowId) return;
 
-      window.location.href = `https://my.awesomate.pro/inquiry-details/${rowId}`;
+      window.location.href = `https://my.awesomate.pro/create-inquiry/${rowId}`;
     });
   }
 }
