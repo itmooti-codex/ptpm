@@ -895,7 +895,7 @@ export class DashboardView {
       const wrap = document.createElement("div");
       wrap.id = "notificationPopover";
       wrap.className =
-        "hidden fixed top-16 right-6 z-50 w-[420px] max-w-sm bg-white rounded-lg shadow-xl border border-slate-200";
+        "hidden absolute top-16 right-6 z-50 w-[420px] max-w-sm bg-white rounded-lg shadow-xl border border-slate-200";
 
       wrap.innerHTML = `
       <!-- Header -->
