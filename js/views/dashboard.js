@@ -963,7 +963,7 @@ export class DashboardView {
       const listEl = document.getElementById("notifList");
       function rowTemplate(item, active) {
         const unreadDot = !item.read
-          ? `<span class="ml-2 w-2.5 h-2.5 rounded-full bg-red-600"></span>`
+          ? `<span class="ml-2 p-1 w-2.5 h-2.5 rounded-full bg-red-600"></span>`
           : "";
         return `
         <div class="px-4 py-3 ${
@@ -981,7 +981,9 @@ export class DashboardView {
             </span>
             <div class="flex-1">
               <div class="flex items-center justify-between">
-                <div class="text-sm font-semibold text-slate-800">${item.id}
+                <div class="w-[250px] text-sm font-semibold text-slate-800">${
+                  item.id
+                }
                   <span class="font-normal text-slate-600"> - ${
                     item.text
                   }</span>

@@ -153,7 +153,7 @@ export class NotificationView {
 
   rowTemplate(item, active) {
     const unreadDot = !item.read
-      ? `<span class="ml-2 w-2.5 h-2.5 rounded-full bg-red-600"></span>`
+      ? `<span class="ml-2 p-1 w-2.5 h-2.5 rounded-full bg-red-600"></span>`
       : "";
     return `
       <div class="px-4 py-3 bg-white border-b last:border-b-0">
@@ -185,7 +185,7 @@ export class NotificationView {
     const wrap = document.createElement("div");
     wrap.id = "notificationPopover";
     wrap.className =
-      "hidden fixed top-16 right-6 z-50 w-[420px] max-w-sm bg-white rounded-lg shadow-xl border border-slate-200";
+      "hidden absolute top-16 right-6 z-50 w-[420px] max-w-sm bg-white rounded-lg shadow-xl border border-slate-200";
     wrap.innerHTML = `
       <div class="flex items-center justify-between px-4 py-3 border-b rounded-t-lg bg-white">
         <div class="flex items-center gap-2">
