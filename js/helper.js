@@ -839,3 +839,31 @@ export function showAlertModal({
   document.body.style.overflow = "hidden";
   return modal;
 }
+
+export async function createAlert(
+  type = "",
+  title = "",
+  type = "",
+  isRead = false,
+  originUrl = "",
+  createdAt = "",
+  notifiedContact = "",
+  quoteJobId = "",
+  Plugin = "",
+  modalName = ""
+) {
+  let alertObj = {
+    title: title,
+    created_at: createdAt,
+    type: type,
+    quote_job_id: quoteJobId,
+    notified_contact_id: notifiedContact,
+    is_read: isRead,
+    origin_url: originUrl,
+  };
+
+  let query = Plugin.switchTo(modalName).mutation();
+  query.createOne(alertObj);
+  let result = await query.execute(true).toPromise();
+  return result.resp;
+}

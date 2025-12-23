@@ -257,12 +257,10 @@ export class NotificationView {
             General Updates
           </button>
         </div>
-        <button id="notifMarkAll" type="button" class="mt-3 mb-2 inline-flex items-center gap-2 text-sm text-gray-700 hover:text-blue-700">
-          <span class="inline-flex w-4 h-4 items-center justify-center rounded border border-gray-300 bg-white">
-            <svg class="hidden w-3 h-3 text-blue-600" viewBox="0 0 20 20" fill="currentColor"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>
-          </span>
-          <span>Mark all as read</span>
-        </button>
+        <label for="notifMarkAll" class="mt-3 mb-2 inline-flex items-center gap-2 text-sm text-gray-700 hover:text-blue-700 cursor-pointer select-none">
+          <input id="notifMarkAll" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+          <h5>Mark all as read</h5>
+        </label>
       </div>
       <div class="max-h-[380px] overflow-auto transition-all duration-200" id="notifList"></div>
       <div class="px-4 py-3 border-t rounded-b-lg text-center">
