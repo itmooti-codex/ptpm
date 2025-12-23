@@ -882,22 +882,34 @@ export class DashboardView {
   }
 
   async createNotificationModal() {
-    await this.model.fetchNotification((records) => {
+    await this.model.fetchNotification((records = []) => {
+      const formatDate = (value) => {
+        const d = window.dayjs ? window.dayjs(value) : null;
+        return d?.isValid?.() ? d.format("DD MMM · h:mma") : value || "";
+      };
+      const normalizeType = (value = "") => {
+        const t = String(value || "").toLowerCase();
+        return t.includes("action") ? "Action Required" : "General Updates";
+      };
+
       let mappedNotification = records.map((record) => {
+        const tab = normalizeType(record?.Type || record?.type);
+        const label = record?.Unique_ID
+          ? `#${record.Unique_ID}`
+          : record?.Title || "Notification";
         return {
-          dateTime: record.Publish_Date_Time,
-          title: record.Title,
-          uniqueId: record.Unique_ID,
-          type: record.Type,
-          read: record.Is_Read,
-          origin_url: record.Origin_Url,
-          notified_contact_id: record.Notified_Contact_ID,
+          id: label,
+          text: record?.Title || "Notification",
+          when: formatDate(record?.Publish_Date_Time),
+          tab,
+          read: record?.Is_Read,
+          uniqueId: record?.Unique_ID ?? record?.unique_id ?? record?.id,
+          origin_url: record?.Origin_Url,
+          notified_contact_id: record?.Notified_Contact_ID,
         };
       });
 
-      let unReadAnnouncements = mappedNotification.filter(
-        (item) => item.read === false
-      );
+      const getUnread = () => mappedNotification.filter((item) => !item.read);
 
       const wrap = document.createElement("div");
       wrap.id = "notificationPopover";
@@ -958,6 +970,8 @@ export class DashboardView {
 
       document.body.appendChild(wrap);
 
+      const model = this.model;
+
       // ----- State -----
       let currentTab = "Action Required";
       let onlyUnread = false;
@@ -970,28 +984,14 @@ export class DashboardView {
         const unreadDot = !item.read
           ? `<span class="ml-2 p-1 w-2.5 h-2.5 rounded-full bg-red-600"></span>`
           : "";
+        const baseBg = !item.read ? "bg-slate-200" : "bg-white";
         return `
-        <div class="px-4 py-3 ${
-          active ? "bg-blue-50" : "bg-white"
-        } border-b last:border-b-0">
+        <div class="px-4 py-3 ${baseBg} border-b last:border-b-0">
           <div class="flex items-start">
-            <span class="mt-0.5 mr-3 inline-flex items-center justify-center w-5 h-5">
-              <svg viewBox="0 0 24 24" class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor"
-                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <path d="M14.31 8l5.74 9.94"></path>
-                <path d="M9.69 8h11.48"></path>
-                <path d="M7.38 12l5.74-9.94"></path>
-              </svg>
-            </span>
             <div class="flex-1">
               <div class="flex items-center justify-between">
-                <div class="w-[250px] text-sm font-semibold text-slate-800">${
-                  item.id
-                }
-                  <span class="font-normal text-slate-600"> - ${
-                    item.text
-                  }</span>
+                <div class="w-[250px] text-sm font-semibold text-slate-800">${item.id}
+                  <span class="font-normal text-slate-600"> - ${item.text}</span>
                 </div>
                 ${unreadDot}
               </div>
@@ -1035,6 +1035,7 @@ export class DashboardView {
         if (selectedIndex >= items.length) selectedIndex = items.length - 1;
         if (selectedIndex < 0) selectedIndex = 0;
 
+        markAllOn = getUnread().length === 0;
         if (markAllCheckbox) {
           markAllCheckbox.checked = markAllOn;
         }
@@ -1043,13 +1044,45 @@ export class DashboardView {
           .map((item, i) => rowTemplate(item, i === selectedIndex))
           .join("");
 
-        // click to select & mark as read
+        // click to select, mark as read, and follow origin URL
         Array.from(listEl.children).forEach((el, i) => {
-          el.addEventListener("click", () => {
+          el.addEventListener("click", async () => {
             selectedIndex = i;
-            // mark as read on click (optional)
             const originalIndex = items[i]?._idx;
-            if (originalIndex != null) data[originalIndex].read = true;
+            const target =
+              originalIndex != null ? mappedNotification[originalIndex] : null;
+
+            if (target) {
+              if (!target.read) {
+                target.read = true;
+                const id = target.uniqueId ?? target.id;
+                if (
+                  id &&
+                  model &&
+                  typeof model.updateAnnouncements === "function"
+                ) {
+                  try {
+                    await model.updateAnnouncements([id]);
+                  } catch (err) {
+                    console.error(
+                      "[Dashboard] Failed to mark notification read",
+                      err
+                    );
+                  }
+                }
+              }
+
+              const url =
+                target.origin_url ?? target.originUrl ?? target.origin;
+              if (url) {
+                try {
+                  window.open(url, "_blank", "noreferrer");
+                } catch (err) {
+                  console.error("[Dashboard] Failed to open origin_url", err);
+                }
+              }
+            }
+
             render();
           });
         });
@@ -1083,18 +1116,21 @@ export class DashboardView {
       markAllCheckbox.addEventListener("change", async (event) => {
         markAllOn = event.target.checked;
         if (markAllOn) {
-          const idsToMark = unReadAnnouncements.map((item) => item.uniqueId);
-          if (idsToMark.length) {
-            await this.model.updateAnnouncements(idsToMark);
+          const idsToMark = getUnread()
+            .map((item) => item.uniqueId ?? item.id)
+            .filter(Boolean);
+          if (
+            idsToMark.length &&
+            typeof model?.updateAnnouncements === "function"
+          ) {
+            try {
+              await model.updateAnnouncements(idsToMark);
+            } catch (err) {
+              console.error("[Dashboard] Failed to mark all read", err);
+            }
           }
           mappedNotification.forEach((n) => (n.read = true));
         }
-        //  else {
-        //   // toggle off: mark items in current tab as unread again
-        //   mappedNotification
-        //     .filter((n) => n.tab === currentTab)
-        //     .forEach((n) => (n.read = false));
-        // }
         render();
       });
 

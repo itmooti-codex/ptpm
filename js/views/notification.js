@@ -53,18 +53,30 @@ export class NotificationView {
       this.render();
     });
 
-    this.markAllBtn?.addEventListener("click", () => {
-      const icon = this.markAllBtn.querySelector("svg");
-      this.state.markAllOn = !this.state.markAllOn;
-      if (this.state.markAllOn) {
-        this.data.forEach((n) => (n.read = true));
-        icon?.classList.remove("hidden");
-      } else {
-        this.data
-          .filter((n) => n.tab === this.state.currentTab)
-          .forEach((n) => (n.read = false));
-        icon?.classList.add("hidden");
+    this.markAllBtn?.addEventListener("click", async () => {
+      const unreadItems = this.data.filter((n) => !n.read);
+      if (!unreadItems.length) return;
+
+      const idsToMark = unreadItems
+        .map((n) => n.uniqueId ?? n.unique_id ?? n.id)
+        .filter(Boolean);
+
+      if (
+        idsToMark.length &&
+        this.model &&
+        typeof this.model.updateAnnouncements === "function"
+      ) {
+        try {
+          await this.model.updateAnnouncements(idsToMark);
+        } catch (err) {
+          console.error("[Notification] Failed to mark all as read", err);
+        }
       }
+
+      unreadItems.forEach((n) => (n.read = true));
+      this.state.markAllOn = true;
+      const icon = this.markAllBtn.querySelector("svg");
+      icon?.classList.remove("hidden");
       this.render();
     });
 
@@ -97,6 +109,13 @@ export class NotificationView {
     if (!this.listEl) return;
 
     const { currentTab, onlyUnread } = this.state;
+
+    const hasUnread = this.data.some((n) => !n.read);
+    this.state.markAllOn = !hasUnread;
+    if (this.markAllBtn) {
+      const icon = this.markAllBtn.querySelector("svg");
+      icon?.classList.toggle("hidden", hasUnread);
+    }
 
     const tabAction = this.tabActionBtn;
     const tabGeneral = this.tabGeneralBtn;
@@ -138,12 +157,42 @@ export class NotificationView {
       .join("");
 
     Array.from(this.listEl.children).forEach((el, i) => {
-      el.addEventListener("click", () => {
+      el.addEventListener("click", async () => {
         this.state.selectedIndex = i;
         const originalIndex = items[i]?._idx;
-        if (originalIndex != null && this.data[originalIndex]) {
-          this.data[originalIndex].read = true;
+        const target = originalIndex != null ? this.data[originalIndex] : null;
+
+        if (target) {
+          if (!target.read) {
+            target.read = true;
+            const id =
+              target.uniqueId ??
+              target.unique_id ??
+              target.id ??
+              target.Unique_ID;
+            if (
+              id &&
+              this.model &&
+              typeof this.model.updateAnnouncements === "function"
+            ) {
+              try {
+                await this.model.updateAnnouncements([id]);
+              } catch (err) {
+                console.error("[Notification] Failed to mark read", err);
+              }
+            }
+          }
+
+          const url = target.origin_url ?? target.originUrl ?? target.origin;
+          if (url) {
+            try {
+              window.open(url, "_blank", "noreferrer");
+            } catch (err) {
+              console.error("[Notification] Failed to open origin_url", err);
+            }
+          }
         }
+
         this.render();
       });
     });
@@ -155,21 +204,13 @@ export class NotificationView {
     const unreadDot = !item.read
       ? `<span class="ml-2 p-1 w-2.5 h-2.5 rounded-full bg-red-600"></span>`
       : "";
+    const baseBg = !item.read ? "bg-slate-200" : "bg-white";
     return `
-      <div class="px-4 py-3 bg-white border-b last:border-b-0">
+      <div class="px-4 py-3 ${baseBg} border-b last:border-b-0">
         <div class="flex items-start">
-          <span class="mt-0.5 mr-3 inline-flex items-center justify-center w-5 h-5">
-            <svg viewBox="0 0 24 24" class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor"
-              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <path d="M14.31 8l5.74 9.94"></path>
-              <path d="M9.69 8h11.48"></path>
-              <path d="M7.38 12l5.74-9.94"></path>
-            </svg>
-          </span>
           <div class="flex-1">
             <div class="flex items-center justify-between">
-              <div class="text-sm font-semibold text-slate-800">${item.id}
+              <div class="text-sm font-medium text-slate-800">${item.id}
                 <span class="font-normal text-slate-600"> - ${item.text}</span>
               </div>
               ${unreadDot}

@@ -618,6 +618,7 @@ export class DashboardController {
           ),
           tab,
           read: n.Is_Read,
+          uniqueId: n?.Unique_ID ?? n?.unique_id ?? n?.id,
           origin_url: n.Origin_Url,
           notified_contact_id: n.Notified_Contact_ID,
         };

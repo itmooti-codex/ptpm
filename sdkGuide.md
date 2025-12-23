@@ -5,7 +5,12 @@ All async operations return `rxjs` Observables. No exceptions. You can convert t
 # Including the SDK
 
 ```html
-<script async data-chunk="client" src="https://static-au03.vitalstats.app/static/sdk/v1/latest.js" crossorigin="anonymous" />
+<script
+  async
+  data-chunk="client"
+  src="https://static-au03.vitalstats.app/static/sdk/v1/latest.js"
+  crossorigin="anonymous"
+/>
 ```
 
 The `/v1/` in the URL indicates the version of the public API exposed by the SDK. This means that if there is a breaking change, the `/v1/` will be incremented to `/v2/`.
@@ -17,10 +22,10 @@ However, there are frequent updates to the underlying code that do not affect th
 # Initializing the SDK
 
 ## initVitalStats(options)
+
 Once the script is loaded, it sets the following function on `window` that must be called to start an SDK for an account (its details must be loaded):
 
 ```javascript
-
 /**
  * Initialize an SDK for a client.
  *
@@ -43,7 +48,7 @@ Once the script is loaded, it sets the following function on `window` that must 
  *
  * @param {boolean} [options.enableHistoryModels = false] - If
  * `true`, the History variations of each model will also
- * be instantiated. Unless you plan on querying the 
+ * be instantiated. Unless you plan on querying the
  * history models (doubtful), you do not need this.
  *
  * **Note:** This is not related to the time travel
@@ -76,7 +81,7 @@ Once the script is loaded, it sets the following function on `window` that must 
 function initVitalStats(options) {
   // ...initialization
 }
-window.initVitalStats = initVitalStats
+window.initVitalStats = initVitalStats;
 ```
 
 As stated in the function's documentation, provide `options.isDefault = true` unless you plan to instantiate a client connection for more than one account on the page.
@@ -88,7 +93,7 @@ initVitalStats({
   // ...options
 })
   .toPromise()
-  .then(({ plugin, store }) => {})
+  .then(({ plugin, store }) => {});
 ```
 
 If you call `initVitalStats()` with `options.slug` equal to one that has already been instantiated (or is in the process of instantiating), the same Object will be emitted by the returned Observable. Duplicate instances will not be created unless expressly setting `options.forceRecreate = true`.
@@ -113,7 +118,7 @@ This function is set on `window`.
 
 I **strongly** recommend that you use constants for model names that then use keys that are generic for every account. Populate the Object based on the account, and make the Object available everywhere in your app.
 
-Each Model instance has a `schema` Object that contains the Ontraport `objectId`, making it easy to map models to a constant. 
+Each Model instance has a `schema` Object that contains the Ontraport `objectId`, making it easy to map models to a constant.
 
 Like this:
 
@@ -123,7 +128,7 @@ initVitalStats({
   apiKey: '<api key>',
   isDefault: true,
 }).subscribe(({ plugin }) => {
-  /* 
+  /*
    * I'm not showing the full implementation, but create
    * some kind of Object that maps
    * ontraport Object IDs to the name of
@@ -133,7 +138,7 @@ initVitalStats({
   const objectIdToConstant = {
     '0': 'CONTACT',
     // ...etc.
-  } 
+  }
   const MODEL_NAMES = {};
   const models = plugin.getState();
   let schema, props;
@@ -151,14 +156,14 @@ initVitalStats({
     }
   }
   window.MODEL_NAMES = MODEL_NAMES;
-  
+
   // Then, in your code you can do stuff like this:
   const bob = await getVitalStatsPlugin()
     .switchTo(MODEL_NAMES.CONTACT)
     .query()
     .where('email', 'bob@gmail.com')
     .fetchOneRecord()
-    .toPromise(); 
+    .toPromise();
 })
 
 ```
@@ -180,17 +185,16 @@ However, mutations are not automatically undoable because it doesn't make sense 
 Here's how:
 
 ```javascript
-const mutation = await getVitalStatsPlugin().mutation()
+const mutation = await getVitalStatsPlugin()
+  .mutation()
   .undoable() // Must be called before making any changes!!
-  .switchTo('AwcContact')
-  .update(query => query
-    .where('email', 'bob@gmail.com')
-    .set({ lastName: "smith" })
+  .switchTo("AwcContact")
+  .update((query) =>
+    query.where("email", "bob@gmail.com").set({ lastName: "smith" })
   )
-  .switchTo('AwcLesson')
-  .update(query => query
-    .where('id', 24)
-    .set({
+  .switchTo("AwcLesson")
+  .update((query) =>
+    query.where("id", 24).set({
       // ...properties to update
     })
   )
@@ -199,19 +203,19 @@ const mutation = await getVitalStatsPlugin().mutation()
   // about what it does right now, just always include it.
   .execute(true)
   .toPromise()
-  .then(mutation => {
+  .then((mutation) => {
     if (mutation.isCancelling) {
-      console.log('Mutation Failed.')    
+      console.log("Mutation Failed.");
     } else {
-      console.log('Mutation Scucessful.')
+      console.log("Mutation Scucessful.");
     }
   });
 if (mutation.isCancelling) {
-  console.log('Mutation Failed.')
+  console.log("Mutation Failed.");
 } else {
-  console.log('Mutation Scucessful.')
+  console.log("Mutation Scucessful.");
 }
-  
+
 // Undo all those changes (move backward 1 step in time):
 await getVitalStatsPlugin().timeTravel(-1);
 
@@ -242,8 +246,8 @@ Returns the `Model` instance that represents the model indicated by `modelName`.
 This function is also available on each `Model` instance. For example:
 
 ```javascript
-const ContactModel = getVitalStatsPlugin().switchTo('AwcContact');
-const OrderModel = ContactModel.switchTo('AwcOrder');
+const ContactModel = getVitalStatsPlugin().switchTo("AwcContact");
+const OrderModel = ContactModel.switchTo("AwcOrder");
 ```
 
 It is just shorthand for:
@@ -256,21 +260,20 @@ getVitalStatsPlugin().getState().AwcContact;
 
 Retrieve a plain Object containing `Model` instances of all models associated with the client's account.
 
->Critical: Do not mutate this Object, or any state for that matter, without using a Mutation or the Record's setState() method (detailed later).
+> Critical: Do not mutate this Object, or any state for that matter, without using a Mutation or the Record's setState() method (detailed later).
 
 This same function exists on each `Model` and `Record` instance as well. The only difference is what is in the Object it returns:
 
 ```javascript
 const plugin = getVitalStatsPlugin();
-console.log(plugin.getState()) // { "someModelName": Model, "anotherModelName": Model }
+console.log(plugin.getState()); // { "someModelName": Model, "anotherModelName": Model }
 
 const ContactModel = plugin.switchTo("AwcContact");
-console.log(ContactModel.getState()) // { "id1": Record, "id2": Record }
+console.log(ContactModel.getState()); // { "id1": Record, "id2": Record }
 
 const contactRecords = ContactModel.getState();
-console.log(contactRecords["<id_of_record>"]) // { firstName: "Bob", "email": "bob@gmail.com" }   
+console.log(contactRecords["<id_of_record>"]); // { firstName: "Bob", "email": "bob@gmail.com" }
 ```
-
 
 ### subscribe((plugin) => {})
 
@@ -284,16 +287,16 @@ Example of subscribing to the Plugin:
 /**
  * @type {import("rxjs").Subscription}
  */
-const subscription = getVitalStatsPlugin().subscribe(plugin => {
+const subscription = getVitalStatsPlugin().subscribe((plugin) => {
   // The `__changes` property provides an Object whose keys are names of
   // models that changed, and its values will be the type of change that
   // occurred. It will always be `"updated"`, you're not doing dynamically
   // instantiated models right now.
-  console.log('The following models changed: ', plugin.__changes);
+  console.log("The following models changed: ", plugin.__changes);
   // You can check the `__changesEvent` to determine whether it
   // was an `optimistic` state change (pending commit once confirmed by the backend),
   // or `commit` (indicating it is confirmed by the backend).
-  console.log('Change type: ', plugin.__changesEvent) // One of: "optimistic" or "commit"
+  console.log("Change type: ", plugin.__changesEvent); // One of: "optimistic" or "commit"
 });
 
 // To stop the subscription:
@@ -301,7 +304,6 @@ subscription.unsubscribe();
 ```
 
 You can do the same for any `Model` or `Record`. The only difference is your callback would get the `Model` or `Record` instance, and only when that particular `Model` or `Record`'s state changes.
-
 
 # Model
 
@@ -350,30 +352,35 @@ The `Record` exposes a convenience method for easily updating its state without 
 
 ```javascript
 record.setState({
-  property1: 'newValue',
+  property1: "newValue",
   // ...etc. You only need to provide the properties and values that are changing.
 });
 
-// You can also subscribe to the returned Observable 
+// You can also subscribe to the returned Observable
 // (or convert it to a Promise) to be notified when
 // the change is complete:
-record.setState({
-  // ...changes
-}).subscribe(record => {
-  // change is complete. The `record` provided as
-  // the only parameter is the same as the original
-  // `record`, record instances don't change, only
-  // their underlying state.
-});
+record
+  .setState({
+    // ...changes
+  })
+  .subscribe((record) => {
+    // change is complete. The `record` provided as
+    // the only parameter is the same as the original
+    // `record`, record instances don't change, only
+    // their underlying state.
+  });
 
 // Or, with async/await:
 await record.setState({}).toPromise();
 
 // You can also provide `true` as the 2nd argument to make
 // the change undoable:
-record.setState({
- // ...changes
-}, true);
+record.setState(
+  {
+    // ...changes
+  },
+  true
+);
 
 // To undo the change:
 getVitalStatsPlugin().timeTravel(-1); // -1 undoes whatever last changes, -2 jumps back 2.
@@ -387,49 +394,50 @@ getVitalStatsPlugin().timeTravel(1); // Move forward 1 step
 ## Basics
 
 ```javascript
-/* 
+/*
  * The MODEL_NAMES reference is assuming you
  * setup a constants Object like I showed at
  * the beginning of this document.
  */
-const contactModel = getVitalStatsPlugin()
-  .switchTo(MODEL_NAMES.CONTACT);
-const query = contactModel.query()
+const contactModel = getVitalStatsPlugin().switchTo(MODEL_NAMES.CONTACT);
+const query = contactModel
+  .query()
   // Signature: fieldName, operator|value, value
   // The `=` operator is implied, so you
-  .where('email', 'like', '%@gmail.com')
+  .where("email", "like", "%@gmail.com")
   // The `=` operator is implied
-  .andWhere('email', 'sam@gmail.com')
+  .andWhere("email", "sam@gmail.com")
   // But you can still provide it if
   // you want.
-  .orWhere('email', '=', 'bob@gmail.com')
+  .orWhere("email", "=", "bob@gmail.com")
   // There are also functions for `whereIn`
-  .andWhereIn('firstName', [  'Bob', 'Jane' ])
+  .andWhereIn("firstName", ["Bob", "Jane"])
   // But whereIn() is just a convenience for:
-  .andWhere('firstName', 'in', [ 'Bob', 'Jane' ])
-  /* 
+  .andWhere("firstName", "in", ["Bob", "Jane"])
+  /*
    * You can also provide an Object with
    * multiple properties. These will be
    * interpreted as "and":
    */
   .orWhere({
-    email: 'bob@gmail.com',
-    lastName: 'Smith',
+    email: "bob@gmail.com",
+    lastName: "Smith",
     // You can also include arguments
     // for related models using their
     // virtual field name:
     posts: {
-      isPublished: true
-    }
+      isPublished: true,
+    },
   })
   // Provide a function to create grouped arguments
-  .orWhere(query => query
-    /*
-     * For timestamp fields, you can provide
-     * the epoch timestamp, or a Date instance.
-     */
-    .where('created_at', '>', new Date('2024-08-09'))
-    .andWhere('updated_at', '<', Math.round(Date.now() / 1000))
+  .orWhere((query) =>
+    query
+      /*
+       * For timestamp fields, you can provide
+       * the epoch timestamp, or a Date instance.
+       */
+      .where("created_at", ">", new Date("2024-08-09"))
+      .andWhere("updated_at", "<", Math.round(Date.now() / 1000))
   )
   /*
    * Assuming the Contact record has a `posts` virtual field,
@@ -438,89 +446,89 @@ const query = contactModel.query()
    * to construct the query - same as a grouped query
    * just with 1 extra argument.
    */
-  .andWhere('posts', query => query
-    .where('title', 'like', '%my content%')
-  )
+  .andWhere("posts", (query) => query.where("title", "like", "%my content%"))
   /*
    * You can also use arguments that check
    * values within a JSON field. Provide
    * the path to the value you want to query.
-   * 
+   *
    * This example would check that a record has:
    * `some-json-field-name.key1.key2 > 10`
    */
-  .orWhere([ 'some-json-field-name', 'key1', 'key2' ], '>', 10)
-  /* 
+  .orWhere(["some-json-field-name", "key1", "key2"], ">", 10)
+  /*
    * All `where` methods have a `not` variation.
-   * 
+   *
    * - whereNot()
    * - andWhereNot()
    * - orWhereNot()
    * - whereNotIn()
    * - orWhereNotIn()
    * - andWhereNotIn()
-   * 
+   *
    * These have the exact same signature
    * as the regular ones, and are identical
-   * in all ways. They simply negate the 
+   * in all ways. They simply negate the
    * comparison, that's all. Meaning, you can
-   * use them with grouped queries, virtual 
+   * use them with grouped queries, virtual
    * field queries, JSON, etc.
    */
-  .orWhereNot('lastName', 'Smith')
-  .orWhereNot(query => query
-    .where('lastName', 'like', '%Smith%')
-    .andWhere('firstName', 'like', '%Bob%')
+  .orWhereNot("lastName", "Smith")
+  .orWhereNot((query) =>
+    query
+      .where("lastName", "like", "%Smith%")
+      .andWhere("firstName", "like", "%Bob%")
   )
-  /* 
+  /*
    * Include records on related models using
    * the virtual field name - just like you
    * do in your Graphql queries. The signature
    * is the same as a grouped query, the only
-   * difference is you provide the name of the 
+   * difference is you provide the name of the
    * virtual field as the first argument,
    * and you can also use `select()` to
    * choose the fields you want returned.
    */
-  .include('posts', query => query
-    .select([ 'id', 'title', 'content' ])
-    .where('somePostField', 'someValue')
-    .andWhere()
+  .include("posts", (query) =>
+    query
+      .select(["id", "title", "content"])
+      .where("somePostField", "someValue")
+      .andWhere()
   )
   // Or, if you don't need to filter them:
-  .includeFields('posts', [ 'id', 'title', 'content' ])
+  .includeFields("posts", ["id", "title", "content"])
   // Or, include them all
-  .includeFields('posts')
+  .includeFields("posts")
   // You can also limit the result set:
   .limit(100)
   // Or paginate it
   .offset(100);
 ```
+
 ## Variables
 
 Any argument value can be provided as a variable. Provide `:varName` as the value, then include the variables when you execute it:
 
 ```javascript
 query
-  .where('email', ':email')
-  .orWhereIn('firstName', ':names')
+  .where("email", ":email")
+  .orWhereIn("firstName", ":names")
   // If you use variables for limit or offset,
   // they must be called `:limit` and `:offset`.
   // But you can use whatever variable name
   // you want for where() argument values.
-  .limit(':limit')
-  
+  .limit(":limit");
+
 // Then, when you execute, provide your variables Object
 // just like you do when submitting to Graphql:
 query.fetch({
   variables: {
-    email: 'bob@gmail.com',
-    names: [ 'sam', 'bob', 'susan' ],
-    limit: 100
-  }
-})
+    email: "bob@gmail.com",
+    names: ["sam", "bob", "susan"],
+    limit: 100,
+  },
+});
 ```
-
 
 ## Graphql
 
@@ -535,7 +543,7 @@ console.log(query.toGraphql()); // document
 console.log(query.toGraphql(true)); // Graphql string, what you usually write
 ```
 
-You can provide options to pretty print the string, which is nice for debugging. The defaults are fine, so you can just provide an empty Object. 
+You can provide options to pretty print the string, which is nice for debugging. The defaults are fine, so you can just provide an empty Object.
 
 Note that this uses prettier, which is lazy loaded. So it won't be available the first time you call it. But it will trigger it to load, and the next time you call it (after async delay), and it will pretty print:
 
@@ -548,13 +556,9 @@ console.log(query.toGraphql({})); // Pretty printed string.
 This is likely going to be really helpful for you, because it can automatically convert your existing queries into query instances:
 
 ```javascript
-const query = contactModel
-  .query()
-  .fromGraphql('<graphql string>');
+const query = contactModel.query().fromGraphql("<graphql string>");
 // You can even modify it just like any other query:
-query
-  .deSelectAll()
-  .select([ 'firstName', 'lastName' ]);
+query.deSelectAll().select(["firstName", "lastName"]);
 ```
 
 ## calc queries
@@ -598,6 +602,7 @@ query
 ## Execution
 
 ### Base Methods
+
 1. get() - sync - Returns records from local state, no API calls
 2. find() - async - Attempts to resolve from local state. If not available, it will fetch. The only way it would make sense for you to use find() would be when you use ids in your query. Otherwise, it'll always fetch because you don't set up any unique constraints, which is what it uses to determine whether it has all the records necessary to satisfy the query already available in local state.
 3. fetch() - async - Fetches from the server and adds the records to local state.
@@ -615,7 +620,7 @@ There are convenience methods available to alter the format of the returned resu
 
 ```javascript
 // emits an Object containing
-// the records, keyed by their ID. 
+// the records, keyed by their ID.
 // Or, null if none satisfy the query.
 await query.fetchAllRecords();
 // emits a single record, or null if none satisfy the query
@@ -632,10 +637,13 @@ await query.fetchAllRecordsArray();
 
 ### !!Important To Know About Query Execution
 
-Query instances will automatically destruct after you execute it. Meaning, you cannot execute the same query 2x *unless* you call `noDestroy()`:
+Query instances will automatically destruct after you execute it. Meaning, you cannot execute the same query 2x _unless_ you call `noDestroy()`:
 
 ```javascript
-const records = await query.fetchAllRecords().pipe(toMainInstance(true)).toPromise();
+const records = await query
+  .fetchAllRecords()
+  .pipe(toMainInstance(true))
+  .toPromise();
 // query is now destroyed, this will result in an error:
 query.getAllRecords();
 
@@ -653,7 +661,7 @@ query.getAllRecords();
 query.destroy();
 ```
 
-Secondly, for `fetch()` or `find()`, pipe it through `toMainInstance(true)`. 
+Secondly, for `fetch()` or `find()`, pipe it through `toMainInstance(true)`.
 
 I have exposed this operator on window: `window.toMainInstance`
 
@@ -665,7 +673,6 @@ Here's a list of when you need to use it:
 2. find() & variations - yes - query.find().pipe(toMainInstance(true))
 3. fetch() & variatoins - yes - query.fetch().pipe(toMainInstance(true))
 4. fetchDirect() & variations - no
-
 
 # Mutation
 
@@ -681,12 +688,12 @@ Each model & plugin `Mutation` instance has a `switchTo()` method that retrieves
 
 Once you've queued up all the changes you want to make, call `execute()` on either model or plugin `Mutation` - it doesn't matter which.
 
->Tip: If you already have a reference to the record(s) you want to mutate, it can be easier to just provide the record(s) to `update()` or `delete()`, rather than providing a function and constructing a query. This doesn't apply to create, since no record would exist yet. Example shown below.
+> Tip: If you already have a reference to the record(s) you want to mutate, it can be easier to just provide the record(s) to `update()` or `delete()`, rather than providing a function and constructing a query. This doesn't apply to create, since no record would exist yet. Example shown below.
 
 ```
-// To start, get a mutation. You can do this from the `plugin` 
-// and then `switchTo()` the Model whose records you want 
-// to mutate, or you can do it from a Model instance and it'll 
+// To start, get a mutation. You can do this from the `plugin`
+// and then `switchTo()` the Model whose records you want
+// to mutate, or you can do it from a Model instance and it'll
 // instantiate the Plugin Mutation automatically. Therefore,
 // these 2 are identical:
 const plugin = getVitalStatsPlugin();
@@ -701,13 +708,13 @@ plugin.switchTo('AwcContact').mutation();
 mutation.update(query => query
   .where('name', 'bob')
   .set({
-    // ...values to update  
+    // ...values to update
   })
 );
 // If you have the record(s) already, you can
 // just provide them. It accepts a single record,
 // Array of records, or Object containing records.
-// But DO NOT provide state directly, the Object 
+// But DO NOT provide state directly, the Object
 // or Array you provide will be mutated.
 // I'll explain why later, doing so requires
 // explanation how you can do more advanced stuff
@@ -747,9 +754,9 @@ const records = mutation.create([{
 // you just can't provide an Object to create().
 const record = mutation.createOne({
   // ...state for the record
-}) 
+})
 
-``` 
+```
 
 ## Executing
 
@@ -760,9 +767,9 @@ const record = mutation.createOne({
 // to the plugin mutation.
 const pluginMutation = await mutation.execute(true);
 if (pluginMutation.isCancelling) {
-  console.log('mutation failed')
+  console.log("mutation failed");
 } else {
-  console.log('mutation successful');
+  console.log("mutation successful");
 }
 ```
 
@@ -772,13 +779,13 @@ The SDK will automatically keep a stateful record for each unique visitor, and i
 
 You can mutate the `props` Object via a mutation, it's a normal field, but it's a JSON type so its value is an Object.
 
-But there is also a convenience method, `setProps()`, that is identical to `getState()` except it merges the provided Object with the Session's existing `props` Object (or creates it if there are no props set for it yet). Then, it saves the updated `props` Object to the DB. 
+But there is also a convenience method, `setProps()`, that is identical to `getState()` except it merges the provided Object with the Session's existing `props` Object (or creates it if there are no props set for it yet). Then, it saves the updated `props` Object to the DB.
 
 Example:
 
 ```javascript
 getVitalStatsPlugin().getSession().setProps({
-  myCustomKey: 'myCustomValue'
+  myCustomKey: "myCustomValue",
 });
 ```
 

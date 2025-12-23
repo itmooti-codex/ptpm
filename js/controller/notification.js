@@ -50,6 +50,7 @@ export class NotificationController {
           read: n.Is_Read,
           origin_url: n.Origin_Url,
           notified_contact_id: n.Notified_Contact_ID,
+          uniqueId: n?.Unique_ID ?? n?.unique_id ?? n?.id,
         };
       })
       .filter((n) => n.text || n.when || n.id);
