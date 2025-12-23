@@ -889,6 +889,9 @@ export class DashboardView {
           title: record.Title,
           uniqueId: record.Unique_ID,
           type: record.Type,
+          read: record.Is_Read,
+          origin_url: record.Origin_Url,
+          notified_contact_id: record.Notified_Contact_ID,
         };
       });
 
@@ -934,12 +937,10 @@ export class DashboardView {
         </div>
   
         <!-- Mark all as read -->
-        <button id="notifMarkAll" type="button" class="mt-3 mb-2 inline-flex items-center gap-2 text-sm text-gray-700 hover:text-blue-700">
-          <span class="inline-flex w-4 h-4 items-center justify-center rounded border border-gray-300 bg-white">
-            <svg class="hidden w-3 h-3 text-blue-600" viewBox="0 0 20 20" fill="currentColor"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>
-          </span>
+        <label for="notifMarkAll" class="mt-3 mb-2 inline-flex items-center gap-2 text-sm text-gray-700 hover:text-blue-700 cursor-pointer select-none">
+          <input id="notifMarkAll" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
           <span>Mark all as read</span>
-        </button>
+        </label>
       </div>
   
       <!-- List -->
@@ -1030,6 +1031,10 @@ export class DashboardView {
         if (selectedIndex >= items.length) selectedIndex = items.length - 1;
         if (selectedIndex < 0) selectedIndex = 0;
 
+        if (markAllCheckbox) {
+          markAllCheckbox.checked = markAllOn;
+        }
+
         listEl.innerHTML = items
           .map((item, i) => rowTemplate(item, i === selectedIndex))
           .join("");
@@ -1048,7 +1053,7 @@ export class DashboardView {
 
       // ----- Controls -----
       const unreadToggle = document.getElementById("notifUnreadToggle");
-      const markAll = document.getElementById("notifMarkAll");
+      const markAllCheckbox = document.getElementById("notifMarkAll");
       const tabActionBtn = document.getElementById("notifTabAction");
       const tabGeneralBtn = document.getElementById("notifTabGeneral");
 
@@ -1070,19 +1075,16 @@ export class DashboardView {
         render();
       });
 
-      // Button for Mark all as read with visual check icon (toggle)
-      markAll.addEventListener("click", () => {
-        const icon = markAll.querySelector("svg");
-        markAllOn = !markAllOn;
+      // Checkbox for Mark all as read
+      markAllCheckbox.addEventListener("change", (event) => {
+        markAllOn = event.target.checked;
         if (markAllOn) {
           mappedNotification.forEach((n) => (n.read = true));
-          if (icon) icon.classList.remove("hidden");
         } else {
           // toggle off: mark items in current tab as unread again
           mappedNotification
             .filter((n) => n.tab === currentTab)
             .forEach((n) => (n.read = false));
-          if (icon) icon.classList.add("hidden");
         }
         render();
       });

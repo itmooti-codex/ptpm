@@ -1,4 +1,4 @@
-// models/DashboardModel.js
+import { LOGGEDIN_USER_ID } from "../../sdk/config.js";
 const dayjsRef = window.dayjs;
 if (!dayjsRef) {
   throw new Error("Day.js is required for the dashboard model to operate.");
@@ -1047,8 +1047,18 @@ export class DashboardModel {
   async fetchNotification(callback) {
     this.announcementQuery = pptmAnnouncementModel
       .query()
+      .where("notified_contact_id", LOGGEDIN_USER_ID)
       .deSelectAll()
-      .select(["id", "publish_date_time", "title", "unique_id", "type"])
+      .select([
+        "id",
+        "publish_date_time",
+        "title",
+        "unique_id",
+        "type",
+        "is_read",
+        "notified_contact_id",
+        "origin_url",
+      ])
       .noDestroy();
     this.announcementQuery = this.announcementQuery.orderBy(
       "publish_date_time",

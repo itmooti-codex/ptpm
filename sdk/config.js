@@ -9,3 +9,4 @@ export const config = {
 export const ACCOUNT_NAME = "peterpm";
 export const API_KEY = "1rBR-jpR3yE3HE1VhFD0j";
 export const HTTP_ENDPOINT = "https://peterpm.vitalstats.app";
+export const LOGGEDIN_USER_ID = "20";
