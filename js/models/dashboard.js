@@ -1112,10 +1112,20 @@ export class DashboardModel {
       });
   }
 
-  async updateAnnouncement(id) {
-    let query = pptmAnnouncementModel.mutation();
-    query.updateOne((q) => q.where("unique_id", id).set({ is_read: true }));
-    let result = await query.execute(true).toPromise();
+  // async updateAnnouncement(id) {
+  //   let query = pptmAnnouncementModel.mutation();
+  //   query.updateOne((q) => q.where("unique_id", id).set({ is_read: true }));
+  //   let result = await query.execute(true).toPromise();
+  //   return result;
+  // }
+
+  async updateAnnouncements(ids = []) {
+    if (!Array.isArray(ids) || ids.length === 0) return null;
+    const mutation = pptmAnnouncementModel.mutation();
+    mutation.update((q) =>
+      q.where("unique_id", "in", ids).set({ is_read: true })
+    );
+    const result = await mutation.execute(true).toPromise();
     return result;
   }
 }

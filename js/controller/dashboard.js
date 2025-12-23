@@ -613,9 +613,13 @@ export class DashboardController {
         return {
           id: label,
           text: n?.Title || "Notification",
-          when: this.formatNotificationDate(n?.Publish_Date_Time),
+          when: this.formatNotificationDate(
+            n?.Publish_Date_Time || n?.publish_date_time
+          ),
           tab,
-          read: false,
+          read: n.Is_Read,
+          origin_url: n.Origin_Url,
+          notified_contact_id: n.Notified_Contact_ID,
         };
       })
       .filter((n) => n.text || n.when || n.id);
@@ -679,8 +683,9 @@ export class DashboardController {
   updateNotificationBadge() {
     const badge = document.getElementById("notification-count");
     if (!badge) return;
-    const unread =
-      (this.latestNotifications || []).filter((n) => !n.read).length;
+    const unread = (this.latestNotifications || []).filter(
+      (n) => !n.read
+    ).length;
     badge.textContent = String(unread);
     badge.classList.toggle("hidden", unread <= 0);
   }

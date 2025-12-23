@@ -1083,16 +1083,18 @@ export class DashboardView {
       markAllCheckbox.addEventListener("change", async (event) => {
         markAllOn = event.target.checked;
         if (markAllOn) {
-          unReadAnnouncements.forEach(async (item) => {
-            await this.model.updateAnnouncement(item.uniqueId);
-          });
+          const idsToMark = unReadAnnouncements.map((item) => item.uniqueId);
+          if (idsToMark.length) {
+            await this.model.updateAnnouncements(idsToMark);
+          }
           mappedNotification.forEach((n) => (n.read = true));
-        } else {
-          // toggle off: mark items in current tab as unread again
-          mappedNotification
-            .filter((n) => n.tab === currentTab)
-            .forEach((n) => (n.read = false));
         }
+        //  else {
+        //   // toggle off: mark items in current tab as unread again
+        //   mappedNotification
+        //     .filter((n) => n.tab === currentTab)
+        //     .forEach((n) => (n.read = false));
+        // }
         render();
       });
 
