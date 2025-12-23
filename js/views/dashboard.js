@@ -943,7 +943,7 @@ export class DashboardView {
         <!-- Mark all as read -->
         <label for="notifMarkAll" class="mt-3 mb-2 inline-flex items-center gap-2 text-sm text-gray-700 hover:text-blue-700 cursor-pointer select-none">
           <input id="notifMarkAll" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-          <span>Mark all as read</span>
+          <h5>Mark all as read</h5>
         </label>
       </div>
   
