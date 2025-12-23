@@ -1111,4 +1111,11 @@ export class DashboardModel {
         error: () => {},
       });
   }
+
+  async updateAnnouncement(id) {
+    let query = pptmAnnouncementModel.mutation();
+    query.updateOne((q) => q.where("unique_id", id).set({ is_read: true }));
+    let result = await query.execute(true).toPromise();
+    return result;
+  }
 }

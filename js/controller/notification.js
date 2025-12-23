@@ -47,7 +47,9 @@ export class NotificationController {
             n?.Publish_Date_Time || n?.publish_date_time
           ),
           tab,
-          read: false,
+          read: n.Is_Read,
+          origin_url: n.Origin_Url,
+          notified_contact_id: n.Notified_Contact_ID,
         };
       })
       .filter((n) => n.text || n.when || n.id);

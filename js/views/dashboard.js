@@ -895,6 +895,10 @@ export class DashboardView {
         };
       });
 
+      let unReadAnnouncements = mappedNotification.filter(
+        (item) => item.read === false
+      );
+
       const wrap = document.createElement("div");
       wrap.id = "notificationPopover";
       wrap.className =
@@ -1076,9 +1080,12 @@ export class DashboardView {
       });
 
       // Checkbox for Mark all as read
-      markAllCheckbox.addEventListener("change", (event) => {
+      markAllCheckbox.addEventListener("change", async (event) => {
         markAllOn = event.target.checked;
         if (markAllOn) {
+          unReadAnnouncements.forEach(async (item) => {
+            await this.model.updateAnnouncement(item.uniqueId);
+          });
           mappedNotification.forEach((n) => (n.read = true));
         } else {
           // toggle off: mark items in current tab as unread again
