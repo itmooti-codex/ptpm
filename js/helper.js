@@ -843,14 +843,12 @@ export function showAlertModal({
 export async function createAlert(
   type = "",
   title = "",
-  type = "",
   isRead = false,
   originUrl = "",
   createdAt = "",
   notifiedContact = "",
   quoteJobId = "",
-  Plugin = "",
-  modalName = ""
+  Plugin = ""
 ) {
   let alertObj = {
     title: title,
@@ -862,7 +860,7 @@ export async function createAlert(
     origin_url: originUrl,
   };
 
-  let query = Plugin.switchTo(modalName).mutation();
+  let query = Plugin.switchTo("PeterpmAnnouncement").mutation();
   query.createOne(alertObj);
   let result = await query.execute(true).toPromise();
   return result.resp;

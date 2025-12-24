@@ -1,9 +1,10 @@
-import { showLoader, hideLoader } from "../helper.js";
+import { showLoader, hideLoader, createAlert } from "../helper.js";
 
 export class NewInquiryController {
-  constructor(model, view) {
+  constructor(model, view, plugin) {
     this.model = model;
     this.view = view;
+    this.plugin = plugin;
     this.relatedRequestId = 0;
     this.#bindLoaderHelpers();
     this.noises = [
@@ -682,6 +683,16 @@ export class NewInquiryController {
             await this.model.createNewUpload(uploadObj);
           }
         }
+        await createAlert(
+          "Inquiry",
+          "New inquiry has been created",
+          false,
+          window.location.href,
+          Date.now(),
+          "notifiedContact",
+          "23",
+          this.plugin
+        );
         this.view.customModalHeader.innerText = "Successful";
         this.view.customModalBody.innerText =
           "New inquiry created successfully.";

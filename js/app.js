@@ -58,11 +58,6 @@ import { VitalStatsSDK } from "../sdk/init.js";
 
     async maybeInitDashboard() {
       if (this.controllers.dashboard) return this.controllers.dashboard;
-      // const hasCalendar = document.getElementById("calendar-grid");
-      // const hasTable = document.getElementById("enquiry-table-container");
-      // if (!hasCalendar || !hasTable) return;
-      // if (typeof dayjs === "undefined") return;
-      // if (this.controllers.dashboard) return; // already initialized
       const model = new DashboardModel(tempPlugin);
       const view = new DashboardView("", model);
       const ctrl = new DashboardController(model, view, {
@@ -79,7 +74,7 @@ import { VitalStatsSDK } from "../sdk/init.js";
       if (this.controllers.newInquiry) return;
       const model = new NewInquiryModel(tempPlugin);
       const view = new NewInquiryView(model);
-      const ctrl = new NewInquiryController(model, view);
+      const ctrl = new NewInquiryController(model, view, tempPlugin);
       const boundInitAutocomplete = ctrl.initAutocomplete.bind(ctrl);
       window.initAutocomplete = boundInitAutocomplete;
       ctrl.init();
