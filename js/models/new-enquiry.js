@@ -1344,12 +1344,9 @@ export class NewInquiryModel {
     return result;
   }
 
-  async updateExistingInquiry(uniqueId, inquiryObj) {
-    const sanitizedId = typeof uniqueId === "string" ? uniqueId.trim() : uniqueId;
-    if (!sanitizedId) return null;
-
+  async updateExistingInquiry(id, inquiryObj) {
     const query = await this.dealModel.mutation();
-    query.update((q) => q.where("unique_id", sanitizedId).set(inquiryObj));
+    query.update((q) => q.where("id", id).set(inquiryObj));
     const result = await query.execute(true).toPromise();
     return result;
   }
