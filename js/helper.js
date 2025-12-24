@@ -847,7 +847,7 @@ export async function createAlert(
 ) {
   let alertObj = {
     title: title,
-    publish_date_time: createdAt,
+    created_at: createdAt,
     type: type,
     quote_job_id: quoteJobId,
     inquiry_id: inquiry_id,

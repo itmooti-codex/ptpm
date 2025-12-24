@@ -1051,7 +1051,7 @@ export class DashboardModel {
       .deSelectAll()
       .select([
         "id",
-        "publish_date_time",
+        "created_at",
         "title",
         "unique_id",
         "type",
@@ -1061,7 +1061,7 @@ export class DashboardModel {
       ])
       .noDestroy();
     this.announcementQuery = this.announcementQuery.orderBy(
-      "publish_date_time",
+      "created_at",
       "desc"
     );
     this.announcementQuery.getOrInitQueryCalc();
