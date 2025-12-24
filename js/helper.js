@@ -677,12 +677,6 @@ export function initFileUploadArea({
   inputEl.addEventListener("change", async (e) => {
     await handleFiles(e.target.files);
   });
-
-  triggerEl.addEventListener("click", (e) => {
-    e.preventDefault();
-    inputEl.click();
-  });
-
   const stop = (e) => {
     e.preventDefault();
     e.stopPropagation();

@@ -134,8 +134,9 @@ export class NewInquiryView {
     this.bindCancelPrompt();
     this.bindResetPrompt();
     this.bindContactActionGuards();
-    this.checkInquiryId();
+    // Bind resident feedback upload areas early so they remain interactive even if later async steps fail.
     this.initResidentFeedbackUploads();
+    this.checkInquiryId();
   }
 
   isActive() {
