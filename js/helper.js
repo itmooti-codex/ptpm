@@ -848,6 +848,7 @@ export async function createAlert(
   createdAt = "",
   notifiedContact = "",
   quoteJobId = "",
+  inquiry_id = "",
   Plugin = ""
 ) {
   let alertObj = {
@@ -855,6 +856,7 @@ export async function createAlert(
     created_at: createdAt,
     type: type,
     quote_job_id: quoteJobId,
+    inquiry_id: inquiry_id,
     notified_contact_id: notifiedContact,
     is_read: isRead,
     origin_url: originUrl,

@@ -667,6 +667,9 @@ export class NewInquiryController {
       let result = await this.model.createNewInquiry(dealsObj);
 
       if (!result.isCancelling) {
+        let inquriy_Id = Object.keys(
+          result.mutations.PeterpmDeal.managedData
+        )[0];
         if (residentImages.length) {
           const uploadObj = {
             type: "photo",
@@ -674,9 +677,7 @@ export class NewInquiryController {
             customer_id: contactId,
             company_id: companyId,
             job_id: "",
-            inquiry_id: Object.keys(
-              result.mutations.PeterpmDeal.managedData
-            )[0],
+            inquiry_id: inquriy_Id,
           };
           for (const img of residentImages) {
             uploadObj.photo_upload = img;
@@ -689,8 +690,9 @@ export class NewInquiryController {
           false,
           window.location.href,
           Date.now(),
-          "notifiedContact",
-          "23",
+          "",
+          "",
+          inquriy_Id,
           this.plugin
         );
         this.view.customModalHeader.innerText = "Successful";
