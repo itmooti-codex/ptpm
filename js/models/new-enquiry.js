@@ -1344,6 +1344,16 @@ export class NewInquiryModel {
     return result;
   }
 
+  async updateExistingInquiry(uniqueId, inquiryObj) {
+    const sanitizedId = typeof uniqueId === "string" ? uniqueId.trim() : uniqueId;
+    if (!sanitizedId) return null;
+
+    const query = await this.dealModel.mutation();
+    query.update((q) => q.where("unique_id", sanitizedId).set(inquiryObj));
+    const result = await query.execute(true).toPromise();
+    return result;
+  }
+
   async fetchcontactDetailsById(id) {
     let query = this.contactModel.query();
     query = query

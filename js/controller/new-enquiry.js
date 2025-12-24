@@ -173,6 +173,17 @@ export class NewInquiryController {
     hideLoader(this.loaderElement, this.loaderCounter, force);
   }
 
+  #extractInquiryIdFromResult(result) {
+    const managedData = result?.mutations?.PeterpmDeal?.managedData;
+    if (managedData && typeof managedData === "object") {
+      const keys = Object.keys(managedData);
+      if (keys.length) return keys[0];
+    }
+    if (result?.resp?.id) return result.resp.id;
+    if (result?.id) return result.id;
+    return null;
+  }
+
   async init() {
     if (!this.view?.isActive?.()) return;
     this.services = await this.fetchServices();
@@ -663,45 +674,75 @@ export class NewInquiryController {
         dealsObj["company_id"] = companyId;
       }
       const residentImages = this.view.getResidentFeedbackImages?.() || [];
-      this.#showLoader("creating new enquiry...");
-      let result = await this.model.createNewInquiry(dealsObj);
+      const inquiryUniqueId = document.body.dataset.inquiryId;
+      const isUpdating = Boolean(inquiryUniqueId);
+      this.#showLoader(
+        isUpdating ? "Updating inquiry..." : "Creating new enquiry..."
+      );
+      let result = null;
+      try {
+        if (isUpdating) {
+          result = await this.model.updateExistingInquiry(
+            inquiryUniqueId,
+            dealsObj
+          );
+        } else {
+          result = await this.model.createNewInquiry(dealsObj);
+        }
+      } catch (error) {
+        console.error("[NewInquiry] Failed to save inquiry", error);
+        this.view.customModalHeader.innerText = "Failed";
+        this.view.customModalBody.innerText = isUpdating
+          ? "Inquiry update failed."
+          : "New inquiry creation failed.";
+        this.view.toggleModal("statusModal");
+        this.#hideLoader();
+        return;
+      }
 
-      if (!result.isCancelling) {
-        let inquriy_Id = Object.keys(
-          result.mutations.PeterpmDeal.managedData
-        )[0];
-        if (residentImages.length) {
+      const isSuccessful = Boolean(result) && !result?.isCancelling;
+      if (isSuccessful) {
+        const inquiryId =
+          this.#extractInquiryIdFromResult(result) || inquiryUniqueId || "";
+        if (residentImages.length && inquiryId) {
           const uploadObj = {
             type: "photo",
             property_name_id: selectedPropertyId,
             customer_id: contactId,
             company_id: companyId,
             job_id: "",
-            inquiry_id: inquriy_Id,
+            inquiry_id: inquiryId,
           };
           for (const img of residentImages) {
             uploadObj.photo_upload = img;
             await this.model.createNewUpload(uploadObj);
           }
         }
-        await createAlert(
-          "Inquiry",
-          "New inquiry has been created",
-          false,
-          window.location.href,
-          Date.now(),
-          "",
-          "",
-          inquriy_Id,
-          this.plugin
-        );
+        if (inquiryId) {
+          await createAlert(
+            "Inquiry",
+            isUpdating
+              ? "Inquiry has been updated"
+              : "New inquiry has been created",
+            false,
+            window.location.href,
+            Date.now(),
+            "",
+            "",
+            inquiryId,
+            this.plugin
+          );
+        }
         this.view.customModalHeader.innerText = "Successful";
-        this.view.customModalBody.innerText =
-          "New inquiry created successfully.";
+        this.view.customModalBody.innerText = isUpdating
+          ? "Inquiry updated successfully."
+          : "New inquiry created successfully.";
         this.view.toggleModal("statusModal");
       } else {
         this.view.customModalHeader.innerText = "Failed";
-        this.view.customModalBody.innerText = "New inquiry creation failed.";
+        this.view.customModalBody.innerText = isUpdating
+          ? "Inquiry update failed."
+          : "New inquiry creation failed.";
         this.view.toggleModal("statusModal");
       }
       this.#hideLoader();
