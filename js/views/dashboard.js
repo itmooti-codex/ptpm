@@ -242,6 +242,7 @@ export class DashboardView {
       "urgent-calls": ["job-filters", "task-filters"],
     };
     this.handleActionButtonClick();
+    this.renderPagination();
   }
 
   buildClientContactIcons(meta = {}) {
@@ -1341,5 +1342,63 @@ export class DashboardView {
 
       window.location.href = `https://my.awesomate.pro/create-inquiry/${rowId}`;
     });
+  }
+
+  renderPagination() {
+    let start = 1;
+    let end = 4;
+
+    const gt = document.getElementById("gt-btn");
+    const lt = document.getElementById("lt-btn");
+    const prev = document.getElementById("prev-page-btn");
+    const next = document.getElementById("next-page-btn");
+    const embedDiv = document.getElementById("pagination-pages");
+    embedDiv.appendChild(this.createBtn(start, end));
+
+    lt.addEventListener("click", () => {
+      if (start == 1) return;
+      start--, end--;
+      let div = this.createBtn(start, end);
+      embedDiv.innerHTML = "";
+      embedDiv.appendChild(div);
+    });
+
+    gt.addEventListener("click", () => {
+      if (end == 10) return;
+      start++, end++;
+      let div = this.createBtn(start, end);
+      embedDiv.innerHTML = "";
+      embedDiv.appendChild(div);
+    });
+
+    prev.addEventListener("click", () => {
+      if (start == 1) return;
+      start--, end--;
+      let div = this.createBtn(start, end);
+      embedDiv.innerHTML = "";
+      embedDiv.appendChild(div);
+    });
+
+    next.addEventListener("click", () => {
+      if (end == 10) return;
+      start++, end++;
+      let div = this.createBtn(start, end);
+      embedDiv.innerHTML = "";
+      embedDiv.appendChild(div);
+    });
+  }
+
+  createBtn(start, end) {
+    let btnDiv = document.createElement("div");
+    btnDiv.className = "flex gap-2";
+    for (let i = start; i <= end; i++) {
+      const btn = document.createElement("button");
+      btn.setAttribute("idx", i);
+      btn.className =
+        "px-3 py-1.5 text-sm font-semibold text-slate-500 transition hover:border-brand-300 hover:text-brand-600";
+      btn.innerText = i;
+      btnDiv.appendChild(btn);
+    }
+    return btnDiv;
   }
 }

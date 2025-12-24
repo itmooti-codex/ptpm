@@ -16,7 +16,12 @@ export class DashboardHelper {
   }
 
   mapDealToTableRow(records) {
-    return Object.values(records).map((data) => {
+    const list = Array.isArray(records?.resp)
+      ? records.resp
+      : Array.isArray(records)
+      ? records
+      : Object.values(records ?? {});
+    return list.map((data) => {
       return {
         uniqueId: data?.unique_id || null,
         "date-added": this.formatUnixDate(data?.created_at) || null,

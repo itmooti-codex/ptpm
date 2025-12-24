@@ -627,15 +627,12 @@
             <!-- Pagination -->
             <div class="mt-4 flex items-center justify-center border-t border-slate-200 px-6 py-4 text-sm text-slate-600">
               <div class="flex items-center gap-2">
-                <button class="px-3 py-1.5 text-sm font-semibold text-slate-500 transition hover:border-brand-300 hover:text-brand-600">&lt;</button>
-                <button class="px-3 py-1.5 text-sm font-semibold text-slate-500 transition hover:border-brand-300 hover:text-brand-600">Previous</button>
-                <button class="rounded-full border border-slate-200 px-3 py-1.5 text-sm font-semibold text-slate-500 transition hover:border-brand-300 hover:text-brand-600">1</button>
-                <button class="rounded-full bg-brand-500 px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-brand-600">2</button>
-                <button class="rounded-full border border-slate-200 px-3 py-1.5 text-sm font-semibold text-slate-500 transition hover:border-brand-300 hover:text-brand-600">3</button>
-                <button class="rounded-full border border-slate-200 px-3 py-1.5 text-sm font-semibold text-slate-500 transition hover:border-brand-300 hover:text-brand-600">4</button>
-                <span class="px-1 text-slate-400">...</span>
-                <button class="px-3 py-1.5 text-sm font-semibold text-slate-500 transition hover:border-brand-300 hover:text-brand-600">Next</button>
-                <button class="px-3 py-1.5 text-sm font-semibold text-slate-500 transition hover:border-brand-300 hover:text-brand-600">&gt;</button>
+                <button id="lt-btn" class="px-3 py-1.5 text-sm font-semibold text-slate-500 transition hover:border-brand-300 hover:text-brand-600">&lt;</button>
+                <button id="prev-page-btn" class="px-3 py-1.5 text-sm font-semibold text-slate-500 transition hover:border-brand-300 hover:text-brand-600">Previous</button>
+                
+                <div id="pagination-pages" class="flex gap-3"></div>
+                <button id="next-page-btn" class="px-3 py-1.5 text-sm font-semibold text-slate-500 transition hover:border-brand-300 hover:text-brand-600">Next</button>
+                <button id="gt-btn" class="px-3 py-1.5 text-sm font-semibold text-slate-500 transition hover:border-brand-300 hover:text-brand-600">&gt;</button>
               </div>
             </div>
         </section>

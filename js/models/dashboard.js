@@ -207,8 +207,10 @@ export class DashboardModel {
           q.andWhere("date_quoted_accepted", ">=", startEpoch);
         if (endEpoch != null) q.andWhere("quote_valid_until", "<=", endEpoch);
       })
+      .orderBy("created_at", "desc")
       .deSelectAll()
       .select([
+        "id",
         "Unique_ID",
         "Date_Added",
         "Type",
@@ -236,6 +238,9 @@ export class DashboardModel {
           q.deSelectAll().select(["first_name", "last_name"]);
         });
       })
+      .orderBy("created_at", "desc")
+      .limit(5)
+      .offset(35)
       .noDestroy();
   }
 

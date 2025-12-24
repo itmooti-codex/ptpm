@@ -134,9 +134,8 @@ export class NewInquiryView {
     this.bindCancelPrompt();
     this.bindResetPrompt();
     this.bindContactActionGuards();
-    // Bind resident feedback upload areas early so they remain interactive even if later async steps fail.
-    this.initResidentFeedbackUploads();
     this.checkInquiryId();
+    this.initResidentFeedbackUploads();
   }
 
   isActive() {
@@ -2578,7 +2577,8 @@ export class NewInquiryView {
         }
       } else {
         if (key === "date_job_required_by") {
-          value = this.parseDateStringToUnix(el.value);
+          const [d, m, y] = el.value.split("/");
+          value = Math.floor(new Date(y, m - 1, d).getTime() / 1000) ?? "";
         } else {
           value = el.value?.trim() || "";
         }
@@ -3213,46 +3213,11 @@ export class NewInquiryView {
       const mm = String(date.getMonth() + 1).padStart(2, "0");
       const dd = String(date.getDate()).padStart(2, "0");
 
-      // Match flatpickr format (d/m/Y) so downstream parsing stays consistent.
-      return `${dd}/${mm}/${yyyy}`;
+      return `${yyyy}-${mm}-${dd}`;
     } catch (e) {
       console.error("Date conversion error:", e);
       return "";
     }
-  }
-
-  parseDateStringToUnix(value) {
-    const raw = value?.trim();
-    if (!raw) return "";
-
-    const toUnix = (y, m, d) => {
-      const date = new Date(Number(y), Number(m) - 1, Number(d));
-      return Number.isFinite(date.getTime())
-        ? Math.floor(date.getTime() / 1000)
-        : "";
-    };
-
-    // d/m/Y (flatpickr format)
-    const slashParts = raw.split("/");
-    if (slashParts.length === 3) {
-      const [d, m, y] = slashParts;
-      return toUnix(y, m, d);
-    }
-
-    // Handle both Y-m-d and d-m-Y
-    const dashParts = raw.split("-");
-    if (dashParts.length === 3) {
-      const [a, b, c] = dashParts;
-      if (a.length === 4) {
-        return toUnix(a, b, c);
-      }
-      return toUnix(c, b, a);
-    }
-
-    const parsed = new Date(raw);
-    return Number.isFinite(parsed.getTime())
-      ? Math.floor(parsed.getTime() / 1000)
-      : "";
   }
 
   populateFields(fields, normalizedValues) {
