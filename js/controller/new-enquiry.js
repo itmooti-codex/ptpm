@@ -705,15 +705,15 @@ export class NewInquiryController {
         const inquiryId =
           this.#extractInquiryIdFromResult(result) || inquiryUniqueId || "";
         if (residentImages.length && inquiryId) {
-          const uploadObj = {
-            type: "photo",
-            property_name_id: selectedPropertyId,
-            customer_id: contactId,
-            company_id: companyId,
-            job_id: "",
-            inquiry_id: inquiryId,
-          };
           for (const img of residentImages) {
+            const uploadObj = {
+              type: "photo",
+              property_name_id: selectedPropertyId,
+              customer_id: contactId,
+              company_id: companyId,
+              job_id: "",
+              inquiry_id: inquiryId,
+            };
             uploadObj.photo_upload = img;
             await this.model.createNewUpload(uploadObj);
           }
