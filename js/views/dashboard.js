@@ -242,7 +242,6 @@ export class DashboardView {
       "urgent-calls": ["job-filters", "task-filters"],
     };
     this.handleActionButtonClick();
-    this.renderPagination();
   }
 
   buildClientContactIcons(meta = {}) {
@@ -1194,10 +1193,12 @@ export class DashboardView {
     links.forEach((a) => {
       const isActive = a.getAttribute("data-tab") === tab;
       a.setAttribute("data-active", isActive ? "true" : "false");
-      a.classList.toggle("text-brand-600", isActive);
+      a.classList.toggle("text-sky-900", isActive);
       a.classList.toggle("border-brand-500", isActive);
       a.classList.toggle("border-b-2", true);
-      a.classList.toggle("text-slate-500", !isActive);
+      a.classList.toggle("text-base", !isActive);
+      a.classList.toggle("font-medium", !isActive);
+      a.classList.toggle("font-['Inter']", !isActive);
       a.classList.toggle("border-transparent", !isActive);
     });
 
@@ -1345,60 +1346,122 @@ export class DashboardView {
   }
 
   renderPagination() {
-    let start = 1;
-    let end = 4;
+    const PAGES_PER_GROUP = 4;
+    const TOTAL_PAGES = Math.ceil(this.model.totalCount / PAGES_PER_GROUP);
+    const limit =
+      (this?.model?.paginationLimit ?? this?.model?.limit ?? 10) || 10;
 
-    const gt = document.getElementById("gt-btn");
-    const lt = document.getElementById("lt-btn");
+    let currentIdx = 1;
+    let start = 1;
+
+    const embedDiv = document.getElementById("pagination-pages");
     const prev = document.getElementById("prev-page-btn");
     const next = document.getElementById("next-page-btn");
-    const embedDiv = document.getElementById("pagination-pages");
-    embedDiv.appendChild(this.createBtn(start, end));
+    const lt = document.getElementById("lt-btn");
+    const gt = document.getElementById("gt-btn");
 
-    lt.addEventListener("click", () => {
-      if (start == 1) return;
-      start--, end--;
-      let div = this.createBtn(start, end);
+    const updateModelRange = (shouldNotify = false) => {
+      if (!this.model) return;
+      const totalCount = this.model.totalCount;
+      const startIndex = totalCount - (currentIdx - 1) * limit;
+      this.model.startIndex = Number.isFinite(startIndex) ? startIndex : null;
+      this.model.endIndex =
+        this.model.startIndex != null ? this.model.startIndex + limit : null;
+
+      if (shouldNotify && typeof this.onPageChange === "function") {
+        this.onPageChange(currentIdx);
+      }
+    };
+
+    function renderPages() {
+      const end = Math.min(start + PAGES_PER_GROUP - 1, TOTAL_PAGES);
       embedDiv.innerHTML = "";
-      embedDiv.appendChild(div);
-    });
-
-    gt.addEventListener("click", () => {
-      if (end == 10) return;
-      start++, end++;
-      let div = this.createBtn(start, end);
-      embedDiv.innerHTML = "";
-      embedDiv.appendChild(div);
-    });
-
-    prev.addEventListener("click", () => {
-      if (start == 1) return;
-      start--, end--;
-      let div = this.createBtn(start, end);
-      embedDiv.innerHTML = "";
-      embedDiv.appendChild(div);
-    });
-
-    next.addEventListener("click", () => {
-      if (end == 10) return;
-      start++, end++;
-      let div = this.createBtn(start, end);
-      embedDiv.innerHTML = "";
-      embedDiv.appendChild(div);
-    });
-  }
-
-  createBtn(start, end) {
-    let btnDiv = document.createElement("div");
-    btnDiv.className = "flex gap-2";
-    for (let i = start; i <= end; i++) {
-      const btn = document.createElement("button");
-      btn.setAttribute("idx", i);
-      btn.className =
-        "px-3 py-1.5 text-sm font-semibold text-slate-500 transition hover:border-brand-300 hover:text-brand-600";
-      btn.innerText = i;
-      btnDiv.appendChild(btn);
+      embedDiv.appendChild(createPagesBtn(start, end));
+      setActive(currentIdx);
+      updateModelRange(false);
     }
-    return btnDiv;
+
+    function bindEvents() {
+      lt.addEventListener("click", () => {
+        if (currentIdx === 1) return;
+        currentIdx--;
+        shiftWindowIfNeeded(false);
+      });
+
+      gt.addEventListener("click", () => {
+        if (currentIdx === TOTAL_PAGES) return;
+        currentIdx++;
+        shiftWindowIfNeeded(false);
+      });
+
+      prev.addEventListener("click", () => {
+        if (start === 1) return;
+        start = Math.max(1, start - PAGES_PER_GROUP);
+        currentIdx = start;
+        renderPages();
+        updateModelRange(false);
+      });
+
+      next.addEventListener("click", () => {
+        if (start + PAGES_PER_GROUP > TOTAL_PAGES) return;
+        start += PAGES_PER_GROUP;
+        currentIdx = start;
+        renderPages();
+        updateModelRange(false);
+      });
+    }
+
+    function shiftWindowIfNeeded(shouldNotify = false) {
+      const end = start + PAGES_PER_GROUP - 1;
+
+      if (currentIdx < start) {
+        start = currentIdx;
+        renderPages();
+      } else if (currentIdx > end) {
+        start = currentIdx - PAGES_PER_GROUP + 1;
+        renderPages();
+      } else {
+        setActive(currentIdx);
+      }
+      updateModelRange(shouldNotify);
+    }
+
+    function createPagesBtn(start, end) {
+      const btnDiv = document.createElement("div");
+      btnDiv.className = "flex gap-2";
+
+      for (let i = start; i <= end; i++) {
+        const btn = document.createElement("button");
+        btn.textContent = i;
+        btn.dataset.idx = i;
+        btn.className = "px-3 py-1.5 text-sm font-semibold text-slate-500";
+
+        btn.addEventListener("click", () => {
+          currentIdx = i;
+          shiftWindowIfNeeded(false);
+        });
+
+        btnDiv.appendChild(btn);
+      }
+      return btnDiv;
+    }
+
+    function setActive(idx) {
+      embedDiv.querySelectorAll("button").forEach((btn) => {
+        const isActive = Number(btn.dataset.idx) === idx;
+
+        btn.classList.toggle("bg-[#003882]", isActive);
+        btn.classList.toggle("text-white", isActive);
+
+        if (!isActive) {
+          btn.classList.add("text-slate-500");
+        } else {
+          btn.classList.remove("text-slate-500");
+        }
+      });
+    }
+
+    renderPages();
+    bindEvents();
   }
 }

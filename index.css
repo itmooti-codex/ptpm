@@ -20,6 +20,11 @@
   border-radius: 9999px;
 }
 
+/* Global font */
+body {
+  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
 /* Keep Google Places suggestions above modal overlays */
 .pac-container {
   z-index: 10100 !important;

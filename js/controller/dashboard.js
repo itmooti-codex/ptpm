@@ -6,6 +6,9 @@ export class DashboardController {
     this.loaderElement = loaderRefs.loaderElement || null;
     this.loaderMessageEl = loaderRefs.loaderMessageEl || null;
     this.loaderCounter = loaderRefs.loaderCounter || null;
+    if (this.view) {
+      this.view.onPageChange = () => this.handleTabChange(this.currentTab);
+    }
     this.initAccountTypeDropdown();
     this.initServiceProviderDropdown();
     this.initSourceDropdown();
@@ -98,6 +101,13 @@ export class DashboardController {
     this.latestNotifications = [];
     this.notificationListeners = new Set();
     this.renderSourceOptionsForTab(this.sources || []);
+  }
+
+  async updateTotalCountForTab(tab) {
+    if (!this.model || typeof this.model.fetchTabCount !== "function") return;
+    const total = await this.model.fetchTabCount(tab);
+    this.model.totalCount = total;
+    this.view.renderPagination();
   }
 
   initServiceProviderDropdown() {
@@ -365,6 +375,7 @@ export class DashboardController {
   async handleTabChange(tab) {
     this.currentTab = tab;
     try {
+      await this.updateTotalCountForTab(tab);
       switch (tab) {
         case "quote":
           await this.fetchQuotesAndRenderTable();

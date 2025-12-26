@@ -61,6 +61,10 @@ export class DashboardModel {
 
     this.limit = 500;
     this.offset = 0;
+    this.startIndex = 1;
+    this.endIndex = 1;
+    this.totalCount = null;
+    this.paginationLimit = 10;
   }
 
   #buildCalendarDays() {
@@ -136,6 +140,40 @@ export class DashboardModel {
     return `${day} ${monthName} ${year}`;
   }
 
+  applyIdRange(query) {
+    const start = Number(this.startIndex);
+    const end = Number(this.endIndex);
+    let q = query;
+    if (Number.isFinite(start)) {
+      q = q.andWhere("id", ">=", start);
+    }
+    if (Number.isFinite(end)) {
+      q = q.andWhere("id", "<=", end);
+    }
+    return q;
+  }
+
+  async fetchTabCount(tab) {
+    const map = {
+      inquiry: ptpmDealModel,
+      quote: ptpmJobModel,
+      jobs: ptpmJobModel,
+      payment: ptpmJobModel,
+      "active-jobs": ptpmJobModel,
+      "urgent-calls": ptpmDealModel,
+    };
+    const model = map[tab];
+    if (!model || typeof model.query !== "function") return 0;
+    try {
+      const q = model.query().deSelectAll().select(["id"]).noDestroy();
+      const result = await q.fetchDirect().toPromise();
+      return Array.isArray(result?.resp) ? result.resp.length : 0;
+    } catch (e) {
+      console.log("Fetch tab count error", e);
+      return 0;
+    }
+  }
+
   BuildDealQuery(filters = {}) {
     const f = filters || {};
     const like = (s) => `%${s}%`;
@@ -201,47 +239,49 @@ export class DashboardModel {
         q.where("address_1", "like", `%${f.address}%`);
       });
     }
-    this.dealQuery = this.dealQuery
-      .andWhere((q) => {
-        if (startEpoch != null)
-          q.andWhere("date_quoted_accepted", ">=", startEpoch);
-        if (endEpoch != null) q.andWhere("quote_valid_until", "<=", endEpoch);
-      })
-      .orderBy("created_at", "desc")
-      .deSelectAll()
-      .select([
-        "id",
-        "Unique_ID",
-        "Date_Added",
-        "Type",
-        "Inquiry_Status",
-        "How_did_you_hear",
-      ])
-      .include("Company", (q) =>
-        q.deSelectAll().select(["name", "account_type"])
-      )
-      .include("Service_Inquiry", (q) => q.select(["service_name"]))
-      .include("Primary_Contact", (q) =>
-        q.select([
-          "first_name",
-          "last_name",
-          "email",
-          "sms_number",
-          "address_1",
+    this.dealQuery = this.dealQuery.andWhere((q) => {
+      if (startEpoch != null)
+        q.andWhere("date_quoted_accepted", ">=", startEpoch);
+      if (endEpoch != null) q.andWhere("quote_valid_until", "<=", endEpoch);
+    });
+
+    this.dealQuery = this.applyIdRange(
+      this.dealQuery
+        .orderBy("created_at", "desc")
+        .deSelectAll()
+        .select([
+          "id",
+          "Unique_ID",
+          "Date_Added",
+          "Type",
+          "Inquiry_Status",
+          "How_did_you_hear",
         ])
-      )
-      .include("Property", (q) => {
-        q.deSelectAll().select(["address_1"]);
-      })
-      .include("Service_Provider", (q) => {
-        q.deSelectAll().include("Contact_Information", (q) => {
-          q.deSelectAll().select(["first_name", "last_name"]);
-        });
-      })
-      .orderBy("created_at", "desc")
-      .limit(5)
-      .offset(35)
-      .noDestroy();
+        .include("Company", (q) =>
+          q.deSelectAll().select(["name", "account_type"])
+        )
+        .include("Service_Inquiry", (q) => q.select(["service_name"]))
+        .include("Primary_Contact", (q) =>
+          q.select([
+            "first_name",
+            "last_name",
+            "email",
+            "sms_number",
+            "address_1",
+          ])
+        )
+        .include("Property", (q) => {
+          q.deSelectAll().select(["address_1"]);
+        })
+        .include("Service_Provider", (q) => {
+          q.deSelectAll().include("Contact_Information", (q) => {
+            q.deSelectAll().select(["first_name", "last_name"]);
+          });
+        })
+        .orderBy("created_at", "desc")
+        .limit(5)
+        .offset(35)
+    ).noDestroy();
   }
 
   BuildQuoteQuery(filters = {}) {
@@ -364,43 +404,46 @@ export class DashboardModel {
     }
 
     // Now apply select/includes consistently
-    this.quoteQuery = this.quoteQuery
-      .andWhereNot("quote_status", "isNull")
-      .deSelectAll()
-      .select([
-        "Unique_ID",
-        "Quote_Status",
-        "Quote_Total",
-        "Quote_Date",
-        "Date_Quoted_Accepted",
-      ])
-      .include("Client_Individual", (q) =>
-        q.select([
-          "first_name",
-          "last_name",
-          "email",
-          "sms_number",
-          "address_1",
+    this.quoteQuery = this.applyIdRange(
+      this.quoteQuery
+        .andWhereNot("quote_status", "isNull")
+        .deSelectAll()
+        .select([
+          "Unique_ID",
+          "Quote_Status",
+          "Quote_Total",
+          "Quote_Date",
+          "Date_Quoted_Accepted",
         ])
-      )
-      .include("Property", (q) => {
-        q.deSelectAll().select(["property_name"]);
-      })
-      .include("Primary_Service_Provider", (q) => {
-        q.deSelectAll().include("Contact_Information", (q) => {
-          q.deSelectAll().select(["first_name", "last_name"]);
-        });
-      })
-      .include("Client_Entity", (q) => q.deSelectAll().select(["name", "type"]))
-      .include("Inquiry_Record", (q) =>
-        q.deSelectAll().select(["inquiry_status", "type", "how_did_you_hear"])
-      )
-      .include("Inquiry_Record", (q) =>
-        q.include("Service_Inquiry", (d) =>
-          d.deSelectAll().select(["service_name"])
+        .include("Client_Individual", (q) =>
+          q.select([
+            "first_name",
+            "last_name",
+            "email",
+            "sms_number",
+            "address_1",
+          ])
         )
-      )
-      .noDestroy();
+        .include("Property", (q) => {
+          q.deSelectAll().select(["property_name"]);
+        })
+        .include("Primary_Service_Provider", (q) => {
+          q.deSelectAll().include("Contact_Information", (q) => {
+            q.deSelectAll().select(["first_name", "last_name"]);
+          });
+        })
+        .include("Client_Entity", (q) =>
+          q.deSelectAll().select(["name", "type"])
+        )
+        .include("Inquiry_Record", (q) =>
+          q.deSelectAll().select(["inquiry_status", "type", "how_did_you_hear"])
+        )
+        .include("Inquiry_Record", (q) =>
+          q.include("Service_Inquiry", (d) =>
+            d.deSelectAll().select(["service_name"])
+          )
+        )
+    ).noDestroy();
     return;
   }
 
@@ -515,47 +558,50 @@ export class DashboardModel {
       });
     }
 
-    this.jobQuery = this.jobQuery
-      .andWhereNot("job_status", "isNull")
-      .deSelectAll()
-      .select([
-        "Unique_ID",
-        "Date_Started",
-        "Payment_Status",
-        "Date_Job_Required_By",
-        "Date_Booked",
-        "Job_Status",
-        "Job_Total",
-        "Date_Quoted_Accepted",
-        "invoice_number",
-      ])
-      .include("Client_Individual", (q) =>
-        q.select([
-          "first_name",
-          "last_name",
-          "email",
-          "sms_number",
-          "address_1",
+    this.jobQuery = this.applyIdRange(
+      this.jobQuery
+        .andWhereNot("job_status", "isNull")
+        .deSelectAll()
+        .select([
+          "Unique_ID",
+          "Date_Started",
+          "Payment_Status",
+          "Date_Job_Required_By",
+          "Date_Booked",
+          "Job_Status",
+          "Job_Total",
+          "Date_Quoted_Accepted",
+          "invoice_number",
         ])
-      )
-      .include("Property", (q) => {
-        q.deSelectAll().select(["property_name"]);
-      })
-      .include("Primary_Service_Provider", (q) => {
-        q.deSelectAll().include("Contact_Information", (q) => {
-          q.deSelectAll().select(["first_name", "last_name"]);
-        });
-      })
-      .include("Client_Entity", (q) => q.deSelectAll().select(["name", "type"]))
-      .include("Inquiry_Record", (q) =>
-        q.deSelectAll().select(["inquiry_status", "type", "how_did_you_hear"])
-      )
-      .include("Inquiry_Record", (q) =>
-        q.include("Service_Inquiry", (d) =>
-          d.deSelectAll().select(["service_name"])
+        .include("Client_Individual", (q) =>
+          q.select([
+            "first_name",
+            "last_name",
+            "email",
+            "sms_number",
+            "address_1",
+          ])
         )
-      )
-      .noDestroy();
+        .include("Property", (q) => {
+          q.deSelectAll().select(["property_name"]);
+        })
+        .include("Primary_Service_Provider", (q) => {
+          q.deSelectAll().include("Contact_Information", (q) => {
+            q.deSelectAll().select(["first_name", "last_name"]);
+          });
+        })
+        .include("Client_Entity", (q) =>
+          q.deSelectAll().select(["name", "type"])
+        )
+        .include("Inquiry_Record", (q) =>
+          q.deSelectAll().select(["inquiry_status", "type", "how_did_you_hear"])
+        )
+        .include("Inquiry_Record", (q) =>
+          q.include("Service_Inquiry", (d) =>
+            d.deSelectAll().select(["service_name"])
+          )
+        )
+    ).noDestroy();
     return;
   }
 
@@ -690,47 +736,50 @@ export class DashboardModel {
       });
     }
 
-    this.paymentQuery = this.paymentQuery
-      .andWhereNot("xero_invoice_status", "isNull")
-      .deSelectAll()
-      .select([
-        "Unique_ID",
-        "Invoice_Number",
-        "Invoice_Date",
-        "Due_Date",
-        "Invoice_Total",
-        "Bill_Time_Paid",
-        "Bill_Approved_Admin",
-        "Bill_Approved_Service_Provider2",
-        "Xero_Invoice_Status",
-      ])
-      .include("Client_Individual", (q) =>
-        q.select([
-          "first_name",
-          "last_name",
-          "email",
-          "sms_number",
-          "address_1",
+    this.paymentQuery = this.applyIdRange(
+      this.paymentQuery
+        .andWhereNot("xero_invoice_status", "isNull")
+        .deSelectAll()
+        .select([
+          "Unique_ID",
+          "Invoice_Number",
+          "Invoice_Date",
+          "Due_Date",
+          "Invoice_Total",
+          "Bill_Time_Paid",
+          "Bill_Approved_Admin",
+          "Bill_Approved_Service_Provider2",
+          "Xero_Invoice_Status",
         ])
-      )
-      .include("Property", (q) => {
-        q.deSelectAll().select(["property_name"]);
-      })
-      .include("Primary_Service_Provider", (q) => {
-        q.deSelectAll().include("Contact_Information", (q) => {
-          q.deSelectAll().select(["first_name", "last_name"]);
-        });
-      })
-      .include("Client_Entity", (q) => q.deSelectAll().select(["name", "type"]))
-      .include("Inquiry_Record", (q) =>
-        q.deSelectAll().select(["inquiry_status", "type", "how_did_you_hear"])
-      )
-      .include("Inquiry_Record", (q) =>
-        q.include("Service_Inquiry", (d) =>
-          d.deSelectAll().select(["service_name"])
+        .include("Client_Individual", (q) =>
+          q.select([
+            "first_name",
+            "last_name",
+            "email",
+            "sms_number",
+            "address_1",
+          ])
         )
-      )
-      .noDestroy();
+        .include("Property", (q) => {
+          q.deSelectAll().select(["property_name"]);
+        })
+        .include("Primary_Service_Provider", (q) => {
+          q.deSelectAll().include("Contact_Information", (q) => {
+            q.deSelectAll().select(["first_name", "last_name"]);
+          });
+        })
+        .include("Client_Entity", (q) =>
+          q.deSelectAll().select(["name", "type"])
+        )
+        .include("Inquiry_Record", (q) =>
+          q.deSelectAll().select(["inquiry_status", "type", "how_did_you_hear"])
+        )
+        .include("Inquiry_Record", (q) =>
+          q.include("Service_Inquiry", (d) =>
+            d.deSelectAll().select(["service_name"])
+          )
+        )
+    ).noDestroy();
 
     if (f.global && f.global.trim()) {
       const likeVal = `%${f.global.trim()}%`;
@@ -889,46 +938,51 @@ export class DashboardModel {
       );
     }
 
-    this.paymentQuery = this.activeJobsQuery
-      .deSelectAll()
-      .andWhereNot("job_status", "completed")
-      .andWhereNot("job_status", "cancelled")
-      .select([
-        "Unique_ID",
-        "Invoice_Number",
-        "Invoice_Date",
-        "Due_Date",
-        "Invoice_Total",
-        "Bill_Time_Paid",
-        "Xero_Invoice_Status",
-      ])
-      .include("Client_Individual", (q) =>
-        q.select([
-          "first_name",
-          "last_name",
-          "email",
-          "sms_number",
-          "address_1",
+    this.activeJobsQuery = this.applyIdRange(this.activeJobsQuery);
+
+    this.paymentQuery = this.applyIdRange(
+      this.activeJobsQuery
+        .deSelectAll()
+        .andWhereNot("job_status", "completed")
+        .andWhereNot("job_status", "cancelled")
+        .select([
+          "Unique_ID",
+          "Invoice_Number",
+          "Invoice_Date",
+          "Due_Date",
+          "Invoice_Total",
+          "Bill_Time_Paid",
+          "Xero_Invoice_Status",
         ])
-      )
-      .include("Property", (q) => {
-        q.deSelectAll().select(["property_name"]);
-      })
-      .include("Primary_Service_Provider", (q) => {
-        q.deSelectAll().include("Contact_Information", (q) => {
-          q.deSelectAll().select(["first_name", "last_name"]);
-        });
-      })
-      .include("Client_Entity", (q) => q.deSelectAll().select(["name", "type"]))
-      .include("Inquiry_Record", (q) =>
-        q.deSelectAll().select(["inquiry_status", "type", "how_did_you_hear"])
-      )
-      .include("Inquiry_Record", (q) =>
-        q.include("Service_Inquiry", (d) =>
-          d.deSelectAll().select(["service_name"])
+        .include("Client_Individual", (q) =>
+          q.select([
+            "first_name",
+            "last_name",
+            "email",
+            "sms_number",
+            "address_1",
+          ])
         )
-      )
-      .noDestroy();
+        .include("Property", (q) => {
+          q.deSelectAll().select(["property_name"]);
+        })
+        .include("Primary_Service_Provider", (q) => {
+          q.deSelectAll().include("Contact_Information", (q) => {
+            q.deSelectAll().select(["first_name", "last_name"]);
+          });
+        })
+        .include("Client_Entity", (q) =>
+          q.deSelectAll().select(["name", "type"])
+        )
+        .include("Inquiry_Record", (q) =>
+          q.deSelectAll().select(["inquiry_status", "type", "how_did_you_hear"])
+        )
+        .include("Inquiry_Record", (q) =>
+          q.include("Service_Inquiry", (d) =>
+            d.deSelectAll().select(["service_name"])
+          )
+        )
+    ).noDestroy();
 
     return;
   }

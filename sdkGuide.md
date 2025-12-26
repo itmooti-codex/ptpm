@@ -585,7 +585,7 @@ query
   .sum('fieldName', 'myAlias')
   .avg('fieldName', 'myAlias')
   .min('fieldName', 'myAlias')
-  .max('fieldName', 'myAlias)
+  .max('fieldName', 'myAlias')
   .median('fieldName', 'myAlias')
   .stdDev('fieldName', 'myAlias')
   .variance('fieldName', 'myAlias')
