@@ -90,21 +90,21 @@
             <!-- Page Title -->
 
             <!-- Email Options -->
-              <div class="flex gap-2 justify-start items-center">
-                <!-- Generate Emails -->
-                <div
-                  x-data="emailOptionsDropdown('general')"
-                  class="flex flex-inline gap-1 justify-around items-center relative"
+            <div class="flex gap-2 justify-start items-center">
+              <!-- Generate Emails -->
+              <div
+                x-data="emailOptionsDropdown('general')"
+                class="flex flex-inline gap-1 justify-around items-center relative"
+              >
+                <!-- Trigger: clicking this toggles the email options -->
+                <button
+                  type="button"
+                  @click="toggle()"
+                  class="flex items-center gap-1 justify-end"
                 >
-                  <!-- Trigger: clicking this toggles the email options -->
-                  <button
-                    type="button"
-                    @click="toggle()"
-                    class="flex items-center gap-1 justify-end"
-                  >
-                    <div
-                      class="text-white text-[14px] font-medium f-inter"
-                      x-text="EMAIL_OPTIONS_DATA[groupKey].label"
+                  <div
+                    class="text-white text-[14px] font-medium f-inter"
+                    x-text="EMAIL_OPTIONS_DATA[groupKey].label"
                   ></div>
                   <svg
                     :class="open ? 'rotate-180 transition-transform' : 'transition-transform'"
@@ -383,8 +383,7 @@
                       <span
                         class="text-slate-500 text-sm font-medium font-['Inter'] leading-4"
                         x-text="actionLabel('callback', 'Create Call Back', 'Creating...')"
-                        ></span
-                      >
+                      ></span>
                     </div>
                   </div>
                   <div
@@ -449,8 +448,7 @@
                       <span
                         class="text-[#D80F0F] text-sm font-medium font-['Inter'] leading-4"
                         x-text="actionLabel('delete', 'Delete Record', 'Deleting...')"
-                        ></span
-                      >
+                      ></span>
                     </div>
                   </div>
                 </div>
@@ -2314,7 +2312,7 @@
                       >
                     </template>
                     <button
-                      class="rounded-md bg-sky-800 px-3 py-2 text-sm font-semibold text-white hover:bg-sky-900"
+                      class="rounded-md bg-[#003882] px-3 py-2 text-sm font-semibold text-white hover:bg-sky-900"
                       @click.prevent="$dispatch('quote:edit', { quoteDate, followUpDate, allowDateEditing: true })"
                       x-show="!isQuoteAccepted"
                       x-cloak
@@ -2868,7 +2866,7 @@
                     <div class="flex items-center gap-2">
                       <template x-if="!isQuoteAccepted">
                         <button
-                          class="rounded-md bg-sky-800 px-3 py-1.5 text-xs font-semibold text-white hover:bg-sky-900"
+                          class="rounded-md bg-[#003882] px-3 py-1.5 text-xs font-semibold text-white hover:bg-sky-900"
                           @click.prevent="$dispatch('activity:add')"
                         >
                           Add Activity
@@ -3193,7 +3191,7 @@
                 x-show="isWaitingForPayment"
                 x-cloak
                 type="button"
-                class="rounded-md bg-sky-800 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-900"
+                class="rounded-md bg-[#003882] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-900"
                 @click="openSendInvoiceModal"
               >
                 Send Invoice
@@ -3715,7 +3713,8 @@
             <div
               class="bg-white flex flex-col overflow-hidden relative ml-auto mr-2 w-full h-full"
               x-transition
-              :class="inquiryCollapsed ? 'rounded-sm overflow-y-auto' : 'rounded-xl'">
+              :class="inquiryCollapsed ? 'rounded-sm overflow-y-auto' : 'rounded-xl'"
+            >
               <header
                 class="bg-[#003882] text-white px-6 py-4 flex items-center justify-between gap-4"
               >
@@ -3747,7 +3746,7 @@
 
               <div class="p-4">
                 <div
-                  class="relative border border-slate-200 rounded-xl bg-white p-4 overflow-y-auto overflow-x-hidden "
+                  class="relative border border-slate-200 rounded-xl bg-white p-4 overflow-y-auto overflow-x-hidden"
                   :class="inquiryCollapsed ? 'h-[55vh]' : 'max-h-[63vh]'"
                 >
                   <template x-if="newMessages > 0">
@@ -3781,9 +3780,7 @@
                     </div>
                   </template>
 
-                  <div
-                    class="flex flex-col gap-4 thin-scrollbar"
-                  >
+                  <div class="flex flex-col gap-4 thin-scrollbar">
                     <template x-if="memos.length === 0">
                       <div class="text-center text-sm text-slate-500 py-6">
                         No memos yet.
@@ -4273,7 +4270,7 @@
                 Cancel
               </button>
               <button
-                class="inline-flex items-center rounded-lg bg-sky-700 px-4 py-2 font-semibold text-white shadow-sm transition hover:bg-sky-800 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500"
+                class="inline-flex items-center rounded-lg bg-sky-700 px-4 py-2 font-semibold text-white shadow-sm transition hover:bg-[#003882] disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500"
                 @click="confirmAction"
                 :disabled="!hasProvider || isSubmitting"
               >
@@ -4428,7 +4425,7 @@
                 Cancel
               </button>
               <button
-                class="inline-flex items-center rounded-lg bg-sky-700 px-4 py-2 font-semibold text-white shadow-sm transition hover:bg-sky-800 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500"
+                class="inline-flex items-center rounded-lg bg-sky-700 px-4 py-2 font-semibold text-white shadow-sm transition hover:bg-[#003882] disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500"
                 @click="handleSend"
                 :disabled="!recipients.length || isSending"
               >
@@ -4518,7 +4515,7 @@
                 Cancel
               </button>
               <button
-                class="inline-flex items-center rounded-lg bg-sky-700 px-4 py-2 font-semibold text-white shadow-sm transition hover:bg-sky-800 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500"
+                class="inline-flex items-center rounded-lg bg-sky-700 px-4 py-2 font-semibold text-white shadow-sm transition hover:bg-[#003882] disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500"
                 @click="handleAccept"
                 :disabled="isSubmitting"
               >
@@ -4951,7 +4948,7 @@
               </button>
               <button
                 type="button"
-                class="rounded-md bg-sky-800 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-900 disabled:opacity-60"
+                class="rounded-md bg-[#003882] px-4 py-2 text-sm font-semibold text-white hover:bg-sky-900 disabled:opacity-60"
                 :disabled="!confirm"
                 @click="handlePrint"
               >
@@ -5024,7 +5021,7 @@
                 Cancel
               </button>
               <button
-                class="rounded bg-sky-800 px-4 py-2 font-semibold text-white shadow-sm transition hover:bg-sky-900 disabled:opacity-60"
+                class="rounded bg-[#003882] px-4 py-2 font-semibold text-white shadow-sm transition hover:bg-sky-900 disabled:opacity-60"
                 @click="handleSave"
                 :disabled="isSubmitting"
               >
@@ -5132,7 +5129,7 @@
                 Cancel
               </button>
               <button
-                class="inline-flex items-center gap-2 rounded-md bg-sky-800 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-sky-900 disabled:opacity-60"
+                class="inline-flex items-center gap-2 rounded-md bg-[#003882] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-sky-900 disabled:opacity-60"
                 @click="handleSend"
                 :disabled="isSubmitting"
               >
@@ -5513,7 +5510,7 @@
                 Cancel
               </button>
               <button
-                class="inline-flex items-center gap-2 rounded-lg bg-sky-700 px-4 py-2 font-semibold text-white shadow-sm transition hover:bg-sky-800 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500"
+                class="inline-flex items-center gap-2 rounded-lg bg-sky-700 px-4 py-2 font-semibold text-white shadow-sm transition hover:bg-[#003882] disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500"
                 @click="handleSave"
                 :disabled="isSubmitting"
               >
@@ -5611,7 +5608,7 @@
                 Cancel
               </button>
               <button
-                class="inline-flex items-center rounded-lg bg-sky-700 px-4 py-2 font-semibold text-white shadow-sm transition hover:bg-sky-800 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500"
+                class="inline-flex items-center rounded-lg bg-sky-700 px-4 py-2 font-semibold text-white shadow-sm transition hover:bg-[#003882] disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500"
                 @click="handleUpdate"
                 :disabled="isSubmitting"
               >
@@ -5902,7 +5899,7 @@
                 Cancel
               </button>
               <button
-                class="inline-flex items-center rounded-lg bg-sky-700 px-4 py-2 font-semibold text-white shadow-sm transition hover:bg-sky-800 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500"
+                class="inline-flex items-center rounded-lg bg-sky-700 px-4 py-2 font-semibold text-white shadow-sm transition hover:bg-[#003882] disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500"
                 @click="submit"
                 :disabled="isSubmitting"
               >
@@ -6242,7 +6239,7 @@
                 Cancel
               </button>
               <button
-                class="inline-flex items-center rounded-lg bg-sky-700 px-4 py-2 font-semibold text-white shadow-sm transition hover:bg-sky-800 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500"
+                class="inline-flex items-center rounded-lg bg-sky-700 px-4 py-2 font-semibold text-white shadow-sm transition hover:bg-[#003882] disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500"
                 @click="handleSubmit"
                 :disabled="isSubmitting || !form.service || (filteredServiceOptions.length && !form.serviceOption)"
               >
@@ -6571,7 +6568,7 @@
                 Cancel
               </button>
               <button
-                class="inline-flex items-center gap-2 rounded-lg bg-sky-700 px-4 py-2 font-semibold text-white shadow-sm transition hover:bg-sky-800 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500"
+                class="inline-flex items-center gap-2 rounded-lg bg-sky-700 px-4 py-2 font-semibold text-white shadow-sm transition hover:bg-[#003882] disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500"
                 @click="handleSave"
                 :disabled="isSubmitting"
               >
@@ -6737,7 +6734,7 @@
                 Cancel
               </button>
               <button
-                class="inline-flex items-center gap-2 rounded bg-sky-800 text-white px-4 py-2 hover:bg-sky-900 disabled:opacity-60"
+                class="inline-flex items-center gap-2 rounded bg-[#003882] text-white px-4 py-2 hover:bg-sky-900 disabled:opacity-60"
                 @click="handleSave()"
                 :disabled="isSubmitting"
               >
@@ -6933,7 +6930,7 @@
                                 Cancel
                               </button>
                               <button
-                                class="inline-flex items-center gap-2 rounded bg-sky-800 text-white px-3 py-2 hover:bg-sky-900 disabled:opacity-60"
+                                class="inline-flex items-center gap-2 rounded bg-[#003882] text-white px-3 py-2 hover:bg-sky-900 disabled:opacity-60"
                                 @click="confirmReassign()"
                                 :disabled="savingReassign"
                               >
@@ -7015,7 +7012,7 @@
                                 Cancel
                               </button>
                               <button
-                                class="inline-flex items-center gap-2 rounded bg-sky-800 text-white px-3 py-2 hover:bg-sky-900 disabled:opacity-60"
+                                class="inline-flex items-center gap-2 rounded bg-[#003882] text-white px-3 py-2 hover:bg-sky-900 disabled:opacity-60"
                                 @click="confirmReschedule()"
                                 :disabled="savingResched"
                               >
@@ -7483,7 +7480,7 @@
               </button>
               <button
                 type="button"
-                class="inline-flex items-center gap-2 rounded bg-sky-800 text-white px-4 py-2 hover:bg-sky-900 disabled:opacity-60"
+                class="inline-flex items-center gap-2 rounded bg-[#003882] text-white px-4 py-2 hover:bg-sky-900 disabled:opacity-60"
                 @click="handleSave()"
                 :disabled="isSubmitting"
               >

@@ -58,13 +58,11 @@ export class DashboardModel {
     this.selectedDate = this.calendarDays[0]?.iso;
     this.inquiryDataByDate = {};
     this.allRows = [];
-
-    this.limit = 500;
-    this.offset = 0;
-    this.startIndex = 1;
-    this.endIndex = 1;
+    this.offset = null;
+    this.startIndex = 300;
+    this.endIndex = 346;
     this.totalCount = null;
-    this.paginationLimit = 10;
+    this.paginationLimit = 5;
   }
 
   #buildCalendarDays() {
@@ -279,9 +277,10 @@ export class DashboardModel {
           });
         })
         .orderBy("created_at", "desc")
-        .limit(5)
-        .offset(35)
-    ).noDestroy();
+        .limit(this.paginationLimit)
+        .offset(this.offset)
+        .noDestroy()
+    );
   }
 
   BuildQuoteQuery(filters = {}) {

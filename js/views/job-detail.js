@@ -1576,7 +1576,7 @@ export class JobDetailView {
             Cancel
           </button>
           <button id="editNotesSaveBtn" type="button"
-            class="rounded bg-[#003882] px-4 py-2 text-sm font-medium text-white hover:bg-sky-800">
+            class="rounded bg-[#003882] px-4 py-2 text-sm font-medium text-white hover:bg-[#003882]">
             Save
           </button>
         </div>

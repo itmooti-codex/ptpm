@@ -107,7 +107,9 @@ export class DashboardController {
     if (!this.model || typeof this.model.fetchTabCount !== "function") return;
     const total = await this.model.fetchTabCount(tab);
     this.model.totalCount = total;
-    this.view.renderPagination();
+    this.view.renderPagination(async () => {
+      await this.handleTabChange(this.currentTab, { skipCount: true });
+    });
   }
 
   initServiceProviderDropdown() {
@@ -313,6 +315,7 @@ export class DashboardController {
     this.loadNotifications();
     this.initGlobalSearch();
     this.bindApplyFilters();
+    this.initFlatpickr();
     this.view.initTopTabs({
       navId,
       panelsId,
@@ -372,10 +375,13 @@ export class DashboardController {
     );
   }
 
-  async handleTabChange(tab) {
+  async handleTabChange(tab, options = {}) {
+    const { skipCount = false } = options;
     this.currentTab = tab;
     try {
-      await this.updateTotalCountForTab(tab);
+      if (!skipCount) {
+        await this.updateTotalCountForTab(tab);
+      }
       switch (tab) {
         case "quote":
           await this.fetchQuotesAndRenderTable();
@@ -815,6 +821,13 @@ export class DashboardController {
 
   hidePageLoader(force = false) {
     hideLoader(this.loaderElement, this.loaderCounter, force);
+  }
+
+  initFlatpickr() {
+    flatpickr(".date-picker", {
+      dateFormat: "d/m/Y",
+      allowInput: true,
+    });
   }
 
   bindApplyFilters() {

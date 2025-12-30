@@ -5,10 +5,10 @@ export function renderDynamicTable({
   emptyState = "No records found.",
   zebra = false,
   getRowClass = null,
-  tableClass = "min-w-full text-sm text-slate-700",
+  tableClass = "w-full table-fixed text-sm text-slate-700",
   theadClass = "bg-[#f5f8ff] text-xs font-semibold uppercase tracking-wide border-b border-slate-200",
   tbodyClass = "bg-white",
-  defaultHeaderClass = "px-6 py-4 text-left",
+  defaultHeaderClass = "truncate px-6 py-4 text-left",
   defaultCellClass = "px-6 py-4 text-slate-600",
   emptyCellClass = "px-6 py-6 text-center text-sm text-slate-500",
 } = {}) {
@@ -147,13 +147,13 @@ export class DashboardView {
       `
       <div class="mt-2 flex items-center gap-2">
         <a data-action="call" class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-brand-500 shadow-sm transition hover:border-brand-300 hover:text-brand-600" aria-label="Call" title="Call">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M2.003 5.884l3.245-.62a1 1 0 011.066.553l1.284 2.568a1 1 0 01-.23 1.149l-1.516 1.513a11.037 11.037 0 005.004 5.004l1.513-1.516a1 1 0 011.149-.23l2.568 1.284a1 1 0 01.553 1.066l-.62 3.245a1 1 0 01-.979.815A14.978 14.978 0 012 5.863a1 1 0 01.003.021z"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="#003882"><path d="M2.003 5.884l3.245-.62a1 1 0 011.066.553l1.284 2.568a1 1 0 01-.23 1.149l-1.516 1.513a11.037 11.037 0 005.004 5.004l1.513-1.516a1 1 0 011.149-.23l2.568 1.284a1 1 0 01.553 1.066l-.62 3.245a1 1 0 01-.979.815A14.978 14.978 0 012 5.863a1 1 0 01.003.021z"/></svg>
         </a>
         <a data-action="email" class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-brand-500 shadow-sm transition hover:border-brand-300 hover:text-brand-600" aria-label="Email" title="Email">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M2.94 6.342A2 2 0 014.564 5h10.872a2 2 0 011.624.842l-7.06 5.297-7.06-5.297z"/><path d="M18 8.118l-6.76 5.07a1.5 1.5 0 01-1.76 0L2.72 8.118A1.994 1.994 0 002 9.874V14a2 2 0 002 2h12a2 2 0 002-2V9.874c0-.603-.272-1.175-.74-1.756z"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="#003882"><path d="M2.94 6.342A2 2 0 014.564 5h10.872a2 2 0 011.624.842l-7.06 5.297-7.06-5.297z"/><path d="M18 8.118l-6.76 5.07a1.5 1.5 0 01-1.76 0L2.72 8.118A1.994 1.994 0 002 9.874V14a2 2 0 002 2h12a2 2 0 002-2V9.874c0-.603-.272-1.175-.74-1.756z"/></svg>
         </a>
         <a data-action="address" class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-brand-500 shadow-sm transition hover:border-brand-300 hover:text-brand-600" aria-label="Location" title="Address">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a.75.75 0 01-.53-.22c-.862-.864-2.392-2.56-3.55-4.383C4.746 11.425 4 9.666 4 8a6 6 0 1112 0c0 1.666-.746 3.425-1.92 5.397-1.158 1.822-2.688 3.519-3.55 4.383A.75.75 0 0110 18zm0-8.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" clip-rule="evenodd"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="#003882"><path fill-rule="evenodd" d="M10 18a.75.75 0 01-.53-.22c-.862-.864-2.392-2.56-3.55-4.383C4.746 11.425 4 9.666 4 8a6 6 0 1112 0c0 1.666-.746 3.425-1.92 5.397-1.158 1.822-2.688 3.519-3.55 4.383A.75.75 0 0110 18zm0-8.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" clip-rule="evenodd"/></svg>
         </a>
       </div>
     `;
@@ -261,17 +261,17 @@ export class DashboardView {
         <a data-action="call" href="${callHref}" ${
       sms ? "" : 'aria-disabled="true"'
     } title="${sms}">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M2.003 5.884l3.245-.62a1 1 0 011.066.553l1.284 2.568a1 1 0 01-.23 1.149l-1.516 1.513a11.037 11.037 0 005.004 5.004l1.513-1.516a1 1 0 011.149-.23l2.568 1.284a1 1 0 01.553 1.066l-.62 3.245a1 1 0 01-.979.815A14.978 14.978 0 012 5.863a1 1 0 01.003.021z"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="#003882"><path d="M2.003 5.884l3.245-.62a1 1 0 011.066.553l1.284 2.568a1 1 0 01-.23 1.149l-1.516 1.513a11.037 11.037 0 005.004 5.004l1.513-1.516a1 1 0 011.149-.23l2.568 1.284a1 1 0 01.553 1.066l-.62 3.245a1 1 0 01-.979.815A14.978 14.978 0 012 5.863a1 1 0 01.003.021z"/></svg>
         </a>
         <a data-action="email" href="${emailHref}" ${
       email ? "" : 'aria-disabled="true"'
     } title="${email}">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M2.94 6.342A2 2 0 014.564 5h10.872a2 2 0 011.624.842l-7.06 5.297-7.06-5.297z"/><path d="M18 8.118l-6.76 5.07a1.5 1.5 0 01-1.76 0L2.72 8.118A1.994 1.994 0 002 9.874V14a2 2 0 002 2h12a2 2 0 002-2V9.874c0-.603-.272-1.175-.74-1.756z"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="#003882"><path d="M2.94 6.342A2 2 0 014.564 5h10.872a2 2 0 011.624.842l-7.06 5.297-7.06-5.297z"/><path d="M18 8.118l-6.76 5.07a1.5 1.5 0 01-1.76 0L2.72 8.118A1.994 1.994 0 002 9.874V14a2 2 0 002 2h12a2 2 0 002-2V9.874c0-.603-.272-1.175-.74-1.756z"/></svg>
         </a>
         <a data-action="address" href="${mapHref}" ${
       address ? 'target="_blank" rel="noopener"' : 'aria-disabled="true"'
     } title="${address}">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a.75.75 0 01-.53-.22c-.862-.864-2.392-2.56-3.55-4.383C4.746 11.425 4 9.666 4 8a6 6 0 1112 0c0 1.666-.746 3.425-1.92 5.397-1.158 1.822-2.688 3.519-3.55 4.383A.75.75 0 0110 18zm0-8.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" clip-rule="evenodd"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="#003882"><path fill-rule="evenodd" d="M10 18a.75.75 0 01-.53-.22c-.862-.864-2.392-2.56-3.55-4.383C4.746 11.425 4 9.666 4 8a6 6 0 1112 0c0 1.666-.746 3.425-1.92 5.397-1.158 1.822-2.688 3.519-3.55 4.383A.75.75 0 0110 18zm0-8.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" clip-rule="evenodd"/></svg>
         </a>
       </div>
     `;
@@ -293,19 +293,61 @@ export class DashboardView {
 
   renderDataTable(config = {}) {
     return renderDynamicTable({
-      tableClass: "min-w-full text-sm text-slate-700",
+      tableClass: "min-w-[720px] w-full table-auto text-sm text-slate-700",
       theadClass:
-        "bg-[#f5f8ff] text-xs font-semibold uppercase tracking-wide border-b border-slate-200",
+        "truncate bg-[#f5f8ff] text-[11px] sm:text-xs font-semibold uppercase tracking-wide border-b border-slate-200",
       tbodyClass: "bg-white",
-      defaultHeaderClass: "px-6 py-4 text-left",
-      defaultCellClass: "px-6 py-4 text-slate-600",
-      emptyCellClass: "px-6 py-6 text-center text-sm text-slate-500",
+      defaultHeaderClass: "px-3 sm:px-6 py-3 sm:py-4 text-left",
+      defaultCellClass: "px-3 sm:px-6 py-3 sm:py-4 text-slate-600",
+      emptyCellClass: "px-3 sm:px-6 py-6 text-center text-sm text-slate-500",
       ...config,
     });
   }
 
+  setupResponsiveLayout() {
+    const filterPanel = document.getElementById("filters-panel");
+    const toggleBtn = document.getElementById("filters-toggle");
+    const closeBtn = document.getElementById("filters-close");
+
+    if (!filterPanel || !toggleBtn) return;
+
+    const showFilters = () => {
+      filterPanel.classList.remove("hidden");
+      toggleBtn.setAttribute("aria-expanded", "true");
+    };
+
+    const hideFilters = () => {
+      if (window.innerWidth >= 1024) return;
+      filterPanel.classList.add("hidden");
+      toggleBtn.setAttribute("aria-expanded", "false");
+    };
+
+    toggleBtn.addEventListener("click", () => {
+      const isHidden = filterPanel.classList.contains("hidden");
+      if (isHidden) {
+        showFilters();
+      } else {
+        hideFilters();
+      }
+    });
+
+    closeBtn?.addEventListener("click", hideFilters);
+
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        showFilters();
+      } else {
+        hideFilters();
+      }
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+  }
+
   init() {
     this.createCreateButtonPopup();
+    this.setupResponsiveLayout();
     // lightweight toast container
     if (!document.getElementById("dashboardToast")) {
       const t = document.createElement("div");
@@ -336,40 +378,44 @@ export class DashboardView {
 
     container.innerHTML = rows
       .map((row, rowIndex) => {
-        const rowTotal =
-          rowTotals[rowIndex] ?? row.reduce((sum, d) => sum + d.total, 0);
+        const rowTotal = Number.isFinite(rowTotals?.[rowIndex])
+          ? Number(rowTotals[rowIndex])
+          : row.reduce(
+              (sum, d) =>
+                sum + (Number.isFinite(Number(d.total)) ? Number(d.total) : 0),
+              0
+            );
 
         const dayCols = row
           .map((day) => {
+            const dayTotal = Number.isFinite(Number(day.total))
+              ? Number(day.total)
+              : 0;
             const isSelected = day.iso === selectedDate;
             const cellBorder = isSelected
               ? "border-emerald-200"
-              : "border-gray-200";
+              : "border-gray-300";
             const headerState = isSelected
-              ? "bg-sky-100 text-teal-700"
-              : "bg-white  text-neutral-700";
-            const valueState = isSelected
-              ? "bg-emerald-50 text-neutral-700"
+              ? "bg-sky-100 text-sky-800"
               : "bg-white text-neutral-700";
-            const hoverHeader = isSelected
-              ? ""
-              : "group-hover:bg-slate-50 group-hover:text-brand-600";
-            const hoverValue = isSelected
-              ? ""
-              : "group-hover:bg-slate-50 group-hover:text-brand-600";
+            const valueState = isSelected
+              ? "bg-emerald-50 text-sky-800"
+              : "bg-white text-slate-500";
 
             return `
               <button
                 type="button"
-                class="group flex flex-1 min-w-0 flex-col border-r ${cellBorder} focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-200"
+                class="flex flex-1 basis-0 min-w-0 inline-flex flex-col justify-start items-start focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-200"
                 data-date="${day.iso}"
                 aria-pressed="${isSelected}"
               >
-                <div class="w-full h-full px-2 py-2 border-b ${cellBorder} ${headerState} ${hoverHeader} text-center text-sm font-medium leading-tight transition-colors">
+                <div class="self-stretch px-2 sm:px-3 py-2 sm:py-3 border-r border-t border-b ${cellBorder} inline-flex justify-center items-center gap-1 sm:gap-2 ${headerState} text-xs sm:text-sm font-medium leading-5 sm:leading-4 whitespace-nowrap">
                   ${day.label}
                 </div>
-                <div class="w-full h-full px-2 py-2 ${valueState} ${hoverValue} text-center text-lg font-semibold leading-tight transition-colors">
-                  ${day.total.toString().padStart(2, "0")}
+                <div class="h-[50px] self-stretch px-2 sm:px-3 py-2 sm:py-3 ${valueState} border-r border-b ${cellBorder} inline-flex justify-center items-center gap-2 sm:gap-3">
+                  <div class="text-xs sm:text-sm font-normal leading-5 tracking-tight whitespace-nowrap">
+                    ${dayTotal.toString().padStart(2, "0")}
+                  </div>
                 </div>
               </button>
             `;
@@ -377,17 +423,21 @@ export class DashboardView {
           .join("");
 
         return `
-          <div class="flex-1 min-w-0 overflow-hidden rounded-xl border border-gray-200 bg-white">
-            <div class="flex items-stretch">
-              ${dayCols}
-              <div class="flex w-32 flex-none flex-col items-stretch border-l border-gray-200">
-                <div class="flex items-center justify-center border-b border-brand-600 bg-brand-600 px-4 py-3 text-sm font-semibold text-white">Total</div>
-                <div class="flex flex-1 items-center justify-center bg-brand-50 px-4 py-3 text-lg font-semibold text-brand-600">${rowTotal
-                  .toString()
-                  .padStart(2, "0")}</div>
+            <div class="w-full bg-white rounded-lg border border-gray-300 inline-flex flex-col overflow-hidden">
+              <div class="flex w-full">
+                ${dayCols}
+                <div class="flex flex-1 min-w-0 bg-neutral-100 inline-flex flex-col">
+                  <div class="px-2 sm:px-3 py-2 sm:py-3 bg-[#003882] border-r border-b border-gray-300 flex justify-center items-center">
+                    <div class="text-white text-xs sm:text-sm font-semibold whitespace-nowrap">Total</div>
+                  </div>
+                  <div class="flex-1 px-2 sm:px-3 py-2 sm:py-3 bg-sky-100 border-r border-b border-gray-300 flex justify-center items-center">
+                    <div class="text-sky-900 text-xs sm:text-sm font-semibold whitespace-nowrap">
+                      ${rowTotal.toString().padStart(2, "0")}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
         `;
       })
       .join("");
@@ -1194,11 +1244,9 @@ export class DashboardView {
       const isActive = a.getAttribute("data-tab") === tab;
       a.setAttribute("data-active", isActive ? "true" : "false");
       a.classList.toggle("text-sky-900", isActive);
-      a.classList.toggle("border-brand-500", isActive);
+      a.classList.toggle("text-neutral-700", !isActive);
+      a.classList.toggle("border-sky-900", isActive);
       a.classList.toggle("border-b-2", true);
-      a.classList.toggle("text-base", !isActive);
-      a.classList.toggle("font-medium", !isActive);
-      a.classList.toggle("font-['Inter']", !isActive);
       a.classList.toggle("border-transparent", !isActive);
     });
 
@@ -1345,11 +1393,11 @@ export class DashboardView {
     });
   }
 
-  renderPagination() {
+  renderPagination(callback) {
     const PAGES_PER_GROUP = 4;
-    const TOTAL_PAGES = Math.ceil(this.model.totalCount / PAGES_PER_GROUP);
     const limit =
-      (this?.model?.paginationLimit ?? this?.model?.limit ?? 10) || 10;
+      (this?.model?.paginationLimit ?? this?.model?.limit ?? 5) || 5;
+    const totalPages = Math.max(1, Math.ceil(this.model.totalCount / limit));
 
     let currentIdx = 1;
     let start = 1;
@@ -1363,7 +1411,7 @@ export class DashboardView {
     const updateModelRange = (shouldNotify = false) => {
       if (!this.model) return;
       const totalCount = this.model.totalCount;
-      const startIndex = totalCount - (currentIdx - 1) * limit;
+      const startIndex = 300 + totalCount - (currentIdx - 1) * limit;
       this.model.startIndex = Number.isFinite(startIndex) ? startIndex : null;
       this.model.endIndex =
         this.model.startIndex != null ? this.model.startIndex + limit : null;
@@ -1371,14 +1419,16 @@ export class DashboardView {
       if (shouldNotify && typeof this.onPageChange === "function") {
         this.onPageChange(currentIdx);
       }
+      this.model.offset = (currentIdx - 1) * limit;
+      callback();
     };
 
     function renderPages() {
-      const end = Math.min(start + PAGES_PER_GROUP - 1, TOTAL_PAGES);
+      const end = Math.min(start + PAGES_PER_GROUP - 1, totalPages);
       embedDiv.innerHTML = "";
       embedDiv.appendChild(createPagesBtn(start, end));
       setActive(currentIdx);
-      updateModelRange(false);
+      updateModelRange(false, callback);
     }
 
     function bindEvents() {
@@ -1389,7 +1439,7 @@ export class DashboardView {
       });
 
       gt.addEventListener("click", () => {
-        if (currentIdx === TOTAL_PAGES) return;
+        if (currentIdx === totalPages) return;
         currentIdx++;
         shiftWindowIfNeeded(false);
       });
@@ -1399,15 +1449,15 @@ export class DashboardView {
         start = Math.max(1, start - PAGES_PER_GROUP);
         currentIdx = start;
         renderPages();
-        updateModelRange(false);
+        updateModelRange(false, callback);
       });
 
       next.addEventListener("click", () => {
-        if (start + PAGES_PER_GROUP > TOTAL_PAGES) return;
+        if (start + PAGES_PER_GROUP > totalPages) return;
         start += PAGES_PER_GROUP;
         currentIdx = start;
         renderPages();
-        updateModelRange(false);
+        updateModelRange(false, callback);
       });
     }
 
@@ -1423,7 +1473,7 @@ export class DashboardView {
       } else {
         setActive(currentIdx);
       }
-      updateModelRange(shouldNotify);
+      updateModelRange(shouldNotify, callback);
     }
 
     function createPagesBtn(start, end) {
