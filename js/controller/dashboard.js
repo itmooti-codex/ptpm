@@ -328,11 +328,25 @@ export class DashboardController {
       resetBtn.addEventListener("click", () => this.clearAllFilters());
     }
 
-    let createButton = document.getElementById("create-btn");
-    createButton.addEventListener("click", () => {
-      let element = document.getElementById("create-button-Popup");
-      element.classList.toggle("hidden");
-    });
+    const createButton = document.getElementById("create-btn");
+    if (createButton) {
+      createButton.addEventListener("click", () => {
+        const wrapper = document.getElementById("create-button-wrapper");
+        const popup = document.getElementById("create-button-popup");
+        if (!wrapper || !popup) return;
+
+        const isHidden = wrapper.classList.contains("hidden");
+        if (isHidden) {
+          const rect = createButton.getBoundingClientRect();
+          const gap = 8;
+          popup.style.top = `${rect.bottom + window.scrollY + gap}px`;
+          popup.style.left = `${rect.left + window.scrollX}px`;
+          wrapper.classList.remove("hidden");
+        } else {
+          wrapper.classList.add("hidden");
+        }
+      });
+    }
 
     ["new-inquiry", "new-quote", "new-job"].forEach((item) => {
       this.attchCreateButtonListners(item);
@@ -950,7 +964,7 @@ export class DashboardController {
       }
       if (!text) return;
       chips.push(`
-        <div data-chip-key="${key}" data-add-btn="true" data-filter="true" data-icon="true" data-tab="false" data-type="primary" class="px-3 py-2 bg-sky-100 rounded-[20px] outline outline-1 outline-offset-[-1px] outline-blue-700 flex justify-center items-center gap-1 mr-2 mb-2">
+        <div data-chip-key="${key}" data-add-btn="true" data-filter="true" data-icon="true" data-tab="false" data-type="primary" class="px-3 py-2 bg-sky-100 rounded-[20px] outline outline-1 outline-offset-[-1px] outline-blue-700 flex justify-center items-center gap-1 mr-2">
           <div class="justify-end text-blue-700 text-xs font-normal font-['Inter'] leading-3">${label}: ${text} </div>
           <button type="button" class="w-3 h-3 relative overflow-hidden remove-chip" aria-label="Remove ${label}">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 3 24 24" class="w-4 h-4 fill-[#003882]">
@@ -1016,7 +1030,12 @@ export class DashboardController {
     if (filters.taskAssignedToMe)
       addChip("taskAssignedToMe", "Assigned To Me", "Yes");
 
-    root.innerHTML = chips.join("") || "";
+    const hasChips = chips.length > 0;
+    const clearAllBtn = hasChips
+      ? `<button id="clear-all-filters" type="button" class="px-1 text-slate-500 text-sm font-medium whitespace-nowrap font-['Inter'] leading-4">Clear All</button>`
+      : "";
+
+    root.innerHTML = chips.join("") + clearAllBtn;
 
     // Attach remove handlers
     root.querySelectorAll(".remove-chip").forEach((btn) => {
@@ -1027,6 +1046,11 @@ export class DashboardController {
         this.removeFilterChip(key);
       });
     });
+
+    const clearAll = root.querySelector("#clear-all-filters");
+    if (clearAll) {
+      clearAll.addEventListener("click", () => this.clearAllFilters());
+    }
   }
 
   removeFilterChip(key) {

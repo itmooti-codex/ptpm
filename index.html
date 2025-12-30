@@ -244,7 +244,7 @@
                   <div class="justify-start text-white text-sm font-medium font-['Inter'] leading-none">Apply Filters</div>
                 </button>
 
-                <button id="reset-filters-btn" data-lead-icon="false" data-size="medium" data-state="Default" data-text="true" data-trail-icon="false" data-type="main" class="px-2 py-2 bg-brand-600 rounded outline outline-1 outline-offset-[-1px] outline-[#003882] inline-flex justify-center items-center gap-2 overflow-hidden">
+                <button id="reset-filters-btn" data-lead-icon="false" data-size="medium" data-state="Default" data-text="true" data-trail-icon="false" data-type="main" class="hidden px-2 py-2 bg-brand-600 rounded outline outline-1 outline-offset-[-1px] outline-[#003882] inline-flex justify-center items-center gap-2 overflow-hidden" aria-hidden="true" tabindex="-1">
                   <div class="justify-start text-white text-sm font-medium font-['Inter'] leading-none">Reset Filters</div>
                 </button>
               </div>
@@ -622,13 +622,13 @@
           <!-- Top navigation -->
 
           <!-- Calendar summary -->
-        <section class="rounded-xl shadow-card">
-          <div id="calendar-grid" class="flex w-full flex-wrap gap-3 overflow-x-auto rounded-lg bg-slate-100 p-3 sm:flex-nowrap sm:overflow-visible"></div>
+        <section class="rounded-xl">
+          <div id="calendar-grid" class="flex w-full flex-wrap gap-3 overflow-x-auto rounded-lg bg-slate-100 sm:flex-nowrap sm:overflow-visible"></div>
         </section>
 
         <!-- Tabs and chips -->
         <section class="w-full max-w-[1570px] flex flex-col justify-start items-start gap-2 bg-white rounded-lg outline outline-1 outline-offset-[-1px] outline-gray-300 shadow-card overflow-hidden">
-          <div class="flex flex-col w-full gap-2">
+          <div class="flex flex-col w-full">
             <div class="self-stretch px-6 py-4 border-b border-gray-300 inline-flex justify-between items-center gap-4">
               <div id="top-tabs" class="flex flex-wrap items-center gap-1 sm:gap-1 text-base font-medium text-neutral-700">
                 <a href="#" data-tab="inquiry" class="px-6 py-3 text-[#003882] border-b-2 border-[#003882] flex items-center gap-2">Inquiry</a>
@@ -650,7 +650,7 @@
                     Urgent Calls
                   <span class="rounded-full bg-rose-100 px-2 py-0.5 text-[11px] font-semibold text-rose-600">23</span>
                 </a>
-                <button class="inline-flex items-center pl-6 rounded-[32px] outline outline-1 outline-offset-[-1px] outline-[#003882] px-6 py-3 text-base font-medium text-[#003882] transition hover:bg-sky-50">
+                <button class="ml-12 inline-flex items-center pl-6 rounded-[32px] outline outline-1 outline-offset-[-1px] outline-[#003882] px-6 py-2 text-base font-medium text-[#003882] transition hover:bg-sky-50">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M8.5 3a5.5 5.5 0 014.267 8.97l3.131 3.132a.75.75 0 11-1.06 1.06l-3.132-3.131A5.5 5.5 0 118.5 3zm0 1.5a4 4 0 100 8 4 4 0 000-8z" clip-rule="evenodd" />
                   </svg>
@@ -660,10 +660,10 @@
               
               <div class="flex flex-wrap items-center gap-3">
                 
-                <button class="px-4 py-3 bg-neutral-100 rounded outline outline-1 outline-offset-[-1px] outline-gray-300 text-sm font-medium text-neutral-700 transition hover:bg-neutral-50">
+                <button class="px-4 py-2 bg-neutral-100 rounded outline outline-1 outline-offset-[-1px] outline-gray-300 text-sm font-medium text-neutral-700 transition hover:bg-neutral-50">
                   Edit Columns
                 </button>
-                <button class="px-4 py-3 bg-[#003882] rounded outline outline-1 outline-offset-[-1px] outline-[#003882] text-sm font-medium text-white transition hover:bg-[#003882]">
+                <button class="px-4 py-2 bg-[#003882] rounded outline outline-1 outline-offset-[-1px] outline-[#003882] text-sm font-medium text-white transition hover:bg-[#003882]">
                   Save View As
                 </button>
               </div>
@@ -675,7 +675,7 @@
           </div>
 
             <!-- Data table -->
-            <div class="self-stretch flex-1 inline-flex justify-start items-start overflow-hidden rounded-xl border border-slate-200 shadow-sm">
+            <div class="self-stretch flex-1 inline-flex justify-start items-start overflow-hidden border-t border-slate-200 shadow-sm">
               <div id="inquiry-table-container" class="w-full overflow-x-auto"></div>
             </div>
 

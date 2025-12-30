@@ -646,10 +646,17 @@ export class NewInquiryView {
     Object.entries(this.tabs).forEach(([key, button]) => {
       if (!button) return;
       const active = key === targetKey;
+      const label = button.querySelector("[data-tab-label]");
       button.classList.toggle("bg-blue-700", active);
-      button.classList.toggle("text-white", active);
       button.classList.toggle("shadow-sm", active);
-      button.classList.toggle("text-slate-500", !active);
+      button.classList.toggle("outline", !active);
+      button.classList.toggle("outline-1", !active);
+      button.classList.toggle("outline-slate-500", !active);
+      button.classList.toggle("bg-white", !active);
+      if (label) {
+        label.classList.toggle("text-white", active);
+        label.classList.toggle("text-slate-500", !active);
+      }
       if (active) {
         button.setAttribute("data-active-tab", "true");
       } else {
@@ -1269,11 +1276,31 @@ export class NewInquiryView {
     thead.innerHTML = `
       <tr>
         <th class="w-7 px-4 py-2">&nbsp;</th>
-        <th class="px-4 py-2 text-left">Role</th>
-        <th class="px-4 py-2 text-left">Contact</th>
-        <th class="px-4 py-2 text-left">SMS Number</th>
-        <th class="px-4 py-2 text-left">Company</th>
-        <th class="w-20 px-4 py-2 text-right">Action</th>
+        <th>
+          <div data-alignment="Alignment6" data-checkbox="false" data-icon="false" data-label="true" data-padding="Small" class="self-stretch px-4 py-3 inline-flex justify-start items-center gap-2 w-full">
+            <div class="justify-start text-neutral-700 text-sm font-medium font-['Inter'] leading-4">Role</div>
+          </div>
+        </th>
+        <th>
+          <div data-alignment="Alignment6" data-checkbox="false" data-icon="false" data-label="true" data-padding="Small" class="self-stretch px-4 py-3 inline-flex justify-start items-center gap-2 w-full">
+            <div class="justify-start text-neutral-700 text-sm font-medium font-['Inter'] leading-4">Contact</div>
+          </div>
+        </th>
+        <th>
+          <div data-alignment="Alignment6" data-checkbox="false" data-icon="false" data-label="true" data-padding="Small" class="self-stretch px-4 py-3 inline-flex justify-start items-center gap-2 w-full">
+            <div class="justify-start text-neutral-700 text-sm font-medium font-['Inter'] leading-4">SMS Number</div>
+          </div>
+        </th>
+        <th>
+          <div data-alignment="Alignment6" data-checkbox="false" data-icon="false" data-label="true" data-padding="Small" class="self-stretch px-4 py-3 inline-flex justify-start items-center gap-2 w-full">
+            <div class="justify-start text-neutral-700 text-sm font-medium font-['Inter'] leading-4">Company</div>
+          </div>
+        </th>
+        <th class="w-20">
+          <div data-alignment="Alignment6" data-checkbox="false" data-icon="false" data-label="true" data-padding="Small" class="self-stretch px-4 py-3 inline-flex justify-end items-center gap-2">
+            <div class="justify-start text-neutral-700 text-sm font-medium font-['Inter'] leading-4">Action</div>
+          </div>
+        </th>
       </tr>
     `;
     table.appendChild(thead);
