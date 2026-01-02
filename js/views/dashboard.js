@@ -295,7 +295,7 @@ export class DashboardView {
     return renderDynamicTable({
       tableClass: "min-w-[720px] w-full table-auto text-sm text-slate-700",
       theadClass:
-        "truncate bg-[#f5f8ff] text-[11px] sm:text-xs font-semibold uppercase tracking-wide border-b border-slate-200",
+        "bg-[#f5f8ff] text-[11px] sm:text-xs font-semibold uppercase tracking-wide border-b border-slate-200",
       tbodyClass: "bg-white",
       defaultHeaderClass: "px-3 sm:px-6 py-3 sm:py-4 text-left",
       defaultCellClass: "px-3 sm:px-6 py-3 sm:py-4 text-slate-600",
