@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="browser-default">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -41,36 +41,12 @@
       rel="stylesheet"
     />
     <style>
+      
       body {
         font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
       }
-      /* Prevent external Ontraport styles from bleeding into PT&P pages */
-      :where(.op-reset[data-page]) :where(*, *::before, *::after) {
-        box-sizing: border-box;
-      }
-      :where(.op-reset[data-page]) :where(input, select, textarea) {
-        font-family: 'Inter', ui-sans-serif, system-ui, sans-serif !important;
-        font-size: inherit !important;
-        line-height: inherit !important;
-        color: inherit !important;
-        letter-spacing: inherit !important;
-      }
-      :where(.op-reset[data-page]) :where(button) {
-        font-family: 'Inter', ui-sans-serif, system-ui, sans-serif !important;
-        background-color: unset !important;
-        color: inherit !important;
-      }
-      :where(.op-reset[data-page]) :where(button:active, button:focus, button:focus-visible) {
-        background-color: inherit !important;
-        color: inherit !important;
-        box-shadow: none !important;
-      }
-      :where(.op-reset[data-page]) a {
-        color: inherit;
-      }
-    </style>
 
-    <!-- Flatpickr CSS -->
+    </style>
     <link
     rel="stylesheet"
     href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
@@ -161,7 +137,7 @@
               </svg>
               </div>
 
-          <div data-label="false" data-lead-icon="true" data-size="small" data-state="default" data-trail-icon="false" class="w-full sm:w-[508px] bg-white rounded inline-flex flex-col justify-start items-start gap-2">
+          <div data-label="false" data-lead-icon="true" data-size="small"  data-trail-icon="false" class="w-full sm:w-[508px] bg-white rounded inline-flex flex-col justify-start items-start gap-2">
             <div class="w-full self-stretch px-4 py-3 rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-center items-center gap-2 overflow-hidden">
               <div class="w-3 h-3 relative overflow-hidden">
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -178,7 +154,7 @@
 
           <div class="w-full sm:w-auto flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-12">
             <div class="flex flex-wrap sm:flex-nowrap justify-start items-center gap-3 sm:gap-4">
-              <button id="create-btn" data-lead-icon="true" data-size="medium" data-state="Default" data-text="true" data-trail-icon="true" data-type="main" class="px-4 py-3 bg-white rounded outline outline-1 outline-offset-[-1px] outline-white inline-flex justify-center items-center gap-2 overflow-hidden">
+              <button id="create-btn" data-lead-icon="true" data-size="medium"  data-text="true" data-trail-icon="true" data-type="main" class="px-4 py-3 bg-white rounded outline outline-1 outline-offset-[-1px] outline-white inline-flex justify-center items-center gap-2 overflow-hidden">
                 <div data-property-1="circle" class="w-3.5 h-3.5 relative overflow-hidden">
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M7.00001 1.1665C5.84629 1.1665 4.71847 1.50862 3.75918 2.1496C2.7999 2.79057 2.05223 3.70161 1.61071 4.76752C1.1692 5.83342 1.05368 7.00631 1.27876 8.13786C1.50384 9.26942 2.05942 10.3088 2.87522 11.1246C3.69103 11.9404 4.73043 12.496 5.86198 12.7211C6.99354 12.9462 8.16643 12.8306 9.23233 12.3891C10.2982 11.9476 11.2093 11.1999 11.8502 10.2407C12.4912 9.28137 12.8333 8.15356 12.8333 6.99984C12.8317 5.45324 12.2166 3.97046 11.123 2.87685C10.0294 1.78324 8.5466 1.16814 7.00001 1.1665ZM7.00001 11.9357C6.02378 11.9357 5.06948 11.6462 4.25777 11.1039C3.44607 10.5615 2.81342 9.79064 2.43984 8.88872C2.06625 7.98681 1.9685 6.99436 2.15896 6.03689C2.34941 5.07942 2.81951 4.19993 3.5098 3.50963C4.2001 2.81933 5.07959 2.34923 6.03706 2.15878C6.99453 1.96833 7.98698 2.06608 8.8889 2.43966C9.79081 2.81325 10.5617 3.44589 11.1041 4.2576C11.6464 5.0693 11.9359 6.02361 11.9359 6.99984C11.9344 8.30846 11.4139 9.56306 10.4886 10.4884C9.56324 11.4137 8.30864 11.9342 7.00001 11.9357ZM9.69232 6.99984C9.69232 7.11884 9.64504 7.23298 9.56089 7.31713C9.47674 7.40128 9.36261 7.44855 9.2436 7.44855H7.44873V9.24343C7.44873 9.36243 7.40145 9.47657 7.3173 9.56072C7.23315 9.64487 7.11902 9.69214 7.00001 9.69214C6.881 9.69214 6.76687 9.64487 6.68272 9.56072C6.59857 9.47657 6.55129 9.36243 6.55129 9.24343V7.44855H4.75642C4.63741 7.44855 4.52328 7.40128 4.43913 7.31713C4.35498 7.23298 4.3077 7.11884 4.3077 6.99984C4.3077 6.88083 4.35498 6.7667 4.43913 6.68254C4.52328 6.59839 4.63741 6.55112 4.75642 6.55112H6.55129V4.75625C6.55129 4.63724 6.59857 4.52311 6.68272 4.43896C6.76687 4.3548 6.881 4.30753 7.00001 4.30753C7.11902 4.30753 7.23315 4.3548 7.3173 4.43896C7.40145 4.52311 7.44873 4.63724 7.44873 4.75625V6.55112H9.2436C9.36261 6.55112 9.47674 6.59839 9.56089 6.68254C9.64504 6.7667 9.69232 6.88083 9.69232 6.99984Z" fill="#003882"/>
@@ -193,7 +169,7 @@
               </button>
               <div id="create-popup-base" class="relative"></div>
 
-              <div data-lead-icon="false" data-size="medium" data-state="Default" data-text="true" data-trail-icon="true" data-type="outline" class="px-4 py-3 rounded outline outline-1 outline-offset-[-1px] outline-white flex justify-center items-center gap-2 overflow-hidden">
+              <div data-lead-icon="false" data-size="medium"  data-text="true" data-trail-icon="true" data-type="outline" class="px-4 py-3 rounded outline outline-1 outline-offset-[-1px] outline-white flex justify-center items-center gap-2 overflow-hidden">
                 <div class="justify-start text-white text-sm font-medium font-['Inter'] leading-4">Print</div>
                 <div data-property-1="down" class="w-3.5 h-3.5 relative overflow-hidden">
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -201,7 +177,7 @@
                     </svg>                
                 </div>
               </div>
-              <div data-lead-icon="false" data-size="medium" data-state="Default" data-text="true" data-trail-icon="true" data-type="outline" class="px-4 py-3 rounded outline outline-1 outline-offset-[-1px] outline-white flex justify-center items-center gap-2 overflow-hidden">
+              <div data-lead-icon="false" data-size="medium"  data-text="true" data-trail-icon="true" data-type="outline" class="px-4 py-3 rounded outline outline-1 outline-offset-[-1px] outline-white flex justify-center items-center gap-2 overflow-hidden">
                 <div class="justify-start text-white text-sm font-medium font-['Inter'] leading-4">Batch Actions</div>
                 <div data-property-1="down" class="w-3.5 h-3.5 relative overflow-hidden">
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -264,11 +240,11 @@
               </div>
               <div class="ml-4 inline-flex items-center gap-2">
                 
-                <button id="apply-filters-btn" data-lead-icon="false" data-size="medium" data-state="Default" data-text="true" data-trail-icon="false" data-type="main" class="px-2 py-2 bg-brand-600 rounded outline outline-1 outline-offset-[-1px] outline-[#003882] inline-flex justify-center items-center gap-2 overflow-hidden">
+                <button id="apply-filters-btn" data-lead-icon="false" data-size="medium"  data-text="true" data-trail-icon="false" data-type="main" class="px-2 py-2 bg-brand-600 rounded outline outline-1 outline-offset-[-1px] outline-[#003882] inline-flex justify-center items-center gap-2 overflow-hidden">
                   <div class="justify-start text-white text-sm font-medium font-['Inter'] leading-none">Apply Filters</div>
                 </button>
 
-                <button id="reset-filters-btn" data-lead-icon="false" data-size="medium" data-state="Default" data-text="true" data-trail-icon="false" data-type="main" class="hidden px-2 py-2 bg-brand-600 rounded outline outline-1 outline-offset-[-1px] outline-[#003882] inline-flex justify-center items-center gap-2 overflow-hidden" aria-hidden="true" tabindex="-1">
+                <button id="reset-filters-btn" data-lead-icon="false" data-size="medium"  data-text="true" data-trail-icon="false" data-type="main" class="hidden px-2 py-2 bg-brand-600 rounded outline outline-1 outline-offset-[-1px] outline-[#003882] inline-flex justify-center items-center gap-2 overflow-hidden" aria-hidden="true" tabindex="-1">
                   <div class="justify-start text-white text-sm font-medium font-['Inter'] leading-none">Reset Filters</div>
                 </button>
               </div>
