@@ -15,6 +15,30 @@ import { NotificationController } from "./controller/notification.js";
 import { config } from "../sdk/config.js";
 import { VitalStatsSDK } from "../sdk/init.js";
 
+// Strip Ontraport-injected styles when we can't use Shadow DOM
+function stripOntraportStyles() {
+  const pattern = /(ontraport|ontra|op-reset|op-generated)/i;
+  const nodes = Array.from(
+    document.querySelectorAll('link[rel="stylesheet"], style')
+  );
+
+  nodes.forEach((node) => {
+    if (node.dataset?.ptpKeep === "true") return;
+
+    if (
+      node.tagName === "LINK" &&
+      pattern.test(node.getAttribute("href") || "")
+    ) {
+      node.remove();
+    } else if (
+      node.tagName === "STYLE" &&
+      pattern.test(node.textContent || "")
+    ) {
+      node.remove();
+    }
+  });
+}
+
 // Central app bootstrap: instantiate classes once based on page
 (function bootstrap() {
   const loaderElement = initOperationLoader();
@@ -104,7 +128,10 @@ import { VitalStatsSDK } from "../sdk/init.js";
     },
   };
 
-  document.addEventListener("DOMContentLoaded", () => App.start());
+  document.addEventListener("DOMContentLoaded", () => {
+    stripOntraportStyles();
+    App.start();
+  });
   window.App = App; // optional: debug access
   window.renderDynamicTable = renderDynamicTable;
 })();
