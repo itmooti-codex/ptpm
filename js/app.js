@@ -15,28 +15,15 @@ import { NotificationController } from "./controller/notification.js";
 import { config } from "../sdk/config.js";
 import { VitalStatsSDK } from "../sdk/init.js";
 
-// Strip Ontraport-injected styles when we can't use Shadow DOM
-function stripOntraportStyles() {
-  const pattern = /(ontraport|ontra|op-reset|op-generated)/i;
-  const nodes = Array.from(
-    document.querySelectorAll('link[rel="stylesheet"], style')
-  );
+// Apply a neutral class to all elements to avoid host overrides
+function applyBrowserDefault() {
+  const all = [
+    document.documentElement,
+    document.body,
+    ...document.querySelectorAll("*"),
+  ].filter(Boolean);
 
-  nodes.forEach((node) => {
-    if (node.dataset?.ptpKeep === "true") return;
-
-    if (
-      node.tagName === "LINK" &&
-      pattern.test(node.getAttribute("href") || "")
-    ) {
-      node.remove();
-    } else if (
-      node.tagName === "STYLE" &&
-      pattern.test(node.textContent || "")
-    ) {
-      node.remove();
-    }
-  });
+  all.forEach((el) => el.classList.add("browser-default"));
 }
 
 // Central app bootstrap: instantiate classes once based on page
@@ -129,7 +116,7 @@ function stripOntraportStyles() {
   };
 
   document.addEventListener("DOMContentLoaded", () => {
-    stripOntraportStyles();
+    applyBrowserDefault();
     App.start();
   });
   window.App = App; // optional: debug access
