@@ -22,10 +22,37 @@
 
 /* Global font */
 body {
-  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Hide scrollbars while keeping scrollability (pages, modals, panels) */
+html,
+body,
+[data-modal],
+[modal-name],
+.modal,
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE/Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+[data-modal]::-webkit-scrollbar,
+[modal-name]::-webkit-scrollbar,
+.modal::-webkit-scrollbar,
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
 }
 
 /* Keep Google Places suggestions above modal overlays */
 .pac-container {
   z-index: 10100 !important;
+}
+
+[data-dropdown-card] input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  appearance: auto; /* or none if you’re custom-styling */
+  transform: none;
 }

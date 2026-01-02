@@ -92,7 +92,7 @@ export class NewInquiryController {
     this.inquiryConfigs = [
       {
         id: "service-inquiry",
-        placeholder: "Select Service",
+        placeholder: "Select",
         options: [
           "Pool Cleaning",
           "Pigeon Removal",
@@ -107,12 +107,12 @@ export class NewInquiryController {
       },
       {
         id: "inquiry-source",
-        placeholder: "Select Source",
+        placeholder: "Select",
         options: ["Web Form", "Phone Call", "Email", "SMS"],
       },
       {
         id: "inquiry-type",
-        placeholder: "Select Type",
+        placeholder: "Select",
         options: [
           "General Inquiry",
           "Service Request or Quote",
@@ -196,29 +196,8 @@ export class NewInquiryController {
     this.view.onSave((payload) => this.#handleSave(payload));
 
     this.#loadContacts();
-    this.#renderDropdownOptionsForTab(
-      this.noises,
-      "noises-list",
-      "noises-card"
-    );
-    this.#renderDropdownOptionsForTab(
-      this.services,
-      "services-list",
-      "services-card"
-    );
-
-    this.#renderDropdownOptionsForTab(
-      this.pestLocations,
-      "location-list",
-      "location-card"
-    );
-    this.#renderDropdownOptionsForTab(
-      this.buildingFeatures,
-      "property-building-list",
-      "property-building-card"
-    );
-
-    this.#renderDropdownOptionsForTab(this.times, "times-list", "times-card");
+    this.renderAllTabs();
+    this.#initGlobalDropdownClose();
 
     flatpickr(".date-picker", {
       dateFormat: "d/m/Y",
@@ -238,6 +217,29 @@ export class NewInquiryController {
     this.onSubmitButtonClicked();
     this.onViewDetailLinkClicked();
     this.onEntityAddButtonClick();
+  }
+
+  renderAllTabs() {
+    // Example: replace these with your actual data arrays
+    const tabs = [
+      { list: "noises-list", card: "noises-card", items: this.noises },
+      { list: "services-list", card: "services-card", items: this.services },
+      {
+        list: "location-list",
+        card: "location-card",
+        items: this.pestLocations,
+      },
+      {
+        list: "property-building-list",
+        card: "property-building-card",
+        items: this.buildingFeatures,
+      },
+      { list: "times-list", card: "times-card", items: this.times },
+    ];
+
+    tabs.forEach(({ list, card, items }) => {
+      this.#renderDropdownOptionsForTab(items, list, card);
+    });
   }
 
   async #loadContacts() {
@@ -361,139 +363,127 @@ export class NewInquiryController {
   #renderDropdownOptionsForTab(statuses, listId, cardId) {
     const list = document.getElementById(listId);
     const card = document.getElementById(cardId);
-    if (!card || !list) return;
+    if (!list || !card) return;
 
-    // Remove previous dynamic items (keep static ones like 'All')
-    Array.from(list.querySelectorAll('li[data-dynamic="true"]')).forEach((n) =>
-      n.remove()
+    // 1️⃣ Remove previously rendered dynamic items (keep static ones like "All")
+    list
+      .querySelectorAll('li[data-dynamic="true"]')
+      .forEach((li) => li.remove());
+
+    // 2️⃣ Track applied filters
+    const applied = new Set(
+      this.filters?.statuses?.map((x) => String(x.text).toLowerCase()) || []
     );
 
-    // Sort alphabetically by text
-    statuses.sort((a, b) => a.text.localeCompare(b.text));
-
+    // 3️⃣ Create a document fragment for better performance
     const frag = document.createDocumentFragment();
 
-    // Get applied filters (lowercased)
-    const applied = Array.isArray(this.filters?.statuses)
-      ? this.filters.statuses.map((x) => String(x.text).toLowerCase())
-      : [];
+    // 4️⃣ Sort without mutating original array
+    [...statuses]
+      .sort((a, b) => a.text.localeCompare(b.text))
+      .forEach(({ text = "", value = "" }) => {
+        const textLower = text.toLowerCase();
+        const id = `status-${textLower.replace(/[^a-z0-9]+/g, "-")}`;
 
-    statuses.forEach((s) => {
-      const text = s.text || "";
-      const value = s.value || "";
-      const textLower = text.toLowerCase();
+        // 5️⃣ Create LI element with innerHTML for checkbox + label
+        const li = document.createElement("li");
+        li.className = "px-2 py-1 flex items-center gap-2";
+        li.dataset.dynamic = "true"; // mark dynamic items for future cleanup
+        li.innerHTML = `
+            <input 
+              id="${id}" 
+              data-status 
+              value="${value}" 
+              type="checkbox" 
+              class="h-4 w-4 accent-[#003882]"
+              ${applied.has(textLower) ? "checked" : ""}
+            >
+            <label 
+              for="${id}" 
+              class="text-slate-700 text-sm font-normal font-['Inter'] leading-5"
+            >
+              ${text}
+            </label>
+          `;
 
-      const id = `status-${textLower.replace(/[^a-z0-9]+/g, "-")}`;
+        frag.appendChild(li);
+      });
 
-      const li = document.createElement("li");
-      li.className = "px-2 py-1 flex items-center gap-2";
-      li.setAttribute("data-dynamic", "true");
-
-      const checkedAttr = applied.includes(textLower) ? "checked" : "";
-
-      li.innerHTML = `
-        <input 
-          id="${id}" 
-          data-status 
-          value="${value}" 
-          ${checkedAttr} 
-          type="checkbox" 
-          class="h-4 w-4 accent-[#003882]"
-        >
-        <label for="${id}">${text}</label>
-      `;
-
-      frag.appendChild(li);
-    });
-
+    // 6️⃣ Append all items at once for efficiency
     list.appendChild(frag);
 
-    // Re-bind dropdown interactions depending on which list is rendered
-    if (listId === "noises-list") {
-      this.#initDropdown(
-        "noises-btn",
-        "noises-card",
-        "noise-all",
-        'input[type="checkbox"]:not(#noise-all)'
-      );
-    } else if (listId == "location-list") {
-      this.#initDropdown(
-        "location-btn",
-        "location-card",
-        "location-all",
-        'input[type="checkbox"]:not(#location-all)'
-      );
-    } else if (listId == "property-building-list") {
-      this.#initDropdown(
-        "property-building-btn",
-        "property-building-card",
-        "property-building-all",
-        'input[type="checkbox"]:not(#property-building-all)'
-      );
-    } else if (listId == "times-list") {
-      this.#initDropdown(
-        "times-btn",
-        "times-card",
-        "times-all",
-        'input[type="checkbox"]:not(#times-all)'
-      );
-    } else if (listId == "services-list") {
-      this.#initDropdown(
-        "services-btn",
-        "services-card",
-        "services-all",
-        'input[type="checkbox"]:not(#services-all)'
-      );
-    }
+    // 7️⃣ Initialize dropdown behavior once (important for memory)
+    this.#initDropdownOnce(listId, cardId);
   }
 
-  #initDropdown(dropdownId, cardId, allCheckboxId, itemSelector) {
-    const btn = document.getElementById(dropdownId);
+  #initDropdownOnce(listId, cardId) {
     const card = document.getElementById(cardId);
+    const btn = document.getElementById(`${listId.replace("-list", "-btn")}`);
+    const allCheckbox = card?.querySelector(
+      `#${listId.replace("-list", "-all")}`
+    );
+    const itemSelector = 'input[type="checkbox"]:not([id$="-all"])';
+
     if (!btn || !card) return;
 
+    // 1️⃣ Prevent multiple initialization
+    if (btn.dataset.initialized) return;
+    btn.dataset.initialized = "true";
+
+    // -----------------------------
+    // BUTTON CLICK (toggle dropdown)
+    // -----------------------------
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
       card.classList.toggle("hidden");
 
+      // Rotate icon if exists
       const icon = btn.querySelector("svg");
       if (icon) icon.classList.toggle("rotate-180");
     });
 
-    document.addEventListener("click", (e) => {
-      if (
-        !card.classList.contains("hidden") &&
-        !card.contains(e.target) &&
-        e.target !== btn
-      ) {
-        card.classList.add("hidden");
-        const icon = btn.querySelector("svg");
-        if (icon) icon.classList.remove("rotate-180");
+    // -----------------------------
+    // CHECKBOX CHANGE (event delegation)
+    // -----------------------------
+    card.addEventListener("change", (e) => {
+      const items = Array.from(card.querySelectorAll(itemSelector));
+      if (e.target === allCheckbox) {
+        // Toggle all checkboxes
+        const next = allCheckbox.checked;
+        items.forEach((c) => (c.checked = next));
+      } else if (e.target.matches(itemSelector)) {
+        // Update "All" checkbox based on individual items
+        if (allCheckbox) {
+          allCheckbox.checked = items.every((c) => c.checked);
+        }
       }
     });
 
-    const allToggle = card.querySelector(`#${allCheckboxId}`);
-    const itemBoxes = Array.from(card.querySelectorAll(itemSelector));
+    // 3️⃣ Initialize "All" checkbox state
+    if (allCheckbox) {
+      const items = Array.from(card.querySelectorAll(itemSelector));
+      allCheckbox.checked = items.every((c) => c.checked);
+    }
+  }
 
-    const syncAllCheckbox = () => {
-      const allChecked = itemBoxes.every((c) => c.checked);
-      if (allToggle) allToggle.checked = allChecked;
-    };
+  #initGlobalDropdownClose() {
+    // Ensure global listener is added only once
+    if (window.__dropdownDocListenerAdded) return;
+    window.__dropdownDocListenerAdded = true;
 
-    itemBoxes.forEach((box) => {
-      box.addEventListener("change", () => {
-        syncAllCheckbox();
+    document.addEventListener("click", (e) => {
+      // Find all dropdown cards
+      document.querySelectorAll("[data-dropdown-card]").forEach((card) => {
+        const btnId = card.dataset.btn;
+        const btn = document.getElementById(btnId);
+
+        // If click is outside card and button → hide dropdown
+        if (!card.contains(e.target) && e.target !== btn) {
+          card.classList.add("hidden");
+          btn?.querySelector("svg")?.classList.remove("rotate-180");
+        }
       });
     });
-
-    if (allToggle) {
-      allToggle.addEventListener("change", () => {
-        const next = !!allToggle.checked;
-        itemBoxes.forEach((c) => (c.checked = next));
-      });
-    }
-
-    syncAllCheckbox();
   }
 
   createInquiryDetailOption() {

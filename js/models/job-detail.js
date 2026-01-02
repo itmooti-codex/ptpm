@@ -58,6 +58,10 @@ export class JobDetailModal {
     window.jobModel = this.jobModel;
   }
 
+  #logError(context, error) {
+    console.error(`[JobDetailModel] ${context}`, error);
+  }
+
   async fetchContacts(callback) {
     this.contactQuery = this.contactModel
       .query()
@@ -91,12 +95,16 @@ export class JobDetailModal {
     try {
       if (typeof this.contactQuery.subscribe === "function")
         liveObs = this.contactQuery.subscribe();
-    } catch (_) {}
+    } catch (_) {
+      this.#logError("contact subscribe failed", _);
+    }
 
     if (!liveObs && typeof this.contactQuery.localSubscribe === "function") {
       try {
         liveObs = this.contactQuery.localSubscribe();
-      } catch (_) {}
+      } catch (_) {
+        this.#logError("contact localSubscribe failed", _);
+      }
 
       if (liveObs) {
         this.contactSub = liveObs
@@ -275,7 +283,9 @@ export class JobDetailModal {
     try {
       if (typeof this.serviceProviderQuery.subscribe === "function")
         liveObs = this.serviceProviderQuery.subscribe();
-    } catch (_) {}
+    } catch (_) {
+      this.#logError("serviceProvider subscribe failed", _);
+    }
 
     if (
       !liveObs &&
@@ -283,7 +293,9 @@ export class JobDetailModal {
     ) {
       try {
         liveObs = this.serviceProviderQuery.localSubscribe();
-      } catch (_) {}
+      } catch (_) {
+        this.#logError("serviceProvider localSubscribe failed", _);
+      }
 
       if (liveObs) {
         this.serviceProviderSub = liveObs
@@ -486,12 +498,16 @@ export class JobDetailModal {
       if (typeof this.uploadQuery?.subscribe === "function") {
         liveObs = this.uploadQuery.subscribe();
       }
-    } catch (_) {}
+    } catch (_) {
+      this.#logError("upload subscribe failed", _);
+    }
 
     if (!liveObs && typeof this.uploadQuery?.localSubscribe === "function") {
       try {
         liveObs = this.uploadQuery.localSubscribe();
-      } catch (_) {}
+      } catch (_) {
+        this.#logError("upload localSubscribe failed", _);
+      }
     }
 
     if (!liveObs) return;
@@ -601,12 +617,16 @@ export class JobDetailModal {
       if (typeof this.jobDetailQuery?.subscribe === "function") {
         liveObs = this.jobDetailQuery.subscribe();
       }
-    } catch (_) {}
+    } catch (_) {
+      this.#logError("jobDetail subscribe failed", _);
+    }
 
     if (!liveObs && typeof this.jobDetailQuery?.localSubscribe === "function") {
       try {
         liveObs = this.jobDetailQuery.localSubscribe();
-      } catch (_) {}
+      } catch (_) {
+        this.#logError("jobDetail localSubscribe failed", _);
+      }
     }
 
     if (!liveObs) return;
@@ -632,12 +652,16 @@ export class JobDetailModal {
     try {
       if (typeof this.propertyQuery.subscribe === "function")
         liveObs = this.propertyQuery.subscribe();
-    } catch (_) {}
+    } catch (_) {
+      this.#logError("property subscribe failed", _);
+    }
 
     if (!liveObs && typeof this.propertyQuery.localSubscribe === "function") {
       try {
         liveObs = this.propertyQuery.localSubscribe();
-      } catch (_) {}
+      } catch (_) {
+        this.#logError("property localSubscribe failed", _);
+      }
 
       if (liveObs) {
         this.propertySub = liveObs
@@ -665,12 +689,16 @@ export class JobDetailModal {
     try {
       if (typeof this.inquiryQuery.subscribe === "function")
         liveObs = this.inquiryQuery.subscribe();
-    } catch (_) {}
+    } catch (_) {
+      this.#logError("inquiry subscribe failed", _);
+    }
 
     if (!liveObs && typeof this.inquiryQuery.localSubscribe === "function") {
       try {
         liveObs = this.inquiryQuery.localSubscribe();
-      } catch (_) {}
+      } catch (_) {
+        this.#logError("inquiry localSubscribe failed", _);
+      }
 
       if (liveObs) {
         this.inquirySub = liveObs
@@ -698,12 +726,16 @@ export class JobDetailModal {
     try {
       if (typeof this.jobQuery.subscribe === "function")
         liveObs = this.jobQuery.subscribe();
-    } catch (_) {}
+    } catch (_) {
+      this.#logError("job subscribe failed", _);
+    }
 
     if (!liveObs && typeof this.jobQuery.localSubscribe === "function") {
       try {
         liveObs = this.jobQuery.localSubscribe();
-      } catch (_) {}
+      } catch (_) {
+        this.#logError("job localSubscribe failed", _);
+      }
 
       if (liveObs) {
         this.jobSub = liveObs
@@ -789,7 +821,9 @@ export class JobDetailModal {
       if (typeof this.appointmentQuery?.subscribe === "function") {
         liveObs = this.appointmentQuery.subscribe();
       }
-    } catch (_) {}
+    } catch (_) {
+      this.#logError("appointment subscribe failed", _);
+    }
 
     if (
       !liveObs &&
@@ -797,7 +831,9 @@ export class JobDetailModal {
     ) {
       try {
         liveObs = this.appointmentQuery.localSubscribe();
-      } catch (_) {}
+      } catch (_) {
+        this.#logError("appointment localSubscribe failed", _);
+      }
     }
 
     if (!liveObs) return;
@@ -877,12 +913,16 @@ export class JobDetailModal {
     try {
       if (typeof this.activityQuery.subscribe === "function")
         liveObs = this.activityQuery.subscribe();
-    } catch (_) {}
+    } catch (_) {
+      this.#logError("activity subscribe failed", _);
+    }
 
     if (!liveObs && typeof this.activityQuery.localSubscribe === "function") {
       try {
         liveObs = this.activityQuery.localSubscribe();
-      } catch (_) {}
+      } catch (_) {
+        this.#logError("activity localSubscribe failed", _);
+      }
     }
 
     if (liveObs) {
@@ -909,12 +949,16 @@ export class JobDetailModal {
     try {
       if (typeof this.materialQuery.subscribe === "function")
         liveObs = this.materialQuery.subscribe();
-    } catch (_) {}
+    } catch (_) {
+      this.#logError("material subscribe failed", _);
+    }
 
     if (!liveObs && typeof this.materialQuery.localSubscribe === "function") {
       try {
         liveObs = this.materialQuery.localSubscribe();
-      } catch (_) {}
+      } catch (_) {
+        this.#logError("material localSubscribe failed", _);
+      }
     }
 
     if (liveObs) {
@@ -1114,7 +1158,9 @@ export class JobDetailModal {
       if (typeof this.jobInvoiceQuery?.subscribe === "function") {
         liveObs = this.jobInvoiceQuery.subscribe();
       }
-    } catch (_) {}
+    } catch (_) {
+      this.#logError("jobInvoice subscribe failed", _);
+    }
 
     if (
       !liveObs &&
@@ -1122,7 +1168,9 @@ export class JobDetailModal {
     ) {
       try {
         liveObs = this.jobInvoiceQuery.localSubscribe();
-      } catch (_) {}
+      } catch (_) {
+        this.#logError("jobInvoice localSubscribe failed", _);
+      }
     }
 
     if (!liveObs) return;

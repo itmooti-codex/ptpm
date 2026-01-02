@@ -447,7 +447,9 @@ export class JobDetailController {
         });
         this.view.createOptionsForSelectBox(guestElement, mappedData);
         if (previous) guestElement.value = previous;
-      } catch (e) {}
+      } catch (e) {
+        console.error("[JobDetail] Failed to setup contact options", e);
+      }
     } else if (element == "properties") {
       try {
         let locationElement = document.querySelector(
@@ -464,7 +466,9 @@ export class JobDetailController {
 
         this.view.createOptionsForSelectBox(locationElement, mappedData);
         if (previous) locationElement.value = previous;
-      } catch (c) {}
+      } catch (c) {
+        console.error("[JobDetail] Failed to setup property options", c);
+      }
     } else if (element == "serviceProvider") {
       try {
         let hostElement = document.querySelector('[data-field="host_id"]');
@@ -484,7 +488,9 @@ export class JobDetailController {
 
         this.view.createOptionsForSelectBox(hostElement, mappedData);
         if (previous) hostElement.value = previous;
-      } catch (c) {}
+      } catch (c) {
+        console.error("[JobDetail] Failed to setup service provider options", c);
+      }
     } else if (element == "inquiry") {
       try {
         const inquiryElement = document.querySelector(
@@ -500,7 +506,9 @@ export class JobDetailController {
         });
         this.view.createOptionsForSelectBox(inquiryElement, mappedData);
         if (previous) inquiryElement.value = previous;
-      } catch (e) {}
+      } catch (e) {
+        console.error("[JobDetail] Failed to setup inquiry options", e);
+      }
     } else if (element == "job") {
       try {
         const jobElement = document.querySelector('[data-field="job_id"]');
@@ -514,7 +522,9 @@ export class JobDetailController {
         });
         this.view.createOptionsForSelectBox(jobElement, mappedData);
         if (previous) jobElement.value = previous;
-      } catch (e) {}
+      } catch (e) {
+        console.error("[JobDetail] Failed to setup job options", e);
+      }
     }
   }
 

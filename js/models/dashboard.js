@@ -1145,7 +1145,9 @@ export class DashboardModel {
       if (typeof this.announcementQuery?.subscribe === "function") {
         liveObs = this.announcementQuery?.subscribe();
       }
-    } catch (_) {}
+    } catch (_) {
+      console.error("[DashboardModel] announcement subscribe failed", _);
+    }
 
     if (
       !liveObs &&
@@ -1153,7 +1155,9 @@ export class DashboardModel {
     ) {
       try {
         liveObs = this.announcementQuery?.localSubscribe();
-      } catch (_) {}
+      } catch (_) {
+        console.error("[DashboardModel] announcement localSubscribe failed", _);
+      }
     }
 
     if (!liveObs) return;

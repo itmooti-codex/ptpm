@@ -34,6 +34,10 @@ export class NewInquiryModel {
     this.placesDetailsService = null;
   }
 
+  #logError(context, error) {
+    console.error(`[NewInquiryModel] ${context}`, error);
+  }
+
   async loadContacts() {
     if (!this.plugin) return this.getContacts();
 
@@ -150,7 +154,7 @@ export class NewInquiryModel {
           return model;
         }
       } catch (_) {
-        // ignore missing model
+        this.#logError("#resolveContactModel switchTo failed", _);
       }
     }
 
@@ -162,6 +166,7 @@ export class NewInquiryModel {
     try {
       query = model.query();
     } catch (_) {
+      this.#logError("#primeContacts model.query failed", _);
       query = null;
     }
 
@@ -169,12 +174,16 @@ export class NewInquiryModel {
       if (typeof query.limit === "function") {
         try {
           query = query.limit(this.maxRecords);
-        } catch (_) {}
+        } catch (_) {
+          this.#logError("#primeContacts query.limit failed", _);
+        }
       }
       if (typeof query.noDestroy === "function") {
         try {
           query = query.noDestroy();
-        } catch (_) {}
+        } catch (_) {
+          this.#logError("#primeContacts query.noDestroy failed", _);
+        }
       }
     }
 
@@ -255,6 +264,7 @@ export class NewInquiryModel {
       try {
         return await execution;
       } catch (_) {
+        this.#logError("#awaitResult promise execution failed", _);
         return null;
       }
     }
@@ -262,6 +272,7 @@ export class NewInquiryModel {
       try {
         return await execution;
       } catch (_) {
+        this.#logError("#awaitResult thenable execution failed", _);
         return null;
       }
     }
@@ -304,7 +315,9 @@ export class NewInquiryModel {
         if (state && typeof state === "object") {
           return { ...record, ...state };
         }
-      } catch (_) {}
+      } catch (_) {
+        this.#logError("#unwrap getState failed", _);
+      }
     }
     if (record.state && typeof record.state === "object") {
       return { ...record, ...record.state };
@@ -465,7 +478,9 @@ export class NewInquiryModel {
       fields.forEach(([name, alias]) => {
         try {
           query = query.field(name, alias);
-        } catch (_) {}
+        } catch (_) {
+          this.#logError(`#fetchProperties query.field failed for ${name}`, _);
+        }
       });
     } else if (typeof query.select === "function") {
       try {
@@ -495,7 +510,9 @@ export class NewInquiryModel {
           "building_age",
           "manhole",
         ]);
-      } catch (_) {}
+      } catch (_) {
+        this.#logError("#fetchProperties query.select failed", _);
+      }
     }
     if (typeof query.where === "function") {
       try {
@@ -505,12 +522,16 @@ export class NewInquiryModel {
           }
           return owner;
         });
-      } catch (_) {}
+      } catch (_) {
+        this.#logError("#fetchProperties query.where failed", _);
+      }
     }
     if (typeof query.limit === "function") {
       try {
         query = query.limit(":limit");
-      } catch (_) {}
+      } catch (_) {
+        this.#logError("#fetchProperties query.limit failed", _);
+      }
     }
     query.getOrInitQueryCalc?.();
 
@@ -554,7 +575,9 @@ export class NewInquiryModel {
       fields.forEach(([name, alias]) => {
         try {
           query = query.field(name, alias);
-        } catch (_) {}
+        } catch (_) {
+          this.#logError(`#queryJobs query.field failed for ${name}`, _);
+        }
       });
     } else if (typeof query.select === "function") {
       try {
@@ -578,7 +601,9 @@ export class NewInquiryModel {
           "state",
           "postal_code",
         ]);
-      } catch (_) {}
+      } catch (_) {
+        this.#logError("#queryJobs query.select failed", _);
+      }
     }
     if (typeof query.where === "function") {
       try {
@@ -588,12 +613,16 @@ export class NewInquiryModel {
           }
           return client;
         });
-      } catch (_) {}
+      } catch (_) {
+        this.#logError("#queryJobs query.where failed", _);
+      }
     }
     if (typeof query.limit === "function") {
       try {
         query = query.limit(":limit");
-      } catch (_) {}
+      } catch (_) {
+        this.#logError("#queryJobs query.limit failed", _);
+      }
     }
     query.getOrInitQueryCalc?.();
 
@@ -635,7 +664,9 @@ export class NewInquiryModel {
       fields.forEach(([name, alias]) => {
         try {
           query = query.field(name, alias);
-        } catch (_) {}
+        } catch (_) {
+          this.#logError(`#queryDeals query.field failed for ${name}`, _);
+        }
       });
     } else if (typeof query.select === "function") {
       try {
@@ -657,7 +688,9 @@ export class NewInquiryModel {
           "state",
           "postal_code",
         ]);
-      } catch (_) {}
+      } catch (_) {
+        this.#logError("#queryDeals query.select failed", _);
+      }
     }
     if (typeof query.where === "function") {
       try {
@@ -667,12 +700,16 @@ export class NewInquiryModel {
           }
           return contact;
         });
-      } catch (_) {}
+      } catch (_) {
+        this.#logError("#queryDeals query.where failed", _);
+      }
     }
     if (typeof query.limit === "function") {
       try {
         query = query.limit(":limit");
-      } catch (_) {}
+      } catch (_) {
+        this.#logError("#queryDeals query.limit failed", _);
+      }
     }
     query.getOrInitQueryCalc?.();
 
@@ -702,7 +739,9 @@ export class NewInquiryModel {
     } finally {
       try {
         query.destroy?.();
-      } catch (_) {}
+      } catch (_) {
+        this.#logError("#executeCalcQuery query.destroy failed", _);
+      }
     }
   }
 
@@ -1060,7 +1099,9 @@ export class NewInquiryModel {
     if (stored) {
       try {
         return this.plugin.switchTo(stored);
-      } catch (_) {}
+      } catch (_) {
+        this.#logError(`#resolveRelatedModel switchTo stored ${type} failed`, _);
+      }
     }
 
     const hintsMap = {
@@ -1117,7 +1158,9 @@ export class NewInquiryModel {
         this.relatedModelNames[type] = name;
         try {
           return this.plugin.switchTo(name);
-        } catch (_) {}
+        } catch (_) {
+          this.#logError(`#resolveRelatedModel switchTo hinted ${type} failed`, _);
+        }
       }
     }
 
@@ -1128,7 +1171,9 @@ export class NewInquiryModel {
           this.relatedModelNames[type] = candidate;
           return model;
         }
-      } catch (_) {}
+      } catch (_) {
+        this.#logError(`#resolveRelatedModel switchTo fallback ${type} failed`, _);
+      }
     }
 
     return null;
@@ -1238,14 +1283,18 @@ export class NewInquiryModel {
     try {
       if (typeof this.affiliationQuery.subscribe === "function")
         liveObs = this.affiliationQuery.subscribe();
-    } catch (_) {}
+    } catch (_) {
+      this.#logError("subscribeToAffiliationChanges subscribe failed", _);
+    }
     if (
       !liveObs &&
       typeof this.affiliationQuery.localSubscribe === "function"
     ) {
       try {
         liveObs = this.affiliationQuery.localSubscribe();
-      } catch (_) {}
+      } catch (_) {
+        this.#logError("subscribeToAffiliationChanges localSubscribe failed", _);
+      }
     }
 
     if (liveObs) {
