@@ -119,7 +119,7 @@ export class NewInquiryView {
     this.loaderElement = initOperationLoader();
     this.loaderMessageEl =
       this.loaderElement?.querySelector("[data-loader-message]") || null;
-    this.createSwitchAccountTypeModal();
+    this.createSwithcAccountTypeModal();
     this.companyId = null;
     this.entityContactId = null;
     this.entityRelatedRequestId = 0;
@@ -646,17 +646,10 @@ export class NewInquiryView {
     Object.entries(this.tabs).forEach(([key, button]) => {
       if (!button) return;
       const active = key === targetKey;
-      const label = button.querySelector("[data-tab-label]");
       button.classList.toggle("bg-blue-700", active);
+      button.classList.toggle("text-white", active);
       button.classList.toggle("shadow-sm", active);
-      button.classList.toggle("outline", !active);
-      button.classList.toggle("outline-1", !active);
-      button.classList.toggle("outline-slate-500", !active);
-      button.classList.toggle("bg-white", !active);
-      if (label) {
-        label.classList.toggle("text-white", active);
-        label.classList.toggle("text-slate-500", !active);
-      }
+      button.classList.toggle("text-slate-500", !active);
       if (active) {
         button.setAttribute("data-active-tab", "true");
       } else {
@@ -781,7 +774,10 @@ export class NewInquiryView {
             return;
           }
           if (key === this.activeRelatedTab) {
-            panel.innerHTML = this.#emptyStateFor(key);
+            const message = this.#emptyMessageFor(key);
+            panel.innerHTML = `<p class="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-500 text-center">${this.#escapeHtml(
+              message
+            )}</p>`;
           } else {
             panel.innerHTML = "";
           }
@@ -803,7 +799,7 @@ export class NewInquiryView {
         message = "Select a contact to view related details.";
       } else if (this.relatedLoading) {
         message = "Loading related data...";
-      } else if (activeItems.length != 0) {
+      } else if (!activeItems.length) {
         message = this.#activeMessageFor(this.activeRelatedTab);
       } else {
         show = false;
@@ -858,26 +854,26 @@ export class NewInquiryView {
     return `
       <article id=${
         item.id
-      } class="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm hover:!border-slate-200 active:!border-slate-200 hover:!bg-white active:!bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm">
+      } class="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
         <div class="flex items-center gap-3">
-          <span class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-blue-600 hover:!bg-blue-50 active:!bg-blue-50 hover:!text-blue-600 active:!text-blue-600 hover:bg-blue-50 active:bg-blue-50 focus:bg-blue-50 focus-visible:bg-blue-50 hover:text-blue-600 active:text-blue-600 focus:text-blue-600 focus-visible:text-blue-600">
+          <span class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-blue-600">
             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
               <path d="M3 10.5 12 4l9 6.5v8.5a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1Z" />
             </svg>
           </span>
           <div class="space-y-1">
-            <p class="text-sm font-semibold text-slate-800 hover:!text-slate-800 active:!text-slate-800 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-800 active:text-slate-800 focus:text-slate-800 focus-visible:text-slate-800">${title}</p>
-            <p class="text-xs text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500">${address}</p>
+            <p class="text-sm font-semibold text-slate-800">${title}</p>
+            <p class="text-xs text-slate-500">${address}</p>
             ${
               owner
-                ? `<p class="text-[11px] text-slate-400 hover:!text-[11px] active:!text-[11px] hover:!text-slate-400 active:!text-slate-400 hover:text-[11px] active:text-[11px] focus:text-[11px] focus-visible:text-[11px] hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400">Owner: <span class="font-medium text-slate-600 hover:!text-slate-600 active:!text-slate-600 hover:text-slate-600 active:text-slate-600 focus:text-slate-600 focus-visible:text-slate-600">${owner}</span></p>`
+                ? `<p class="text-[11px] text-slate-400">Owner: <span class="font-medium text-slate-600">${owner}</span></p>`
                 : ""
             }
           </div>
         </div>
         <div class="flex flex-col items-end">
           <a 
-            class="items-center gap-1 text-xs hover:!text-sky-900 mb-[-10px] hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs"
+            class="items-center gap-1 text-xs hover:text-sky-900 mb-[-10px]"
             href="${this.#escapeHtml(mapUrl)}"
             target="_blank"
             rel="noopener noreferrer"
@@ -890,7 +886,7 @@ export class NewInquiryView {
               />
             </svg>
           </a>
-          <div class="justify-start text-blue-700 text-xs font-normal leading-3 hover:!text-blue-700 active:!text-blue-700 hover:text-blue-700 active:text-blue-700 focus:text-blue-700 focus-visible:text-blue-700 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs">View on Map</div>
+          <div class="justify-start text-blue-700 text-xs font-normal leading-3">View on Map</div>
         </div>
       </article>
     `;
@@ -915,16 +911,16 @@ export class NewInquiryView {
     );
 
     return `
-      <article class="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm hover:!border-slate-200 active:!border-slate-200 hover:!bg-white active:!bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm">
+      <article class="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
         <div class="flex items-start justify-between gap-3">
           <div class="space-y-1">
-            <a href="#" class="text-sm font-semibold text-sky-900 hover:!text-sky-600 hover:!text-sky-900 active:!text-sky-900 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-sky-900 active:text-sky-900 focus:text-sky-900 focus-visible:text-sky-900">#${unique}</a>
-            <p class="text-xs text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500">Created On: ${created}</p>
-            <p class="text-xs text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500">Completed On: ${completed}</p>
-            <p class="text-xs text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500">${assignee}</p>
-            <p class="text-xs text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500">${property}</p>
+            <a href="#" class="text-sm font-semibold text-sky-900 hover:text-sky-600">#${unique}</a>
+            <p class="text-xs text-slate-500">Created On: ${created}</p>
+            <p class="text-xs text-slate-500">Completed On: ${completed}</p>
+            <p class="text-xs text-slate-500">${assignee}</p>
+            <p class="text-xs text-slate-500">${property}</p>
           </div>
-          <span class="inline-flex items-center rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-700 hover:!bg-amber-50 active:!bg-amber-50 hover:!text-amber-700 active:!text-amber-700 hover:bg-amber-50 active:bg-amber-50 focus:bg-amber-50 focus-visible:bg-amber-50 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-amber-700 active:text-amber-700 focus:text-amber-700 focus-visible:text-amber-700">
+          <span class="inline-flex items-center rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-700">
             ${status}
           </span>
         </div>
@@ -946,30 +942,30 @@ export class NewInquiryView {
     const posted = this.#formatDateTime(item.created_at || item.createdAt);
 
     return `
-      <article class="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm hover:!border-slate-200 active:!border-slate-200 hover:!bg-white active:!bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm">
+      <article class="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
         <div class="space-y-1">
           <div class="flex items-center justify-between">
-            <span class="text-sm font-semibold text-sky-900 hover:!text-sky-900 active:!text-sky-900 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-sky-900 active:text-sky-900 focus:text-sky-900 focus-visible:text-sky-900">#${unique}</span>
+            <span class="text-sm font-semibold text-sky-900">#${unique}</span>
           </div>
-          <p class="flex items-center gap-2 text-xs text-slate-600 hover:!text-slate-600 active:!text-slate-600 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-slate-600 active:text-slate-600 focus:text-slate-600 focus-visible:text-slate-600">
-            <span class="flex h-5 w-5 items-center justify-center rounded-full bg-sky-50 text-sky-700 hover:!bg-sky-50 active:!bg-sky-50 hover:!text-sky-700 active:!text-sky-700 hover:bg-sky-50 active:bg-sky-50 focus:bg-sky-50 focus-visible:bg-sky-50 hover:text-sky-700 active:text-sky-700 focus:text-sky-700 focus-visible:text-sky-700">
+          <p class="flex items-center gap-2 text-xs text-slate-600">
+            <span class="flex h-5 w-5 items-center justify-center rounded-full bg-sky-50 text-sky-700">
               <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M3 4h14l-1 12H4L3 4Z" />
                 <path d="M7 9h6" />
               </svg>
             </span>
             ${service}
-            <span class="text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400">•</span>
-            <span class="text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500">Previous job ID: <span class="font-medium text-sky-700 hover:!text-sky-700 active:!text-sky-700 hover:text-sky-700 active:text-sky-700 focus:text-sky-700 focus-visible:text-sky-700">${jobId}</span></span>
+            <span class="text-slate-400">•</span>
+            <span class="text-slate-500">Previous job ID: <span class="font-medium text-sky-700">${jobId}</span></span>
           </p>
-          <p class="flex items-center gap-2 text-xs text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500">
+          <p class="flex items-center gap-2 text-xs text-slate-500">
             <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
               <path d="M10 18s6-4.35 6-10a6 6 0 1 0-12 0c0 5.65 6 10 6 10Z" />
               <circle cx="10" cy="8" r="2.5" />
             </svg>
             ${property}
           </p>
-          <p class="text-xs text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500">Posted on: ${posted}</p>
+          <p class="text-xs text-slate-500">Posted on: ${posted}</p>
         </div>
       </article>
     `;
@@ -986,7 +982,6 @@ export class NewInquiryView {
         return "No related properties found.";
     }
   }
-
   #emptyStateFor(tab) {
     if (tab === "properties") {
       return `
@@ -1483,31 +1478,11 @@ export class NewInquiryView {
     thead.innerHTML = `
       <tr>
         <th class="w-7 px-4 py-2">&nbsp;</th>
-        <th>
-          <div data-alignment="Alignment6" data-checkbox="false" data-icon="false" data-label="true" data-padding="Small" class="self-stretch px-4 py-3 inline-flex justify-start items-center gap-2 w-full">
-            <div class="justify-start text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm">Role</div>
-          </div>
-        </th>
-        <th>
-          <div data-alignment="Alignment6" data-checkbox="false" data-icon="false" data-label="true" data-padding="Small" class="self-stretch px-4 py-3 inline-flex justify-start items-center gap-2 w-full">
-            <div class="justify-start text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm">Contact</div>
-          </div>
-        </th>
-        <th>
-          <div data-alignment="Alignment6" data-checkbox="false" data-icon="false" data-label="true" data-padding="Small" class="self-stretch px-4 py-3 inline-flex justify-start items-center gap-2 w-full">
-            <div class="justify-start text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm">SMS Number</div>
-          </div>
-        </th>
-        <th>
-          <div data-alignment="Alignment6" data-checkbox="false" data-icon="false" data-label="true" data-padding="Small" class="self-stretch px-4 py-3 inline-flex justify-start items-center gap-2 w-full">
-            <div class="justify-start text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm">Company</div>
-          </div>
-        </th>
-        <th class="w-20">
-          <div data-alignment="Alignment6" data-checkbox="false" data-icon="false" data-label="true" data-padding="Small" class="self-stretch px-4 py-3 inline-flex justify-end items-center gap-2">
-            <div class="justify-start text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm">Action</div>
-          </div>
-        </th>
+        <th class="px-4 py-2 text-left">Role</th>
+        <th class="px-4 py-2 text-left">Contact</th>
+        <th class="px-4 py-2 text-left">SMS Number</th>
+        <th class="px-4 py-2 text-left">Company</th>
+        <th class="w-20 px-4 py-2 text-right">Action</th>
       </tr>
     `;
     table.appendChild(thead);
@@ -1519,7 +1494,8 @@ export class NewInquiryView {
     // Helper functions
     const starIcon = (filled) => `
       <button type="button" class="star-btn" title="Set as Primary">
-        <svg class="h-4 w-4 ${ filled ?"text-amber-500" : "text-slate-300"
+        <svg class="h-4 w-4 ${
+          filled ? "text-amber-500" : "text-slate-300"
         }" viewBox="0 0 20 20" fill="currentColor">
           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.035a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118L10.5 14.347a1 1 0 00-1.175 0L6.625 16.282c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.99 8.72c-.783-.57-.38-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.06-3.292z"/>
         </svg>
@@ -1527,14 +1503,14 @@ export class NewInquiryView {
     `;
 
     const actionCell = () => `
-      <div class="flex items-center justify-end gap-3 text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500">
-        <button type="button" class="edit-btn" title="Edit">
+      <div class="flex items-center justify-end gap-3 text-slate-500">
+        <button type="button" class="edit-btn hover:text-sky-700" title="Edit">
           <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 20h9"/>
             <path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/>
           </svg>
         </button>
-        <button type="button" class="delete-btn text-rose-600 focus:text-rose-600 focus-visible:text-rose-600" title="Delete">
+        <button type="button" class="delete-btn text-rose-600 hover:text-rose-700" title="Delete">
           <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="3 6 5 6 21 6"/>
             <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
@@ -1589,11 +1565,11 @@ export class NewInquiryView {
         <td class="px-4 py-2">${role}</td>
         <td class="px-4 py-2">
           <div class="font-medium">${toName(contact)}</div>
-          <div class="text-xs text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500">(${toEmail(contact)})</div>
+          <div class="text-xs text-slate-500">(${toEmail(contact)})</div>
         </td>
         <td class="px-4 py-2">${toPhone(contact)}</td>
         <td class="px-4 py-2">${toCompany(company)}</td>
-        <td class="px-4 py-2 text-right hover:text-right active:text-right focus:text-right focus-visible:text-right">${actionCell()}</td>
+        <td class="px-4 py-2 text-right">${actionCell()}</td>
       `;
 
       tbody.appendChild(tr);
@@ -1696,10 +1672,10 @@ export class NewInquiryView {
     wrapper.className =
       "fixed inset-0 z-[9999] hidden flex items-center justify-center bg-black/50";
     wrapper.innerHTML = `
-      <div modal-name="contact-detail-modal" id="addressDetailsModalBox" class="bg-white rounded-lg shadow-xl w-[40vw] max-w-3xl max-h-[90vh] overflow-auto hover:!bg-white active:!bg-white hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-xl active:shadow-xl focus:shadow-xl focus-visible:shadow-xl">
-        <div class="flex items-center justify-between px-5 py-3 bg-[#003882] text-white rounded-t-lg hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:bg-[#003882] active:bg-[#003882] focus:bg-[#003882] focus-visible:bg-[#003882] hover:text-white active:text-white focus:text-white focus-visible:text-white">
-          <h3 class="text-base font-semibold hover:text-base active:text-base focus:text-base focus-visible:text-base">Contact Details</h3>
-          <button id="closeAddressDetailsBtn" class="p-1 rounded" aria-label="Close">
+      <div modal-name="contact-detail-modal" id="addressDetailsModalBox" class="bg-white rounded-lg shadow-xl w-[40vw] max-w-3xl max-h-[90vh] overflow-auto">
+        <div class="flex items-center justify-between px-5 py-3 bg-[#003882] text-white rounded-t-lg">
+          <h3 class="text-base font-semibold">Contact Details</h3>
+          <button id="closeAddressDetailsBtn" class="p-1 rounded hover:bg-white/10" aria-label="Close">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
               <path d="M18.75 6.82 17.18 5.25 12 10.43 6.82 5.25 5.25 6.82 10.43 12 5.25 17.18 6.82 18.75 12 13.57 17.18 18.75 18.75 17.18 13.57 12 18.75 6.82Z" fill="white"/>
             </svg>
@@ -1712,8 +1688,8 @@ export class NewInquiryView {
  
         <div class="px-5 py-5 space-y-6">
         <div class="hidden" id="account-type-section">
-                <label class="block text-sm font-medium text-slate-600 hover:!text-slate-600 active:!text-slate-600 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-600 active:text-slate-600 focus:text-slate-600 focus-visible:text-slate-600">Entity Type</label>
-                <select id="account-type" data-contact-id="account-type" data-contact-field="account_type" class="!block w-full appearance-none rounded-lg border border-slate-200 bg-white my-2 px-4 py-3 text-sm text-slate-600 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100 hover:!border-slate-200 active:!border-slate-200 hover:!bg-white active:!bg-white hover:!text-slate-600 active:!text-slate-600 outline outline-1 outline-offset-[-1px] outline-gray-300 hover:border active:border focus:border focus-visible:border hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-600 active:text-slate-600 focus:text-slate-600 focus-visible:text-slate-600 hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300">
+                <label class="block text-sm font-medium text-slate-600">Entity Type</label>
+                <select id="account-type" data-contact-id="account-type" data-contact-field="account_type" class="!block w-full appearance-none rounded-lg border border-slate-200 bg-white my-2 px-4 py-3 text-sm text-slate-600 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100">
                   <option clas="font-medium text-slate-600" value="Body Corp">Body Corp</option>
                   <option clas="font-medium text-slate-600" value="Body Corp Company">Body Corp Company</option>
                   <option clas="font-medium text-slate-600" value="Business &amp; Gov">Business &amp; Gov</option>
@@ -1725,11 +1701,11 @@ export class NewInquiryView {
                 </select>
               </div>
               <div id="company-name-section" class="hidden">
-                <label class="text-sm font-medium text-slate-600 hover:!text-slate-600 active:!text-slate-600 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-600 active:text-slate-600 focus:text-slate-600 focus-visible:text-slate-600">Company Name</label>
-                <input type="tel" data-contact-field="company_name" data-contact-id="company_name" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100 hover:!border-slate-200 active:!border-slate-200 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:border active:border focus:border focus-visible:border hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700">
+                <label class="text-sm font-medium text-slate-600">Company Name</label>
+                <input type="tel" data-contact-field="company_name" data-contact-id="company_name" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100">
               </div>
         <div class="hidden" id="affiliations-role-section">
-                <label class="block text-sm font-medium text-slate-600 hover:!text-slate-600 active:!text-slate-600 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-600 active:text-slate-600 focus:text-slate-600 focus-visible:text-slate-600"
+                <label class="block text-sm font-medium text-slate-600"
                   >Role</label
                 >
                 <input
@@ -1737,77 +1713,77 @@ export class NewInquiryView {
                   data-contact-id="affiliationsrole"
                   data-contact-field="affiliationsrole"
                   placeholder="Resident, Owner, Property Manager..."
-                  class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100 hover:!border-slate-200 active:!border-slate-200 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:border active:border focus:border focus-visible:border hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700"
+                  class="mt-1 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 focus:ring-2 focus:ring-slate-200 browser-default"
                 />
               </div>
           <div class="space-y-3">
            <div class="flex gap-4">
                 <div class="flex-1 min-w-[150px]">
-                  <label class="text-sm font-medium text-slate-600 hover:!text-slate-600 active:!text-slate-600 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-600 active:text-slate-600 focus:text-slate-600 focus-visible:text-slate-600">First Name <span class="text-rose-500 hover:!text-rose-500 active:!text-rose-500 hover:text-rose-500 active:text-rose-500 focus:text-rose-500 focus-visible:text-rose-500">*</span></label>
-                  <input type="text" data-contact-field="first_name" data-contact-id="first_name" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100 hover:!border-slate-200 active:!border-slate-200 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:border active:border focus:border focus-visible:border hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700">
+                  <label class="text-sm font-medium text-slate-600">First Name <span class="text-rose-500">*</span></label>
+                  <input type="text" data-contact-field="first_name" data-contact-id="first_name" class="mt-1 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 focus:ring-2 focus:ring-slate-200 browser-default">
                 </div>
                 <div class="flex-1 min-w-[150px]">
-                  <label class="text-sm font-medium text-slate-600 hover:!text-slate-600 active:!text-slate-600 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-600 active:text-slate-600 focus:text-slate-600 focus-visible:text-slate-600">Last Name</label>
-                  <input type="text" data-contact-field="last_name" data-contact-id="last_name" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100 hover:!border-slate-200 active:!border-slate-200 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:border active:border focus:border focus-visible:border hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700">
+                  <label class="text-sm font-medium text-slate-600">Last Name</label>
+                  <input type="text" data-contact-field="last_name" data-contact-id="last_name" class="mt-1 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 focus:ring-2 focus:ring-slate-200 browser-default">
                 </div>
               </div>
 
               <div class="flex gap-4">
                 <div class="flex-1 min-w-[150px]">
-                  <label class="text-sm font-medium text-slate-600 hover:!text-slate-600 active:!text-slate-600 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-600 active:text-slate-600 focus:text-slate-600 focus-visible:text-slate-600">Email <span class="text-rose-500 hover:!text-rose-500 active:!text-rose-500 hover:text-rose-500 active:text-rose-500 focus:text-rose-500 focus-visible:text-rose-500">*</span></label>
-                  <input type="email" data-contact-field="email" data-contact-id="email" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100 hover:!border-slate-200 active:!border-slate-200 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:border active:border focus:border focus-visible:border hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700">
+                  <label class="text-sm font-medium text-slate-600">Email <span class="text-rose-500">*</span></label>
+                  <input type="email" data-contact-field="email" data-contact-id="email" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100">
                 </div>
                 <div class="flex-1 min-w-[150px]">
-                  <label class="text-sm font-medium text-slate-600 hover:!text-slate-600 active:!text-slate-600 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-600 active:text-slate-600 focus:text-slate-600 focus-visible:text-slate-600">SMS Number</label>
-                  <input type="tel" data-contact-field="sms_number" data-contact-id="sms_number" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100 hover:!border-slate-200 active:!border-slate-200 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:border active:border focus:border focus-visible:border hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700">
+                  <label class="text-sm font-medium text-slate-600">SMS Number</label>
+                  <input type="tel" data-contact-field="sms_number" data-contact-id="sms_number" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100">
                 </div>
               </div>
               <div  class="hidden">
-              <input id="contact-address" type="text"/>
+              <input id="contact-address" type="text" class="mt-1 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 focus:ring-2 focus:ring-slate-200 browser-default"/>
               </div>
               
 
               <div>
-                <label class="text-sm font-medium text-slate-600 hover:!text-slate-600 active:!text-slate-600 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-600 active:text-slate-600 focus:text-slate-600 focus-visible:text-slate-600">Office Number</label>
-                <input type="tel" data-contact-field="office_phone" data-contact-id="office_phone" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100 hover:!border-slate-200 active:!border-slate-200 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:border active:border focus:border focus-visible:border hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700">
+                <label class="text-sm font-medium text-slate-600">Office Number</label>
+                <input type="tel" data-contact-field="office_phone" data-contact-id="office_phone" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100">
               </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1 hover:!text-gray-700 active:!text-gray-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-gray-700 active:text-gray-700 focus:text-gray-700 focus-visible:text-gray-700">Address</label>
+              <label class="block text-sm  font-medium text-gray-700 mb-1">Address</label>
             <div class="relative hidden">
-              <input id="adTopSearch" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 pr-9 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:!border-gray-300 active:!border-gray-300 hover:border active:border focus:border focus-visible:border hover:border-gray-300 active:border-gray-300 focus:border-gray-300 focus-visible:border-gray-300" />
-                <svg class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 hover:!text-gray-500 active:!text-gray-500 hover:text-gray-500 active:text-gray-500 focus:text-gray-500 focus-visible:text-gray-500" viewBox="0 0 24 24" fill="currentColor"><path d="M21 20l-5.6-5.6a7.5 7.5 0 10-1.4 1.4L20 21l1-1Zm-13.5-5A5.5 5.5 0 1113 9.5 5.51 5.51 0 017.5 15Z"/></svg>
+              <input id="adTopSearch" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 pr-9 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                <svg class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" viewBox="0 0 24 24" fill="currentColor"><path d="M21 20l-5.6-5.6a7.5 7.5 0 10-1.4 1.4L20 21l1-1Zm-13.5-5A5.5 5.5 0 1113 9.5 5.51 5.51 0 017.5 15Z"/></svg>
               </div>
             </div>
             <div data-section="address">
             <div class="flex gap-3">
               <div class="flex-1">
-                <label class="block font-medium text-sm text-gray-700 mb-1 hover:!text-gray-700 active:!text-gray-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-gray-700 active:text-gray-700 focus:text-gray-700 focus-visible:text-gray-700">Address line 1</label>
-                <input id="adTopLine1" data-contact-id="address" data-contact-field="top_address_line1" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:!border-gray-300 active:!border-gray-300 hover:border active:border focus:border focus-visible:border hover:border-gray-300 active:border-gray-300 focus:border-gray-300 focus-visible:border-gray-300" />
+                <label class="block font-medium text-sm text-gray-700 mb-1">Address line 1</label>
+                <input id="adTopLine1" data-contact-id="address" data-contact-field="top_address_line1" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
               </div>
               <div class="flex-1">
-                <label class="block font-medium text-sm text-gray-700 mb-1 hover:!text-gray-700 active:!text-gray-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-gray-700 active:text-gray-700 focus:text-gray-700 focus-visible:text-gray-700">Address line 2</label>
-                <input id="adTopLine2" data-contact-id="address_2" data-contact-field="top_address_line2" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:!border-gray-300 active:!border-gray-300 hover:border active:border focus:border focus-visible:border hover:border-gray-300 active:border-gray-300 focus:border-gray-300 focus-visible:border-gray-300" />
+                <label class="block font-medium text-sm text-gray-700 mb-1">Address line 2</label>
+                <input id="adTopLine2" data-contact-id="address_2" data-contact-field="top_address_line2" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
               </div>
             </div>
             <div class="flex gap-3">
               <div class="flex-1">
-                <label class="block text-sm font-medium text-gray-700 mb-1 hover:!text-gray-700 active:!text-gray-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-gray-700 active:text-gray-700 focus:text-gray-700 focus-visible:text-gray-700">City</label>
-                <input id="adTopCity" data-contact-id="city" data-contact-field="top_city" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:!border-gray-300 active:!border-gray-300 hover:border active:border focus:border focus-visible:border hover:border-gray-300 active:border-gray-300 focus:border-gray-300 focus-visible:border-gray-300" />
+                <label class="block text-sm font-medium text-gray-700 mb-1">City</label>
+                <input id="adTopCity" data-contact-id="city" data-contact-field="top_city" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
               </div>
               <div class="flex-1">
-                <label class="block text-sm font-medium text-gray-700 mb-1 hover:!text-gray-700 active:!text-gray-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-gray-700 active:text-gray-700 focus:text-gray-700 focus-visible:text-gray-700">State*</label>
-                 <select id="adTopState" data-contact-id="state" data-contact-field="top_state" class="!block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:!border-gray-300 active:!border-gray-300 outline outline-1 outline-offset-[-1px] outline-gray-300 hover:border active:border focus:border focus-visible:border hover:border-gray-300 active:border-gray-300 focus:border-gray-300 focus-visible:border-gray-300 hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300">
+                <label class="block text-sm font-medium text-gray-700 mb-1">State*</label>
+                 <select id="adTopState" data-contact-id="state" data-contact-field="top_state" class="!block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                 </select>
               </div>
             </div>
             <div class="flex gap-3">
               <div class="flex-1">
-                <label class="block text-sm font-medium text-gray-700 mb-1 hover:!text-gray-700 active:!text-gray-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-gray-700 active:text-gray-700 focus:text-gray-700 focus-visible:text-gray-700">Postal Code*</label>
-                <input id="adTopPostal" data-contact-id="zip_code" data-contact-field="top_postal" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:!border-gray-300 active:!border-gray-300 hover:border active:border focus:border focus-visible:border hover:border-gray-300 active:border-gray-300 focus:border-gray-300 focus-visible:border-gray-300" />
+                <label class="block text-sm font-medium text-gray-700 mb-1">Postal Code*</label>
+                <input id="adTopPostal" data-contact-id="zip_code" data-contact-field="top_postal" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
               </div>
               <div class="flex-1">
-                <label class="block text-sm font-medium text-gray-700 mb-1 hover:!text-gray-700 active:!text-gray-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-gray-700 active:text-gray-700 focus:text-gray-700 focus-visible:text-gray-700">Country</label>
-                <select id="adTopCountry" data-contact-id="country" data-contact-field="top_country" class="!block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:!border-gray-300 active:!border-gray-300 outline outline-1 outline-offset-[-1px] outline-gray-300 hover:border active:border focus:border focus-visible:border hover:border-gray-300 active:border-gray-300 focus:border-gray-300 focus-visible:border-gray-300 hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                <select id="adTopCountry" data-contact-id="country" data-contact-field="top_country" class="!block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                    <option value="AU">Australia</option>
                 </select>
               </div>
@@ -1817,15 +1793,15 @@ export class NewInquiryView {
   
           <div class="pt-2">
             <div class="mb-2 flex items-center justify-between">
-              <h4 class="text-sm font-medium text-gray-900 hover:!text-gray-900 active:!text-gray-900 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-gray-900 active:text-gray-900 focus:text-gray-900 focus-visible:text-gray-900">Postal Address</h4>
+              <h4 class="text-sm font-medium text-gray-900">Postal Address</h4>
               <div class="flex items-center gap-2">
               <input
                 id="adSameAsAbove"
                 name="adSameAsAbove"
                 type="checkbox"
-                class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 accent-blue-600 hover:!border-gray-300 active:!border-gray-300 hover:!text-blue-600 active:!text-blue-600 hover:border-gray-300 active:border-gray-300 focus:border-gray-300 focus-visible:border-gray-300 hover:text-blue-600 active:text-blue-600 focus:text-blue-600 focus-visible:text-blue-600"
+                class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 accent-blue-600"
               />
-              <label for="adSameAsAbove" class="text-sm text-gray-700 select-none cursor-pointer hover:!text-gray-700 active:!text-gray-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-gray-700 active:text-gray-700 focus:text-gray-700 focus-visible:text-gray-700">
+              <label for="adSameAsAbove" class="text-sm text-gray-700 select-none cursor-pointer">
                 Same as above
               </label>
             </div>
@@ -1834,39 +1810,39 @@ export class NewInquiryView {
   
             <div class="space-y-3" data-section="postal-address">
               <div class="hidden">
-                <label class="block font-medium text-sm text-gray-700 mb-1 hover:!text-gray-700 active:!text-gray-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-gray-700 active:text-gray-700 focus:text-gray-700 focus-visible:text-gray-700">Address</label>
-              <input id="adBotSearch" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:!border-gray-300 active:!border-gray-300 hover:border active:border focus:border focus-visible:border hover:border-gray-300 active:border-gray-300 focus:border-gray-300 focus-visible:border-gray-300" />
+                <label class="block font-medium text-sm text-gray-700 mb-1">Address</label>
+              <input id="adBotSearch" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
               </div>
               <div class="flex gap-3">
                 <div class="flex-1">
-                  <label class="block font-medium text-sm text-gray-700 mb-1 hover:!text-gray-700 active:!text-gray-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-gray-700 active:text-gray-700 focus:text-gray-700 focus-visible:text-gray-700">Address line 1</label>
-                  <input id="adBotLine1" data-contact-id="postal_address"  data-contact-field="bot_address_line1" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:!border-gray-300 active:!border-gray-300 hover:border active:border focus:border focus-visible:border hover:border-gray-300 active:border-gray-300 focus:border-gray-300 focus-visible:border-gray-300" />
+                  <label class="block font-medium text-sm text-gray-700 mb-1">Address line 1</label>
+                  <input id="adBotLine1" data-contact-id="postal_address"  data-contact-field="bot_address_line1" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
                 </div>
                 <div class="flex-1">
-                  <label class="block text-sm font-medium text-gray-700 mb-1 hover:!text-gray-700 active:!text-gray-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-gray-700 active:text-gray-700 focus:text-gray-700 focus-visible:text-gray-700">Address line 2</label>
-                  <input id="adBotLine2" data-contact-id="postal_address_2"  data-contact-field="bot_address_line2" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:!border-gray-300 active:!border-gray-300 hover:border active:border focus:border focus-visible:border hover:border-gray-300 active:border-gray-300 focus:border-gray-300 focus-visible:border-gray-300" />
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Address line 2</label>
+                  <input id="adBotLine2" data-contact-id="postal_address_2"  data-contact-field="bot_address_line2" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
                 </div>
               </div>
               <div class="flex gap-3">
                 <div class="flex-1">
-                  <label class="block text-sm font-medium text-gray-700 mb-1 hover:!text-gray-700 active:!text-gray-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-gray-700 active:text-gray-700 focus:text-gray-700 focus-visible:text-gray-700">City</label>
-                  <input id="adBotCity" data-contact-id="postal_city" data-contact-field="bot_city" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:!border-gray-300 active:!border-gray-300 hover:border active:border focus:border focus-visible:border hover:border-gray-300 active:border-gray-300 focus:border-gray-300 focus-visible:border-gray-300" />
+                  <label class="block text-sm font-medium text-gray-700 mb-1">City</label>
+                  <input id="adBotCity" data-contact-id="postal_city" data-contact-field="bot_city" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
                 </div>
                 <div class="flex-1">
-                  <label class="block text-sm font-medium text-gray-700 mb-1 hover:!text-gray-700 active:!text-gray-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-gray-700 active:text-gray-700 focus:text-gray-700 focus-visible:text-gray-700">State*</label>
-                  <select id="adBotState" data-contact-id="postal_state" data-contact-field="bot_state" class="!block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:!border-gray-300 active:!border-gray-300 outline outline-1 outline-offset-[-1px] outline-gray-300 hover:border active:border focus:border focus-visible:border hover:border-gray-300 active:border-gray-300 focus:border-gray-300 focus-visible:border-gray-300 hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300">
+                  <label class="block text-sm font-medium text-gray-700 mb-1">State*</label>
+                  <select id="adBotState" data-contact-id="postal_state" data-contact-field="bot_state" class="!block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     
                   </select>
                 </div>
               </div>
               <div class="flex gap-3">
                 <div class="flex-1">
-                  <label class="block text-sm font-medium text-gray-700 mb-1 hover:!text-gray-700 active:!text-gray-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-gray-700 active:text-gray-700 focus:text-gray-700 focus-visible:text-gray-700">Postal Code*</label>
-                  <input id="adBotPostal" data-contact-id="postal_code" data-contact-field="bot_postal" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:!border-gray-300 active:!border-gray-300 hover:border active:border focus:border focus-visible:border hover:border-gray-300 active:border-gray-300 focus:border-gray-300 focus-visible:border-gray-300" />
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Postal Code*</label>
+                  <input id="adBotPostal" data-contact-id="postal_code" data-contact-field="bot_postal" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
                 </div>
                 <div class="flex-1">
-                  <label class="block text-sm font-medium text-gray-700 mb-1 hover:!text-gray-700 active:!text-gray-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-gray-700 active:text-gray-700 focus:text-gray-700 focus-visible:text-gray-700">Country</label>
-                  <select id="adBotCountry" data-contact-id="postal_country" data-contact-field="bot_country" class="!block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:!border-gray-300 active:!border-gray-300 outline outline-1 outline-offset-[-1px] outline-gray-300 hover:border active:border focus:border focus-visible:border hover:border-gray-300 active:border-gray-300 focus:border-gray-300 focus-visible:border-gray-300 hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300">
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                  <select id="adBotCountry" data-contact-id="postal_country" data-contact-field="bot_country" class="!block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     <option value="AU">Australia</option>
                   </select>
                 </div>
@@ -1875,9 +1851,9 @@ export class NewInquiryView {
           </div>
         </div>
   
-        <div class="flex justify-end gap-3 px-5 py-4 border-t rounded-b-lg hover:border-t active:border-t focus:border-t focus-visible:border-t">
-          <button id="cancelAddressDetailsBtn" class="text-sm text-slate-600 font-medium focus:text-sm focus-visible:text-sm focus:text-slate-600 focus-visible:text-slate-600">Cancel</button>
-          <button id="updateAddressDetailsBtn" class="px-4 py-2 bg-[#003882] text-white text-sm font-medium rounded focus:bg-[#003882] focus-visible:bg-[#003882] focus:text-white focus-visible:text-white focus:text-sm focus-visible:text-sm">Save</button>
+        <div class="flex justify-end gap-3 px-5 py-4 border-t rounded-b-lg">
+          <button id="cancelAddressDetailsBtn" class="text-sm text-slate-600 font-medium hover:text-gray-800">Cancel</button>
+          <button id="updateAddressDetailsBtn" class="px-4 py-2 bg-[#003882] text-white text-sm font-medium rounded hover:bg-blue-700">Save</button>
         </div>
       </div>
     `;
@@ -2001,11 +1977,11 @@ export class NewInquiryView {
       "fixed inset-0 z-[999] hidden items-center justify-center bg-black/50";
 
     wrapper.innerHTML = `
-      <div id="propertyContactModalBox" class="bg-white rounded-lg shadow-xl w-[95vw] max-w-md max-h-[90vh] overflow-auto hover:!bg-white active:!bg-white hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-xl active:shadow-xl focus:shadow-xl focus-visible:shadow-xl">
+      <div id="propertyContactModalBox" class="bg-white rounded-lg shadow-xl w-[95vw] max-w-md max-h-[90vh] overflow-auto">
         <!-- Header -->
-        <div class="flex items-center justify-between px-5 py-3 bg-[#003882] text-white rounded-t-lg hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:bg-[#003882] active:bg-[#003882] focus:bg-[#003882] focus-visible:bg-[#003882] hover:text-white active:text-white focus:text-white focus-visible:text-white">
-          <h3 class="text-base font-semibold hover:text-base active:text-base focus:text-base focus-visible:text-base">Add Property Contact</h3>
-          <button id="pcCloseBtn" class="p-1 rounded" aria-label="Close">
+        <div class="flex items-center justify-between px-5 py-3 bg-[#003882] text-white rounded-t-lg">
+          <h3 class="text-base font-semibold">Add Property Contact</h3>
+          <button id="pcCloseBtn" class="p-1 rounded hover:bg-white/10" aria-label="Close">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
               <path d="M18.75 6.82 17.18 5.25 12 10.43 6.82 5.25 5.25 6.82 10.43 12 5.25 17.18 6.82 18.75 12 13.57 17.18 18.75 18.75 17.18 13.57 12 18.75 6.82Z" fill="white"/>
             </svg>
@@ -2016,15 +1992,15 @@ export class NewInquiryView {
         <div class="px-5 py-5 space-y-5">
           <!-- Contact search -->
           <div>
-            <label class="block font-medium text-sm text-gray-700 mb-1 hover:!text-gray-700 active:!text-gray-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-gray-700 active:text-gray-700 focus:text-gray-700 focus-visible:text-gray-700">Contact</label>
+            <label class="block font-medium text-sm text-gray-700 mb-1">Contact</label>
             <div class="relative">
               <input id="pcSearch" type="text" placeholder="Search by name, email, phone"
-                     class="w-full border border-gray-300 rounded-md px-3 py-2 pr-9 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:!border-gray-300 active:!border-gray-300 hover:!text-gray-800 active:!text-gray-800 hover:border active:border focus:border focus-visible:border hover:border-gray-300 active:border-gray-300 focus:border-gray-300 focus-visible:border-gray-300 hover:text-gray-800 active:text-gray-800 focus:text-gray-800 focus-visible:text-gray-800"/>
-              <div id="pcSearchList" class="absolute z-10 mt-1 left-0 right-0 bg-white border border-slate-200 rounded-lg shadow-md hidden hover:!bg-white active:!bg-white hover:!border-slate-200 active:!border-slate-200 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:shadow-md active:shadow-md focus:shadow-md focus-visible:shadow-md">
+                     class="mt-1 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 focus:ring-2 focus:ring-slate-200 browser-default pr-9"/>
+              <div id="pcSearchList" class="absolute z-10 mt-1 left-0 right-0 bg-white border border-slate-200 rounded-lg shadow-md hidden">
                 <div id="pcSearchScroll" class="max-h-64 overflow-auto"></div>
-                <div id="pcSearchFooter" data-contact-id="add-new-property-contact" class="border-t sticky bottom-0 bg-white hover:!bg-white active:!bg-white hover:border-t active:border-t focus:border-t focus-visible:border-t hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white"></div>
+                <div id="pcSearchFooter" data-contact-id="add-new-property-contact" class="border-t sticky bottom-0 bg-white"></div>
               </div>
-              <svg xmlns="http://www.w3.org/2000/svg" class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 hover:!text-gray-500 active:!text-gray-500 hover:text-gray-500 active:text-gray-500 focus:text-gray-500 focus-visible:text-gray-500" viewBox="0 0 24 24" fill="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" viewBox="0 0 24 24" fill="currentColor">
                       <path fill-rule="evenodd" d="M12.9 14.32a8 8 0 111.414-1.414l3.387 3.386a1 1 0 01-1.414 1.415l-3.387-3.387zM14 8a6 6 0 11-12 0 6 6 0 0112 0z" clip-rule="evenodd"></path>
                     </svg>
             </div>
@@ -2033,46 +2009,46 @@ export class NewInquiryView {
            <!-- Role -->
            <div class="flex gap-3">
             <div class="flex-1">
-              <label class="block text-sm font-medium text-gray-700 mb-1 hover:!text-gray-700 active:!text-gray-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-gray-700 active:text-gray-700 focus:text-gray-700 focus-visible:text-gray-700">Role</label>
-              <input id="pcRole" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:!border-gray-300 active:!border-gray-300 hover:border active:border focus:border focus-visible:border hover:border-gray-300 active:border-gray-300 focus:border-gray-300 focus-visible:border-gray-300"/>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Role</label>
+              <input id="pcRole" type="text" class="mt-1 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 focus:ring-2 focus:ring-slate-200 browser-default"/>
             </div>
           </div>
   
           <!-- Names -->
           <div class="flex gap-3" id>
             <div class="flex-1">
-              <label class="block text-sm font-medium text-gray-700 mb-1 hover:!text-gray-700 active:!text-gray-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-gray-700 active:text-gray-700 focus:text-gray-700 focus-visible:text-gray-700">First Name*</label>
-              <input id="pcFirstName" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:!border-gray-300 active:!border-gray-300 hover:border active:border focus:border focus-visible:border hover:border-gray-300 active:border-gray-300 focus:border-gray-300 focus-visible:border-gray-300"/>
+              <label class="block text-sm font-medium text-gray-700 mb-1">First Name*</label>
+              <input id="pcFirstName" type="text" class="mt-1 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 focus:ring-2 focus:ring-slate-200 browser-default"/>
             </div>
             <div class="flex-1">
-              <label class="block text-sm font-medium text-gray-700 mb-1 hover:!text-gray-700 active:!text-gray-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-gray-700 active:text-gray-700 focus:text-gray-700 focus-visible:text-gray-700">Last Name</label>
-              <input id="pcLastName" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:!border-gray-300 active:!border-gray-300 hover:border active:border focus:border focus-visible:border hover:border-gray-300 active:border-gray-300 focus:border-gray-300 focus-visible:border-gray-300"/>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+              <input id="pcLastName" type="text" class="mt-1 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 focus:ring-2 focus:ring-slate-200 browser-default"/>
             </div>
           </div>
   
           <!-- Email / SMS -->
           <div class="flex gap-3">
             <div class="flex-1">
-              <label class="block text-sm font-medium text-gray-700 mb-1 hover:!text-gray-700 active:!text-gray-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-gray-700 active:text-gray-700 focus:text-gray-700 focus-visible:text-gray-700">Email*</label>
-              <input id="pcEmail" type="email" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:!border-gray-300 active:!border-gray-300 hover:border active:border focus:border focus-visible:border hover:border-gray-300 active:border-gray-300 focus:border-gray-300 focus-visible:border-gray-300"/>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Email*</label>
+              <input id="pcEmail" type="email" class="mt-1 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 focus:ring-2 focus:ring-slate-200 browser-default"/>
             </div>
             <div class="flex-1">
-              <label class="block text-sm font-medium text-gray-700 mb-1 hover:!text-gray-700 active:!text-gray-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-gray-700 active:text-gray-700 focus:text-gray-700 focus-visible:text-gray-700">SMS Number</label>
-              <input id="pcSms" type="tel" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:!border-gray-300 active:!border-gray-300 hover:border active:border focus:border focus-visible:border hover:border-gray-300 active:border-gray-300 focus:border-gray-300 focus-visible:border-gray-300"/>
+              <label class="block text-sm font-medium text-gray-700 mb-1">SMS Number</label>
+              <input id="pcSms" type="tel" class="mt-1 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 focus:ring-2 focus:ring-slate-200 browser-default"/>
             </div>
           </div>
   
           <!-- Primary -->
-          <div class="inline-flex text-gray-700 font-medium items-center gap-2 text-sm hover:!text-gray-700 active:!text-gray-700 hover:text-gray-700 active:text-gray-700 focus:text-gray-700 focus-visible:text-gray-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm">
-            <input id="pcPrimary" name="pcPrimary" type="checkbox" class="h-4 w-4 accent-[#003882] rounded border-gray-300 text-blue-600 focus:ring-blue-500 hover:!border-gray-300 active:!border-gray-300 hover:!text-blue-600 active:!text-blue-600 hover:border-gray-300 active:border-gray-300 focus:border-gray-300 focus-visible:border-gray-300 hover:text-blue-600 active:text-blue-600 focus:text-blue-600 focus-visible:text-blue-600"/>
-            <label for="pcPrimary" class="text-sm text-gray-700 hover:!text-gray-700 active:!text-gray-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-gray-700 active:text-gray-700 focus:text-gray-700 focus-visible:text-gray-700">Is Primary Contact</label>
+          <div class="inline-flex text-gray-700 font-medium items-center gap-2 text-sm">
+            <input id="pcPrimary" name="pcPrimary" type="checkbox" class="h-4 w-4 accent-[#003882] rounded border-gray-300 text-blue-600 focus:ring-blue-500"/>
+            <label for="pcPrimary" class="text-sm text-gray-700">Is Primary Contact</label>
           </div>
         </div>
   
         <!-- Footer -->
-        <div class="flex justify-end gap-3 px-5 py-4 border-t rounded-b-lg hover:border-t active:border-t focus:border-t focus-visible:border-t">
-          <button id="pcCancelBtn" class="text-sm text-slate-600 font-medium font-['Inter'] focus:text-sm focus-visible:text-sm focus:text-slate-600 focus-visible:text-slate-600 hover:!text-slate-600 active:!text-slate-600">Cancel</button>
-          <button id="pcSaveBtn" class="px-4 py-2 bg-[#003882] text-white text-sm font-medium font-['Inter'] rounded outline outline-1 outline-offset-[-1px] outline-[#003882] inline-flex justify-center items-center gap-2 hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882] hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white hover:!outline-[#003882] active:!outline-[#003882] focus:!outline-[#003882] focus-visible:!outline-[#003882] focus:outline focus-visible:outline focus:outline-1 focus-visible:outline-1 focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px]"></button>
+        <div class="flex justify-end gap-3 px-5 py-4 border-t rounded-b-lg">
+          <button id="pcCancelBtn" class="text-sm text-slate-600 font-medium hover:text-gray-800">Cancel</button>
+          <button id="pcSaveBtn" class="px-4 py-2 text-white text-sm bg-[#003882] font-medium rounded"></button>
         </div>
       </div>
     `;
@@ -2115,12 +2091,11 @@ export class NewInquiryView {
     });
 
     saveBtn.addEventListener("click", async () => {
-      const isUpdatingContact = Boolean(this.contactId);
       showLoader(
         this.loaderElement,
         this.loaderMessageEl,
         this.loaderCounter,
-        isUpdatingContact ? "Updating contact..." : "Creating contact..."
+        "Saving contact..."
       );
       try {
         const contact = {
@@ -2222,12 +2197,7 @@ export class NewInquiryView {
         if (primary) primary.checked = false;
         if (!preserveSearch && search) search.value = "";
         this.affiliationId = undefined;
-      } catch (error) {
-        console.error(
-          "[NewInquiryView] Failed to reset affiliation modal",
-          error
-        );
-      }
+      } catch (_) {}
     };
 
     this.setAffiliationContacts = (contacts = []) => {
@@ -2272,10 +2242,10 @@ export class NewInquiryView {
           li.className =
             "flex flex-col gap-1 text-sm px-4 pt-4 pb-2 cursor-pointer border-b last:border-b-0 hover:bg-slate-50";
           li.innerHTML = `
-            <div class="text-[15px] font-medium text-slate-800 hover:!text-[15px] active:!text-[15px] hover:!text-slate-800 active:!text-slate-800 hover:text-[15px] active:text-[15px] focus:text-[15px] focus-visible:text-[15px] hover:text-slate-800 active:text-slate-800 focus:text-slate-800 focus-visible:text-slate-800">${this.#escapeHtml(
+            <div class="text-[15px] font-medium text-slate-800">${this.#escapeHtml(
               name
             )}</div>
-            <div class="text-xs text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500">${this.#escapeHtml(sub)}</div>
+            <div class="text-xs text-slate-500">${this.#escapeHtml(sub)}</div>
           `;
           li.addEventListener("click", () => {
             this.contactId = c.id;
@@ -2297,7 +2267,7 @@ export class NewInquiryView {
       addBtn.className =
         "w-full flex items-center gap-2 px-4 py-3 text-[15px] font-medium text-sky-800 hover:bg-sky-50";
       addBtn.innerHTML = `
-        <span class="inline-flex items-center justify-center h-5 w-5 rounded-full border border-sky-800 text-sky-800 hover:!border-sky-800 active:!border-sky-800 hover:!text-sky-800 active:!text-sky-800 hover:border active:border focus:border focus-visible:border hover:border-sky-800 active:border-sky-800 focus:border-sky-800 focus-visible:border-sky-800 hover:text-sky-800 active:text-sky-800 focus:text-sky-800 focus-visible:text-sky-800">+</span>
+        <span class="inline-flex items-center justify-center h-5 w-5 rounded-full border border-sky-800 text-sky-800">+</span>
         <span>Add New Contact</span>
       `;
       addBtn.addEventListener("click", () => {
@@ -2347,6 +2317,16 @@ export class NewInquiryView {
         searchList.classList.add("hidden");
       }
     });
+
+    modal.addEventListener("click", (e) => {
+      if (
+        searchList &&
+        !searchList.contains(e.target) &&
+        e.target !== searchInput
+      ) {
+        searchList.classList.add("hidden");
+      }
+    });
   }
 
   onAddNewContactButtonClick() {
@@ -2381,19 +2361,17 @@ export class NewInquiryView {
     });
   }
 
-  async getValuesFromContactDetailModal(elements, { skipLoader = false } = {}) {
+  async getValuesFromContactDetailModal(elements) {
     const formElements = Array.from(elements);
     const contactData = this.buildContactData(formElements);
     const contactId = this.getContactId();
 
-    if (!skipLoader) {
-      showLoader(
-        this.loaderElement,
-        this.loaderMessageEl,
-        this.loaderCounter,
-        contactId ? "Updating contact..." : "Creating contact..."
-      );
-    }
+    showLoader(
+      this.loaderElement,
+      this.loaderMessageEl,
+      this.loaderCounter,
+      contactId ? "Updating contact..." : "Creating contact..."
+    );
 
     try {
       const result = await this.saveContact(contactId, contactData);
@@ -2410,9 +2388,7 @@ export class NewInquiryView {
       console.error("[NewInquiry] Contact modal save failed", error);
       this.showFeedback("Unable to save contact right now.");
     } finally {
-      if (!skipLoader) {
-        hideLoader(this.loaderElement, this.loaderCounter);
-      }
+      hideLoader(this.loaderElement, this.loaderCounter);
     }
   }
 
@@ -2467,30 +2443,26 @@ export class NewInquiryView {
     this.toggleModal("statusModal");
   }
 
-  async getEntityValuesFromContactDetailModal(
-    elements,
-    { skipLoader = false } = {}
-  ) {
+  async getEntityValuesFromContactDetailModal(elements) {
     const element = Array.from(elements);
     const entityDetailObj = {};
     element.forEach((item) => {
-      const key = item.dataset.contactId;
+      const key = item.item.dataset.contactId;
       const value = item.value;
       if (key) entityDetailObj[key] = value;
+      0;
     });
 
     let primaryContactPersonId = document.querySelector(
       "[data-contact-field='contact_id']"
     ).value;
 
-    if (!skipLoader) {
-      showLoader(
-        this.loaderElement,
-        this.loaderMessageEl,
-        this.loaderCounter,
-        primaryContactPersonId ? "Updating contact..." : "Creating contact..."
-      );
-    }
+    showLoader(
+      this.loaderElement,
+      this.loaderMessageEl,
+      this.loaderCounter,
+      primaryContactPersonId ? "Updating contact..." : "Creating contact..."
+    );
     try {
       if (primaryContactPersonId) {
         entityDetailObj["Companies"] = {
@@ -2574,9 +2546,7 @@ export class NewInquiryView {
       console.error("[NewInquiry] Contact modal save failed", error);
       this.showFeedback("Unable to save contact right now.");
     } finally {
-      if (!skipLoader) {
-        hideLoader(this.loaderElement, this.loaderCounter);
-      }
+      hideLoader(this.loaderElement, this.loaderCounter);
     }
   }
 
@@ -2623,7 +2593,7 @@ export class NewInquiryView {
   //     //         p.id
   //     //       } class="flex items-start justify-between gap-3">
   //     //         <div>
-  //     //           <p class="text-sm font-medium text-slate-700 hover:!text-slate-700 active:!text-slate-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700">${this.#escapeHtml(
+  //     //           <p class="text-sm font-medium text-slate-700">${this.#escapeHtml(
   //     //             p.property_name || p.id
   //     //           )}</p>
   //     //         </div>
@@ -2656,11 +2626,11 @@ export class NewInquiryView {
   //     const addBtn = document.createElement("button");
   //     addBtn.type = "button";
   //     addBtn.innerHTML = `
-  //                   <span class="inline-flex h-5 w-5 items-center justify-center rounded-full border border-sky-900 text-sky-900 hover:!border-sky-900 active:!border-sky-900 hover:!text-sky-900 active:!text-sky-900 hover:border active:border focus:border focus-visible:border hover:border-sky-900 active:border-sky-900 focus:border-sky-900 focus-visible:border-sky-900 hover:text-sky-900 active:text-sky-900 focus:text-sky-900 focus-visible:text-sky-900">
+  //                   <span class="inline-flex h-5 w-5 items-center justify-center rounded-full border border-sky-900 text-sky-900">
   //                       +
   //                     </span>
 
-  //                   <span class="text-sky-900 hover:!bg-slate-50 hover:!text-sky-900 active:!text-sky-900 hover:text-sky-900 active:text-sky-900 focus:text-sky-900 focus-visible:text-sky-900">Add New Property</span>
+  //                   <span class="text-sky-900 hover:bg-slate-50">Add New Property</span>
   //                  `;
   //     addBtn.className =
   //       "flex w-full items-center gap-2 border-t border-slate-200 px-4 py-3 text-sm font-medium text-sky-900 hover:bg-slate-50";
@@ -2949,16 +2919,16 @@ export class NewInquiryView {
     });
   }
 
-  createSwitchAccountTypeModal() {
+  createSwithcAccountTypeModal() {
     let modalWrapper = document.createElement("div");
     modalWrapper.id = "switchAccountTypeModalWrapper";
     modalWrapper.classList =
       "flex fixed inset-0 z-[999] hidden items-center justify-center bg-black/50";
 
     modalWrapper.innerHTML = `
-      <div class="bg-white w-full max-w-md rounded-lg shadow-lg hover:!bg-white active:!bg-white hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-lg active:shadow-lg focus:shadow-lg focus-visible:shadow-lg">
-        <div class="flex w-full justify-between px-6 py-4 border-b border-gray-300 items-center hover:!border-gray-300 active:!border-gray-300 hover:border-b active:border-b focus:border-b focus-visible:border-b hover:border-gray-300 active:border-gray-300 focus:border-gray-300 focus-visible:border-gray-300">
-          <div class="flex-1 justify-start text-neutral-700 text-lg font-semibold leading-5 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 hover:text-lg active:text-lg focus:text-lg focus-visible:text-lg">Switch Account Type</div>
+      <div class="bg-white w-full max-w-md rounded-lg shadow-lg">
+        <div class=" flex w-full justify-between px-6 py-4 border-b border-gray-300 items-center">
+          <div class="flex-1 justify-start text-neutral-700 text-lg font-semibold  leading-5">Switch Account Type</div>
           <div id="switchAccountTypeCloseBtn" class="w-6 h-6 relative overflow-hidden">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M18.75 6.81984L17.1802 5.25L12 10.4302L6.81984 5.25L5.25 6.81984L10.4302 12L5.25 17.1802L6.81984 18.75L12 13.5698L17.1802 18.75L18.75 17.1802L13.5698 12L18.75 6.81984Z" fill="#21272A"/>
@@ -2967,22 +2937,22 @@ export class NewInquiryView {
           </div>
          </div>
   
-        <div class="px-5 py-6 text-gray-700 hover:!text-gray-700 active:!text-gray-700 hover:text-gray-700 active:text-gray-700 focus:text-gray-700 focus-visible:text-gray-700">
+        <div class="px-5 py-6 text-gray-700">
           Switching to the Company will reset all filled data.
           Do you want to continue?
         </div>
   
-        <div class="flex justify-end gap-3 px-5 py-4 border-t hover:border-t active:border-t focus:border-t focus-visible:border-t">
+        <div class="flex justify-end gap-3 px-5 py-4 border-t">
           <button
             id="switchAccountTypeCancelBtn"
-            class="text-gray-600 focus:text-gray-600 focus-visible:text-gray-600"
+            class="text-gray-600 hover:text-gray-800"
           >
             Cancel
           </button>
   
           <button
             id="switchAccountTypeContinueBtn"
-            class="bg-[#003882] text-white px-4 py-2 rounded-md focus:bg-[#003882] focus-visible:bg-[#003882] focus:text-white focus-visible:text-white"
+            class="bg-[#003882] text-white px-4 py-2 rounded-md hover:bg-[#003882]"
           >
             Continue
           </button>
@@ -3073,7 +3043,7 @@ export class NewInquiryView {
             p.Primary_Person_Contact_ID
           } class="flex items-start justify-between gap-3">
               <div>
-                <p class="text-sm font-medium text-slate-700 hover:!text-slate-700 active:!text-slate-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700">${this.#escapeHtml(
+                <p class="text-sm font-medium text-slate-700">${this.#escapeHtml(
                   p.Name
                 )}</p>
               </div>
@@ -3126,11 +3096,11 @@ export class NewInquiryView {
       // const addBtn = document.createElement("button");
       // addBtn.type = "button";
       // addBtn.innerHTML = `
-      //               <span class="inline-flex h-5 w-5 items-center justify-center rounded-full border border-sky-900 text-sky-900 hover:!border-sky-900 active:!border-sky-900 hover:!text-sky-900 active:!text-sky-900 hover:border active:border focus:border focus-visible:border hover:border-sky-900 active:border-sky-900 focus:border-sky-900 focus-visible:border-sky-900 hover:text-sky-900 active:text-sky-900 focus:text-sky-900 focus-visible:text-sky-900">
+      //               <span class="inline-flex h-5 w-5 items-center justify-center rounded-full border border-sky-900 text-sky-900">
       //                   +
       //                 </span>
 
-      //               <span class="text-sky-900 hover:!bg-slate-50 hover:!text-sky-900 active:!text-sky-900 hover:text-sky-900 active:text-sky-900 focus:text-sky-900 focus-visible:text-sky-900">Add New Property</span>
+      //               <span class="text-sky-900 hover:bg-slate-50">Add New Property</span>
       //              `;
       // addBtn.className =
       //   "flex w-full items-center gap-2 border-t border-slate-200 px-4 py-3 text-sm font-medium text-sky-900 hover:bg-slate-50";
@@ -3237,8 +3207,10 @@ export class NewInquiryView {
 
   async checkInquiryId() {
     try {
-      const inquiryId = document.body.dataset.inquiryId;
-      const accountType = document.body.dataset.accountType;
+      const url = new URL(window.location.href);
+
+      const inquiryId = url.searchParams.get("inquiry");
+      const accountType = url.searchParams.get("accountType");
 
       let result = await this.model.filterEnquiries(inquiryId, accountType);
       if (!Array.isArray(result.resp)) {
@@ -3255,7 +3227,7 @@ export class NewInquiryView {
         this.model.fetchPropertiesById(inquiryData.Property_ID)
       );
 
-      if (accountType === "Company") {
+      if (accountType === "company") {
         await this.handleCompanyAccount(inquiryData, propertyData);
       } else {
         await this.handleContactAccount(inquiryData, propertyData);
@@ -3620,7 +3592,7 @@ export class NewInquiryView {
               fill="#0052CC"
             ></path>
           </svg>
-          <p class="text-gray-800 text-sm hover:!text-gray-800 active:!text-gray-800 hover:text-gray-800 active:text-gray-800 focus:text-gray-800 focus-visible:text-gray-800 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm">${file.name}</p>
+          <p class="text-gray-800 text-sm">${file.name}</p>
         </div>
         <svg
           width="16"
