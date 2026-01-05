@@ -405,7 +405,7 @@ export class DashboardView {
             return `
               <button
                 type="button"
-                class="flex flex-1 basis-0 min-w-0 inline-flex flex-col justify-start items-start focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-200"
+                class="!flex !flex-1 !basis-0 !min-w-0 !inline-flex !flex-col !justify-start !items-start focus:!outline-none focus-visible:!ring-2 focus-visible:!ring-emerald-200"
                 data-date="${day.iso}"
                 aria-pressed="${isSelected}"
               >
@@ -980,7 +980,7 @@ export class DashboardView {
           <div class="flex items-center gap-2 text-xs text-gray-600 select-none hover:!text-gray-600 active:!text-gray-600 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-gray-600 active:text-gray-600 focus:text-gray-600 focus-visible:text-gray-600">
             <span>Only show unread</span>
             <button id="notifUnreadToggle" type="button" aria-pressed="false"
-              class="w-10 h-5 inline-flex items-center rounded-full bg-gray-300 relative hover:!bg-gray-300 active:!bg-gray-300 hover:bg-gray-300 active:bg-gray-300 focus:bg-gray-300 focus-visible:bg-gray-300">
+              class="!w-10 !h-5 !inline-flex !items-center !rounded-full !bg-gray-300 !relative hover:!bg-gray-300 active:!bg-gray-300 hover:!bg-gray-300 active:!bg-gray-300 focus:!bg-gray-300 focus-visible:!bg-gray-300">
               <span class="knob absolute w-4 h-4 bg-white rounded-full left-0.5 transition-transform duration-200 ease-out translate-x-0 hover:!bg-white active:!bg-white hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white"></span>
             </button>
           </div>
@@ -991,13 +991,13 @@ export class DashboardView {
         <!-- Tailwind safelist anchor for dynamic classes used at runtime on Ontraport builds -->
         <span class="hidden bg-blue-600 bg-gray-300 text-gray-700 text-white shadow-sm translate-x-0 translate-x-5 hover:!bg-blue-600 active:!bg-blue-600 hover:!bg-gray-300 active:!bg-gray-300 hover:!text-gray-700 active:!text-gray-700 hover:!text-white active:!text-white hover:bg-blue-600 active:bg-blue-600 focus:bg-blue-600 focus-visible:bg-blue-600 hover:bg-gray-300 active:bg-gray-300 focus:bg-gray-300 focus-visible:bg-gray-300 hover:text-gray-700 active:text-gray-700 focus:text-gray-700 focus-visible:text-gray-700 hover:text-white active:text-white focus:text-white focus-visible:text-white hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm"></span>
         <div class="flex items-center gap-3">
-          <button id="notifTabAction" class="px-3 py-1.5 rounded-full text-sm font-medium bg-blue-600 text-white shadow-sm hover:!bg-blue-600 active:!bg-blue-600 hover:!text-white active:!text-white hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:bg-blue-600 active:bg-blue-600 focus:bg-blue-600 focus-visible:bg-blue-600 hover:text-white active:text-white focus:text-white focus-visible:text-white hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm">
+          <button id="notifTabAction" class="!px-3 !py-1.5 !rounded-full !text-sm !font-medium !bg-blue-600 !text-white !shadow-sm hover:!bg-blue-600 active:!bg-blue-600 hover:!text-white active:!text-white hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm hover:!bg-blue-600 active:!bg-blue-600 focus:!bg-blue-600 focus-visible:!bg-blue-600 hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white hover:!shadow-sm active:!shadow-sm focus:!shadow-sm focus-visible:!shadow-sm">
             <span class="inline-flex items-center gap-1">
               <span class="w-2.5 h-2.5 rounded-full bg-red-600 hover:!bg-red-600 active:!bg-red-600 hover:bg-red-600 active:bg-red-600 focus:bg-red-600 focus-visible:bg-red-600"></span>
               Action Required
             </span>
           </button>
-          <button id="notifTabGeneral" class="px-3 py-1.5 rounded-full text-sm font-medium text-gray-700 hover:!bg-gray-100 hover:!text-gray-700 active:!text-gray-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-gray-700 active:text-gray-700 focus:text-gray-700 focus-visible:text-gray-700">
+          <button id="notifTabGeneral" class="!px-3 !py-1.5 !rounded-full !text-sm !font-medium !text-gray-700 hover:!bg-gray-100 hover:!text-gray-700 active:!text-gray-700 hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm hover:!text-gray-700 active:!text-gray-700 focus:!text-gray-700 focus-visible:!text-gray-700">
             General Updates
           </button>
         </div>
@@ -1329,19 +1329,19 @@ export class DashboardView {
 
     modalBox.innerHTML = `
       <div class="flex flex-col text-sm text-slate-700 hover:!text-slate-700 active:!text-slate-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700">
-        <button id="new-inquiry" class="flex gap-2 px-4 py-2 text-left hover:!bg-slate-100 w-full hover:text-left active:text-left focus:text-left focus-visible:text-left">
+        <button id="new-inquiry" class="!flex !gap-2 !px-4 !py-2 !text-left hover:!bg-slate-100 !w-full hover:!text-left active:!text-left focus:!text-left focus-visible:!text-left">
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M8.33333 8.88889C8.66667 8.88889 8.88889 9.11111 8.88889 9.44444C8.88889 9.77778 8.66667 10 8.33333 10C8 10 7.77778 9.77778 7.77778 9.44444C7.77778 9.11111 8 8.88889 8.33333 8.88889ZM3.94444 9.83333L3.77778 9.44444L3.94444 9.05556C4.66667 7.27778 6.38889 6.11111 8.33333 6.11111C9.38889 6.11111 10.3333 6.44444 11.1111 7V3.33333C11.1111 2.72222 10.6111 2.22222 10 2.22222H7.77778V1.11111C7.77778 0.5 7.27778 0 6.66667 0H4.44444C3.83333 0 3.33333 0.5 3.33333 1.11111V2.22222H1.11111C0.5 2.22222 0 2.72222 0 3.33333V9.44444C0 10.0556 0.5 10.5556 1.11111 10.5556H4.33333C4.16667 10.3333 4.05556 10.1111 3.94444 9.83333ZM4.44444 1.11111H6.66667V2.22222H4.44444V1.11111ZM8.33333 7.22222C6.83333 7.22222 5.5 8.16667 5 9.44444C5.5 10.7222 6.83333 11.6667 8.33333 11.6667C9.83333 11.6667 11.1667 10.7222 11.6667 9.44444C11.1667 8.16667 9.83333 7.22222 8.33333 7.22222ZM8.33333 10.8333C7.55556 10.8333 6.94445 10.2222 6.94445 9.44444C6.94445 8.66667 7.55556 8.05556 8.33333 8.05556C9.11111 8.05556 9.72222 8.66667 9.72222 9.44444C9.72222 10.2222 9.11111 10.8333 8.33333 10.8333Z" fill="#636D88"/>
         </svg>
           <span>New Inquiry</span>
         </button>
-        <button id="new-quote" class="flex gap-2 px-4 py-2 text-left hover:!bg-slate-100 w-full hover:text-left active:text-left focus:text-left focus-visible:text-left">
+        <button id="new-quote" class="!flex !gap-2 !px-4 !py-2 !text-left hover:!bg-slate-100 !w-full hover:!text-left active:!text-left focus:!text-left focus-visible:!text-left">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M4.311 12.7337C4.52262 12.7337 4.67101 12.628 4.91967 12.3949L6.83581 10.6482L10.4088 10.6534C11.9864 10.6588 12.8333 9.77998 12.8333 8.22905V4.17431C12.8333 2.62337 11.9864 1.75 10.409 1.75H3.59098C2.01904 1.75 1.16667 2.61795 1.16667 4.17431V8.22905C1.16667 9.78517 2.01882 10.6534 3.59098 10.6482H3.83987V12.1885C3.83987 12.5166 4.01445 12.7337 4.311 12.7337ZM4.44335 5.8734C4.44335 5.23311 4.93571 4.7884 5.576 4.7884C6.27479 4.7884 6.74592 5.344 6.74592 6.06944C6.74592 7.42975 5.6607 8.07547 5.11549 8.07547C4.96191 8.07547 4.85079 7.96435 4.85079 7.8268C4.85079 7.69965 4.90906 7.61495 5.11029 7.55691C5.45969 7.4616 5.86713 7.18628 6.06317 6.747H6.02071C5.87774 6.92158 5.6607 6.95862 5.43326 6.95862C4.82978 6.95862 4.44335 6.48207 4.44335 5.8734ZM7.33359 5.8734C7.33359 5.23311 7.82595 4.7884 8.46624 4.7884C9.16503 4.7884 9.63616 5.344 9.63616 6.06944C9.63616 7.42975 8.55094 8.07547 8.00573 8.07547C7.85215 8.07547 7.74103 7.96435 7.74103 7.8268C7.74103 7.69965 7.7993 7.61495 8.00053 7.55691C8.34993 7.4616 8.75737 7.18628 8.95318 6.747H8.91095C8.76798 6.92158 8.55094 6.95862 8.32328 6.95862C7.72003 6.95862 7.33359 6.48207 7.33359 5.8734Z" fill="#636D88"/>
           </svg>
           <span>New Quote</span>
         </button>
-        <button id="new-job" class="flex gap-2 px-4 py-2 text-left hover:!bg-slate-100 w-full hover:text-left active:text-left focus:text-left focus-visible:text-left">
+        <button id="new-job" class="!flex !gap-2 !px-4 !py-2 !text-left hover:!bg-slate-100 !w-full hover:!text-left active:!text-left focus:!text-left focus-visible:!text-left">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M5.90626 2.3335C5.61617 2.3335 5.33798 2.44873 5.13286 2.65385C4.92774 2.85897 4.81251 3.13717 4.81251 3.42725V3.79183H2.26042C1.97034 3.79183 1.69214 3.90706 1.48702 4.11218C1.28191 4.3173 1.16667 4.5955 1.16667 4.88558L1.16667 5.89475L6.71855 7.37495C6.90297 7.42407 7.09704 7.42407 7.28146 7.37495L12.8333 5.89475V4.88558C12.8333 4.5955 12.7181 4.3173 12.513 4.11218C12.3079 3.90706 12.0297 3.79183 11.7396 3.79183H9.18751V3.42725C9.18751 3.13717 9.07227 2.85897 8.86715 2.65385C8.66204 2.44873 8.38384 2.3335 8.09376 2.3335H5.90626ZM5.90626 3.06266H8.09376C8.19045 3.06266 8.28318 3.10107 8.35155 3.16945C8.41993 3.23782 8.45834 3.33055 8.45834 3.42725V3.79183H5.54167V3.42725C5.54167 3.33055 5.58008 3.23782 5.64846 3.16945C5.71683 3.10107 5.80956 3.06266 5.90626 3.06266Z" fill="#636D88"/>
           <path d="M1.16667 10.7189C1.16667 11.009 1.28191 11.2872 1.48702 11.4923C1.69214 11.6974 1.97034 11.8127 2.26042 11.8127H11.7396C12.0297 11.8127 12.3079 11.6974 12.513 11.4923C12.7181 11.2872 12.8333 11.009 12.8333 10.7189V6.59912L7.09407 8.12818C7.03244 8.14464 6.96757 8.14464 6.90594 8.12818L1.16667 6.59912V10.7189Z" fill="#636D88"/>

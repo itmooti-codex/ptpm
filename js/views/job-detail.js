@@ -205,8 +205,8 @@ export class JobDetailView {
         </div>
 
         <div class="flex justify-end items-center gap-3 border-t border-slate-200 pt-3 hover:!border-slate-200 active:!border-slate-200 hover:border-t active:border-t focus:border-t focus-visible:border-t hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200">
-          <button id="cancel-activities" class="text-slate-600 text-sm font-medium px-3 py-2 rounded hover:!text-slate-600 active:!text-slate-600 hover:text-slate-600 active:text-slate-600 focus:text-slate-600 focus-visible:text-slate-600 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm">Cancel</button>
-          <button id="add-activities" class="text-white bg-[#003882] text-sm font-medium px-4 py-2 rounded hover:!text-white active:!text-white hover:!bg-[#003882] active:!bg-[#003882] hover:text-white active:text-white focus:text-white focus-visible:text-white hover:bg-[#003882] active:bg-[#003882] focus:bg-[#003882] focus-visible:bg-[#003882] hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm">Add</button>
+          <button id="cancel-activities" class="!text-slate-600 !text-sm !font-medium !px-3 !py-2 !rounded hover:!text-slate-600 active:!text-slate-600 hover:!text-slate-600 active:!text-slate-600 focus:!text-slate-600 focus-visible:!text-slate-600 hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm">Cancel</button>
+          <button id="add-activities" class="!text-white !bg-[#003882] !text-sm !font-medium !px-4 !py-2 !rounded hover:!text-white active:!text-white hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882] hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm">Add</button>
         </div>
       </div>
 
@@ -562,13 +562,13 @@ export class JobDetailView {
                 >
                   <button
                     id="cancel-material-btn"
-                    class="text-sky-700 text-sm font-medium px-3 py-2 rounded hover:!text-sky-700 active:!text-sky-700 hover:text-sky-700 active:text-sky-700 focus:text-sky-700 focus-visible:text-sky-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm"
+                    class="!text-sky-700 !text-sm !font-medium !px-3 !py-2 !rounded hover:!text-sky-700 active:!text-sky-700 hover:!text-sky-700 active:!text-sky-700 focus:!text-sky-700 focus-visible:!text-sky-700 hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm"
                   >
                     Cancel
                   </button>
                   <button
                     id="add-material-btn"
-                    class="text-white bg-[#003882] text-sm font-medium px-4 py-2 rounded hover:!text-white active:!text-white hover:!bg-[#003882] active:!bg-[#003882] hover:text-white active:text-white focus:text-white focus-visible:text-white hover:bg-[#003882] active:bg-[#003882] focus:bg-[#003882] focus-visible:bg-[#003882] hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm"
+                    class="!text-white !bg-[#003882] !text-sm !font-medium !px-4 !py-2 !rounded hover:!text-white active:!text-white hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882] hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm"
                   >
                     Add
                   </button>
@@ -718,8 +718,8 @@ export class JobDetailView {
           </div>
         </div>
         <div class="flex justify-end items-center gap-3">
-          <button class="text-sky-700 text-sm font-medium px-3 py-2 rounded hover:!text-sky-700 active:!text-sky-700 hover:text-sky-700 active:text-sky-700 focus:text-sky-700 focus-visible:text-sky-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm">Cancel</button>
-          <button id="add-images-btn" class="text-white bg-[#003882] text-sm font-medium px-4 py-2 rounded hover:!text-white active:!text-white hover:!bg-[#003882] active:!bg-[#003882] hover:text-white active:text-white focus:text-white focus-visible:text-white hover:bg-[#003882] active:bg-[#003882] focus:bg-[#003882] focus-visible:bg-[#003882] hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm">Add</button>
+          <button class="!text-sky-700 !text-sm !font-medium !px-3 !py-2 !rounded hover:!text-sky-700 active:!text-sky-700 hover:!text-sky-700 active:!text-sky-700 focus:!text-sky-700 focus-visible:!text-sky-700 hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm">Cancel</button>
+          <button id="add-images-btn" class="!text-white !bg-[#003882] !text-sm !font-medium !px-4 !py-2 !rounded hover:!text-white active:!text-white hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882] hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm">Add</button>
         </div>
       </div>
       <div class="flex-1 h-fit p-4 rounded-lg overflow-auto">
@@ -1066,7 +1066,7 @@ export class JobDetailView {
                   <div class="text-neutral-700 text-sm font-semibold hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm">Invoice Total</div>
                   <div class="text-neutral-700 text-base font-bold hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 hover:text-base active:text-base focus:text-base focus-visible:text-base" data-field="invoice_total">$ 0.00</div>
               </div>
-          <button id="generate-invoice-btn" class="px-4 py-2 bg-[#003882] text-white text-sm font-medium rounded hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:bg-[#003882] active:bg-[#003882] focus:bg-[#003882] focus-visible:bg-[#003882] hover:text-white active:text-white focus:text-white focus-visible:text-white hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm">Generate Invoice</button></div>
+          <button id="generate-invoice-btn" class="!px-4 !py-2 !bg-[#003882] !text-white !text-sm !font-medium !rounded hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882] hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm">Generate Invoice</button></div>
 
           <div class="hidden grid grid-cols-1 md:grid-cols-4 gap-3">
             <div class="flex flex-col gap-1">
@@ -1091,7 +1091,7 @@ export class JobDetailView {
           <a target="_blank" data-field= "Xero_Invoice_PDF" class="px-4 py-2 rounded outline outline-1 outline-gray-300 text-slate-500 text-sm hover:!text-slate-500 active:!text-slate-500 hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm" disabled>Download Invoice (PDF)</a>
           <a target="_blank" data-field= "View_Xero_Invoice_(Admin)" class="px-4 py-2 rounded outline outline-1 outline-gray-300 text-slate-500 text-sm hover:!text-slate-500 active:!text-slate-500 hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm" disabled>View Xero Invoice (Admin)</a>
           <a target="_blank" data-field= "Invoice_URL_Client" class="px-4 py-2 rounded outline outline-1 outline-gray-300 text-slate-500 text-sm hover:!text-slate-500 active:!text-slate-500 hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm" disabled>Send To Customer</a>
-          <button data-field= "" class="hidden px-4 py-2 bg-[#003882] text-white text-sm font-medium rounded hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:bg-[#003882] active:bg-[#003882] focus:bg-[#003882] focus-visible:bg-[#003882] hover:text-white active:text-white focus:text-white focus-visible:text-white hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm">Generate Invoice</button>
+          <button data-field= "" class="!hidden !px-4 !py-2 !bg-[#003882] !text-white !text-sm !font-medium !rounded hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882] hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm">Generate Invoice</button>
         </div>
       </div>
     `;
@@ -1357,7 +1357,7 @@ export class JobDetailView {
         <!-- Header -->
         <div class="flex justify-between items-center border-b pb-3 hover:border-b active:border-b focus:border-b focus-visible:border-b">
           <div class="text-neutral-700 text-lg font-semibold leading-tight hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 hover:text-lg active:text-lg focus:text-lg focus-visible:text-lg">Deal Information</div>
-          <button id="dealInformationCloseBtn" class="text-gray-600 hover:!text-gray-800 hover:!text-gray-600 active:!text-gray-600 hover:text-gray-600 active:text-gray-600 focus:text-gray-600 focus-visible:text-gray-600">
+          <button id="dealInformationCloseBtn" class="!text-gray-600 hover:!text-gray-800 hover:!text-gray-600 active:!text-gray-600 hover:!text-gray-600 active:!text-gray-600 focus:!text-gray-600 focus-visible:!text-gray-600">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
               <path d="M18.75 6.81984L17.1802 5.25L12 10.4302L6.81984 5.25L5.25 6.81984L10.4302 12L5.25 17.1802L6.81984 18.75L12 13.5698L17.1802 18.75L18.75 17.1802L13.5698 12L18.75 6.81984Z" fill="#21272A"/>
             </svg>
@@ -1417,10 +1417,10 @@ export class JobDetailView {
         <!-- Actions -->
         <div class="pt-3 flex justify-end items-center gap-3 border-t hover:border-t active:border-t focus:border-t focus-visible:border-t">
           <button id="dealInformationCancelBtn"
-            class="px-4 py-3 rounded text-neutral-700 text-sm font-medium hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm">Cancel</button>
+            class="!px-4 !py-3 !rounded !text-neutral-700 !text-sm !font-medium hover:!text-neutral-700 active:!text-neutral-700 hover:!text-neutral-700 active:!text-neutral-700 focus:!text-neutral-700 focus-visible:!text-neutral-700 hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm">Cancel</button>
   
           <button id="dealInformationSaveBtn"
-            class="px-4 py-3 bg-[#003882] rounded text-white text-sm font-medium hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:bg-[#003882] active:bg-[#003882] focus:bg-[#003882] focus-visible:bg-[#003882] hover:text-white active:text-white focus:text-white focus-visible:text-white hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm">Save</button>
+            class="!px-4 !py-3 !bg-[#003882] !rounded !text-white !text-sm !font-medium hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882] hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm">Save</button>
         </div>
       </div>
     `;
@@ -1472,7 +1472,7 @@ export class JobDetailView {
           <div class="text-neutral-700 text-lg font-semibold leading-tight hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 hover:text-lg active:text-lg focus:text-lg focus-visible:text-lg">
             Create Quote on Behalf of Serviceman?
           </div>
-          <button id="createQuoteCloseBtn" class="text-gray-600 hover:!text-gray-800 hover:!text-gray-600 active:!text-gray-600 hover:text-gray-600 active:text-gray-600 focus:text-gray-600 focus-visible:text-gray-600">
+          <button id="createQuoteCloseBtn" class="!text-gray-600 hover:!text-gray-800 hover:!text-gray-600 active:!text-gray-600 hover:!text-gray-600 active:!text-gray-600 focus:!text-gray-600 focus-visible:!text-gray-600">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
               <path d="M18.75 6.81984L17.1802 5.25L12 10.4302L6.81984 5.25L5.25 6.81984L10.4302 12L5.25 17.1802L6.81984 18.75L12 13.5698L17.1802 18.75L18.75 17.1802L13.5698 12L18.75 6.81984Z" fill="#21272A"/>
             </svg>
@@ -1495,10 +1495,10 @@ export class JobDetailView {
         <!-- Actions -->
         <div class="pt-3 flex justify-end gap-3 border-t hover:border-t active:border-t focus:border-t focus-visible:border-t">
           <button id="createQuoteCancelBtn"
-            class="px-4 py-3 rounded text-neutral-700 text-sm font-medium hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm">Cancel</button>
+            class="!px-4 !py-3 !rounded !text-neutral-700 !text-sm !font-medium hover:!text-neutral-700 active:!text-neutral-700 hover:!text-neutral-700 active:!text-neutral-700 focus:!text-neutral-700 focus-visible:!text-neutral-700 hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm">Cancel</button>
   
           <button id="createQuoteConfirmBtn"
-            class="px-4 py-3 bg-[#003882] rounded text-white text-sm font-medium hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:bg-[#003882] active:bg-[#003882] focus:bg-[#003882] focus-visible:bg-[#003882] hover:text-white active:text-white focus:text-white focus-visible:text-white hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm">Create & Notify</button>
+            class="!px-4 !py-3 !bg-[#003882] !rounded !text-white !text-sm !font-medium hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882] hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm">Create & Notify</button>
         </div>
       </div>
     `;
@@ -1551,7 +1551,7 @@ export class JobDetailView {
         <div class="flex items-center justify-between border-b px-6 py-4 hover:border-b active:border-b focus:border-b focus-visible:border-b">
           <h2 class="text-lg font-semibold text-neutral-800 hover:!text-neutral-800 active:!text-neutral-800 hover:text-lg active:text-lg focus:text-lg focus-visible:text-lg hover:text-neutral-800 active:text-neutral-800 focus:text-neutral-800 focus-visible:text-neutral-800">Edit Notes</h2>
           <button id="editNotesCloseBtn" type="button" aria-label="Close"
-                  class="text-neutral-500 hover:!text-neutral-700 hover:!text-neutral-500 active:!text-neutral-500 hover:text-neutral-500 active:text-neutral-500 focus:text-neutral-500 focus-visible:text-neutral-500">
+                  class="!text-neutral-500 hover:!text-neutral-700 hover:!text-neutral-500 active:!text-neutral-500 hover:!text-neutral-500 active:!text-neutral-500 focus:!text-neutral-500 focus-visible:!text-neutral-500">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
               <path d="M18.75 6.82 17.18 5.25 12 10.43 6.82 5.25 5.25 6.82 10.43 12 5.25 17.18 6.82 18.75 12 13.57 17.18 18.75 18.75 17.18 13.57 12 18.75 6.82Z"
                     fill="#4B5563"/>
@@ -1572,11 +1572,11 @@ export class JobDetailView {
         <!-- Footer -->
         <div class="flex items-center justify-end gap-3 border-t px-6 py-4 hover:border-t active:border-t focus:border-t focus-visible:border-t">
           <button id="editNotesCancelBtn" type="button"
-            class="rounded px-4 py-2 text-sm font-medium text-neutral-700 hover:!bg-slate-100 hover:!text-neutral-700 active:!text-neutral-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700">
+            class="!rounded !px-4 !py-2 !text-sm !font-medium !text-neutral-700 hover:!bg-slate-100 hover:!text-neutral-700 active:!text-neutral-700 hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm hover:!text-neutral-700 active:!text-neutral-700 focus:!text-neutral-700 focus-visible:!text-neutral-700">
             Cancel
           </button>
           <button id="editNotesSaveBtn" type="button"
-            class="rounded bg-[#003882] px-4 py-2 text-sm font-medium text-white hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:bg-[#003882] active:bg-[#003882] focus:bg-[#003882] focus-visible:bg-[#003882] hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-white active:text-white focus:text-white focus-visible:text-white">
+            class="!rounded !bg-[#003882] !px-4 !py-2 !text-sm !font-medium !text-white hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882] hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white">
             Save
           </button>
         </div>
@@ -1631,7 +1631,7 @@ export class JobDetailView {
           <div class="text-neutral-700 text-lg font-semibold leading-tight hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 hover:text-lg active:text-lg focus:text-lg focus-visible:text-lg">
             Quote Documents
           </div>
-          <button id="closeQuoteDocsBtn" class="text-gray-600 hover:!text-gray-800 hover:!text-gray-600 active:!text-gray-600 hover:text-gray-600 active:text-gray-600 focus:text-gray-600 focus-visible:text-gray-600">
+          <button id="closeQuoteDocsBtn" class="!text-gray-600 hover:!text-gray-800 hover:!text-gray-600 active:!text-gray-600 hover:!text-gray-600 active:!text-gray-600 focus:!text-gray-600 focus-visible:!text-gray-600">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
               <path d="M18.75 6.81984L17.1802 5.25L12 10.4302L6.81984 5.25L5.25 6.81984L10.4302 12L5.25 17.1802L6.81984 18.75L12 13.5698L17.1802 18.75L18.75 17.1802L13.5698 12L18.75 6.81984Z" fill="#21272A"/>
             </svg>
@@ -1648,7 +1648,7 @@ export class JobDetailView {
                 <path d="M5 14a5 5 0 0 0 5 5h4a5 5 0 0 0 0-10" stroke="#CBD5E1" stroke-width="2" stroke-linecap="round"/>
               </svg>
               <p class="text-sm hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm">
-                <button id="quoteDocsUploadBtn" class="text-blue-600 hover:!underline font-medium hover:!text-blue-600 active:!text-blue-600 hover:text-blue-600 active:text-blue-600 focus:text-blue-600 focus-visible:text-blue-600">Click to upload</button>
+                <button id="quoteDocsUploadBtn" class="!text-blue-600 hover:!underline !font-medium hover:!text-blue-600 active:!text-blue-600 hover:!text-blue-600 active:!text-blue-600 focus:!text-blue-600 focus-visible:!text-blue-600">Click to upload</button>
                 <span class="text-gray-500 hover:!text-gray-500 active:!text-gray-500 hover:text-gray-500 active:text-gray-500 focus:text-gray-500 focus-visible:text-gray-500"> or drag and drop</span>
               </p>
               <p class="text-gray-500 text-xs mt-2 hover:!text-gray-500 active:!text-gray-500 hover:text-gray-500 active:text-gray-500 focus:text-gray-500 focus-visible:text-gray-500 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs">SVG, PNG, JPG or GIF (max 800×400px)</p>
@@ -1669,7 +1669,7 @@ export class JobDetailView {
                 </svg>
                 <span class="text-sm text-gray-700 hover:!text-gray-700 active:!text-gray-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-gray-700 active:text-gray-700 focus:text-gray-700 focus-visible:text-gray-700">${name}</span>
               </div>
-              <button class="quoteDocsDeleteBtn text-gray-500 hover:!text-gray-700 hover:!text-gray-500 active:!text-gray-500 hover:text-gray-500 active:text-gray-500 focus:text-gray-500 focus-visible:text-gray-500" aria-label="Delete">
+              <button class="!quoteDocsDeleteBtn !text-gray-500 hover:!text-gray-700 hover:!text-gray-500 active:!text-gray-500 hover:!text-gray-500 active:!text-gray-500 focus:!text-gray-500 focus-visible:!text-gray-500" aria-label="Delete">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none">
                   <path d="M9 3h6m-8 4h10m-8 0v12m6-12v12M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12" stroke="#64748B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
@@ -1684,10 +1684,10 @@ export class JobDetailView {
   
         <!-- Actions -->
         <div class="pt-6 mt-6 flex justify-end space-x-3 border-t hover:border-t active:border-t focus:border-t focus-visible:border-t">
-          <button id="cancelQuoteDocsBtn" class="text-slate-500 text-sm font-medium hover:!text-gray-700 hover:!text-slate-500 active:!text-slate-500 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm">
+          <button id="cancelQuoteDocsBtn" class="!text-slate-500 !text-sm !font-medium hover:!text-gray-700 hover:!text-slate-500 active:!text-slate-500 hover:!text-slate-500 active:!text-slate-500 focus:!text-slate-500 focus-visible:!text-slate-500 hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm">
             Cancel
           </button>
-          <button id="saveQuoteDocsBtn" class="px-4 py-3 bg-blue-600 text-white text-sm font-medium rounded hover:!bg-blue-700 hover:!bg-blue-600 active:!bg-blue-600 hover:!text-white active:!text-white hover:bg-blue-600 active:bg-blue-600 focus:bg-blue-600 focus-visible:bg-blue-600 hover:text-white active:text-white focus:text-white focus-visible:text-white hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm">
+          <button id="saveQuoteDocsBtn" class="!px-4 !py-3 !bg-blue-600 !text-white !text-sm !font-medium !rounded hover:!bg-blue-700 hover:!bg-blue-600 active:!bg-blue-600 hover:!text-white active:!text-white hover:!bg-blue-600 active:!bg-blue-600 focus:!bg-blue-600 focus-visible:!bg-blue-600 hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm">
             Save
           </button>
         </div>
@@ -1747,7 +1747,7 @@ export class JobDetailView {
             </svg>
             <span class="text-sm text-gray-700 hover:!text-gray-700 active:!text-gray-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-gray-700 active:text-gray-700 focus:text-gray-700 focus-visible:text-gray-700">${f.name}</span>
           </div>
-          <button class="quoteDocsDeleteBtn text-gray-500 hover:!text-gray-700 hover:!text-gray-500 active:!text-gray-500 hover:text-gray-500 active:text-gray-500 focus:text-gray-500 focus-visible:text-gray-500" aria-label="Delete">
+          <button class="!quoteDocsDeleteBtn !text-gray-500 hover:!text-gray-700 hover:!text-gray-500 active:!text-gray-500 hover:!text-gray-500 active:!text-gray-500 focus:!text-gray-500 focus-visible:!text-gray-500" aria-label="Delete">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none">
               <path d="M9 3h6m-8 4h10m-8 0v12m6-12v12M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12" stroke="#64748B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
@@ -1825,7 +1825,7 @@ export class JobDetailView {
         <!-- Header -->
         <div class="flex items-center justify-between bg-blue-800 text-white rounded-t-lg px-6 py-3 hover:!bg-blue-800 active:!bg-blue-800 hover:!text-white active:!text-white hover:bg-blue-800 active:bg-blue-800 focus:bg-blue-800 focus-visible:bg-blue-800 hover:text-white active:text-white focus:text-white focus-visible:text-white">
           <h3 class="text-lg font-semibold leading-tight hover:text-lg active:text-lg focus:text-lg focus-visible:text-lg">Activity List</h3>
-          <button id="closeActivityListBtn" class="p-1 rounded hover:!bg-blue-700/60">
+          <button id="closeActivityListBtn" class="!p-1 !rounded hover:!bg-blue-700/60">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
               <path d="M18.75 6.81984L17.1802 5.25L12 10.4302L6.81984 5.25L5.25 6.81984L10.4302 12L5.25 17.1802L6.81984 18.75L12 13.5698L17.1802 18.75L18.75 17.1802L13.5698 12L18.75 6.81984Z" fill="white"/>
             </svg>
@@ -1946,7 +1946,7 @@ export class JobDetailView {
             </svg>
             <h3 class="text-base font-semibold hover:text-base active:text-base focus:text-base focus-visible:text-base">Wildlife Report</h3>
           </div>
-          <button id="closeWildlifeReportBtn" class="p-1 rounded hover:!bg-white/10">
+          <button id="closeWildlifeReportBtn" class="!p-1 !rounded hover:!bg-white/10">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
               <path d="M18.75 6.82 17.18 5.25 12 10.43 6.82 5.25 5.25 6.82 10.43 12 5.25 17.18 6.82 18.75 12 13.57 17.18 18.75 18.75 17.18 13.57 12 18.75 6.82Z" fill="white"/>
             </svg>
@@ -2010,8 +2010,8 @@ export class JobDetailView {
   
         <!-- Footer -->
         <div class="flex justify-end gap-3 px-4 py-3 border-t rounded-b-lg hover:border-t active:border-t focus:border-t focus-visible:border-t">
-          <button id="cancelWildlifeReportBtn" class="text-sm text-slate-500 font-medium hover:!text-gray-700 hover:!text-slate-500 active:!text-slate-500 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500">Cancel</button>
-          <button id="saveWildlifeReportBtn" class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded hover:!bg-blue-700 hover:!bg-blue-600 active:!bg-blue-600 hover:!text-white active:!text-white hover:bg-blue-600 active:bg-blue-600 focus:bg-blue-600 focus-visible:bg-blue-600 hover:text-white active:text-white focus:text-white focus-visible:text-white hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm">Save</button>
+          <button id="cancelWildlifeReportBtn" class="!text-sm !text-slate-500 !font-medium hover:!text-gray-700 hover:!text-slate-500 active:!text-slate-500 hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm hover:!text-slate-500 active:!text-slate-500 focus:!text-slate-500 focus-visible:!text-slate-500">Cancel</button>
+          <button id="saveWildlifeReportBtn" class="!px-4 !py-2 !bg-blue-600 !text-white !text-sm !font-medium !rounded hover:!bg-blue-700 hover:!bg-blue-600 active:!bg-blue-600 hover:!text-white active:!text-white hover:!bg-blue-600 active:!bg-blue-600 focus:!bg-blue-600 focus-visible:!bg-blue-600 hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm">Save</button>
         </div>
       </div>
     `;
@@ -2117,7 +2117,7 @@ export class JobDetailView {
         <!-- Header -->
         <div class="flex items-center justify-between bg-blue-800 text-white rounded-t-lg px-5 py-3 hover:!bg-blue-800 active:!bg-blue-800 hover:!text-white active:!text-white hover:bg-blue-800 active:bg-blue-800 focus:bg-blue-800 focus-visible:bg-blue-800 hover:text-white active:text-white focus:text-white focus-visible:text-white">
           <h3 class="text-base font-semibold hover:text-base active:text-base focus:text-base focus-visible:text-base">Tasks</h3>
-          <button id="closeTasksBtn" class="p-1 rounded hover:!bg-white/10">
+          <button id="closeTasksBtn" class="!p-1 !rounded hover:!bg-white/10">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
               <path d="M18.75 6.82 17.18 5.25 12 10.43 6.82 5.25 5.25 6.82 10.43 12 5.25 17.18 6.82 18.75 12 13.57 17.18 18.75 18.75 17.18 13.57 12 18.75 6.82Z" fill="white"/>
             </svg>
@@ -3098,7 +3098,7 @@ export class JobDetailView {
 
       const footer = `
         <div data-field="confirm-allocation" class="p-2 bg-[#003882] flex justify-center sticky bottom-0 hover:!bg-[#003882] active:!bg-[#003882] hover:bg-[#003882] active:bg-[#003882] focus:bg-[#003882] focus-visible:bg-[#003882]">
-          <button class="text-white text-sm font-medium flex items-center gap-2 hover:!text-white active:!text-white hover:text-white active:text-white focus:text-white focus-visible:text-white hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm">
+          <button class="!text-white !text-sm !font-medium !flex !items-center !gap-2 hover:!text-white active:!text-white hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm">
             Confirm Allocation ✓
           </button>
         </div>
@@ -4364,13 +4364,13 @@ export class JobDetailView {
             const divElement = document.createElement("div");
             divElement.className = "flex flex-wrap gap-2";
             divElement.innerHTML = `<div class="flex items-center justify-end gap-3 text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500">
-              <button type="button" class="edit-btn hover:!text-sky-700" title="Edit">
+              <button type="button" class="!edit-btn hover:!text-sky-700" title="Edit">
                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M12 20h9"></path>
                   <path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4 12.5-12.5z"></path>
                 </svg>
               </button>
-              <button type="button" class="delete-btn text-rose-600 hover:!text-rose-700 hover:!text-rose-600 active:!text-rose-600 hover:text-rose-600 active:text-rose-600 focus:text-rose-600 focus-visible:text-rose-600" title="Delete">
+              <button type="button" class="!delete-btn !text-rose-600 hover:!text-rose-700 hover:!text-rose-600 active:!text-rose-600 hover:!text-rose-600 active:!text-rose-600 focus:!text-rose-600 focus-visible:!text-rose-600" title="Delete">
                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="3 6 5 6 21 6"></polyline>
                   <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"></path>
@@ -4519,8 +4519,8 @@ export class JobDetailView {
             <p class="text-sm text-slate-600 hover:!text-slate-600 active:!text-slate-600 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-600 active:text-slate-600 focus:text-slate-600 focus-visible:text-slate-600">${message}</p>
           </div>
           <div class="flex justify-end gap-2">
-            <button data-confirm-cancel class="px-3 py-2 text-sm font-medium text-slate-600 rounded-lg hover:!bg-slate-100 hover:!text-slate-600 active:!text-slate-600 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-600 active:text-slate-600 focus:text-slate-600 focus-visible:text-slate-600">${cancelLabel}</button>
-            <button data-confirm-ok class="px-3 py-2 text-sm font-semibold text-white bg-rose-600 rounded-lg hover:!bg-rose-700 hover:!text-white active:!text-white hover:!bg-rose-600 active:!bg-rose-600 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-white active:text-white focus:text-white focus-visible:text-white hover:bg-rose-600 active:bg-rose-600 focus:bg-rose-600 focus-visible:bg-rose-600">${confirmLabel}</button>
+            <button data-confirm-cancel class="!px-3 !py-2 !text-sm !font-medium !text-slate-600 !rounded-lg hover:!bg-slate-100 hover:!text-slate-600 active:!text-slate-600 hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm hover:!text-slate-600 active:!text-slate-600 focus:!text-slate-600 focus-visible:!text-slate-600">${cancelLabel}</button>
+            <button data-confirm-ok class="!px-3 !py-2 !text-sm !font-semibold !text-white !bg-rose-600 !rounded-lg hover:!bg-rose-700 hover:!text-white active:!text-white hover:!bg-rose-600 active:!bg-rose-600 hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white hover:!bg-rose-600 active:!bg-rose-600 focus:!bg-rose-600 focus-visible:!bg-rose-600">${confirmLabel}</button>
           </div>
         </div>
       `;
@@ -4671,13 +4671,13 @@ export class JobDetailView {
             const divElement = document.createElement("div");
             divElement.className =
               "flex items-center justify-end gap-3 text-slate-500";
-            divElement.innerHTML = `<button type="button" class="edit-btn hover:!text-sky-700" title="Edit">
+            divElement.innerHTML = `<button type="button" class="!edit-btn hover:!text-sky-700" title="Edit">
                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M12 20h9"></path>
                   <path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4 12.5-12.5z"></path>
                 </svg>
               </button>
-              <button type="button" class="delete-btn text-rose-600 hover:!text-rose-700 hover:!text-rose-600 active:!text-rose-600 hover:text-rose-600 active:text-rose-600 focus:text-rose-600 focus-visible:text-rose-600" title="Delete">
+              <button type="button" class="!delete-btn !text-rose-600 hover:!text-rose-700 hover:!text-rose-600 active:!text-rose-600 hover:!text-rose-600 active:!text-rose-600 focus:!text-rose-600 focus-visible:!text-rose-600" title="Delete">
                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="3 6 5 6 21 6"></polyline>
                   <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"></path>

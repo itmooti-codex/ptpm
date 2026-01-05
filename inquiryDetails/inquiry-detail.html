@@ -100,7 +100,7 @@
                 <button
                   type="button"
                   @click="toggle()"
-                  class="flex items-center gap-1 justify-end"
+                  class="!flex !items-center !gap-1 !justify-end"
                 >
                   <div
                     class="text-white text-[14px] font-medium f-inter hover:!text-white active:!text-white hover:!text-[14px] active:!text-[14px] hover:text-white active:text-white focus:text-white focus-visible:text-white hover:text-[14px] active:text-[14px] focus:text-[14px] focus-visible:text-[14px]"
@@ -171,7 +171,7 @@
                 <button
                   type="button"
                   @click="toggle()"
-                  class="flex items-center gap-1 justify-end"
+                  class="!flex !items-center !gap-1 !justify-end"
                 >
                   <div
                     class="justify-end text-white text-[14px] font-medium f-inter hover:!text-white active:!text-white hover:!text-[14px] active:!text-[14px] hover:text-white active:text-white focus:text-white focus-visible:text-white hover:text-[14px] active:text-[14px] focus:text-[14px] focus-visible:text-[14px]"
@@ -242,7 +242,7 @@
                 <button
                   type="button"
                   @click="toggle()"
-                  class="flex items-center gap-1 justify-end"
+                  class="!flex !items-center !gap-1 !justify-end"
                 >
                   <div
                     class="justify-end text-white text-[14px] font-medium f-inter hover:!text-white active:!text-white hover:!text-[14px] active:!text-[14px] hover:text-white active:text-white focus:text-white focus-visible:text-white hover:text-[14px] active:text-[14px] focus:text-[14px] focus-visible:text-[14px]"
@@ -849,7 +849,7 @@
                       >
                         <button
                           type="button"
-                          class="flex w-full items-center gap-3 px-4 py-3 text-left hover:!bg-slate-50 focus:bg-slate-100 focus:outline-none transition hover:text-left active:text-left focus:text-left focus-visible:text-left"
+                          class="!flex !w-full !items-center !gap-3 !px-4 !py-3 !text-left hover:!bg-slate-50 focus:!bg-slate-100 focus:!outline-none !transition hover:!text-left active:!text-left focus:!text-left focus-visible:!text-left"
                           data-provider-row
                           data-provider-id="[ID]"
                           role="option"
@@ -918,7 +918,7 @@
                   </div>
                   <button
                     type="button"
-                    class="flex w-full items-center justify-center gap-2 rounded-b-sm bg-[#003882] px-4 py-3 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-60 hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:bg-[#003882] active:bg-[#003882] focus:bg-[#003882] focus-visible:bg-[#003882] hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-white active:text-white focus:text-white focus-visible:text-white"
+                    class="!flex !w-full !items-center !justify-center !gap-2 !rounded-b-sm !bg-[#003882] !px-4 !py-3 !text-sm !font-semibold !text-white !transition disabled:!cursor-not-allowed disabled:!opacity-60 hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882] hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white"
                     @click="confirmAllocation"
                     :disabled="isSubmitting || !selectedProviderId"
                     :class="{ 'opacity-60 cursor-not-allowed': isSubmitting || !selectedProviderId }"
@@ -984,14 +984,14 @@
             <div class="flex items-center gap-2">
               <button
                 x-data="{}"
-                class="px-4 py-[12px] bg-white text-[#003882] f-inter font-medium text-[14px] rounded border border-sky-900 hover:!bg-white active:!bg-white hover:!text-[#003882] active:!text-[#003882] hover:!text-[14px] active:!text-[14px] hover:!border-sky-900 active:!border-sky-900 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:text-[#003882] active:text-[#003882] focus:text-[#003882] focus-visible:text-[#003882] hover:text-[14px] active:text-[14px] focus:text-[14px] focus-visible:text-[14px] hover:border active:border focus:border focus-visible:border hover:border-sky-900 active:border-sky-900 focus:border-sky-900 focus-visible:border-sky-900"
+                class="!px-4 !py-[12px] !bg-white !text-[#003882] !f-inter !font-medium !text-[14px] !rounded !border !border-sky-900 hover:!bg-white active:!bg-white hover:!text-[#003882] active:!text-[#003882] hover:!text-[14px] active:!text-[14px] hover:!border-sky-900 active:!border-sky-900 hover:!bg-white active:!bg-white focus:!bg-white focus-visible:!bg-white hover:!text-[#003882] active:!text-[#003882] focus:!text-[#003882] focus-visible:!text-[#003882] hover:!text-[14px] active:!text-[14px] focus:!text-[14px] focus-visible:!text-[14px] hover:!border active:!border focus:!border focus-visible:!border hover:!border-sky-900 active:!border-sky-900 focus:!border-sky-900 focus-visible:!border-sky-900"
                 @click.prevent="$dispatch('dealInfo:open')"
               >
                 Deal Info
               </button>
 
               <button
-                class="px-4 py-[12px] bg-sky-900 text-white f-inter font-medium text-[14px] rounded border border-sky-900 hover:!bg-sky-900 active:!bg-sky-900 hover:!text-white active:!text-white hover:!text-[14px] active:!text-[14px] hover:!border-sky-900 active:!border-sky-900 hover:bg-sky-900 active:bg-sky-900 focus:bg-sky-900 focus-visible:bg-sky-900 hover:text-white active:text-white focus:text-white focus-visible:text-white hover:text-[14px] active:text-[14px] focus:text-[14px] focus-visible:text-[14px] hover:border active:border focus:border focus-visible:border hover:border-sky-900 active:border-sky-900 focus:border-sky-900 focus-visible:border-sky-900"
+                class="!px-4 !py-[12px] !bg-sky-900 !text-white !f-inter !font-medium !text-[14px] !rounded !border !border-sky-900 hover:!bg-sky-900 active:!bg-sky-900 hover:!text-white active:!text-white hover:!text-[14px] active:!text-[14px] hover:!border-sky-900 active:!border-sky-900 hover:!bg-sky-900 active:!bg-sky-900 focus:!bg-sky-900 focus-visible:!bg-sky-900 hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white hover:!text-[14px] active:!text-[14px] focus:!text-[14px] focus-visible:!text-[14px] hover:!border active:!border focus:!border focus-visible:!border hover:!border-sky-900 active:!border-sky-900 focus:!border-sky-900 focus-visible:!border-sky-900"
                 x-show="!hasJob"
                 x-cloak
               >
@@ -999,7 +999,7 @@
               </button>
               <button
                 type="button"
-                class="flex items-center justify-center rounded border border-sky-800 px-4 py-[11px] text-sky-800 bg-white hover:!bg-slate-50 hover:!border-sky-800 active:!border-sky-800 hover:!text-sky-800 active:!text-sky-800 hover:!bg-white active:!bg-white hover:border active:border focus:border focus-visible:border hover:border-sky-800 active:border-sky-800 focus:border-sky-800 focus-visible:border-sky-800 hover:text-sky-800 active:text-sky-800 focus:text-sky-800 focus-visible:text-sky-800 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white"
+                class="!flex !items-center !justify-center !rounded !border !border-sky-800 !px-4 !py-[11px] !text-sky-800 !bg-white hover:!bg-slate-50 hover:!border-sky-800 active:!border-sky-800 hover:!text-sky-800 active:!text-sky-800 hover:!bg-white active:!bg-white hover:!border active:!border focus:!border focus-visible:!border hover:!border-sky-800 active:!border-sky-800 focus:!border-sky-800 focus-visible:!border-sky-800 hover:!text-sky-800 active:!text-sky-800 focus:!text-sky-800 focus-visible:!text-sky-800 hover:!bg-white active:!bg-white focus:!bg-white focus-visible:!bg-white"
                 x-show="$store.quoteState && $store.quoteState.accepted"
                 x-cloak
                 @click.prevent="inquiryCollapsed = !inquiryCollapsed"
@@ -1136,7 +1136,7 @@
                           >
                             <button
                               type="button"
-                              class="flex w-full items-center gap-3 px-4 py-3 text-left hover:!bg-slate-50 focus:bg-slate-100 focus:outline-none transition hover:text-left active:text-left focus:text-left focus-visible:text-left"
+                              class="!flex !w-full !items-center !gap-3 !px-4 !py-3 !text-left hover:!bg-slate-50 focus:!bg-slate-100 focus:!outline-none !transition hover:!text-left active:!text-left focus:!text-left focus-visible:!text-left"
                               data-provider-row
                               data-provider-id="[ID]"
                               role="option"
@@ -1205,7 +1205,7 @@
                       </div>
                       <button
                         type="button"
-                        class="flex w-full items-center justify-center gap-2 rounded-b-sm bg-[#003882] px-4 py-3 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-60 hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:bg-[#003882] active:bg-[#003882] focus:bg-[#003882] focus-visible:bg-[#003882] hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-white active:text-white focus:text-white focus-visible:text-white"
+                        class="!flex !w-full !items-center !justify-center !gap-2 !rounded-b-sm !bg-[#003882] !px-4 !py-3 !text-sm !font-semibold !text-white !transition disabled:!cursor-not-allowed disabled:!opacity-60 hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882] hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white"
                         @click="confirmAllocation"
                         :disabled="isSubmitting || !selectedProviderId"
                         :class="{ 'opacity-60 cursor-not-allowed': isSubmitting || !selectedProviderId }"
@@ -1425,7 +1425,7 @@
                     </div>
                     <button
                       x-data="{}"
-                      class="inline-flex items-center gap-1 text-blue-700 text-xs hover:!text-blue-700 active:!text-blue-700 hover:text-blue-700 active:text-blue-700 focus:text-blue-700 focus-visible:text-blue-700 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs"
+                      class="!inline-flex !items-center !gap-1 !text-blue-700 !text-xs hover:!text-blue-700 active:!text-blue-700 hover:!text-blue-700 active:!text-blue-700 focus:!text-blue-700 focus-visible:!text-blue-700 hover:!text-xs active:!text-xs focus:!text-xs focus-visible:!text-xs"
                       @click="$dispatch('uploads:show', { target: 'resident-feedback' })"
                     >
                       <span
@@ -1537,7 +1537,7 @@
                       </div>
                     </div>
                     <button
-                      class="inline-flex items-center gap-1 text-blue-700 text-xs hover:!text-blue-700 active:!text-blue-700 hover:text-blue-700 active:text-blue-700 focus:text-blue-700 focus-visible:text-blue-700 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs"
+                      class="!inline-flex !items-center !gap-1 !text-blue-700 !text-xs hover:!text-blue-700 active:!text-blue-700 hover:!text-blue-700 active:!text-blue-700 focus:!text-blue-700 focus-visible:!text-blue-700 hover:!text-xs active:!text-xs focus:!text-xs focus-visible:!text-xs"
                       @click="window.dispatchEvent(new CustomEvent('propertyContact:add:open', {detail: { propertyId: PROPERTY_ID }}));"
                     >
                       <svg
@@ -1652,7 +1652,7 @@
                       <div class="grid grid-cols-2 border-t border-gray-300 hover:!border-gray-300 active:!border-gray-300 hover:border-t active:border-t focus:border-t focus-visible:border-t hover:border-gray-300 active:border-gray-300 focus:border-gray-300 focus-visible:border-gray-300">
                         <button
                           type="button"
-                          class="px-4 py-2 w-full !flex items-center justify-center"
+                          class="!px-4 !py-2 !w-full !flex !items-center !justify-center"
                           data-affiliation-id="[ID]"
                           data-contact-id="[Contact_ID]"
                           data-property-id="[Property_ID]"
@@ -1698,7 +1698,7 @@
                           </svg>
                         </button>
                         <button
-                          class="px-4 py-2 w-full !flex items-center justify-center"
+                          class="!px-4 !py-2 !w-full !flex !items-center !justify-center"
                           @click="window.dispatchEvent(new CustomEvent('affiliation:delete:open', { detail: { id: [ID] } }));
 "
                         >
@@ -1760,7 +1760,7 @@
                     </div>
                     <button
                       type="button"
-                      class="w-5 h-5 bg-red-100 rounded-full flex items-center justify-center transition hover:!bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-300 hover:!bg-red-100 active:!bg-red-100 hover:bg-red-100 active:bg-red-100 focus:bg-red-100 focus-visible:bg-red-100"
+                      class="!w-5 !h-5 !bg-red-100 !rounded-full !flex !items-center !justify-center !transition hover:!bg-red-200 focus:!outline-none focus:!ring-2 focus:!ring-red-300 hover:!bg-red-100 active:!bg-red-100 hover:!bg-red-100 active:!bg-red-100 focus:!bg-red-100 focus-visible:!bg-red-100"
                     >
                       <svg
                         width="20"
@@ -1829,7 +1829,7 @@
                       </div>
                     </div>
                     <button
-                      class="inline-flex items-center gap-1 text-blue-700 text-xs hover:!text-blue-700 active:!text-blue-700 hover:text-blue-700 active:text-blue-700 focus:text-blue-700 focus-visible:text-blue-700 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs"
+                      class="!inline-flex !items-center !gap-1 !text-blue-700 !text-xs hover:!text-blue-700 active:!text-blue-700 hover:!text-blue-700 active:!text-blue-700 focus:!text-blue-700 focus-visible:!text-blue-700 hover:!text-xs active:!text-xs focus:!text-xs focus-visible:!text-xs"
                     >
                       <a
                         class="text-blue-700 text-xs font-normal font-['Inter'] hover:!text-blue-700 active:!text-blue-700 hover:text-blue-700 active:text-blue-700 focus:text-blue-700 focus-visible:text-blue-700 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs"
@@ -2223,7 +2223,7 @@
                 </p>
 
                 <button
-                  class="mt-4 inline-flex items-center gap-2 rounded-md border border-slate-300 px-4 py-2 text-slate-700 hover:!bg-slate-50 hover:!border-slate-300 active:!border-slate-300 hover:!text-slate-700 active:!text-slate-700 hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700"
+                  class="!mt-4 !inline-flex !items-center !gap-2 !rounded-md !border !border-slate-300 !px-4 !py-2 !text-slate-700 hover:!bg-slate-50 hover:!border-slate-300 active:!border-slate-300 hover:!text-slate-700 active:!text-slate-700 hover:!border active:!border focus:!border focus-visible:!border hover:!border-slate-300 active:!border-slate-300 focus:!border-slate-300 focus-visible:!border-slate-300 hover:!text-slate-700 active:!text-slate-700 focus:!text-slate-700 focus-visible:!text-slate-700"
                   x-data
                   @click.prevent="window.dispatchEvent(new CustomEvent('quote:create-click'))"
                 >
@@ -2283,7 +2283,7 @@
                   <div class="flex flex-wrap gap-2">
                     <template x-if="!isQuoteSent && !isQuoteAccepted">
                       <button
-                        class="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:!bg-slate-50 hover:!border-slate-300 active:!border-slate-300 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700"
+                        class="!rounded-md !border !border-slate-300 !bg-white !px-3 !py-2 !text-sm !font-medium !text-slate-700 hover:!bg-slate-50 hover:!border-slate-300 active:!border-slate-300 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:!border active:!border focus:!border focus-visible:!border hover:!border-slate-300 active:!border-slate-300 focus:!border-slate-300 focus-visible:!border-slate-300 hover:!bg-white active:!bg-white focus:!bg-white focus-visible:!bg-white hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm hover:!text-slate-700 active:!text-slate-700 focus:!text-slate-700 focus-visible:!text-slate-700"
                         @click.prevent="handleSendQuoteClick"
                       >
                         Send Quote
@@ -2291,7 +2291,7 @@
                     </template>
                     <template x-if="isQuoteSent && !isQuoteAccepted">
                       <button
-                        class="rounded-md border border-sky-200 bg-sky-50 px-3 py-2 text-sm font-semibold text-sky-800 hover:!bg-sky-100 hover:!border-sky-200 active:!border-sky-200 hover:!bg-sky-50 active:!bg-sky-50 hover:!text-sky-800 active:!text-sky-800 hover:border active:border focus:border focus-visible:border hover:border-sky-200 active:border-sky-200 focus:border-sky-200 focus-visible:border-sky-200 hover:bg-sky-50 active:bg-sky-50 focus:bg-sky-50 focus-visible:bg-sky-50 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-sky-800 active:text-sky-800 focus:text-sky-800 focus-visible:text-sky-800"
+                        class="!rounded-md !border !border-sky-200 !bg-sky-50 !px-3 !py-2 !text-sm !font-semibold !text-sky-800 hover:!bg-sky-100 hover:!border-sky-200 active:!border-sky-200 hover:!bg-sky-50 active:!bg-sky-50 hover:!text-sky-800 active:!text-sky-800 hover:!border active:!border focus:!border focus-visible:!border hover:!border-sky-200 active:!border-sky-200 focus:!border-sky-200 focus-visible:!border-sky-200 hover:!bg-sky-50 active:!bg-sky-50 focus:!bg-sky-50 focus-visible:!bg-sky-50 hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm hover:!text-sky-800 active:!text-sky-800 focus:!text-sky-800 focus-visible:!text-sky-800"
                         @click.prevent="handleAcceptQuote"
                       >
                         Accept Quote
@@ -2304,7 +2304,7 @@
                       >
                     </template>
                     <button
-                      class="rounded-md bg-[#003882] px-3 py-2 text-sm font-semibold text-white hover:!bg-sky-900 hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:bg-[#003882] active:bg-[#003882] focus:bg-[#003882] focus-visible:bg-[#003882] hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-white active:text-white focus:text-white focus-visible:text-white"
+                      class="!rounded-md !bg-[#003882] !px-3 !py-2 !text-sm !font-semibold !text-white hover:!bg-sky-900 hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882] hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white"
                       @click.prevent="$dispatch('quote:edit', { quoteDate, followUpDate, allowDateEditing: true })"
                       x-show="!isQuoteAccepted"
                       x-cloak
@@ -2364,7 +2364,7 @@
                       >
                         <button
                           type="button"
-                          class="flex w-full items-center justify-between rounded-lg border border-slate-300 bg-white px-3 py-2 text-left text-sm text-slate-800 shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500 hover:!border-slate-300 active:!border-slate-300 hover:!bg-white active:!bg-white hover:!text-slate-800 active:!text-slate-800 hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:text-left active:text-left focus:text-left focus-visible:text-left hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-800 active:text-slate-800 focus:text-slate-800 focus-visible:text-slate-800 hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm"
+                          class="!flex !w-full !items-center !justify-between !rounded-lg !border !border-slate-300 !bg-white !px-3 !py-2 !text-left !text-sm !text-slate-800 !shadow-sm focus:!border-sky-600 focus:!outline-none focus:!ring-1 focus:!ring-sky-500 hover:!border-slate-300 active:!border-slate-300 hover:!bg-white active:!bg-white hover:!text-slate-800 active:!text-slate-800 hover:!border active:!border focus:!border focus-visible:!border hover:!border-slate-300 active:!border-slate-300 focus:!border-slate-300 focus-visible:!border-slate-300 hover:!bg-white active:!bg-white focus:!bg-white focus-visible:!bg-white hover:!text-left active:!text-left focus:!text-left focus-visible:!text-left hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm hover:!text-slate-800 active:!text-slate-800 focus:!text-slate-800 focus-visible:!text-slate-800 hover:!shadow-sm active:!shadow-sm focus:!shadow-sm focus-visible:!shadow-sm"
                           @click="toggleDropdown"
                           :aria-expanded="open"
                         >
@@ -2425,7 +2425,7 @@
                                       <li>
                                         <button
                                           type="button"
-                                          class="flex w-full flex-col gap-0.5 px-3 py-2 text-left text-sm hover:!bg-slate-50 hover:text-left active:text-left focus:text-left focus-visible:text-left hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm"
+                                          class="!flex !w-full !flex-col !gap-0.5 !px-3 !py-2 !text-left !text-sm hover:!bg-slate-50 hover:!text-left active:!text-left focus:!text-left focus-visible:!text-left hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm"
                                           @click="selectContact(contact)"
                                         >
                                           <span
@@ -2461,7 +2461,7 @@
                               >
                                 <button
                                   type="button"
-                                  class="flex w-full items-center justify-center gap-2 rounded-md border border-dashed border-sky-300 px-3 py-2 text-sm font-semibold text-sky-800 hover:!bg-sky-50 hover:!border-sky-300 active:!border-sky-300 hover:!text-sky-800 active:!text-sky-800 hover:border active:border focus:border focus-visible:border hover:border-dashed active:border-dashed focus:border-dashed focus-visible:border-dashed hover:border-sky-300 active:border-sky-300 focus:border-sky-300 focus-visible:border-sky-300 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-sky-800 active:text-sky-800 focus:text-sky-800 focus-visible:text-sky-800"
+                                  class="!flex !w-full !items-center !justify-center !gap-2 !rounded-md !border !border-dashed !border-sky-300 !px-3 !py-2 !text-sm !font-semibold !text-sky-800 hover:!bg-sky-50 hover:!border-sky-300 active:!border-sky-300 hover:!text-sky-800 active:!text-sky-800 hover:!border active:!border focus:!border focus-visible:!border hover:!border-dashed active:!border-dashed focus:!border-dashed focus-visible:!border-dashed hover:!border-sky-300 active:!border-sky-300 focus:!border-sky-300 focus-visible:!border-sky-300 hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm hover:!text-sky-800 active:!text-sky-800 focus:!text-sky-800 focus-visible:!text-sky-800"
                                   @click.prevent.stop="openAddContact"
                                 >
                                   <svg
@@ -2479,7 +2479,7 @@
                                 </button>
                                 <button
                                   type="button"
-                                  class="text-sm text-slate-500 hover:!text-slate-700 hover:!text-slate-500 active:!text-slate-500 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
+                                  class="!text-sm !text-slate-500 hover:!text-slate-700 hover:!text-slate-500 active:!text-slate-500 hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm hover:!text-slate-500 active:!text-slate-500 focus:!text-slate-500 focus-visible:!text-slate-500"
                                   @click="clearSelection"
                                   x-show="selectedContact"
                                   x-cloak
@@ -2556,7 +2556,7 @@
                     >
                       <button
                         type="button"
-                        class="flex w-full items-center justify-between rounded-lg border border-slate-300 bg-white px-3 py-2 text-left text-sm text-slate-800 transition focus:outline-none focus:ring-2 focus:ring-sky-500 hover:!border-slate-300 active:!border-slate-300 hover:!bg-white active:!bg-white hover:!text-slate-800 active:!text-slate-800 hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:text-left active:text-left focus:text-left focus-visible:text-left hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-800 active:text-slate-800 focus:text-slate-800 focus-visible:text-slate-800"
+                        class="!flex !w-full !items-center !justify-between !rounded-lg !border !border-slate-300 !bg-white !px-3 !py-2 !text-left !text-sm !text-slate-800 !transition focus:!outline-none focus:!ring-2 focus:!ring-sky-500 hover:!border-slate-300 active:!border-slate-300 hover:!bg-white active:!bg-white hover:!text-slate-800 active:!text-slate-800 hover:!border active:!border focus:!border focus-visible:!border hover:!border-slate-300 active:!border-slate-300 focus:!border-slate-300 focus-visible:!border-slate-300 hover:!bg-white active:!bg-white focus:!bg-white focus-visible:!bg-white hover:!text-left active:!text-left focus:!text-left focus-visible:!text-left hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm hover:!text-slate-800 active:!text-slate-800 focus:!text-slate-800 focus-visible:!text-slate-800"
                         @click="toggleRecipientDropdown"
                         :aria-expanded="recipientDropdownOpen"
                       >
@@ -2676,7 +2676,7 @@
                             >
                               <button
                                 type="button"
-                                class="flex w-full items-center justify-center gap-2 rounded-md border border-dashed border-sky-300 px-3 py-2 text-sm font-semibold text-sky-800 hover:!bg-sky-50 hover:!border-sky-300 active:!border-sky-300 hover:!text-sky-800 active:!text-sky-800 hover:border active:border focus:border focus-visible:border hover:border-dashed active:border-dashed focus:border-dashed focus-visible:border-dashed hover:border-sky-300 active:border-sky-300 focus:border-sky-300 focus-visible:border-sky-300 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-sky-800 active:text-sky-800 focus:text-sky-800 focus-visible:text-sky-800"
+                                class="!flex !w-full !items-center !justify-center !gap-2 !rounded-md !border !border-dashed !border-sky-300 !px-3 !py-2 !text-sm !font-semibold !text-sky-800 hover:!bg-sky-50 hover:!border-sky-300 active:!border-sky-300 hover:!text-sky-800 active:!text-sky-800 hover:!border active:!border focus:!border focus-visible:!border hover:!border-dashed active:!border-dashed focus:!border-dashed focus-visible:!border-dashed hover:!border-sky-300 active:!border-sky-300 focus:!border-sky-300 focus-visible:!border-sky-300 hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm hover:!text-sky-800 active:!text-sky-800 focus:!text-sky-800 focus-visible:!text-sky-800"
                                 @click.prevent.stop="handleAddContact"
                               >
                                 <svg
@@ -2858,7 +2858,7 @@
                     <div class="flex items-center gap-2">
                       <template x-if="!isQuoteAccepted">
                         <button
-                          class="rounded-md bg-[#003882] px-3 py-1.5 text-xs font-semibold text-white hover:!bg-sky-900 hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:bg-[#003882] active:bg-[#003882] focus:bg-[#003882] focus-visible:bg-[#003882] hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-white active:text-white focus:text-white focus-visible:text-white"
+                          class="!rounded-md !bg-[#003882] !px-3 !py-1.5 !text-xs !font-semibold !text-white hover:!bg-sky-900 hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882] hover:!text-xs active:!text-xs focus:!text-xs focus-visible:!text-xs hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white"
                           @click.prevent="$dispatch('activity:add')"
                         >
                           Add Activity
@@ -2866,7 +2866,7 @@
                       </template>
                       <template x-if="isQuoteAccepted">
                         <button
-                          class="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:!bg-slate-50 hover:!border-slate-300 active:!border-slate-300 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700"
+                          class="!rounded-md !border !border-slate-300 !bg-white !px-3 !py-1.5 !text-xs !font-semibold !text-slate-700 hover:!bg-slate-50 hover:!border-slate-300 active:!border-slate-300 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:!border active:!border focus:!border focus-visible:!border hover:!border-slate-300 active:!border-slate-300 focus:!border-slate-300 focus-visible:!border-slate-300 hover:!bg-white active:!bg-white focus:!bg-white focus-visible:!bg-white hover:!text-xs active:!text-xs focus:!text-xs focus-visible:!text-xs hover:!text-slate-700 active:!text-slate-700 focus:!text-slate-700 focus-visible:!text-slate-700"
                           @click.prevent="window.dispatchEvent(new CustomEvent('activities:view-all'))"
                         >
                           View All Activities
@@ -2921,7 +2921,7 @@
                               x-cloak
                             >
                               <button
-                                class="text-slate-400 hover:!text-slate-600 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400"
+                                class="!text-slate-400 hover:!text-slate-600 hover:!text-slate-400 active:!text-slate-400 hover:!text-slate-400 active:!text-slate-400 focus:!text-slate-400 focus-visible:!text-slate-400"
                                 title="Edit Activity"
                                 @click.prevent="
                         (() => {
@@ -2973,7 +2973,7 @@
                                 </svg>
                               </button>
                               <button
-                                class="text-rose-500 hover:!text-rose-600 hover:!text-rose-500 active:!text-rose-500 hover:text-rose-500 active:text-rose-500 focus:text-rose-500 focus-visible:text-rose-500"
+                                class="!text-rose-500 hover:!text-rose-600 hover:!text-rose-500 active:!text-rose-500 hover:!text-rose-500 active:!text-rose-500 focus:!text-rose-500 focus-visible:!text-rose-500"
                                 title="Delete Activity"
                                 @click.prevent="
                         (() => {
@@ -3023,7 +3023,7 @@
                 Recommendations
               </h3>
               <button
-                class="inline-flex items-center gap-1 text-xs font-medium text-sky-700 hover:!text-sky-700 active:!text-sky-700 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-sky-700 active:text-sky-700 focus:text-sky-700 focus-visible:text-sky-700"
+                class="!inline-flex !items-center !gap-1 !text-xs !font-medium !text-sky-700 hover:!text-sky-700 active:!text-sky-700 hover:!text-xs active:!text-xs focus:!text-xs focus-visible:!text-xs hover:!text-sky-700 active:!text-sky-700 focus:!text-sky-700 focus-visible:!text-sky-700"
                 @click.prevent="$dispatch('recommendation:edit', { recommendation: (document.querySelector('[data-admin-recommendation]')?.textContent || '').trim(), jobId: JOB_ID })"
               >
                 <svg
@@ -3183,7 +3183,7 @@
                 x-show="isWaitingForPayment"
                 x-cloak
                 type="button"
-                class="rounded-md bg-[#003882] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:!bg-sky-900 hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:bg-[#003882] active:bg-[#003882] focus:bg-[#003882] focus-visible:bg-[#003882] hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-white active:text-white focus:text-white focus-visible:text-white hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm"
+                class="!rounded-md !bg-[#003882] !px-4 !py-2 !text-sm !font-semibold !text-white !shadow-sm !transition hover:!bg-sky-900 hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882] hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white hover:!shadow-sm active:!shadow-sm focus:!shadow-sm focus-visible:!shadow-sm"
                 @click="openSendInvoiceModal"
               >
                 Send Invoice
@@ -3220,7 +3220,7 @@
                     <div class="relative">
                       <button
                         type="button"
-                        class="flex w-full items-center justify-between rounded-lg border border-slate-300 bg-white px-3 py-2 text-left text-sm text-slate-800 shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500 hover:!border-slate-300 active:!border-slate-300 hover:!bg-white active:!bg-white hover:!text-slate-800 active:!text-slate-800 hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:text-left active:text-left focus:text-left focus-visible:text-left hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-800 active:text-slate-800 focus:text-slate-800 focus-visible:text-slate-800 hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm"
+                        class="!flex !w-full !items-center !justify-between !rounded-lg !border !border-slate-300 !bg-white !px-3 !py-2 !text-left !text-sm !text-slate-800 !shadow-sm focus:!border-sky-600 focus:!outline-none focus:!ring-1 focus:!ring-sky-500 hover:!border-slate-300 active:!border-slate-300 hover:!bg-white active:!bg-white hover:!text-slate-800 active:!text-slate-800 hover:!border active:!border focus:!border focus-visible:!border hover:!border-slate-300 active:!border-slate-300 focus:!border-slate-300 focus-visible:!border-slate-300 hover:!bg-white active:!bg-white focus:!bg-white focus-visible:!bg-white hover:!text-left active:!text-left focus:!text-left focus-visible:!text-left hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm hover:!text-slate-800 active:!text-slate-800 focus:!text-slate-800 focus-visible:!text-slate-800 hover:!shadow-sm active:!shadow-sm focus:!shadow-sm focus-visible:!shadow-sm"
                         @click="toggleRecipientDropdown"
                       >
                         <span class="truncate" x-text="selectedSummary"></span>
@@ -3252,7 +3252,7 @@
                             >
                               <button
                                 type="button"
-                                class="w-full px-3 py-3 text-left hover:!bg-slate-50 hover:text-left active:text-left focus:text-left focus-visible:text-left"
+                                class="!w-full !px-3 !py-3 !text-left hover:!bg-slate-50 hover:!text-left active:!text-left focus:!text-left focus-visible:!text-left"
                                 @click.prevent="toggleRecipient(option.email)"
                               >
                                 <div class="flex items-start gap-3">
@@ -3296,7 +3296,7 @@
                         </div>
                         <button
                           type="button"
-                          class="flex w-full items-center justify-center gap-1 border-t border-slate-100 px-4 py-2 text-sm font-medium text-sky-700 hover:!bg-slate-50 hover:!border-slate-100 active:!border-slate-100 hover:!text-sky-700 active:!text-sky-700 hover:border-t active:border-t focus:border-t focus-visible:border-t hover:border-slate-100 active:border-slate-100 focus:border-slate-100 focus-visible:border-slate-100 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-sky-700 active:text-sky-700 focus:text-sky-700 focus-visible:text-sky-700"
+                          class="!flex !w-full !items-center !justify-center !gap-1 !border-t !border-slate-100 !px-4 !py-2 !text-sm !font-medium !text-sky-700 hover:!bg-slate-50 hover:!border-slate-100 active:!border-slate-100 hover:!text-sky-700 active:!text-sky-700 hover:!border-t active:!border-t focus:!border-t focus-visible:!border-t hover:!border-slate-100 active:!border-slate-100 focus:!border-slate-100 focus-visible:!border-slate-100 hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm hover:!text-sky-700 active:!text-sky-700 focus:!text-sky-700 focus-visible:!text-sky-700"
                           @click.prevent="handleAddContact"
                         >
                           <svg
@@ -3715,7 +3715,7 @@
                 </div>
                 <button
                   type="button"
-                  class="p-2 rounded hover:!bg-white/10 transition"
+                  class="!p-2 !rounded hover:!bg-white/10 !transition"
                   @click="handleMemoClose"
                   aria-label="Close memos modal"
                 >
@@ -3763,7 +3763,7 @@
                       <span x-text="`${newMessages} new messages`"></span>
                       <button
                         type="button"
-                        class="ml-1 text-[#003882] hover:!text-[#022d62] hover:!text-[#003882] active:!text-[#003882] hover:text-[#003882] active:text-[#003882] focus:text-[#003882] focus-visible:text-[#003882]"
+                        class="!ml-1 !text-[#003882] hover:!text-[#022d62] hover:!text-[#003882] active:!text-[#003882] hover:!text-[#003882] active:!text-[#003882] focus:!text-[#003882] focus-visible:!text-[#003882]"
                         @click.stop="newMessages = 0; lastSeenCount = memos.length"
                         aria-label="Dismiss new messages"
                       >
@@ -3808,7 +3808,7 @@
                             </div>
                             <div class="relative" x-data="{ menuOpen: false }">
                               <button
-                                class="text-slate-400 hover:!text-slate-600 p-1 -mr-1 rounded hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400"
+                                class="!text-slate-400 hover:!text-slate-600 !p-1 !-mr-1 !rounded hover:!text-slate-400 active:!text-slate-400 hover:!text-slate-400 active:!text-slate-400 focus:!text-slate-400 focus-visible:!text-slate-400"
                                 type="button"
                                 @click="menuOpen = !menuOpen"
                               >
@@ -3834,7 +3834,7 @@
                                 <template x-if="memo.isMine">
                                   <button
                                     type="button"
-                                    class="w-full px-3 py-2 text-left text-red-600 hover:!bg-red-50 hover:!text-red-600 active:!text-red-600 hover:text-left active:text-left focus:text-left focus-visible:text-left hover:text-red-600 active:text-red-600 focus:text-red-600 focus-visible:text-red-600"
+                                    class="!w-full !px-3 !py-2 !text-left !text-red-600 hover:!bg-red-50 hover:!text-red-600 active:!text-red-600 hover:!text-left active:!text-left focus:!text-left focus-visible:!text-left hover:!text-red-600 active:!text-red-600 focus:!text-red-600 focus-visible:!text-red-600"
                                     @click="menuOpen = false; $dispatch('memo-delete-post', { id: memo.id })"
                                   >
                                     Delete
@@ -3861,7 +3861,7 @@
                             </a>
                           </template>
                           <button
-                            class="w-max text-[12px] font-normal text-[#003882] hover:!underline hover:!text-[12px] active:!text-[12px] hover:!text-[#003882] active:!text-[#003882] hover:text-[12px] active:text-[12px] focus:text-[12px] focus-visible:text-[12px] hover:text-[#003882] active:text-[#003882] focus:text-[#003882] focus-visible:text-[#003882]"
+                            class="!w-max !text-[12px] !font-normal !text-[#003882] hover:!underline hover:!text-[12px] active:!text-[12px] hover:!text-[#003882] active:!text-[#003882] hover:!text-[12px] active:!text-[12px] focus:!text-[12px] focus-visible:!text-[12px] hover:!text-[#003882] active:!text-[#003882] focus:!text-[#003882] focus-visible:!text-[#003882]"
                             type="button"
                             @click="replying = true; $nextTick(() => $refs?.replyBox?.focus())"
                           >
@@ -3875,7 +3875,7 @@
                                 <div class="h-px flex-1 bg-slate-200 hover:!bg-slate-200 active:!bg-slate-200 hover:bg-slate-200 active:bg-slate-200 focus:bg-slate-200 focus-visible:bg-slate-200"></div>
                                 <button
                                   type="button"
-                                  class="flex items-center gap-1 font-medium text-slate-600 hover:!text-slate-600 active:!text-slate-600 hover:text-slate-600 active:text-slate-600 focus:text-slate-600 focus-visible:text-slate-600"
+                                  class="!flex !items-center !gap-1 !font-medium !text-slate-600 hover:!text-slate-600 active:!text-slate-600 hover:!text-slate-600 active:!text-slate-600 focus:!text-slate-600 focus-visible:!text-slate-600"
                                   @click="repliesOpen = !repliesOpen"
                                 >
                                   <span
@@ -3939,7 +3939,7 @@
                                           x-show="reply.isMine"
                                         >
                                           <button
-                                            class="text-slate-400 hover:!text-slate-600 p-1 -mr-1 rounded hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400"
+                                            class="!text-slate-400 hover:!text-slate-600 !p-1 !-mr-1 !rounded hover:!text-slate-400 active:!text-slate-400 hover:!text-slate-400 active:!text-slate-400 focus:!text-slate-400 focus-visible:!text-slate-400"
                                             type="button"
                                             @click="menuOpen = !menuOpen"
                                           >
@@ -3964,7 +3964,7 @@
                                           >
                                             <button
                                               type="button"
-                                              class="w-full px-3 py-2 text-left text-red-600 hover:!bg-red-50 hover:!text-red-600 active:!text-red-600 hover:text-left active:text-left focus:text-left focus-visible:text-left hover:text-red-600 active:text-red-600 focus:text-red-600 focus-visible:text-red-600"
+                                              class="!w-full !px-3 !py-2 !text-left !text-red-600 hover:!bg-red-50 hover:!text-red-600 active:!text-red-600 hover:!text-left active:!text-left focus:!text-left focus-visible:!text-left hover:!text-red-600 active:!text-red-600 focus:!text-red-600 focus-visible:!text-red-600"
                                               @click="menuOpen = false; $dispatch('memo-delete-comment', { postId: memo.id, commentId: reply.id })"
                                             >
                                               Delete
@@ -4000,7 +4000,7 @@
                             >
                               <button
                                 type="button"
-                                class="px-4 py-2 rounded-lg bg-[#003882] text-white text-sm flex items-center gap-2 hover:!bg-[#022d62] hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:bg-[#003882] active:bg-[#003882] focus:bg-[#003882] focus-visible:bg-[#003882] hover:text-white active:text-white focus:text-white focus-visible:text-white hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm"
+                                class="!px-4 !py-2 !rounded-lg !bg-[#003882] !text-white !text-sm !flex !items-center !gap-2 hover:!bg-[#022d62] hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882] hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm"
                                 :class="{ 'opacity-60 cursor-not-allowed': sendingReplyId === memo.id }"
                                 :disabled="sendingReplyId === memo.id"
                                 @click="$dispatch('memo-send-reply', { id: memo.id, text: draft, onDone: () => { draft = ''; replying = false } })"
@@ -4049,7 +4049,7 @@
                 <div class="flex items-center justify-end gap-3 pt-1">
                   <button
                     type="button"
-                    class="px-3 py-2 border border-[#003882] text-[#003882] rounded-lg text-sm flex items-center gap-2 hover:!bg-sky-50 hover:!border-[#003882] active:!border-[#003882] hover:!text-[#003882] active:!text-[#003882] hover:border active:border focus:border focus-visible:border hover:border-[#003882] active:border-[#003882] focus:border-[#003882] focus-visible:border-[#003882] hover:text-[#003882] active:text-[#003882] focus:text-[#003882] focus-visible:text-[#003882] hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm"
+                    class="!px-3 !py-2 !border !border-[#003882] !text-[#003882] !rounded-lg !text-sm !flex !items-center !gap-2 hover:!bg-sky-50 hover:!border-[#003882] active:!border-[#003882] hover:!text-[#003882] active:!text-[#003882] hover:!border active:!border focus:!border focus-visible:!border hover:!border-[#003882] active:!border-[#003882] focus:!border-[#003882] focus-visible:!border-[#003882] hover:!text-[#003882] active:!text-[#003882] focus:!text-[#003882] focus-visible:!text-[#003882] hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm"
                     :class="{ 'opacity-60 cursor-not-allowed': isSending }"
                     @click="!isSending && $refs.memoFileInput?.click()"
                   >
@@ -4073,7 +4073,7 @@
                   </button>
                   <button
                     type="button"
-                    class="px-4 py-2 rounded-lg bg-[#003882] text-white text-sm flex items-center gap-2 hover:!bg-[#022d62] hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:bg-[#003882] active:bg-[#003882] focus:bg-[#003882] focus-visible:bg-[#003882] hover:text-white active:text-white focus:text-white focus-visible:text-white hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm"
+                    class="!px-4 !py-2 !rounded-lg !bg-[#003882] !text-white !text-sm !flex !items-center !gap-2 hover:!bg-[#022d62] hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882] hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm"
                     :class="{ 'opacity-60 cursor-not-allowed': isSending }"
                     :disabled="isSending"
                     @click="sendMemo"
@@ -4110,7 +4110,7 @@
                 >
                   <h3 class="text-lg font-semibold hover:text-lg active:text-lg focus:text-lg focus-visible:text-lg">Delete confirmation</h3>
                   <button
-                    class="text-slate-500 hover:!text-slate-700 hover:!text-slate-500 active:!text-slate-500 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
+                    class="!text-slate-500 hover:!text-slate-700 hover:!text-slate-500 active:!text-slate-500 hover:!text-slate-500 active:!text-slate-500 focus:!text-slate-500 focus-visible:!text-slate-500"
                     @click="cancelDelete()"
                     aria-label="Close"
                   >
@@ -4130,7 +4130,7 @@
                 >
                   <button
                     type="button"
-                    class="text-slate-600 hover:!text-slate-800 hover:!text-slate-600 active:!text-slate-600 hover:text-slate-600 active:text-slate-600 focus:text-slate-600 focus-visible:text-slate-600"
+                    class="!text-slate-600 hover:!text-slate-800 hover:!text-slate-600 active:!text-slate-600 hover:!text-slate-600 active:!text-slate-600 focus:!text-slate-600 focus-visible:!text-slate-600"
                     :class="{ 'opacity-60 cursor-not-allowed': isDeleting }"
                     :disabled="isDeleting"
                     @click="cancelDelete()"
@@ -4139,7 +4139,7 @@
                   </button>
                   <button
                     type="button"
-                    class="inline-flex items-center gap-2 rounded-md bg-red-600 text-white px-4 py-2 hover:!bg-red-700 hover:!bg-red-600 active:!bg-red-600 hover:!text-white active:!text-white hover:bg-red-600 active:bg-red-600 focus:bg-red-600 focus-visible:bg-red-600 hover:text-white active:text-white focus:text-white focus-visible:text-white"
+                    class="!inline-flex !items-center !gap-2 !rounded-md !bg-red-600 !text-white !px-4 !py-2 hover:!bg-red-700 hover:!bg-red-600 active:!bg-red-600 hover:!text-white active:!text-white hover:!bg-red-600 active:!bg-red-600 focus:!bg-red-600 focus-visible:!bg-red-600 hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white"
                     :class="{ 'opacity-60 cursor-not-allowed': isDeleting }"
                     :disabled="isDeleting"
                     @click="confirmDelete()"
@@ -4157,7 +4157,7 @@
 
     <!-- Floating Action Button with notification -->
     <button
-      class="fixed bottom-6 right-6 z-40 h-16 w-16 rounded-full bg-[#003882] text-white shadow-2xl flex items-center justify-center hover:!bg-[#022d62] transition hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:bg-[#003882] active:bg-[#003882] focus:bg-[#003882] focus-visible:bg-[#003882] hover:text-white active:text-white focus:text-white focus-visible:text-white hover:shadow-2xl active:shadow-2xl focus:shadow-2xl focus-visible:shadow-2xl"
+      class="!fixed !bottom-6 !right-6 !z-40 !h-16 !w-16 !rounded-full !bg-[#003882] !text-white !shadow-2xl !flex !items-center !justify-center hover:!bg-[#022d62] !transition hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882] hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white hover:!shadow-2xl active:!shadow-2xl focus:!shadow-2xl focus-visible:!shadow-2xl"
       @click="openmemos = true"
       aria-label="Open memos"
     >
@@ -4204,7 +4204,7 @@
                 </p>
               </div>
               <button
-                class="text-slate-400 transition hover:!text-slate-600 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400"
+                class="!text-slate-400 !transition hover:!text-slate-600 hover:!text-slate-400 active:!text-slate-400 hover:!text-slate-400 active:!text-slate-400 focus:!text-slate-400 focus-visible:!text-slate-400"
                 @click="handleClose"
               >
                 <span class="sr-only">Close modal</span>
@@ -4256,13 +4256,13 @@
               class="flex items-center justify-between border-t border-slate-200 px-6 py-4 text-sm hover:!border-slate-200 active:!border-slate-200 hover:border-t active:border-t focus:border-t focus-visible:border-t hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm"
             >
               <button
-                class="font-medium text-slate-500 transition hover:!text-slate-700 hover:!text-slate-500 active:!text-slate-500 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
+                class="!font-medium !text-slate-500 !transition hover:!text-slate-700 hover:!text-slate-500 active:!text-slate-500 hover:!text-slate-500 active:!text-slate-500 focus:!text-slate-500 focus-visible:!text-slate-500"
                 @click="handleClose"
               >
                 Cancel
               </button>
               <button
-                class="inline-flex items-center rounded-lg bg-sky-700 px-4 py-2 font-semibold text-white shadow-sm transition hover:!bg-[#003882] disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 hover:!bg-sky-700 active:!bg-sky-700 hover:!text-white active:!text-white hover:bg-sky-700 active:bg-sky-700 focus:bg-sky-700 focus-visible:bg-sky-700 hover:text-white active:text-white focus:text-white focus-visible:text-white hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm hover:disabled:bg-slate-300 active:disabled:bg-slate-300 focus:disabled:bg-slate-300 focus-visible:disabled:bg-slate-300 hover:disabled:text-slate-500 active:disabled:text-slate-500 focus:disabled:text-slate-500 focus-visible:disabled:text-slate-500"
+                class="!inline-flex !items-center !rounded-lg !bg-sky-700 !px-4 !py-2 !font-semibold !text-white !shadow-sm !transition hover:!bg-[#003882] disabled:!cursor-not-allowed disabled:!bg-slate-300 disabled:!text-slate-500 hover:!bg-sky-700 active:!bg-sky-700 hover:!text-white active:!text-white hover:!bg-sky-700 active:!bg-sky-700 focus:!bg-sky-700 focus-visible:!bg-sky-700 hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white hover:!shadow-sm active:!shadow-sm focus:!shadow-sm focus-visible:!shadow-sm hover:disabled:!bg-slate-300 active:disabled:!bg-slate-300 focus:disabled:!bg-slate-300 focus-visible:disabled:!bg-slate-300 hover:disabled:!text-slate-500 active:disabled:!text-slate-500 focus:disabled:!text-slate-500 focus-visible:disabled:!text-slate-500"
                 @click="confirmAction"
                 :disabled="!hasProvider || isSubmitting"
               >
@@ -4309,7 +4309,7 @@
                 Send Quote To:
               </h3>
               <button
-                class="text-slate-400 transition hover:!text-slate-600 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400"
+                class="!text-slate-400 !transition hover:!text-slate-600 hover:!text-slate-400 active:!text-slate-400 hover:!text-slate-400 active:!text-slate-400 focus:!text-slate-400 focus-visible:!text-slate-400"
                 @click="close"
               >
                 <span class="sr-only">Close</span>
@@ -4411,13 +4411,13 @@
               class="flex items-center justify-between border-t border-slate-200 px-6 py-4 text-sm hover:!border-slate-200 active:!border-slate-200 hover:border-t active:border-t focus:border-t focus-visible:border-t hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm"
             >
               <button
-                class="font-medium text-slate-500 hover:!text-slate-700 hover:!text-slate-500 active:!text-slate-500 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
+                class="!font-medium !text-slate-500 hover:!text-slate-700 hover:!text-slate-500 active:!text-slate-500 hover:!text-slate-500 active:!text-slate-500 focus:!text-slate-500 focus-visible:!text-slate-500"
                 @click="close"
               >
                 Cancel
               </button>
               <button
-                class="inline-flex items-center rounded-lg bg-sky-700 px-4 py-2 font-semibold text-white shadow-sm transition hover:!bg-[#003882] disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 hover:!bg-sky-700 active:!bg-sky-700 hover:!text-white active:!text-white hover:bg-sky-700 active:bg-sky-700 focus:bg-sky-700 focus-visible:bg-sky-700 hover:text-white active:text-white focus:text-white focus-visible:text-white hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm hover:disabled:bg-slate-300 active:disabled:bg-slate-300 focus:disabled:bg-slate-300 focus-visible:disabled:bg-slate-300 hover:disabled:text-slate-500 active:disabled:text-slate-500 focus:disabled:text-slate-500 focus-visible:disabled:text-slate-500"
+                class="!inline-flex !items-center !rounded-lg !bg-sky-700 !px-4 !py-2 !font-semibold !text-white !shadow-sm !transition hover:!bg-[#003882] disabled:!cursor-not-allowed disabled:!bg-slate-300 disabled:!text-slate-500 hover:!bg-sky-700 active:!bg-sky-700 hover:!text-white active:!text-white hover:!bg-sky-700 active:!bg-sky-700 focus:!bg-sky-700 focus-visible:!bg-sky-700 hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white hover:!shadow-sm active:!shadow-sm focus:!shadow-sm focus-visible:!shadow-sm hover:disabled:!bg-slate-300 active:disabled:!bg-slate-300 focus:disabled:!bg-slate-300 focus-visible:disabled:!bg-slate-300 hover:disabled:!text-slate-500 active:disabled:!text-slate-500 focus:disabled:!text-slate-500 focus-visible:disabled:!text-slate-500"
                 @click="handleSend"
                 :disabled="!recipients.length || isSending"
               >
@@ -4462,7 +4462,7 @@
             >
               <h3 class="text-lg font-semibold text-slate-900 hover:!text-slate-900 active:!text-slate-900 hover:text-lg active:text-lg focus:text-lg focus-visible:text-lg hover:text-slate-900 active:text-slate-900 focus:text-slate-900 focus-visible:text-slate-900">Accept Quote</h3>
               <button
-                class="text-slate-400 transition hover:!text-slate-600 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400"
+                class="!text-slate-400 !transition hover:!text-slate-600 hover:!text-slate-400 active:!text-slate-400 hover:!text-slate-400 active:!text-slate-400 focus:!text-slate-400 focus-visible:!text-slate-400"
                 @click="close"
               >
                 <span class="sr-only">Close</span>
@@ -4501,13 +4501,13 @@
               class="flex items-center justify-between border-t border-slate-200 px-6 py-4 text-sm hover:!border-slate-200 active:!border-slate-200 hover:border-t active:border-t focus:border-t focus-visible:border-t hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm"
             >
               <button
-                class="font-medium text-slate-500 hover:!text-slate-700 hover:!text-slate-500 active:!text-slate-500 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
+                class="!font-medium !text-slate-500 hover:!text-slate-700 hover:!text-slate-500 active:!text-slate-500 hover:!text-slate-500 active:!text-slate-500 focus:!text-slate-500 focus-visible:!text-slate-500"
                 @click="close"
               >
                 Cancel
               </button>
               <button
-                class="inline-flex items-center rounded-lg bg-sky-700 px-4 py-2 font-semibold text-white shadow-sm transition hover:!bg-[#003882] disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 hover:!bg-sky-700 active:!bg-sky-700 hover:!text-white active:!text-white hover:bg-sky-700 active:bg-sky-700 focus:bg-sky-700 focus-visible:bg-sky-700 hover:text-white active:text-white focus:text-white focus-visible:text-white hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm hover:disabled:bg-slate-300 active:disabled:bg-slate-300 focus:disabled:bg-slate-300 focus-visible:disabled:bg-slate-300 hover:disabled:text-slate-500 active:disabled:text-slate-500 focus:disabled:text-slate-500 focus-visible:disabled:text-slate-500"
+                class="!inline-flex !items-center !rounded-lg !bg-sky-700 !px-4 !py-2 !font-semibold !text-white !shadow-sm !transition hover:!bg-[#003882] disabled:!cursor-not-allowed disabled:!bg-slate-300 disabled:!text-slate-500 hover:!bg-sky-700 active:!bg-sky-700 hover:!text-white active:!text-white hover:!bg-sky-700 active:!bg-sky-700 focus:!bg-sky-700 focus-visible:!bg-sky-700 hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white hover:!shadow-sm active:!shadow-sm focus:!shadow-sm focus-visible:!shadow-sm hover:disabled:!bg-slate-300 active:disabled:!bg-slate-300 focus:disabled:!bg-slate-300 focus-visible:disabled:!bg-slate-300 hover:disabled:!text-slate-500 active:disabled:!text-slate-500 focus:disabled:!text-slate-500 focus-visible:disabled:!text-slate-500"
                 @click="handleAccept"
                 :disabled="isSubmitting"
               >
@@ -4556,7 +4556,7 @@
             >
               <h3 class="text-lg font-semibold hover:text-lg active:text-lg focus:text-lg focus-visible:text-lg">Activity List</h3>
               <button
-                class="text-white/80 transition hover:!text-white hover:!text-white/80 active:!text-white/80 hover:text-white/80 active:text-white/80 focus:text-white/80 focus-visible:text-white/80"
+                class="!text-white/80 !transition hover:!text-white hover:!text-white/80 active:!text-white/80 hover:!text-white/80 active:!text-white/80 focus:!text-white/80 focus-visible:!text-white/80"
                 @click="close"
               >
                 <span class="sr-only">Close</span>
@@ -4591,7 +4591,7 @@
 
             <div class="flex justify-end border-t border-slate-200 px-6 py-4 hover:!border-slate-200 active:!border-slate-200 hover:border-t active:border-t focus:border-t focus-visible:border-t hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200">
               <button
-                class="rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:!bg-slate-50 hover:!border-slate-300 active:!border-slate-300 hover:!text-slate-700 active:!text-slate-700 hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700"
+                class="!rounded-md !border !border-slate-300 !px-4 !py-2 !text-sm !font-semibold !text-slate-700 hover:!bg-slate-50 hover:!border-slate-300 active:!border-slate-300 hover:!text-slate-700 active:!text-slate-700 hover:!border active:!border focus:!border focus-visible:!border hover:!border-slate-300 active:!border-slate-300 focus:!border-slate-300 focus-visible:!border-slate-300 hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm hover:!text-slate-700 active:!text-slate-700 focus:!text-slate-700 focus-visible:!text-slate-700"
                 @click="close"
               >
                 Close
@@ -4621,7 +4621,7 @@
             >
               <button
                 type="button"
-                class="rounded-full border border-slate-200 bg-white p-2 text-slate-500 shadow-sm transition hover:!border-slate-300 hover:!text-slate-700 hover:!border-slate-200 active:!border-slate-200 hover:!bg-white active:!bg-white hover:!text-slate-500 active:!text-slate-500 hover:border active:border focus:border focus-visible:border hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500 hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm"
+                class="!rounded-full !border !border-slate-200 !bg-white !p-2 !text-slate-500 !shadow-sm !transition hover:!border-slate-300 hover:!text-slate-700 hover:!border-slate-200 active:!border-slate-200 hover:!bg-white active:!bg-white hover:!text-slate-500 active:!text-slate-500 hover:!border active:!border focus:!border focus-visible:!border hover:!border-slate-200 active:!border-slate-200 focus:!border-slate-200 focus-visible:!border-slate-200 hover:!bg-white active:!bg-white focus:!bg-white focus-visible:!bg-white hover:!text-slate-500 active:!text-slate-500 focus:!text-slate-500 focus-visible:!text-slate-500 hover:!shadow-sm active:!shadow-sm focus:!shadow-sm focus-visible:!shadow-sm"
                 title="Edit Bill"
                 @click="handleEdit"
               >
@@ -4639,7 +4639,7 @@
               </button>
               <button
                 type="button"
-                class="rounded-full border border-slate-200 bg-white p-2 text-slate-500 shadow-sm transition hover:!border-slate-300 hover:!text-slate-700 hover:!border-slate-200 active:!border-slate-200 hover:!bg-white active:!bg-white hover:!text-slate-500 active:!text-slate-500 hover:border active:border focus:border focus-visible:border hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500 hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm"
+                class="!rounded-full !border !border-slate-200 !bg-white !p-2 !text-slate-500 !shadow-sm !transition hover:!border-slate-300 hover:!text-slate-700 hover:!border-slate-200 active:!border-slate-200 hover:!bg-white active:!bg-white hover:!text-slate-500 active:!text-slate-500 hover:!border active:!border focus:!border focus-visible:!border hover:!border-slate-200 active:!border-slate-200 focus:!border-slate-200 focus-visible:!border-slate-200 hover:!bg-white active:!bg-white focus:!bg-white focus-visible:!bg-white hover:!text-slate-500 active:!text-slate-500 focus:!text-slate-500 focus-visible:!text-slate-500 hover:!shadow-sm active:!shadow-sm focus:!shadow-sm focus-visible:!shadow-sm"
                 title="Download PDF"
                 @click="handleDownload"
               >
@@ -4657,7 +4657,7 @@
               </button>
               <button
                 type="button"
-                class="rounded-full border border-slate-200 bg-white p-2 text-slate-500 shadow-sm transition hover:!border-slate-300 hover:!text-slate-700 hover:!border-slate-200 active:!border-slate-200 hover:!bg-white active:!bg-white hover:!text-slate-500 active:!text-slate-500 hover:border active:border focus:border focus-visible:border hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500 hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm"
+                class="!rounded-full !border !border-slate-200 !bg-white !p-2 !text-slate-500 !shadow-sm !transition hover:!border-slate-300 hover:!text-slate-700 hover:!border-slate-200 active:!border-slate-200 hover:!bg-white active:!bg-white hover:!text-slate-500 active:!text-slate-500 hover:!border active:!border focus:!border focus-visible:!border hover:!border-slate-200 active:!border-slate-200 focus:!border-slate-200 focus-visible:!border-slate-200 hover:!bg-white active:!bg-white focus:!bg-white focus-visible:!bg-white hover:!text-slate-500 active:!text-slate-500 focus:!text-slate-500 focus-visible:!text-slate-500 hover:!shadow-sm active:!shadow-sm focus:!shadow-sm focus-visible:!shadow-sm"
                 title="Print"
                 @click="handlePrint"
               >
@@ -4675,7 +4675,7 @@
               </button>
               <button
                 type="button"
-                class="rounded-full border border-slate-200 bg-white p-2 text-slate-500 shadow-sm transition hover:!border-slate-300 hover:!text-slate-700 hover:!border-slate-200 active:!border-slate-200 hover:!bg-white active:!bg-white hover:!text-slate-500 active:!text-slate-500 hover:border active:border focus:border focus-visible:border hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500 hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm"
+                class="!rounded-full !border !border-slate-200 !bg-white !p-2 !text-slate-500 !shadow-sm !transition hover:!border-slate-300 hover:!text-slate-700 hover:!border-slate-200 active:!border-slate-200 hover:!bg-white active:!bg-white hover:!text-slate-500 active:!text-slate-500 hover:!border active:!border focus:!border focus-visible:!border hover:!border-slate-200 active:!border-slate-200 focus:!border-slate-200 focus-visible:!border-slate-200 hover:!bg-white active:!bg-white focus:!bg-white focus-visible:!bg-white hover:!text-slate-500 active:!text-slate-500 focus:!text-slate-500 focus-visible:!text-slate-500 hover:!shadow-sm active:!shadow-sm focus:!shadow-sm focus-visible:!shadow-sm"
                 title="Close"
                 @click="close"
               >
@@ -4707,7 +4707,7 @@
                 ></p>
               </div>
               <button
-                class="text-slate-400 transition hover:!text-slate-600 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400"
+                class="!text-slate-400 !transition hover:!text-slate-600 hover:!text-slate-400 active:!text-slate-400 hover:!text-slate-400 active:!text-slate-400 focus:!text-slate-400 focus-visible:!text-slate-400"
                 @click="close"
               >
                 <span class="sr-only">Close</span>
@@ -4933,14 +4933,14 @@
               class="flex items-center justify-end gap-3 border-t border-slate-200 px-6 py-4 hover:!border-slate-200 active:!border-slate-200 hover:border-t active:border-t focus:border-t focus-visible:border-t hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200"
             >
               <button
-                class="rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:!bg-slate-50 hover:!border-slate-300 active:!border-slate-300 hover:!text-slate-700 active:!text-slate-700 hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700"
+                class="!rounded-md !border !border-slate-300 !px-4 !py-2 !text-sm !font-semibold !text-slate-700 hover:!bg-slate-50 hover:!border-slate-300 active:!border-slate-300 hover:!text-slate-700 active:!text-slate-700 hover:!border active:!border focus:!border focus-visible:!border hover:!border-slate-300 active:!border-slate-300 focus:!border-slate-300 focus-visible:!border-slate-300 hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm hover:!text-slate-700 active:!text-slate-700 focus:!text-slate-700 focus-visible:!text-slate-700"
                 @click="close"
               >
                 Close
               </button>
               <button
                 type="button"
-                class="rounded-md bg-[#003882] px-4 py-2 text-sm font-semibold text-white hover:!bg-sky-900 disabled:opacity-60 hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:bg-[#003882] active:bg-[#003882] focus:bg-[#003882] focus-visible:bg-[#003882] hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-white active:text-white focus:text-white focus-visible:text-white"
+                class="!rounded-md !bg-[#003882] !px-4 !py-2 !text-sm !font-semibold !text-white hover:!bg-sky-900 disabled:!opacity-60 hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882] hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white"
                 :disabled="!confirm"
                 @click="handlePrint"
               >
@@ -4968,7 +4968,7 @@
                 Edit Follow Up Comment
               </h3>
               <button
-                class="text-slate-400 transition hover:!text-slate-600 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400"
+                class="!text-slate-400 !transition hover:!text-slate-600 hover:!text-slate-400 active:!text-slate-400 hover:!text-slate-400 active:!text-slate-400 focus:!text-slate-400 focus-visible:!text-slate-400"
                 @click="close"
               >
                 <span class="sr-only">Close</span>
@@ -5007,13 +5007,13 @@
               class="flex items-center justify-end gap-4 border-t border-slate-200 px-5 py-4 text-sm hover:!border-slate-200 active:!border-slate-200 hover:border-t active:border-t focus:border-t focus-visible:border-t hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm"
             >
               <button
-                class="text-slate-500 hover:!text-slate-700 hover:!text-slate-500 active:!text-slate-500 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
+                class="!text-slate-500 hover:!text-slate-700 hover:!text-slate-500 active:!text-slate-500 hover:!text-slate-500 active:!text-slate-500 focus:!text-slate-500 focus-visible:!text-slate-500"
                 @click="close"
               >
                 Cancel
               </button>
               <button
-                class="rounded bg-[#003882] px-4 py-2 font-semibold text-white shadow-sm transition hover:!bg-sky-900 disabled:opacity-60 hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:bg-[#003882] active:bg-[#003882] focus:bg-[#003882] focus-visible:bg-[#003882] hover:text-white active:text-white focus:text-white focus-visible:text-white hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm"
+                class="!rounded !bg-[#003882] !px-4 !py-2 !font-semibold !text-white !shadow-sm !transition hover:!bg-sky-900 disabled:!opacity-60 hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882] hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white hover:!shadow-sm active:!shadow-sm focus:!shadow-sm focus-visible:!shadow-sm"
                 @click="handleSave"
                 :disabled="isSubmitting"
               >
@@ -5061,7 +5061,7 @@
                 Send Invoice To:
               </h3>
               <button
-                class="text-slate-400 transition hover:!text-slate-600 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400"
+                class="!text-slate-400 !transition hover:!text-slate-600 hover:!text-slate-400 active:!text-slate-400 hover:!text-slate-400 active:!text-slate-400 focus:!text-slate-400 focus-visible:!text-slate-400"
                 @click="close"
               >
                 <span class="sr-only">Close</span>
@@ -5115,13 +5115,13 @@
               class="flex items-center justify-end gap-3 border-t border-slate-200 px-5 py-4 hover:!border-slate-200 active:!border-slate-200 hover:border-t active:border-t focus:border-t focus-visible:border-t hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200"
             >
               <button
-                class="text-sm text-slate-500 hover:!text-slate-700 hover:!text-slate-500 active:!text-slate-500 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
+                class="!text-sm !text-slate-500 hover:!text-slate-700 hover:!text-slate-500 active:!text-slate-500 hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm hover:!text-slate-500 active:!text-slate-500 focus:!text-slate-500 focus-visible:!text-slate-500"
                 @click="close"
               >
                 Cancel
               </button>
               <button
-                class="inline-flex items-center gap-2 rounded-md bg-[#003882] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:!bg-sky-900 disabled:opacity-60 hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:bg-[#003882] active:bg-[#003882] focus:bg-[#003882] focus-visible:bg-[#003882] hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-white active:text-white focus:text-white focus-visible:text-white hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm"
+                class="!inline-flex !items-center !gap-2 !rounded-md !bg-[#003882] !px-4 !py-2 !text-sm !font-semibold !text-white !shadow-sm hover:!bg-sky-900 disabled:!opacity-60 hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882] hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white hover:!shadow-sm active:!shadow-sm focus:!shadow-sm focus-visible:!shadow-sm"
                 @click="handleSend"
                 :disabled="isSubmitting"
               >
@@ -5166,7 +5166,7 @@
               class="flex items-center justify-between bg-[#003882] px-6 py-4 text-white hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:bg-[#003882] active:bg-[#003882] focus:bg-[#003882] focus-visible:bg-[#003882] hover:text-white active:text-white focus:text-white focus-visible:text-white"
             >
               <h3 class="text-lg font-semibold hover:text-lg active:text-lg focus:text-lg focus-visible:text-lg">Tasks</h3>
-              <button class="text-white/80 hover:!text-white hover:!text-white/80 active:!text-white/80 hover:text-white/80 active:text-white/80 focus:text-white/80 focus-visible:text-white/80" @click="close">
+              <button class="!text-white/80 hover:!text-white hover:!text-white/80 active:!text-white/80 hover:!text-white/80 active:!text-white/80 focus:!text-white/80 focus-visible:!text-white/80" @click="close">
                 <span class="sr-only">Close</span>
                 <svg
                   class="h-5 w-5"
@@ -5245,7 +5245,7 @@
             >
               <h3 class="text-lg font-semibold text-slate-900 hover:!text-slate-900 active:!text-slate-900 hover:text-lg active:text-lg focus:text-lg focus-visible:text-lg hover:text-slate-900 active:text-slate-900 focus:text-slate-900 focus-visible:text-slate-900">Edit Quote</h3>
               <button
-                class="text-slate-400 transition hover:!text-slate-600 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400"
+                class="!text-slate-400 !transition hover:!text-slate-600 hover:!text-slate-400 active:!text-slate-400 hover:!text-slate-400 active:!text-slate-400 focus:!text-slate-400 focus-visible:!text-slate-400"
                 @click="closeModal"
               >
                 <span class="sr-only">Close modal</span>
@@ -5467,7 +5467,7 @@
                         ></span>
                       </div>
                       <button
-                        class="text-slate-400 transition hover:!text-rose-600 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400"
+                        class="!text-slate-400 !transition hover:!text-rose-600 hover:!text-slate-400 active:!text-slate-400 hover:!text-slate-400 active:!text-slate-400 focus:!text-slate-400 focus-visible:!text-slate-400"
                         @click.prevent="removeAttachment(file.id)"
                         x-show="!file.existing"
                       >
@@ -5496,13 +5496,13 @@
               class="flex items-center justify-between border-t border-slate-200 px-6 py-4 text-sm hover:!border-slate-200 active:!border-slate-200 hover:border-t active:border-t focus:border-t focus-visible:border-t hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm"
             >
               <button
-                class="font-medium text-slate-500 hover:!text-slate-700 hover:!text-slate-500 active:!text-slate-500 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
+                class="!font-medium !text-slate-500 hover:!text-slate-700 hover:!text-slate-500 active:!text-slate-500 hover:!text-slate-500 active:!text-slate-500 focus:!text-slate-500 focus-visible:!text-slate-500"
                 @click="closeModal"
               >
                 Cancel
               </button>
               <button
-                class="inline-flex items-center gap-2 rounded-lg bg-sky-700 px-4 py-2 font-semibold text-white shadow-sm transition hover:!bg-[#003882] disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 hover:!bg-sky-700 active:!bg-sky-700 hover:!text-white active:!text-white hover:bg-sky-700 active:bg-sky-700 focus:bg-sky-700 focus-visible:bg-sky-700 hover:text-white active:text-white focus:text-white focus-visible:text-white hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm hover:disabled:bg-slate-300 active:disabled:bg-slate-300 focus:disabled:bg-slate-300 focus-visible:disabled:bg-slate-300 hover:disabled:text-slate-500 active:disabled:text-slate-500 focus:disabled:text-slate-500 focus-visible:disabled:text-slate-500"
+                class="!inline-flex !items-center !gap-2 !rounded-lg !bg-sky-700 !px-4 !py-2 !font-semibold !text-white !shadow-sm !transition hover:!bg-[#003882] disabled:!cursor-not-allowed disabled:!bg-slate-300 disabled:!text-slate-500 hover:!bg-sky-700 active:!bg-sky-700 hover:!text-white active:!text-white hover:!bg-sky-700 active:!bg-sky-700 focus:!bg-sky-700 focus-visible:!bg-sky-700 hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white hover:!shadow-sm active:!shadow-sm focus:!shadow-sm focus-visible:!shadow-sm hover:disabled:!bg-slate-300 active:disabled:!bg-slate-300 focus:disabled:!bg-slate-300 focus-visible:disabled:!bg-slate-300 hover:disabled:!text-slate-500 active:disabled:!text-slate-500 focus:disabled:!text-slate-500 focus-visible:disabled:!text-slate-500"
                 @click="handleSave"
                 :disabled="isSubmitting"
               >
@@ -5553,7 +5553,7 @@
                 </p>
               </div>
               <button
-                class="text-slate-400 transition hover:!text-slate-600 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400"
+                class="!text-slate-400 !transition hover:!text-slate-600 hover:!text-slate-400 active:!text-slate-400 hover:!text-slate-400 active:!text-slate-400 focus:!text-slate-400 focus-visible:!text-slate-400"
                 @click="handleClose"
               >
                 <span class="sr-only">Close modal</span>
@@ -5594,13 +5594,13 @@
               class="flex items-center justify-between border-t border-slate-200 px-6 py-4 text-sm hover:!border-slate-200 active:!border-slate-200 hover:border-t active:border-t focus:border-t focus-visible:border-t hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm"
             >
               <button
-                class="font-medium text-slate-500 transition hover:!text-slate-700 hover:!text-slate-500 active:!text-slate-500 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
+                class="!font-medium !text-slate-500 !transition hover:!text-slate-700 hover:!text-slate-500 active:!text-slate-500 hover:!text-slate-500 active:!text-slate-500 focus:!text-slate-500 focus-visible:!text-slate-500"
                 @click="handleClose"
               >
                 Cancel
               </button>
               <button
-                class="inline-flex items-center rounded-lg bg-sky-700 px-4 py-2 font-semibold text-white shadow-sm transition hover:!bg-[#003882] disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 hover:!bg-sky-700 active:!bg-sky-700 hover:!text-white active:!text-white hover:bg-sky-700 active:bg-sky-700 focus:bg-sky-700 focus-visible:bg-sky-700 hover:text-white active:text-white focus:text-white focus-visible:text-white hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm hover:disabled:bg-slate-300 active:disabled:bg-slate-300 focus:disabled:bg-slate-300 focus-visible:disabled:bg-slate-300 hover:disabled:text-slate-500 active:disabled:text-slate-500 focus:disabled:text-slate-500 focus-visible:disabled:text-slate-500"
+                class="!inline-flex !items-center !rounded-lg !bg-sky-700 !px-4 !py-2 !font-semibold !text-white !shadow-sm !transition hover:!bg-[#003882] disabled:!cursor-not-allowed disabled:!bg-slate-300 disabled:!text-slate-500 hover:!bg-sky-700 active:!bg-sky-700 hover:!text-white active:!text-white hover:!bg-sky-700 active:!bg-sky-700 focus:!bg-sky-700 focus-visible:!bg-sky-700 hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white hover:!shadow-sm active:!shadow-sm focus:!shadow-sm focus-visible:!shadow-sm hover:disabled:!bg-slate-300 active:disabled:!bg-slate-300 focus:disabled:!bg-slate-300 focus-visible:disabled:!bg-slate-300 hover:disabled:!text-slate-500 active:disabled:!text-slate-500 focus:disabled:!text-slate-500 focus-visible:disabled:!text-slate-500"
                 @click="handleUpdate"
                 :disabled="isSubmitting"
               >
@@ -5644,7 +5644,7 @@
             class="relative w-full max-w-4xl rounded-2xl bg-white shadow-2xl hover:!bg-white active:!bg-white hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-2xl active:shadow-2xl focus:shadow-2xl focus-visible:shadow-2xl"
           >
             <button
-              class="absolute right-4 top-4 rounded-full p-1 text-slate-500 hover:!bg-slate-100 hover:!text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-200 hover:!text-slate-500 active:!text-slate-500 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
+              class="!absolute !right-4 !top-4 !rounded-full !p-1 !text-slate-500 hover:!bg-slate-100 hover:!text-slate-700 focus:!outline-none focus:!ring-2 focus:!ring-slate-200 hover:!text-slate-500 active:!text-slate-500 hover:!text-slate-500 active:!text-slate-500 focus:!text-slate-500 focus-visible:!text-slate-500"
               @click="close()"
             >
               <span class="sr-only">Close modal</span>
@@ -5750,7 +5750,7 @@
 
                     <div class="absolute inset-y-0 left-0 flex items-center">
                       <button
-                        class="rounded-full bg-white/80 p-2 text-slate-700 shadow hover:!bg-white focus:outline-none focus:ring-2 focus:ring-slate-300 disabled:opacity-30 hover:!bg-white/80 active:!bg-white/80 hover:!text-slate-700 active:!text-slate-700 hover:bg-white/80 active:bg-white/80 focus:bg-white/80 focus-visible:bg-white/80 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:shadow active:shadow focus:shadow focus-visible:shadow"
+                        class="!rounded-full !bg-white/80 !p-2 !text-slate-700 !shadow hover:!bg-white focus:!outline-none focus:!ring-2 focus:!ring-slate-300 disabled:!opacity-30 hover:!bg-white/80 active:!bg-white/80 hover:!text-slate-700 active:!text-slate-700 hover:!bg-white/80 active:!bg-white/80 focus:!bg-white/80 focus-visible:!bg-white/80 hover:!text-slate-700 active:!text-slate-700 focus:!text-slate-700 focus-visible:!text-slate-700 hover:!shadow active:!shadow focus:!shadow focus-visible:!shadow"
                         @click="prev"
                         :disabled="!hasPrev"
                       >
@@ -5770,7 +5770,7 @@
                     </div>
                     <div class="absolute inset-y-0 right-0 flex items-center">
                       <button
-                        class="rounded-full bg-white/80 p-2 text-slate-700 shadow hover:!bg-white focus:outline-none focus:ring-2 focus:ring-slate-300 disabled:opacity-30 hover:!bg-white/80 active:!bg-white/80 hover:!text-slate-700 active:!text-slate-700 hover:bg-white/80 active:bg-white/80 focus:bg-white/80 focus-visible:bg-white/80 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:shadow active:shadow focus:shadow focus-visible:shadow"
+                        class="!rounded-full !bg-white/80 !p-2 !text-slate-700 !shadow hover:!bg-white focus:!outline-none focus:!ring-2 focus:!ring-slate-300 disabled:!opacity-30 hover:!bg-white/80 active:!bg-white/80 hover:!text-slate-700 active:!text-slate-700 hover:!bg-white/80 active:!bg-white/80 focus:!bg-white/80 focus-visible:!bg-white/80 hover:!text-slate-700 active:!text-slate-700 focus:!text-slate-700 focus-visible:!text-slate-700 hover:!shadow active:!shadow focus:!shadow focus-visible:!shadow"
                         @click="next"
                         :disabled="!hasNext"
                       >
@@ -5846,7 +5846,7 @@
                 </p>
               </div>
               <button
-                class="text-slate-400 transition hover:!text-slate-600 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400"
+                class="!text-slate-400 !transition hover:!text-slate-600 hover:!text-slate-400 active:!text-slate-400 hover:!text-slate-400 active:!text-slate-400 focus:!text-slate-400 focus-visible:!text-slate-400"
                 @click="close"
               >
                 <span class="sr-only">Close modal</span>
@@ -5885,13 +5885,13 @@
               class="flex items-center justify-between border-t border-slate-200 px-6 py-4 text-sm hover:!border-slate-200 active:!border-slate-200 hover:border-t active:border-t focus:border-t focus-visible:border-t hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm"
             >
               <button
-                class="font-medium text-slate-500 transition hover:!text-slate-700 hover:!text-slate-500 active:!text-slate-500 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
+                class="!font-medium !text-slate-500 !transition hover:!text-slate-700 hover:!text-slate-500 active:!text-slate-500 hover:!text-slate-500 active:!text-slate-500 focus:!text-slate-500 focus-visible:!text-slate-500"
                 @click="close"
               >
                 Cancel
               </button>
               <button
-                class="inline-flex items-center rounded-lg bg-sky-700 px-4 py-2 font-semibold text-white shadow-sm transition hover:!bg-[#003882] disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 hover:!bg-sky-700 active:!bg-sky-700 hover:!text-white active:!text-white hover:bg-sky-700 active:bg-sky-700 focus:bg-sky-700 focus-visible:bg-sky-700 hover:text-white active:text-white focus:text-white focus-visible:text-white hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm hover:disabled:bg-slate-300 active:disabled:bg-slate-300 focus:disabled:bg-slate-300 focus-visible:disabled:bg-slate-300 hover:disabled:text-slate-500 active:disabled:text-slate-500 focus:disabled:text-slate-500 focus-visible:disabled:text-slate-500"
+                class="!inline-flex !items-center !rounded-lg !bg-sky-700 !px-4 !py-2 !font-semibold !text-white !shadow-sm !transition hover:!bg-[#003882] disabled:!cursor-not-allowed disabled:!bg-slate-300 disabled:!text-slate-500 hover:!bg-sky-700 active:!bg-sky-700 hover:!text-white active:!text-white hover:!bg-sky-700 active:!bg-sky-700 focus:!bg-sky-700 focus-visible:!bg-sky-700 hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white hover:!shadow-sm active:!shadow-sm focus:!shadow-sm focus-visible:!shadow-sm hover:disabled:!bg-slate-300 active:disabled:!bg-slate-300 focus:disabled:!bg-slate-300 focus-visible:disabled:!bg-slate-300 hover:disabled:!text-slate-500 active:disabled:!text-slate-500 focus:disabled:!text-slate-500 focus-visible:disabled:!text-slate-500"
                 @click="submit"
                 :disabled="isSubmitting"
               >
@@ -5937,7 +5937,7 @@
             >
               <h3 class="text-lg font-semibold text-slate-900 hover:!text-slate-900 active:!text-slate-900 hover:text-lg active:text-lg focus:text-lg focus-visible:text-lg hover:text-slate-900 active:text-slate-900 focus:text-slate-900 focus-visible:text-slate-900">Add Activity</h3>
               <button
-                class="text-slate-400 transition hover:!text-slate-600 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400"
+                class="!text-slate-400 !transition hover:!text-slate-600 hover:!text-slate-400 active:!text-slate-400 hover:!text-slate-400 active:!text-slate-400 focus:!text-slate-400 focus-visible:!text-slate-400"
                 @click="handleClose"
               >
                 <span class="sr-only">Close modal</span>
@@ -6225,13 +6225,13 @@
               class="flex items-center justify-between border-t border-slate-200 px-6 py-4 text-sm hover:!border-slate-200 active:!border-slate-200 hover:border-t active:border-t focus:border-t focus-visible:border-t hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm"
             >
               <button
-                class="font-medium text-slate-500 transition hover:!text-slate-700 hover:!text-slate-500 active:!text-slate-500 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
+                class="!font-medium !text-slate-500 !transition hover:!text-slate-700 hover:!text-slate-500 active:!text-slate-500 hover:!text-slate-500 active:!text-slate-500 focus:!text-slate-500 focus-visible:!text-slate-500"
                 @click="handleClose"
               >
                 Cancel
               </button>
               <button
-                class="inline-flex items-center rounded-lg bg-sky-700 px-4 py-2 font-semibold text-white shadow-sm transition hover:!bg-[#003882] disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 hover:!bg-sky-700 active:!bg-sky-700 hover:!text-white active:!text-white hover:bg-sky-700 active:bg-sky-700 focus:bg-sky-700 focus-visible:bg-sky-700 hover:text-white active:text-white focus:text-white focus-visible:text-white hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm hover:disabled:bg-slate-300 active:disabled:bg-slate-300 focus:disabled:bg-slate-300 focus-visible:disabled:bg-slate-300 hover:disabled:text-slate-500 active:disabled:text-slate-500 focus:disabled:text-slate-500 focus-visible:disabled:text-slate-500"
+                class="!inline-flex !items-center !rounded-lg !bg-sky-700 !px-4 !py-2 !font-semibold !text-white !shadow-sm !transition hover:!bg-[#003882] disabled:!cursor-not-allowed disabled:!bg-slate-300 disabled:!text-slate-500 hover:!bg-sky-700 active:!bg-sky-700 hover:!text-white active:!text-white hover:!bg-sky-700 active:!bg-sky-700 focus:!bg-sky-700 focus-visible:!bg-sky-700 hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white hover:!shadow-sm active:!shadow-sm focus:!shadow-sm focus-visible:!shadow-sm hover:disabled:!bg-slate-300 active:disabled:!bg-slate-300 focus:disabled:!bg-slate-300 focus-visible:disabled:!bg-slate-300 hover:disabled:!text-slate-500 active:disabled:!text-slate-500 focus:disabled:!text-slate-500 focus-visible:disabled:!text-slate-500"
                 @click="handleSubmit"
                 :disabled="isSubmitting || !form.service || (filteredServiceOptions.length && !form.serviceOption)"
               >
@@ -6279,7 +6279,7 @@
                 Delete Activity
               </h3>
               <button
-                class="text-slate-400 transition hover:!text-slate-600 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400"
+                class="!text-slate-400 !transition hover:!text-slate-600 hover:!text-slate-400 active:!text-slate-400 hover:!text-slate-400 active:!text-slate-400 focus:!text-slate-400 focus-visible:!text-slate-400"
                 @click="close"
               >
                 <span class="sr-only">Close modal</span>
@@ -6311,14 +6311,14 @@
               class="flex items-center justify-between border-t border-slate-200 px-6 py-4 text-sm hover:!border-slate-200 active:!border-slate-200 hover:border-t active:border-t focus:border-t focus-visible:border-t hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm"
             >
               <button
-                class="font-medium text-slate-500 transition hover:!text-slate-700 hover:!text-slate-500 active:!text-slate-500 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
+                class="!font-medium !text-slate-500 !transition hover:!text-slate-700 hover:!text-slate-500 active:!text-slate-500 hover:!text-slate-500 active:!text-slate-500 focus:!text-slate-500 focus-visible:!text-slate-500"
                 @click="close"
                 :disabled="isSubmitting"
               >
                 Cancel
               </button>
               <button
-                class="inline-flex items-center rounded-lg bg-rose-600 px-4 py-2 font-semibold text-white shadow-sm transition hover:!bg-rose-700 disabled:cursor-not-allowed disabled:bg-rose-300 hover:!bg-rose-600 active:!bg-rose-600 hover:!text-white active:!text-white hover:bg-rose-600 active:bg-rose-600 focus:bg-rose-600 focus-visible:bg-rose-600 hover:text-white active:text-white focus:text-white focus-visible:text-white hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm hover:disabled:bg-rose-300 active:disabled:bg-rose-300 focus:disabled:bg-rose-300 focus-visible:disabled:bg-rose-300"
+                class="!inline-flex !items-center !rounded-lg !bg-rose-600 !px-4 !py-2 !font-semibold !text-white !shadow-sm !transition hover:!bg-rose-700 disabled:!cursor-not-allowed disabled:!bg-rose-300 hover:!bg-rose-600 active:!bg-rose-600 hover:!text-white active:!text-white hover:!bg-rose-600 active:!bg-rose-600 focus:!bg-rose-600 focus-visible:!bg-rose-600 hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white hover:!shadow-sm active:!shadow-sm focus:!shadow-sm focus-visible:!shadow-sm hover:disabled:!bg-rose-300 active:disabled:!bg-rose-300 focus:disabled:!bg-rose-300 focus-visible:disabled:!bg-rose-300"
                 @click="confirm"
                 :disabled="isSubmitting"
               >
@@ -6367,7 +6367,7 @@
                 Deal Information
               </h3>
               <button
-                class="text-slate-400 transition hover:!text-slate-600 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400"
+                class="!text-slate-400 !transition hover:!text-slate-600 hover:!text-slate-400 active:!text-slate-400 hover:!text-slate-400 active:!text-slate-400 focus:!text-slate-400 focus-visible:!text-slate-400"
                 @click="handleClose"
               >
                 <span class="sr-only">Close modal</span>
@@ -6554,13 +6554,13 @@
             >
               <button
                 type="button"
-                class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:!bg-slate-100 hover:!border-slate-300 active:!border-slate-300 hover:!text-slate-700 active:!text-slate-700 hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700"
+                class="!rounded-lg !border !border-slate-300 !px-4 !py-2 !text-sm !font-medium !text-slate-700 hover:!bg-slate-100 hover:!border-slate-300 active:!border-slate-300 hover:!text-slate-700 active:!text-slate-700 hover:!border active:!border focus:!border focus-visible:!border hover:!border-slate-300 active:!border-slate-300 focus:!border-slate-300 focus-visible:!border-slate-300 hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm hover:!text-slate-700 active:!text-slate-700 focus:!text-slate-700 focus-visible:!text-slate-700"
                 @click="handleClose"
               >
                 Cancel
               </button>
               <button
-                class="inline-flex items-center gap-2 rounded-lg bg-sky-700 px-4 py-2 font-semibold text-white shadow-sm transition hover:!bg-[#003882] disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 hover:!bg-sky-700 active:!bg-sky-700 hover:!text-white active:!text-white hover:bg-sky-700 active:bg-sky-700 focus:bg-sky-700 focus-visible:bg-sky-700 hover:text-white active:text-white focus:text-white focus-visible:text-white hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm hover:disabled:bg-slate-300 active:disabled:bg-slate-300 focus:disabled:bg-slate-300 focus-visible:disabled:bg-slate-300 hover:disabled:text-slate-500 active:disabled:text-slate-500 focus:disabled:text-slate-500 focus-visible:disabled:text-slate-500"
+                class="!inline-flex !items-center !gap-2 !rounded-lg !bg-sky-700 !px-4 !py-2 !font-semibold !text-white !shadow-sm !transition hover:!bg-[#003882] disabled:!cursor-not-allowed disabled:!bg-slate-300 disabled:!text-slate-500 hover:!bg-sky-700 active:!bg-sky-700 hover:!text-white active:!text-white hover:!bg-sky-700 active:!bg-sky-700 focus:!bg-sky-700 focus-visible:!bg-sky-700 hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white hover:!shadow-sm active:!shadow-sm focus:!shadow-sm focus-visible:!shadow-sm hover:disabled:!bg-slate-300 active:disabled:!bg-slate-300 focus:disabled:!bg-slate-300 focus-visible:disabled:!bg-slate-300 hover:disabled:!text-slate-500 active:disabled:!text-slate-500 focus:disabled:!text-slate-500 focus-visible:disabled:!text-slate-500"
                 @click="handleSave"
                 :disabled="isSubmitting"
               >
@@ -6617,7 +6617,7 @@
                 <span x-text="titleSuffix || '[Current Job]'"></span>
               </h3>
               <button
-                class="text-slate-500 hover:!text-slate-700 hover:!text-slate-500 active:!text-slate-500 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
+                class="!text-slate-500 hover:!text-slate-700 hover:!text-slate-500 active:!text-slate-500 hover:!text-slate-500 active:!text-slate-500 focus:!text-slate-500 focus-visible:!text-slate-500"
                 @click="handleClose()"
               >
                 &times;
@@ -6651,7 +6651,7 @@
                 />
                 <button
                   type="button"
-                  class="text-sky-700 text-sm hover:!underline hover:!text-sky-700 active:!text-sky-700 hover:text-sky-700 active:text-sky-700 focus:text-sky-700 focus-visible:text-sky-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm"
+                  class="!text-sky-700 !text-sm hover:!underline hover:!text-sky-700 active:!text-sky-700 hover:!text-sky-700 active:!text-sky-700 focus:!text-sky-700 focus-visible:!text-sky-700 hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm"
                   @click="assignToMe()"
                 >
                   Assign to me
@@ -6719,14 +6719,14 @@
             <!-- Footer -->
             <div class="flex items-center justify-between px-5 py-4 border-t hover:border-t active:border-t focus:border-t focus-visible:border-t">
               <button
-                class="text-slate-600 hover:!text-slate-800 hover:!text-slate-600 active:!text-slate-600 hover:text-slate-600 active:text-slate-600 focus:text-slate-600 focus-visible:text-slate-600"
+                class="!text-slate-600 hover:!text-slate-800 hover:!text-slate-600 active:!text-slate-600 hover:!text-slate-600 active:!text-slate-600 focus:!text-slate-600 focus-visible:!text-slate-600"
                 @click="handleClose()"
                 :disabled="isSubmitting"
               >
                 Cancel
               </button>
               <button
-                class="inline-flex items-center gap-2 rounded bg-[#003882] text-white px-4 py-2 hover:!bg-sky-900 disabled:opacity-60 hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:bg-[#003882] active:bg-[#003882] focus:bg-[#003882] focus-visible:bg-[#003882] hover:text-white active:text-white focus:text-white focus-visible:text-white"
+                class="!inline-flex !items-center !gap-2 !rounded !bg-[#003882] !text-white !px-4 !py-2 hover:!bg-sky-900 disabled:!opacity-60 hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882] hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white"
                 @click="handleSave()"
                 :disabled="isSubmitting"
               >
@@ -6789,7 +6789,7 @@
                 <span x-text="titleSuffix || '[Current Job]'"></span>
               </h3>
               <button
-                class="text-slate-500 hover:!text-slate-700 hover:!text-slate-500 active:!text-slate-500 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
+                class="!text-slate-500 hover:!text-slate-700 hover:!text-slate-500 active:!text-slate-500 hover:!text-slate-500 active:!text-slate-500 focus:!text-slate-500 focus-visible:!text-slate-500"
                 @click="handleClose()"
               >
                 &times;
@@ -6855,7 +6855,7 @@
                           >
                           <button
                             type="button"
-                            class="p-1 rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex items-center hover:!bg-slate-50 hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300"
+                            class="!p-1 !rounded !outline !outline-1 !outline-offset-[-1px] !outline-gray-300 !inline-flex !items-center hover:!bg-slate-50 hover:!outline active:!outline focus:!outline focus-visible:!outline hover:!outline-1 active:!outline-1 focus:!outline-1 focus-visible:!outline-1 hover:!outline-offset-[-1px] active:!outline-offset-[-1px] focus:!outline-offset-[-1px] focus-visible:!outline-offset-[-1px] hover:!outline-gray-300 active:!outline-gray-300 focus:!outline-gray-300 focus-visible:!outline-gray-300"
                             @click.stop="reassignOpen = !reassignOpen"
                             title="Reassign"
                             aria-label="Reassign"
@@ -6897,7 +6897,7 @@
                               >
                                 <button
                                   type="button"
-                                  class="w-full text-left px-3 py-2 hover:!bg-slate-50 flex items-center justify-between hover:text-left active:text-left focus:text-left focus-visible:text-left"
+                                  class="!w-full !text-left !px-3 !py-2 hover:!bg-slate-50 !flex !items-center !justify-between hover:!text-left active:!text-left focus:!text-left focus-visible:!text-left"
                                   :class="{'bg-sky-50': tempAssigneeId === user.id}"
                                   @click="tempAssigneeId = user.id"
                                 >
@@ -6915,14 +6915,14 @@
                               class="flex items-center justify-between px-3 py-2 border-t hover:border-t active:border-t focus:border-t focus-visible:border-t"
                             >
                               <button
-                                class="text-slate-600 hover:!text-slate-800 hover:!text-slate-600 active:!text-slate-600 hover:text-slate-600 active:text-slate-600 focus:text-slate-600 focus-visible:text-slate-600"
+                                class="!text-slate-600 hover:!text-slate-800 hover:!text-slate-600 active:!text-slate-600 hover:!text-slate-600 active:!text-slate-600 focus:!text-slate-600 focus-visible:!text-slate-600"
                                 @click="reassignOpen=false"
                                 :disabled="savingReassign"
                               >
                                 Cancel
                               </button>
                               <button
-                                class="inline-flex items-center gap-2 rounded bg-[#003882] text-white px-3 py-2 hover:!bg-sky-900 disabled:opacity-60 hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:bg-[#003882] active:bg-[#003882] focus:bg-[#003882] focus-visible:bg-[#003882] hover:text-white active:text-white focus:text-white focus-visible:text-white"
+                                class="!inline-flex !items-center !gap-2 !rounded !bg-[#003882] !text-white !px-3 !py-2 hover:!bg-sky-900 disabled:!opacity-60 hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882] hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white"
                                 @click="confirmReassign()"
                                 :disabled="savingReassign"
                               >
@@ -6959,7 +6959,7 @@
                           <span x-text="humanDue(task.dueISO)"></span>
                           <button
                             type="button"
-                            class="p-1 rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex items-center hover:!bg-slate-50 hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300"
+                            class="!p-1 !rounded !outline !outline-1 !outline-offset-[-1px] !outline-gray-300 !inline-flex !items-center hover:!bg-slate-50 hover:!outline active:!outline focus:!outline focus-visible:!outline hover:!outline-1 active:!outline-1 focus:!outline-1 focus-visible:!outline-1 hover:!outline-offset-[-1px] active:!outline-offset-[-1px] focus:!outline-offset-[-1px] focus-visible:!outline-offset-[-1px] hover:!outline-gray-300 active:!outline-gray-300 focus:!outline-gray-300 focus-visible:!outline-gray-300"
                             @click.stop="reschedOpen = !reschedOpen"
                             title="Reschedule"
                             aria-label="Reschedule"
@@ -6997,14 +6997,14 @@
                             </div>
                             <div class="flex items-center justify-between">
                               <button
-                                class="text-slate-600 hover:!text-slate-800 hover:!text-slate-600 active:!text-slate-600 hover:text-slate-600 active:text-slate-600 focus:text-slate-600 focus-visible:text-slate-600"
+                                class="!text-slate-600 hover:!text-slate-800 hover:!text-slate-600 active:!text-slate-600 hover:!text-slate-600 active:!text-slate-600 focus:!text-slate-600 focus-visible:!text-slate-600"
                                 @click="reschedOpen=false"
                                 :disabled="savingResched"
                               >
                                 Cancel
                               </button>
                               <button
-                                class="inline-flex items-center gap-2 rounded bg-[#003882] text-white px-3 py-2 hover:!bg-sky-900 disabled:opacity-60 hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:bg-[#003882] active:bg-[#003882] focus:bg-[#003882] focus-visible:bg-[#003882] hover:text-white active:text-white focus:text-white focus-visible:text-white"
+                                class="!inline-flex !items-center !gap-2 !rounded !bg-[#003882] !text-white !px-3 !py-2 hover:!bg-sky-900 disabled:!opacity-60 hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882] hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white"
                                 @click="confirmReschedule()"
                                 :disabled="savingResched"
                               >
@@ -7078,7 +7078,7 @@
                         <template x-if="task.status !== 'Completed'">
                           <button
                             type="button"
-                            class="rounded border border-slate-300 px-3 py-2 text-sm hover:!bg-slate-50 disabled:opacity-60 cursor-pointer hover:!border-slate-300 active:!border-slate-300 hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm"
+                            class="!rounded !border !border-slate-300 !px-3 !py-2 !text-sm hover:!bg-slate-50 disabled:!opacity-60 !cursor-pointer hover:!border-slate-300 active:!border-slate-300 hover:!border active:!border focus:!border focus-visible:!border hover:!border-slate-300 active:!border-slate-300 focus:!border-slate-300 focus-visible:!border-slate-300 hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm"
                             @click="handleMarkComplete(task)"
                             :disabled="isBusy(task)"
                           >
@@ -7115,7 +7115,7 @@
 
                         <template x-if="task.status === 'Completed'">
                           <button
-                            class="rounded border border-slate-300 px-3 py-2 text-sm hover:!bg-slate-50 disabled:opacity-60 hover:!border-slate-300 active:!border-slate-300 hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm"
+                            class="!rounded !border !border-slate-300 !px-3 !py-2 !text-sm hover:!bg-slate-50 disabled:!opacity-60 hover:!border-slate-300 active:!border-slate-300 hover:!border active:!border focus:!border focus-visible:!border hover:!border-slate-300 active:!border-slate-300 focus:!border-slate-300 focus-visible:!border-slate-300 hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm"
                             @click="reopen(task)"
                             :disabled="actionLoading[task.uid]"
                           >
@@ -7166,7 +7166,7 @@
             <!-- Footer -->
             <div class="flex items-center justify-end px-5 py-4 border-t hover:border-t active:border-t focus:border-t focus-visible:border-t">
               <button
-                class="text-slate-600 hover:!text-slate-800 hover:!text-slate-600 active:!text-slate-600 hover:text-slate-600 active:text-slate-600 focus:text-slate-600 focus-visible:text-slate-600"
+                class="!text-slate-600 hover:!text-slate-800 hover:!text-slate-600 active:!text-slate-600 hover:!text-slate-600 active:!text-slate-600 focus:!text-slate-600 focus-visible:!text-slate-600"
                 @click="handleClose()"
               >
                 Close
@@ -7203,7 +7203,7 @@
                 x-text="isEdit ? 'Edit Property Contact' : 'Add Property Contact'"
               ></h3>
               <button
-                class="text-slate-500 hover:!text-slate-700 hover:!text-slate-500 active:!text-slate-500 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
+                class="!text-slate-500 hover:!text-slate-700 hover:!text-slate-500 active:!text-slate-500 hover:!text-slate-500 active:!text-slate-500 focus:!text-slate-500 focus-visible:!text-slate-500"
                 @click="handleClose()"
                 aria-label="Close"
               >
@@ -7228,7 +7228,7 @@
                 >
                   <button
                     type="button"
-                    class="flex w-full items-center justify-between rounded-lg border border-slate-300 bg-white px-3 py-2 text-left text-sm text-slate-800 shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500 hover:!border-slate-300 active:!border-slate-300 hover:!bg-white active:!bg-white hover:!text-slate-800 active:!text-slate-800 hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:text-left active:text-left focus:text-left focus-visible:text-left hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-800 active:text-slate-800 focus:text-slate-800 focus-visible:text-slate-800 hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm"
+                    class="!flex !w-full !items-center !justify-between !rounded-lg !border !border-slate-300 !bg-white !px-3 !py-2 !text-left !text-sm !text-slate-800 !shadow-sm focus:!border-sky-600 focus:!outline-none focus:!ring-1 focus:!ring-sky-500 hover:!border-slate-300 active:!border-slate-300 hover:!bg-white active:!bg-white hover:!text-slate-800 active:!text-slate-800 hover:!border active:!border focus:!border focus-visible:!border hover:!border-slate-300 active:!border-slate-300 focus:!border-slate-300 focus-visible:!border-slate-300 hover:!bg-white active:!bg-white focus:!bg-white focus-visible:!bg-white hover:!text-left active:!text-left focus:!text-left focus-visible:!text-left hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm hover:!text-slate-800 active:!text-slate-800 focus:!text-slate-800 focus-visible:!text-slate-800 hover:!shadow-sm active:!shadow-sm focus:!shadow-sm focus-visible:!shadow-sm"
                     @click="toggleSearchDropdown"
                     :aria-expanded="searchDropdownOpen"
                   >
@@ -7332,7 +7332,7 @@
                           >
                             <button
                               type="button"
-                              class="w-full px-3 py-3 text-left hover:!bg-slate-50 hover:text-left active:text-left focus:text-left focus-visible:text-left"
+                              class="!w-full !px-3 !py-3 !text-left hover:!bg-slate-50 hover:!text-left active:!text-left focus:!text-left focus-visible:!text-left"
                               @click="pickSuggestion(contact)"
                             >
                               <div class="flex flex-col gap-0.5">
@@ -7377,7 +7377,7 @@
                     </div>
                     <button
                       type="button"
-                      class="w-full border-t border-slate-100 px-3 py-2 text-left text-sm font-medium text-sky-700 hover:!bg-slate-50 hover:!border-slate-100 active:!border-slate-100 hover:!text-sky-700 active:!text-sky-700 hover:border-t active:border-t focus:border-t focus-visible:border-t hover:border-slate-100 active:border-slate-100 focus:border-slate-100 focus-visible:border-slate-100 hover:text-left active:text-left focus:text-left focus-visible:text-left hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-sky-700 active:text-sky-700 focus:text-sky-700 focus-visible:text-sky-700"
+                      class="!w-full !border-t !border-slate-100 !px-3 !py-2 !text-left !text-sm !font-medium !text-sky-700 hover:!bg-slate-50 hover:!border-slate-100 active:!border-slate-100 hover:!text-sky-700 active:!text-sky-700 hover:!border-t active:!border-t focus:!border-t focus-visible:!border-t hover:!border-slate-100 active:!border-slate-100 focus:!border-slate-100 focus-visible:!border-slate-100 hover:!text-left active:!text-left focus:!text-left focus-visible:!text-left hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm hover:!text-sky-700 active:!text-sky-700 focus:!text-sky-700 focus-visible:!text-sky-700"
                       @click="clearSelectedContact"
                     >
                       Clear selection
@@ -7464,7 +7464,7 @@
             <!-- Footer -->
             <div class="flex items-center justify-end gap-3 px-5 py-4 border-t hover:border-t active:border-t focus:border-t focus-visible:border-t">
               <button
-                class="text-slate-600 hover:!text-slate-800 hover:!text-slate-600 active:!text-slate-600 hover:text-slate-600 active:text-slate-600 focus:text-slate-600 focus-visible:text-slate-600"
+                class="!text-slate-600 hover:!text-slate-800 hover:!text-slate-600 active:!text-slate-600 hover:!text-slate-600 active:!text-slate-600 focus:!text-slate-600 focus-visible:!text-slate-600"
                 @click="handleClose()"
                 :disabled="isSubmitting"
               >
@@ -7472,7 +7472,7 @@
               </button>
               <button
                 type="button"
-                class="inline-flex items-center gap-2 rounded bg-[#003882] text-white px-4 py-2 hover:!bg-sky-900 disabled:opacity-60 hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:bg-[#003882] active:bg-[#003882] focus:bg-[#003882] focus-visible:bg-[#003882] hover:text-white active:text-white focus:text-white focus-visible:text-white"
+                class="!inline-flex !items-center !gap-2 !rounded !bg-[#003882] !text-white !px-4 !py-2 hover:!bg-sky-900 disabled:!opacity-60 hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882] hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white"
                 @click="handleSave()"
                 :disabled="isSubmitting"
               >
@@ -7527,7 +7527,7 @@
             <div class="flex items-center justify-between px-5 py-4 border-b hover:border-b active:border-b focus:border-b focus-visible:border-b">
               <h3 class="text-lg font-semibold hover:text-lg active:text-lg focus:text-lg focus-visible:text-lg">Delete Contact</h3>
               <button
-                class="text-slate-500 hover:!text-slate-700 hover:!text-slate-500 active:!text-slate-500 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
+                class="!text-slate-500 hover:!text-slate-700 hover:!text-slate-500 active:!text-slate-500 hover:!text-slate-500 active:!text-slate-500 focus:!text-slate-500 focus-visible:!text-slate-500"
                 @click="handleClose()"
                 aria-label="Close"
               >
@@ -7551,7 +7551,7 @@
             <div class="flex items-center justify-end gap-3 px-5 py-4 border-t hover:border-t active:border-t focus:border-t focus-visible:border-t">
               <button
                 type="button"
-                class="text-slate-600 hover:!text-slate-800 hover:!text-slate-600 active:!text-slate-600 hover:text-slate-600 active:text-slate-600 focus:text-slate-600 focus-visible:text-slate-600"
+                class="!text-slate-600 hover:!text-slate-800 hover:!text-slate-600 active:!text-slate-600 hover:!text-slate-600 active:!text-slate-600 focus:!text-slate-600 focus-visible:!text-slate-600"
                 @click="handleClose()"
                 :disabled="isSubmitting"
               >
@@ -7560,7 +7560,7 @@
 
               <button
                 type="button"
-                class="inline-flex items-center gap-2 rounded-md bg-red-600 text-white px-4 py-2 hover:!bg-red-700 disabled:opacity-60 hover:!bg-red-600 active:!bg-red-600 hover:!text-white active:!text-white hover:bg-red-600 active:bg-red-600 focus:bg-red-600 focus-visible:bg-red-600 hover:text-white active:text-white focus:text-white focus-visible:text-white"
+                class="!inline-flex !items-center !gap-2 !rounded-md !bg-red-600 !text-white !px-4 !py-2 hover:!bg-red-700 disabled:!opacity-60 hover:!bg-red-600 active:!bg-red-600 hover:!text-white active:!text-white hover:!bg-red-600 active:!bg-red-600 focus:!bg-red-600 focus-visible:!bg-red-600 hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white"
                 @click="handleDelete()"
                 :disabled="isSubmitting"
               >

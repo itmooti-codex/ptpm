@@ -966,7 +966,7 @@ export class DashboardController {
       chips.push(`
         <div data-chip-key="${key}" data-add-btn="true" data-filter="true" data-icon="true" data-tab="false" data-type="primary" class="px-3 py-2 bg-sky-100 rounded-[20px] outline outline-1 outline-offset-[-1px] outline-blue-700 flex justify-center items-center gap-1 mr-2 hover:!bg-sky-100 active:!bg-sky-100 hover:bg-sky-100 active:bg-sky-100 focus:bg-sky-100 focus-visible:bg-sky-100 hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-blue-700 active:outline-blue-700 focus:outline-blue-700 focus-visible:outline-blue-700">
           <div class="justify-end text-blue-700 text-xs font-normal font-['Inter'] leading-3 hover:!text-blue-700 active:!text-blue-700 hover:text-blue-700 active:text-blue-700 focus:text-blue-700 focus-visible:text-blue-700 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs">${label}: ${text} </div>
-          <button type="button" class="w-3 h-3 relative overflow-hidden remove-chip" aria-label="Remove ${label}">
+          <button type="button" class="!w-3 !h-3 !relative !overflow-hidden !remove-chip" aria-label="Remove ${label}">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 3 24 24" class="w-4 h-4 fill-[#003882] hover:fill-[#003882] active:fill-[#003882] focus:fill-[#003882] focus-visible:fill-[#003882]">
               <path d="M6.225 4.811a1 1 0 0 0-1.414 1.414L10.586 12l-5.775 5.775a1 1 0 1 0 1.414 1.414L12 13.414l5.775 5.775a1 1 0 0 0 1.414-1.414L13.414 12l5.775-5.775a1 1 0 0 0-1.414-1.414L12 10.586 6.225 4.811z"></path>
             </svg>
@@ -1032,7 +1032,7 @@ export class DashboardController {
 
     const hasChips = chips.length > 0;
     const clearAllBtn = hasChips
-      ? `<button id="clear-all-filters" type="button" class="px-1 text-slate-500 text-sm font-medium whitespace-nowrap font-['Inter'] leading-4 hover:!text-slate-500 active:!text-slate-500 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm">Clear All</button>`
+      ? `<button id="clear-all-filters" type="button" class="!px-1 !text-slate-500 !text-sm !font-medium !whitespace-nowrap !font-['Inter'] !leading-4 hover:!text-slate-500 active:!text-slate-500 hover:!text-slate-500 active:!text-slate-500 focus:!text-slate-500 focus-visible:!text-slate-500 hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm">Clear All</button>`
       : "";
 
     root.innerHTML = chips.join("") + clearAllBtn;

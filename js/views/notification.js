@@ -239,7 +239,7 @@ export class NotificationView {
         <div class="flex items-center gap-2 text-xs text-gray-600 select-none hover:!text-gray-600 active:!text-gray-600 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-gray-600 active:text-gray-600 focus:text-gray-600 focus-visible:text-gray-600">
           <span>Only show unread</span>
           <button id="notifUnreadToggle" type="button" aria-pressed="false"
-            class="w-10 h-5 inline-flex items-center rounded-full bg-gray-300 relative hover:!bg-gray-300 active:!bg-gray-300 hover:bg-gray-300 active:bg-gray-300 focus:bg-gray-300 focus-visible:bg-gray-300">
+            class="!w-10 !h-5 !inline-flex !items-center !rounded-full !bg-gray-300 !relative hover:!bg-gray-300 active:!bg-gray-300 hover:!bg-gray-300 active:!bg-gray-300 focus:!bg-gray-300 focus-visible:!bg-gray-300">
             <span class="knob absolute w-4 h-4 bg-white rounded-full left-0.5 transition-transform duration-200 ease-out translate-x-0 hover:!bg-white active:!bg-white hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white"></span>
           </button>
         </div>
@@ -247,13 +247,13 @@ export class NotificationView {
       <div class="px-4 pt-3">
         <span class="hidden bg-blue-600 bg-gray-300 text-gray-700 text-white shadow-sm translate-x-0 translate-x-5 hover:!bg-blue-600 active:!bg-blue-600 hover:!bg-gray-300 active:!bg-gray-300 hover:!text-gray-700 active:!text-gray-700 hover:!text-white active:!text-white hover:bg-blue-600 active:bg-blue-600 focus:bg-blue-600 focus-visible:bg-blue-600 hover:bg-gray-300 active:bg-gray-300 focus:bg-gray-300 focus-visible:bg-gray-300 hover:text-gray-700 active:text-gray-700 focus:text-gray-700 focus-visible:text-gray-700 hover:text-white active:text-white focus:text-white focus-visible:text-white hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm"></span>
         <div class="flex items-center gap-3">
-          <button id="notifTabAction" class="px-3 py-1.5 rounded-full text-sm font-medium bg-blue-600 text-white shadow-sm hover:!bg-blue-600 active:!bg-blue-600 hover:!text-white active:!text-white hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:bg-blue-600 active:bg-blue-600 focus:bg-blue-600 focus-visible:bg-blue-600 hover:text-white active:text-white focus:text-white focus-visible:text-white hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm">
+          <button id="notifTabAction" class="!px-3 !py-1.5 !rounded-full !text-sm !font-medium !bg-blue-600 !text-white !shadow-sm hover:!bg-blue-600 active:!bg-blue-600 hover:!text-white active:!text-white hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm hover:!bg-blue-600 active:!bg-blue-600 focus:!bg-blue-600 focus-visible:!bg-blue-600 hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white hover:!shadow-sm active:!shadow-sm focus:!shadow-sm focus-visible:!shadow-sm">
             <span class="inline-flex items-center gap-1">
               <span class="w-2.5 h-2.5 rounded-full bg-red-600 hover:!bg-red-600 active:!bg-red-600 hover:bg-red-600 active:bg-red-600 focus:bg-red-600 focus-visible:bg-red-600"></span>
               Action Required
             </span>
           </button>
-          <button id="notifTabGeneral" class="px-3 py-1.5 rounded-full text-sm font-medium text-gray-700 hover:!bg-gray-100 hover:!text-gray-700 active:!text-gray-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-gray-700 active:text-gray-700 focus:text-gray-700 focus-visible:text-gray-700">
+          <button id="notifTabGeneral" class="!px-3 !py-1.5 !rounded-full !text-sm !font-medium !text-gray-700 hover:!bg-gray-100 hover:!text-gray-700 active:!text-gray-700 hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm hover:!text-gray-700 active:!text-gray-700 focus:!text-gray-700 focus-visible:!text-gray-700">
             General Updates
           </button>
         </div>
@@ -264,7 +264,7 @@ export class NotificationView {
       </div>
       <div class="max-h-[380px] overflow-auto transition-all duration-200" id="notifList"></div>
       <div class="px-4 py-3 border-t rounded-b-lg text-center hover:border-t active:border-t focus:border-t focus-visible:border-t hover:text-center active:text-center focus:text-center focus-visible:text-center">
-        <button type="button" id="notifViewMore" class="text-sm font-medium text-blue-700 hover:!underline hover:!text-blue-700 active:!text-blue-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-blue-700 active:text-blue-700 focus:text-blue-700 focus-visible:text-blue-700">
+        <button type="button" id="notifViewMore" class="!text-sm !font-medium !text-blue-700 hover:!underline hover:!text-blue-700 active:!text-blue-700 hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm hover:!text-blue-700 active:!text-blue-700 focus:!text-blue-700 focus-visible:!text-blue-700">
           View All
         </button>
       </div>
