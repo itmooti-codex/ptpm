@@ -1023,6 +1023,20 @@ export class DashboardView {
       const model = this.model;
 
       // ----- State -----
+      const TAB_ACTIVE_CLASSES =
+        "px-3 py-1.5 rounded-full text-sm font-semibold bg-blue-600 text-white shadow-sm hover:!bg-blue-600 active:!bg-blue-600 focus:!bg-blue-600 focus-visible:!bg-blue-600 hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white";
+      const TAB_INACTIVE_CLASSES =
+        "px-3 py-1.5 rounded-full text-sm font-semibold text-gray-700 hover:!bg-gray-100 active:!bg-gray-100 focus:!bg-gray-100 focus-visible:!bg-gray-100 hover:!text-gray-700 active:!text-gray-700 focus:!text-gray-700 focus-visible:!text-gray-700";
+      const UNREAD_TOGGLE_BASE =
+        "w-10 h-5 inline-flex items-center rounded-full relative transition-colors duration-150 ease-out hover:!bg-gray-300 active:!bg-gray-300 focus:!bg-gray-300 focus-visible:!bg-gray-300";
+      const UNREAD_TOGGLE_ON = "bg-blue-600 hover:!bg-blue-600 active:!bg-blue-600 focus:!bg-blue-600 focus-visible:!bg-blue-600";
+      const UNREAD_TOGGLE_OFF = "bg-gray-300";
+      const UNREAD_KNOB_BASE =
+        "knob absolute w-4 h-4 bg-white rounded-full left-0.5 transition-transform duration-200 ease-out hover:!bg-white active:!bg-white focus:!bg-white focus-visible:!bg-white";
+      const MARK_ALL_LABEL_CLASSES =
+        "mt-3 mb-2 inline-flex items-center gap-2 text-sm text-gray-700 hover:!text-gray-700 active:!text-gray-700 focus:!text-gray-700 focus-visible:!text-gray-700 cursor-pointer select-none hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm";
+      const MARK_ALL_INPUT_CLASSES =
+        "h-4 w-4 rounded border-gray-300 text-blue-600 hover:!border-gray-300 active:!border-gray-300 focus:!border-gray-300 focus-visible:!border-gray-300 hover:!text-blue-600 active:!text-blue-600 focus:!text-blue-600 focus-visible:!text-blue-600 focus:ring-0";
       let currentTab = "Action Required";
       let onlyUnread = false;
       let markAllOn = false;
@@ -1055,23 +1069,26 @@ export class DashboardView {
         // update tab button styles
         const tabAction = document.getElementById("notifTabAction");
         const tabGeneral = document.getElementById("notifTabGeneral");
-        const activeCls =
-          "px-3 py-1.5 rounded-full text-sm font-semibold bg-blue-600 text-white shadow-sm";
-        const inactiveCls =
-          "px-3 py-1.5 rounded-full text-sm font-semibold text-gray-700 hover:bg-gray-100";
         tabAction.className =
-          currentTab === "Action Required" ? activeCls : inactiveCls;
+          currentTab === "Action Required"
+            ? TAB_ACTIVE_CLASSES
+            : TAB_INACTIVE_CLASSES;
         tabGeneral.className =
-          currentTab === "General Updates" ? activeCls : inactiveCls;
+          currentTab === "General Updates"
+            ? TAB_ACTIVE_CLASSES
+            : TAB_INACTIVE_CLASSES;
 
         // sync unread toggle visuals deterministically
         const unreadBtn = document.getElementById("notifUnreadToggle");
         if (unreadBtn) {
+          unreadBtn.className = [
+            UNREAD_TOGGLE_BASE,
+            onlyUnread ? UNREAD_TOGGLE_ON : UNREAD_TOGGLE_OFF,
+          ].join(" ");
           unreadBtn.setAttribute("aria-pressed", String(onlyUnread));
-          unreadBtn.classList.toggle("bg-blue-600", onlyUnread);
-          unreadBtn.classList.toggle("bg-gray-300", !onlyUnread);
           const knob = unreadBtn.querySelector(".knob");
           if (knob) {
+            knob.className = UNREAD_KNOB_BASE;
             knob.classList.toggle("translate-x-0", !onlyUnread);
             knob.classList.toggle("translate-x-5", onlyUnread);
           }
@@ -1143,6 +1160,14 @@ export class DashboardView {
       const markAllCheckbox = document.getElementById("notifMarkAll");
       const tabActionBtn = document.getElementById("notifTabAction");
       const tabGeneralBtn = document.getElementById("notifTabGeneral");
+      const markAllLabel = document.querySelector('label[for="notifMarkAll"]');
+
+      if (markAllLabel) {
+        markAllLabel.className = MARK_ALL_LABEL_CLASSES;
+      }
+      if (markAllCheckbox) {
+        markAllCheckbox.className = MARK_ALL_INPUT_CLASSES;
+      }
 
       // Toggle-style button (no native checkbox) for Only show unread
       unreadToggle.addEventListener("click", () => {
