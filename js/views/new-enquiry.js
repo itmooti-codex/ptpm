@@ -645,6 +645,7 @@ export class NewInquiryView {
 
     Object.entries(this.tabs).forEach(([key, button]) => {
       if (!button) return;
+      button.classList.remove("hidden");
       const active = key === targetKey;
       button.classList.toggle("bg-blue-700", active);
       button.classList.toggle("text-white", active);
@@ -774,10 +775,8 @@ export class NewInquiryView {
             return;
           }
           if (key === this.activeRelatedTab) {
-            const message = this.#emptyMessageFor(key);
-            panel.innerHTML = `<p class="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-500 text-center">${this.#escapeHtml(
-              message
-            )}</p>`;
+            const message = this.#emptyStateFor(key);
+            panel.innerHTML = message;
           } else {
             panel.innerHTML = "";
           }
@@ -799,7 +798,7 @@ export class NewInquiryView {
         message = "Select a contact to view related details.";
       } else if (this.relatedLoading) {
         message = "Loading related data...";
-      } else if (!activeItems.length) {
+      } else if (activeItems.length >= 1) {
         message = this.#activeMessageFor(this.activeRelatedTab);
       } else {
         show = false;

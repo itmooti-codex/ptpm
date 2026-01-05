@@ -380,10 +380,10 @@ function buildUnsavedChangesModal() {
       </div>
       <div class="px-4 py-5 space-y-4 text-left hover:text-left active:text-left focus:text-left focus-visible:text-left">
         <p class="text-sm text-slate-700 hover:!text-slate-700 active:!text-slate-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700">You have unsaved changes. Do you want to discard them or save and exit?</p>
-        <div class="flex justify-end gap-3">
+      </div>
+      <div class="flex justify-end gap-3 m-2">
           <button type="button" data-unsaved-discard class="px-4 py-2 rounded border border-red-500 text-red-600 text-sm font-semibold focus:border focus-visible:border focus:border-red-500 focus-visible:border-red-500 focus:text-red-600 focus-visible:text-red-600 focus:text-sm focus-visible:text-sm">Discard Changes</button>
           <button type="button" data-unsaved-save class="px-4 py-2 rounded bg-[#003882] text-white text-sm font-semibold focus:bg-[#003882] focus-visible:bg-[#003882] focus:text-white focus-visible:text-white focus:text-sm focus-visible:text-sm">Save & Exit</button>
-        </div>
       </div>
     </div>
   `;
