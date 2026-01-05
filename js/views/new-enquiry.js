@@ -2071,8 +2071,8 @@ export class NewInquiryView {
   
         <!-- Footer -->
         <div class="flex justify-end gap-3 px-5 py-4 border-t rounded-b-lg hover:border-t active:border-t focus:border-t focus-visible:border-t">
-          <button id="pcCancelBtn" class="text-sm text-slate-600 font-medium focus:text-sm focus-visible:text-sm focus:text-slate-600 focus-visible:text-slate-600">Cancel</button>
-          <button id="pcSaveBtn" class="px-4 py-2 text-white text-sm bg-[#003882] font-medium rounded focus:text-white focus-visible:text-white focus:text-sm focus-visible:text-sm focus:bg-[#003882] focus-visible:bg-[#003882]"></button>
+          <button id="pcCancelBtn" class="text-sm text-slate-600 font-medium font-['Inter'] focus:text-sm focus-visible:text-sm focus:text-slate-600 focus-visible:text-slate-600 hover:!text-slate-600 active:!text-slate-600">Cancel</button>
+          <button id="pcSaveBtn" class="px-4 py-2 bg-[#003882] text-white text-sm font-medium font-['Inter'] rounded outline outline-1 outline-offset-[-1px] outline-[#003882] inline-flex justify-center items-center gap-2 hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882] hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white hover:!outline-[#003882] active:!outline-[#003882] focus:!outline-[#003882] focus-visible:!outline-[#003882] focus:outline focus-visible:outline focus:outline-1 focus-visible:outline-1 focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px]"></button>
         </div>
       </div>
     `;
