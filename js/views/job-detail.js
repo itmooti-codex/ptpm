@@ -1865,7 +1865,7 @@ export class JobDetailView {
             typeof r.price === "number" ? `$${r.price.toFixed(2)}` : r.price;
 
           return `
-          <tr class="${i % 2 ?"bg-gray-50" : "bg-white"}">
+          <tr class="${i % 2 ? "bg-gray-50" : "bg-white"}">
             <td class="py-4 px-4 whitespace-nowrap">${r.task ?? "-"}</td>
             <td class="py-4 px-4 whitespace-nowrap">${r.option ?? "-"}</td>
             <td class="py-4 px-4 whitespace-nowrap">${r.service ?? "-"}</td>
@@ -2503,10 +2503,16 @@ export class JobDetailView {
         btn.innerHTML = `
           <div class="flex items-start justify-between gap-3">
             <div>
-              <p class="text-sm font-medium text-slate-700 hover:!text-slate-700 active:!text-slate-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700">${item.name}</p>
-              <p class="text-xs text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500">${item.account_type || ""}</p>
+              <p class="text-sm font-medium text-slate-700 hover:!text-slate-700 active:!text-slate-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700">${
+                item.name
+              }</p>
+              <p class="text-xs text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500">${
+                item.account_type || ""
+              }</p>
             </div>
-            <span class="text-xs text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400">#${item.id}</span>
+            <span class="text-xs text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400">#${
+              item.id
+            }</span>
           </div>
         `;
 
@@ -3067,14 +3073,18 @@ export class JobDetailView {
               </div>
   
               <div class="flex items-center gap-2">
-                <div class="h-2.5 w-2.5 rounded-full ${item.Status ==="Active" ? "bg-green-200" : ""}
+                <div class="h-2.5 w-2.5 rounded-full ${
+                  item.Status === "Active" ? "bg-green-200" : ""
+                }
                   ${item.Status === "Offline" ? "bg-gray-200" : ""}
                   ${item.Status === "On-Site" ? "bg-orange-200" : ""}
                   ${item.Status === "Archived" ? "bg-purple-200" : ""}
                   ">
                 </div>
   
-                <span class="text-xs ${item.Status === hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs"Active" ? "text-green-500" : ""}
+                <span class="text-xs ${
+                  item.Status === "Active" ? "text-green-500" : ""
+                }
                 ${item.Status === "Offline" ? "text-gray-500" : ""}
                 ${item.Status === "On-Site" ? "text-orange-500" : ""}
                 ${item.Status === "Archived" ? "text-purple-500" : ""}">
