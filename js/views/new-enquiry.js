@@ -660,8 +660,8 @@ export class NewInquiryView {
 
       /* Outline */
       button.classList.toggle("outline", !active);
-      button.classList.toggle("outline-1-slate-500", !active);
-
+      button.classList.toggle("outline-1", !active);
+      button.classList.toggle("outline-slate-500", !active);
       /* Shadow */
       button.classList.toggle("shadow-sm", active);
 
@@ -869,7 +869,7 @@ export class NewInquiryView {
     return `
       <article id=${
         item.id
-      } class="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+      } class="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm hover:!bg-white active:!bg-white hover:!border-slate-200 active:!border-slate-200">
         <div class="flex items-center gap-3">
           <span class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-blue-600">
             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
@@ -926,7 +926,7 @@ export class NewInquiryView {
     );
 
     return `
-      <article class="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+      <article class="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm hover:!bg-white active:!bg-white hover:!border-slate-200 active:!border-slate-200">
         <div class="flex items-start justify-between gap-3">
           <div class="space-y-1">
             <a href="#" class="text-sm font-semibold text-sky-900 hover:text-sky-600">#${unique}</a>
@@ -957,7 +957,7 @@ export class NewInquiryView {
     const posted = this.#formatDateTime(item.created_at || item.createdAt);
 
     return `
-      <article class="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+      <article class="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm hover:!bg-white active:!bg-white hover:!border-slate-200 active:!border-slate-200">
         <div class="space-y-1">
           <div class="flex items-center justify-between">
             <span class="text-sm font-semibold text-sky-900">#${unique}</span>
