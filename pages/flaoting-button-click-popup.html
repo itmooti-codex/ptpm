@@ -9,7 +9,7 @@
   </head>
   <body class="bg-slate-100 min-h-screen flex items-center justify-center p-6 hover:!bg-slate-100 active:!bg-slate-100 hover:bg-slate-100 active:bg-slate-100 focus:bg-slate-100 focus-visible:bg-slate-100">
     <!-- Trigger -->
-    <button id="openMemosBtn" class="!px-4 !py-2 !rounded !bg-sky-900 !text-white hover:!bg-sky-900 active:!bg-sky-900 hover:!text-white active:!text-white hover:!bg-sky-900 active:!bg-sky-900 focus:!bg-sky-900 focus-visible:!bg-sky-900 hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white">
+    <button id="openMemosBtn" class="px-4 py-2 rounded bg-sky-900 text-white focus:bg-sky-900 focus-visible:bg-sky-900 focus:text-white focus-visible:text-white">
       Open Memos
     </button>
 
@@ -29,7 +29,7 @@
               <!-- Header -->
               <div class="bg-sky-900 rounded-t-lg text-white px-5 py-4 flex items-center justify-between hover:!bg-sky-900 active:!bg-sky-900 hover:!text-white active:!text-white hover:bg-sky-900 active:bg-sky-900 focus:bg-sky-900 focus-visible:bg-sky-900 hover:text-white active:text-white focus:text-white focus-visible:text-white">
                 <div class="font-semibold text-lg hover:text-lg active:text-lg focus:text-lg focus-visible:text-lg">Memos ({{:count}})</div>
-                <button data-action="close" aria-label="Close" class="!text-white/90 hover:!text-white hover:!text-white/90 active:!text-white/90 hover:!text-white/90 active:!text-white/90 focus:!text-white/90 focus-visible:!text-white/90">
+                <button data-action="close" aria-label="Close" class="text-white/90 focus:text-white/90 focus-visible:text-white/90">
                   ✕
                 </button>
               </div>
@@ -39,7 +39,7 @@
               <div class="px-5 pt-3">
                 <div class="w-max mx-auto text-sm bg-sky-100 text-sky-900 rounded-full px-3 py-1.5 flex items-center gap-2 hover:!bg-sky-100 active:!bg-sky-100 hover:!text-sky-900 active:!text-sky-900 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:bg-sky-100 active:bg-sky-100 focus:bg-sky-100 focus-visible:bg-sky-100 hover:text-sky-900 active:text-sky-900 focus:text-sky-900 focus-visible:text-sky-900">
                   <span>↑ {{:newMessages}} new messages</span>
-                  <button class="!ml-2" data-action="dismiss-new">✕</button>
+                  <button class="ml-2" data-action="dismiss-new">✕</button>
                 </div>
               </div>
               {{/if}}
@@ -55,15 +55,15 @@
           <div class="flex flex-col border border-slate-200 rounded-xl p-3 bg-white justify-start items-start gap-6 hover:!border-slate-200 active:!border-slate-200 hover:!bg-white active:!bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white">
             <div contenteditable="true" class="w-full text-slate-500 text-sm leading-tight outline-none hover:!text-slate-500 active:!text-slate-500 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:outline-none active:outline-none focus:outline-none focus-visible:outline-none" data-placeholder="Write a memo..."></div>
             <div class="flex justify-end items-center gap-3 w-full">
-              <button class="!px-2.5 !py-2 !bg-white !rounded !outline !outline-1 !outline-sky-900 !flex !items-center !gap-2 hover:!bg-white active:!bg-white hover:!bg-white active:!bg-white focus:!bg-white focus-visible:!bg-white hover:!outline active:!outline focus:!outline focus-visible:!outline hover:!outline-1 active:!outline-1 focus:!outline-1 focus-visible:!outline-1 hover:!outline-sky-900 active:!outline-sky-900 focus:!outline-sky-900 focus-visible:!outline-sky-900">
+              <button class="px-2.5 py-2 bg-white rounded outline outline-1 outline-sky-900 flex items-center gap-2 focus:bg-white focus-visible:bg-white focus:outline focus-visible:outline focus:outline-1 focus-visible:outline-1 focus:outline-sky-900 focus-visible:outline-sky-900">
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M11.4658 6.69064C11.5065 6.73127 11.5388 6.77952 11.5608 6.83263C11.5828 6.88574 11.5941 6.94268 11.5941 7.00017C11.5941 7.05766 11.5828 7.11459 11.5608 7.16771C11.5388 7.22082 11.5065 7.26907 11.4658 7.3097L6.97872 11.7941C6.40429 12.3684 5.62522 12.6911 4.8129 12.691C4.00058 12.691 3.22155 12.3682 2.6472 11.7938C2.07284 11.2194 1.75019 10.4403 1.75024 9.62798C1.7503 8.81567 2.07304 8.03664 2.64747 7.46228L8.07575 1.95415C8.48585 1.54362 9.04224 1.31281 9.62252 1.3125C10.2028 1.31219 10.7594 1.54241 11.17 1.95251C11.5805 2.36261 11.8113 2.919 11.8116 3.49928C11.8119 4.07956 11.5817 4.6362 11.1716 5.04673L5.74223 10.5549C5.49567 10.8014 5.16125 10.9399 4.81255 10.9399C4.46385 10.9399 4.12943 10.8014 3.88286 10.5549C3.63629 10.3083 3.49777 9.97387 3.49777 9.62517C3.49777 9.27647 3.63629 8.94205 3.88286 8.69548L8.43833 4.06783C8.47823 4.02526 8.52625 3.9911 8.57956 3.96736C8.63286 3.94363 8.69037 3.9308 8.74871 3.92962C8.80705 3.92845 8.86503 3.93896 8.91925 3.96053C8.97346 3.9821 9.02282 4.01429 9.0644 4.05522C9.10599 4.09615 9.13897 4.14499 9.1614 4.19885C9.18383 4.25272 9.19526 4.31053 9.19501 4.36888C9.19477 4.42723 9.18285 4.48494 9.15997 4.53861C9.13708 4.59229 9.1037 4.64084 9.06177 4.68142L4.50575 9.314C4.46496 9.35447 4.43254 9.40257 4.41034 9.45557C4.38814 9.50857 4.37659 9.56542 4.37636 9.62288C4.37614 9.68034 4.38723 9.73728 4.409 9.79046C4.43078 9.84363 4.46282 9.89199 4.50329 9.93279C4.54376 9.97358 4.59186 10.006 4.64486 10.0282C4.69786 10.0504 4.75471 10.0619 4.81217 10.0622C4.86963 10.0624 4.92658 10.0513 4.97975 10.0295C5.03292 10.0078 5.08129 9.97572 5.12208 9.93525L10.5509 4.42986C10.7975 4.1838 10.9362 3.84986 10.9366 3.50152C10.9369 3.15318 10.7989 2.81896 10.5528 2.5724C10.3068 2.32583 9.97283 2.18711 9.62449 2.18675C9.27614 2.18639 8.94193 2.32442 8.69536 2.57048L3.26817 8.07642C3.06486 8.27941 2.90352 8.52046 2.79336 8.7858C2.68321 9.05114 2.62639 9.33558 2.62616 9.62288C2.62594 9.91018 2.6823 10.1947 2.79203 10.4602C2.90176 10.7257 3.06272 10.9671 3.26571 11.1704C3.4687 11.3737 3.70975 11.535 3.97509 11.6452C4.24043 11.7553 4.52487 11.8121 4.81217 11.8124C5.09947 11.8126 5.384 11.7562 5.64952 11.6465C5.91504 11.5368 6.15634 11.3758 6.35966 11.1728L10.8473 6.68845C10.9296 6.60676 11.041 6.56109 11.157 6.5615C11.273 6.56191 11.3841 6.60836 11.4658 6.69064Z" fill="#003882"/>
                     </svg>
 
-                <span class="text-sky-900 text-xs hover:!text-sky-900 active:!text-sky-900 hover:text-sky-900 active:text-sky-900 focus:text-sky-900 focus-visible:text-sky-900 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs">Attach a file</span>
+                <span class="text-sky-900 text-xs focus:text-sky-900 focus-visible:text-sky-900 focus:text-xs focus-visible:text-xs">Attach a file</span>
               </button>
-              <button class="!px-2.5 !py-2 !bg-sky-900 !rounded !flex !items-center !gap-2 hover:!bg-sky-900 active:!bg-sky-900 hover:!bg-sky-900 active:!bg-sky-900 focus:!bg-sky-900 focus-visible:!bg-sky-900">
-                <span class="text-white text-xs hover:!text-white active:!text-white hover:text-white active:text-white focus:text-white focus-visible:text-white hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs">Send</span>
+              <button class="px-2.5 py-2 bg-sky-900 rounded flex items-center gap-2 focus:bg-sky-900 focus-visible:bg-sky-900">
+                <span class="text-white text-xs focus:text-white focus-visible:text-white focus:text-xs focus-visible:text-xs">Send</span>
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12.1662 6.99295C12.1666 7.14145 12.1273 7.28736 12.0524 7.41558C11.9775 7.5438 11.8697 7.64968 11.7401 7.72226L2.99252 12.7238C2.86699 12.7949 2.72527 12.8326 2.58098 12.8332C2.44803 12.8325 2.31719 12.7999 2.19936 12.7384C2.08154 12.6768 1.98015 12.5879 1.90367 12.4791C1.8272 12.3704 1.77784 12.2449 1.75973 12.1132C1.74163 11.9815 1.75529 11.8474 1.79958 11.722L3.20611 7.55712C3.21985 7.5164 3.24585 7.48093 3.28055 7.45556C3.31524 7.4302 3.35693 7.41618 3.3999 7.41543H7.16523C7.22236 7.41555 7.27891 7.40393 7.33136 7.38128C7.38381 7.35863 7.43104 7.32544 7.47012 7.28377C7.50921 7.2421 7.5393 7.19283 7.55855 7.13904C7.57779 7.08525 7.58576 7.02807 7.58198 6.97107C7.57253 6.8639 7.52294 6.76426 7.44315 6.6921C7.36336 6.61994 7.25926 6.58059 7.15168 6.58193H3.40094C3.35734 6.58193 3.31484 6.56826 3.27943 6.54284C3.24401 6.51742 3.21745 6.48153 3.2035 6.44023L1.79697 2.27586C1.74099 2.11624 1.7349 1.94337 1.7795 1.7802C1.82411 1.61704 1.9173 1.47131 2.04671 1.36237C2.17611 1.25343 2.33559 1.18645 2.50397 1.17031C2.67235 1.15417 2.84166 1.18964 2.9894 1.27202L11.7411 6.26728C11.87 6.33969 11.9772 6.44505 12.0519 6.57257C12.1266 6.70008 12.1661 6.84516 12.1662 6.99295Z" fill="white"/>
                     </svg>
@@ -87,20 +87,20 @@
                 <span class="font-medium">{{:author.name}}</span>
                 <span class="text-slate-400 ml-2 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400">{{:timeAgo}}</span>
               </div>
-              <button class="!text-slate-400 hover:!text-slate-600 hover:!text-slate-400 active:!text-slate-400 hover:!text-slate-400 active:!text-slate-400 focus:!text-slate-400 focus-visible:!text-slate-400">⋮</button>
+              <button class="text-slate-400 focus:text-slate-400 focus-visible:text-slate-400">⋮</button>
             </div>
             <p class="mt-1 text-slate-700 leading-relaxed hover:!text-slate-700 active:!text-slate-700 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700">{{:text}}</p>
 
             <div class="mt-2">
-              <button class="!text-sky-700 !text-sm hover:!underline hover:!text-sky-700 active:!text-sky-700 hover:!text-sky-700 active:!text-sky-700 focus:!text-sky-700 focus-visible:!text-sky-700 hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm" data-action="start-reply" data-id="{{:id}}">Reply</button>
+              <button class="text-sky-700 text-sm focus:text-sky-700 focus-visible:text-sky-700 focus:text-sm focus-visible:text-sm" data-action="start-reply" data-id="{{:id}}">Reply</button>
             </div>
 
             {{if replies && replies.length}}
             <!-- replies toggle -->
             <div class="my-3 flex items-center gap-2 text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400">
               <div class="h-px bg-slate-200 flex-1 hover:!bg-slate-200 active:!bg-slate-200 hover:bg-slate-200 active:bg-slate-200 focus:bg-slate-200 focus-visible:bg-slate-200"></div>
-              <button class="!text-xs hover:!text-xs active:!text-xs focus:!text-xs focus-visible:!text-xs" data-action="toggle-replies" data-id="{{:id}}">
-                <span class="underline hover:underline active:underline focus:underline focus-visible:underline">{{:replies.length}} {{:replies.length>1?'Replies':'Reply'}}</span>
+              <button class="text-xs focus:text-xs focus-visible:text-xs" data-action="toggle-replies" data-id="{{:id}}">
+                <span class="underline focus:underline focus-visible:underline">{{:replies.length}} {{:replies.length>1?'Replies':'Reply'}}</span>
                 <span class="ml-1" data-role="chev">▴</span>
               </button>
               <div class="h-px bg-slate-200 flex-1 hover:!bg-slate-200 active:!bg-slate-200 hover:bg-slate-200 active:bg-slate-200 focus:bg-slate-200 focus-visible:bg-slate-200"></div>
@@ -116,7 +116,7 @@
                       <span class="text-slate-400 ml-2 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400">{{:timeAgo}}</span>
                     </div>
                     <p class="mt-1 text-slate-700 leading-relaxed hover:!text-slate-700 active:!text-slate-700 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700">{{:text}}</p>
-                    <button class="!text-sky-700 !text-sm hover:!underline hover:!text-sky-700 active:!text-sky-700 hover:!text-sky-700 active:!text-sky-700 focus:!text-sky-700 focus-visible:!text-sky-700 hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm" data-action="start-reply" data-id="{{:#parent.parent.data.id}}">Reply</button>
+                    <button class="text-sky-700 text-sm focus:text-sky-700 focus-visible:text-sky-700 focus:text-sm focus-visible:text-sm" data-action="start-reply" data-id="{{:#parent.parent.data.id}}">Reply</button>
                   </div>
                 </div>
               {{/for}}
@@ -127,8 +127,8 @@
             <div class="mt-3 hidden" data-role="inline-reply" data-id="{{:id}}">
               <textarea rows="2" class="w-full rounded border border-slate-300 p-2 outline-none hover:!border-slate-300 active:!border-slate-300 hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:outline-none active:outline-none focus:outline-none focus-visible:outline-none" placeholder="Write a reply..."></textarea>
               <div class="mt-2 flex items-center gap-2">
-                <button class="!px-3 !py-1.5 !rounded !bg-sky-900 !text-white !text-sm hover:!bg-sky-900 active:!bg-sky-900 hover:!text-white active:!text-white hover:!bg-sky-900 active:!bg-sky-900 focus:!bg-sky-900 focus-visible:!bg-sky-900 hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm" data-action="send-reply" data-id="{{:id}}">Send</button>
-                <button class="!px-3 !py-1.5 !rounded !bg-slate-100 !text-slate-700 !text-sm hover:!bg-slate-100 active:!bg-slate-100 hover:!text-slate-700 active:!text-slate-700 hover:!bg-slate-100 active:!bg-slate-100 focus:!bg-slate-100 focus-visible:!bg-slate-100 hover:!text-slate-700 active:!text-slate-700 focus:!text-slate-700 focus-visible:!text-slate-700 hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm" data-action="cancel-reply" data-id="{{:id}}">Cancel</button>
+                <button class="px-3 py-1.5 rounded bg-sky-900 text-white text-sm focus:bg-sky-900 focus-visible:bg-sky-900 focus:text-white focus-visible:text-white focus:text-sm focus-visible:text-sm" data-action="send-reply" data-id="{{:id}}">Send</button>
+                <button class="px-3 py-1.5 rounded bg-slate-100 text-slate-700 text-sm focus:bg-slate-100 focus-visible:bg-slate-100 focus:text-slate-700 focus-visible:text-slate-700 focus:text-sm focus-visible:text-sm" data-action="cancel-reply" data-id="{{:id}}">Cancel</button>
               </div>
             </div>
 

@@ -1518,7 +1518,7 @@ export class NewInquiryView {
 
     // Helper functions
     const starIcon = (filled) => `
-      <button type="button" class="!star-btn" title="Set as Primary">
+      <button type="button" class="star-btn" title="Set as Primary">
         <svg class="h-4 w-4 ${ filled ?"text-amber-500" : "text-slate-300"
         }" viewBox="0 0 20 20" fill="currentColor">
           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.035a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118L10.5 14.347a1 1 0 00-1.175 0L6.625 16.282c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.99 8.72c-.783-.57-.38-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.06-3.292z"/>
@@ -1528,13 +1528,13 @@ export class NewInquiryView {
 
     const actionCell = () => `
       <div class="flex items-center justify-end gap-3 text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500">
-        <button type="button" class="!edit-btn hover:!text-sky-700" title="Edit">
+        <button type="button" class="edit-btn" title="Edit">
           <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 20h9"/>
             <path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/>
           </svg>
         </button>
-        <button type="button" class="!delete-btn !text-rose-600 hover:!text-rose-700 hover:!text-rose-600 active:!text-rose-600 hover:!text-rose-600 active:!text-rose-600 focus:!text-rose-600 focus-visible:!text-rose-600" title="Delete">
+        <button type="button" class="delete-btn text-rose-600 focus:text-rose-600 focus-visible:text-rose-600" title="Delete">
           <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="3 6 5 6 21 6"/>
             <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
@@ -1699,7 +1699,7 @@ export class NewInquiryView {
       <div modal-name="contact-detail-modal" id="addressDetailsModalBox" class="bg-white rounded-lg shadow-xl w-[40vw] max-w-3xl max-h-[90vh] overflow-auto hover:!bg-white active:!bg-white hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-xl active:shadow-xl focus:shadow-xl focus-visible:shadow-xl">
         <div class="flex items-center justify-between px-5 py-3 bg-[#003882] text-white rounded-t-lg hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:bg-[#003882] active:bg-[#003882] focus:bg-[#003882] focus-visible:bg-[#003882] hover:text-white active:text-white focus:text-white focus-visible:text-white">
           <h3 class="text-base font-semibold hover:text-base active:text-base focus:text-base focus-visible:text-base">Contact Details</h3>
-          <button id="closeAddressDetailsBtn" class="!p-1 !rounded hover:!bg-white/10" aria-label="Close">
+          <button id="closeAddressDetailsBtn" class="p-1 rounded" aria-label="Close">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
               <path d="M18.75 6.82 17.18 5.25 12 10.43 6.82 5.25 5.25 6.82 10.43 12 5.25 17.18 6.82 18.75 12 13.57 17.18 18.75 18.75 17.18 13.57 12 18.75 6.82Z" fill="white"/>
             </svg>
@@ -1876,8 +1876,8 @@ export class NewInquiryView {
         </div>
   
         <div class="flex justify-end gap-3 px-5 py-4 border-t rounded-b-lg hover:border-t active:border-t focus:border-t focus-visible:border-t">
-          <button id="cancelAddressDetailsBtn" class="!text-sm !text-slate-600 !font-medium hover:!text-gray-800 hover:!text-slate-600 active:!text-slate-600 hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm hover:!text-slate-600 active:!text-slate-600 focus:!text-slate-600 focus-visible:!text-slate-600">Cancel</button>
-          <button id="updateAddressDetailsBtn" class="!px-4 !py-2 !bg-[#003882] !text-white !text-sm !font-medium !rounded hover:!bg-blue-700 hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882] hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm">Save</button>
+          <button id="cancelAddressDetailsBtn" class="text-sm text-slate-600 font-medium focus:text-sm focus-visible:text-sm focus:text-slate-600 focus-visible:text-slate-600">Cancel</button>
+          <button id="updateAddressDetailsBtn" class="px-4 py-2 bg-[#003882] text-white text-sm font-medium rounded focus:bg-[#003882] focus-visible:bg-[#003882] focus:text-white focus-visible:text-white focus:text-sm focus-visible:text-sm">Save</button>
         </div>
       </div>
     `;
@@ -2005,7 +2005,7 @@ export class NewInquiryView {
         <!-- Header -->
         <div class="flex items-center justify-between px-5 py-3 bg-[#003882] text-white rounded-t-lg hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:bg-[#003882] active:bg-[#003882] focus:bg-[#003882] focus-visible:bg-[#003882] hover:text-white active:text-white focus:text-white focus-visible:text-white">
           <h3 class="text-base font-semibold hover:text-base active:text-base focus:text-base focus-visible:text-base">Add Property Contact</h3>
-          <button id="pcCloseBtn" class="!p-1 !rounded hover:!bg-white/10" aria-label="Close">
+          <button id="pcCloseBtn" class="p-1 rounded" aria-label="Close">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
               <path d="M18.75 6.82 17.18 5.25 12 10.43 6.82 5.25 5.25 6.82 10.43 12 5.25 17.18 6.82 18.75 12 13.57 17.18 18.75 18.75 17.18 13.57 12 18.75 6.82Z" fill="white"/>
             </svg>
@@ -2071,8 +2071,8 @@ export class NewInquiryView {
   
         <!-- Footer -->
         <div class="flex justify-end gap-3 px-5 py-4 border-t rounded-b-lg hover:border-t active:border-t focus:border-t focus-visible:border-t">
-          <button id="pcCancelBtn" class="!text-sm !text-slate-600 !font-medium hover:!text-gray-800 hover:!text-slate-600 active:!text-slate-600 hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm hover:!text-slate-600 active:!text-slate-600 focus:!text-slate-600 focus-visible:!text-slate-600">Cancel</button>
-          <button id="pcSaveBtn" class="!px-4 !py-2 !text-white !text-sm !bg-[#003882] !font-medium !rounded hover:!text-white active:!text-white hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882]"></button>
+          <button id="pcCancelBtn" class="text-sm text-slate-600 font-medium focus:text-sm focus-visible:text-sm focus:text-slate-600 focus-visible:text-slate-600">Cancel</button>
+          <button id="pcSaveBtn" class="px-4 py-2 text-white text-sm bg-[#003882] font-medium rounded focus:text-white focus-visible:text-white focus:text-sm focus-visible:text-sm focus:bg-[#003882] focus-visible:bg-[#003882]"></button>
         </div>
       </div>
     `;
@@ -2975,14 +2975,14 @@ export class NewInquiryView {
         <div class="flex justify-end gap-3 px-5 py-4 border-t hover:border-t active:border-t focus:border-t focus-visible:border-t">
           <button
             id="switchAccountTypeCancelBtn"
-            class="!text-gray-600 hover:!text-gray-800 hover:!text-gray-600 active:!text-gray-600 hover:!text-gray-600 active:!text-gray-600 focus:!text-gray-600 focus-visible:!text-gray-600"
+            class="text-gray-600 focus:text-gray-600 focus-visible:text-gray-600"
           >
             Cancel
           </button>
   
           <button
             id="switchAccountTypeContinueBtn"
-            class="!bg-[#003882] !text-white !px-4 !py-2 !rounded-md hover:!bg-[#003882] active:!bg-[#003882] hover:!text-white active:!text-white hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882] hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white"
+            class="bg-[#003882] text-white px-4 py-2 rounded-md focus:bg-[#003882] focus-visible:bg-[#003882] focus:text-white focus-visible:text-white"
           >
             Continue
           </button>
