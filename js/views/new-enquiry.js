@@ -645,17 +645,33 @@ export class NewInquiryView {
 
     Object.entries(this.tabs).forEach(([key, button]) => {
       if (!button) return;
-      button.classList.remove("hidden");
+      let span = button.querySelector("span");
+      span.classList.remove("hidden");
+
       const active = key === targetKey;
+
+      /* Background */
       button.classList.toggle("bg-blue-700", active);
-      button.classList.toggle("text-white", active);
+      button.classList.toggle("bg-white", !active);
+      button.classList.toggle("focus:bg-blue-700", active);
+      button.classList.toggle("focus-visible:bg-blue-700", active);
+      button.classList.toggle("focus:bg-white", !active);
+      button.classList.toggle("focus-visible:bg-white", !active);
+
+      /* Outline */
+      button.classList.toggle("outline", !active);
+      button.classList.toggle("outline-1-slate-500", !active);
+
+      /* Shadow */
       button.classList.toggle("shadow-sm", active);
-      button.classList.toggle("text-slate-500", !active);
-      if (active) {
-        button.setAttribute("data-active-tab", "true");
-      } else {
-        button.removeAttribute("data-active-tab");
-      }
+
+      /* Text */
+      span.classList.toggle("text-white", active);
+      span.classList.toggle("text-slate-500", !active);
+      span.classList.toggle("focus:text-white", active);
+      span.classList.toggle("focus-visible:text-white", active);
+      span.classList.toggle("focus:text-slate-500", !active);
+      span.classList.toggle("focus-visible:text-slate-500", !active);
     });
 
     if (document?.body) {
