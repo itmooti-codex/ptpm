@@ -537,7 +537,6 @@ export class NewInquiryController {
         this.view.affiliationId = null;
       }
       const saveBtn = document.getElementById("pcSaveBtn");
-      saveBtn.classList = "hover:[#003882]";
       if (saveBtn) saveBtn.textContent = "Save Contact";
       this.view.toggleModal("propertyContactModalWrapper");
       const contacts = this.model.getContacts();
