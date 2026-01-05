@@ -400,7 +400,7 @@ export class NewInquiryController {
             >
             <label 
               for="${id}" 
-              class="text-slate-700 text-sm font-normal font-['Inter'] leading-5"
+              class="text-slate-700 text-sm font-normal font-['Inter'] leading-5 hover:text-slate-700 active:text-slate-700"
             >
               ${text}
             </label>

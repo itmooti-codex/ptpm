@@ -41,7 +41,7 @@
       rel="stylesheet"
     />
     <style>
-      
+
       body {
         font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
       }
@@ -55,10 +55,10 @@
       <!-- Flatpickr JS -->
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   </head>
-  <body class="op-reset bg-slate-100 font-sans text-slate-900" data-page="dashboard">
+  <body class="op-reset bg-slate-100 font-sans text-slate-900 hover:bg-slate-100 active:bg-slate-100 hover:text-slate-900 active:text-slate-900" data-page="dashboard">
     <!-- Main content -->
     <main class="flex flex-col space-y-6 mb-4">
-      <header class="w-full px-4 sm:px-5 py-4 bg-[#003882] border-b border-gray-300 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-white shadow-card">
+      <header class="w-full px-4 sm:px-5 py-4 bg-[#003882] border-b border-gray-300 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-white shadow-card hover:bg-[#003882] active:bg-[#003882] hover:border-gray-300 active:border-gray-300 hover:text-white active:text-white">
         <div class="w-full flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6">
           <div class="w-full sm:w-auto flex justify-start items-center gap-3">
             <svg width="208" height="38" viewBox="0 0 208 38" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -137,7 +137,7 @@
               </svg>
               </div>
 
-          <div data-label="false" data-lead-icon="true" data-size="small"  data-trail-icon="false" class="w-full sm:w-[508px] bg-white rounded inline-flex flex-col justify-start items-start gap-2">
+          <div data-label="false" data-lead-icon="true" data-size="small"  data-trail-icon="false" class="w-full sm:w-[508px] bg-white rounded inline-flex flex-col justify-start items-start gap-2 hover:bg-white active:bg-white">
             <div class="w-full self-stretch px-4 py-3 rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-center items-center gap-2 overflow-hidden">
               <div class="w-3 h-3 relative overflow-hidden">
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -147,20 +147,20 @@
               <input
                 type="search"
                 placeholder="Search all records by ID, name, email, contact or address..."
-                class="flex-1 justify-start text-slate-500 text-sm font-medium leading-4 bg-transparent outline-none placeholder:text-slate-500"
+                class="flex-1 justify-start text-slate-500 text-sm font-medium leading-4 bg-transparent outline-none placeholder:text-slate-500 hover:text-slate-500 active:text-slate-500 hover:bg-transparent active:bg-transparent"
               >
             </div>
           </div>
 
           <div class="w-full sm:w-auto flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-12">
             <div class="flex flex-wrap sm:flex-nowrap justify-start items-center gap-3 sm:gap-4">
-              <button id="create-btn" data-lead-icon="true" data-size="medium"  data-text="true" data-trail-icon="true" data-type="main" class="px-4 py-3 bg-white rounded outline outline-1 outline-offset-[-1px] outline-white inline-flex justify-center items-center gap-2 overflow-hidden">
+              <button id="create-btn" data-lead-icon="true" data-size="medium"  data-text="true" data-trail-icon="true" data-type="main" class="px-4 py-3 bg-white rounded outline outline-1 outline-offset-[-1px] outline-white inline-flex justify-center items-center gap-2 overflow-hidden hover:bg-white active:bg-white">
                 <div data-property-1="circle" class="w-3.5 h-3.5 relative overflow-hidden">
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M7.00001 1.1665C5.84629 1.1665 4.71847 1.50862 3.75918 2.1496C2.7999 2.79057 2.05223 3.70161 1.61071 4.76752C1.1692 5.83342 1.05368 7.00631 1.27876 8.13786C1.50384 9.26942 2.05942 10.3088 2.87522 11.1246C3.69103 11.9404 4.73043 12.496 5.86198 12.7211C6.99354 12.9462 8.16643 12.8306 9.23233 12.3891C10.2982 11.9476 11.2093 11.1999 11.8502 10.2407C12.4912 9.28137 12.8333 8.15356 12.8333 6.99984C12.8317 5.45324 12.2166 3.97046 11.123 2.87685C10.0294 1.78324 8.5466 1.16814 7.00001 1.1665ZM7.00001 11.9357C6.02378 11.9357 5.06948 11.6462 4.25777 11.1039C3.44607 10.5615 2.81342 9.79064 2.43984 8.88872C2.06625 7.98681 1.9685 6.99436 2.15896 6.03689C2.34941 5.07942 2.81951 4.19993 3.5098 3.50963C4.2001 2.81933 5.07959 2.34923 6.03706 2.15878C6.99453 1.96833 7.98698 2.06608 8.8889 2.43966C9.79081 2.81325 10.5617 3.44589 11.1041 4.2576C11.6464 5.0693 11.9359 6.02361 11.9359 6.99984C11.9344 8.30846 11.4139 9.56306 10.4886 10.4884C9.56324 11.4137 8.30864 11.9342 7.00001 11.9357ZM9.69232 6.99984C9.69232 7.11884 9.64504 7.23298 9.56089 7.31713C9.47674 7.40128 9.36261 7.44855 9.2436 7.44855H7.44873V9.24343C7.44873 9.36243 7.40145 9.47657 7.3173 9.56072C7.23315 9.64487 7.11902 9.69214 7.00001 9.69214C6.881 9.69214 6.76687 9.64487 6.68272 9.56072C6.59857 9.47657 6.55129 9.36243 6.55129 9.24343V7.44855H4.75642C4.63741 7.44855 4.52328 7.40128 4.43913 7.31713C4.35498 7.23298 4.3077 7.11884 4.3077 6.99984C4.3077 6.88083 4.35498 6.7667 4.43913 6.68254C4.52328 6.59839 4.63741 6.55112 4.75642 6.55112H6.55129V4.75625C6.55129 4.63724 6.59857 4.52311 6.68272 4.43896C6.76687 4.3548 6.881 4.30753 7.00001 4.30753C7.11902 4.30753 7.23315 4.3548 7.3173 4.43896C7.40145 4.52311 7.44873 4.63724 7.44873 4.75625V6.55112H9.2436C9.36261 6.55112 9.47674 6.59839 9.56089 6.68254C9.64504 6.7667 9.69232 6.88083 9.69232 6.99984Z" fill="#003882"/>
                   </svg>                    
                 </div>
-                <div class="justify-start text-[#003882] text-sm font-medium font-['Inter'] leading-4">Create</div>
+                <div class="justify-start text-[#003882] text-sm font-medium font-['Inter'] leading-4 hover:text-[#003882] active:text-[#003882]">Create</div>
                 <div data-property-1="down" class="w-3.5 h-3.5 relative overflow-hidden">
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12.6779 4.98924L7.37518 10.292C7.32593 10.3413 7.26744 10.3804 7.20307 10.4071C7.13869 10.4338 7.06969 10.4475 7 10.4475C6.93032 10.4475 6.86131 10.4338 6.79694 10.4071C6.73257 10.3804 6.67408 10.3413 6.62483 10.292L1.32207 4.98924C1.22257 4.88974 1.16667 4.75478 1.16667 4.61407C1.16667 4.47335 1.22257 4.3384 1.32207 4.2389C1.42157 4.1394 1.55653 4.0835 1.69724 4.0835C1.83796 4.0835 1.97291 4.1394 2.07241 4.2389L7 9.16715L11.9276 4.2389C11.9769 4.18963 12.0354 4.15055 12.0997 4.12388C12.1641 4.09722 12.2331 4.0835 12.3028 4.0835C12.3724 4.0835 12.4414 4.09722 12.5058 4.12388C12.5702 4.15055 12.6287 4.18963 12.6779 4.2389C12.7272 4.28816 12.7663 4.34665 12.793 4.41103C12.8196 4.4754 12.8333 4.54439 12.8333 4.61407C12.8333 4.68374 12.8196 4.75274 12.793 4.81711C12.7663 4.88148 12.7272 4.93997 12.6779 4.98924Z" fill="#003882"/>
@@ -170,7 +170,7 @@
               <div id="create-popup-base" class="relative"></div>
 
               <div data-lead-icon="false" data-size="medium"  data-text="true" data-trail-icon="true" data-type="outline" class="px-4 py-3 rounded outline outline-1 outline-offset-[-1px] outline-white flex justify-center items-center gap-2 overflow-hidden">
-                <div class="justify-start text-white text-sm font-medium font-['Inter'] leading-4">Print</div>
+                <div class="justify-start text-white text-sm font-medium font-['Inter'] leading-4 hover:text-white active:text-white">Print</div>
                 <div data-property-1="down" class="w-3.5 h-3.5 relative overflow-hidden">
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12.3024 4.5835C12.3063 4.5835 12.3105 4.58402 12.3141 4.58545C12.3177 4.58693 12.3211 4.5896 12.3239 4.59229C12.3266 4.59503 12.3292 4.59848 12.3307 4.60205C12.3322 4.60567 12.3336 4.60986 12.3337 4.61377C12.3337 4.61773 12.3322 4.62182 12.3307 4.62549C12.3292 4.6292 12.3267 4.63242 12.3239 4.63525L7.02116 9.93799V9.93896C7.01841 9.94164 7.01495 9.94335 7.0114 9.94482C7.00774 9.94634 7.00365 9.94775 6.99968 9.94775C6.99581 9.94771 6.99153 9.94631 6.98796 9.94482C6.98449 9.94331 6.98087 9.94165 6.9782 9.93896V9.93799L1.67546 4.63525C1.66991 4.62955 1.66667 4.62174 1.66667 4.61377C1.66675 4.60577 1.6698 4.59795 1.67546 4.59229C1.68112 4.58662 1.68894 4.58357 1.69695 4.5835C1.70491 4.5835 1.71273 4.58674 1.71843 4.59229L6.64616 9.521L6.99968 9.87451L7.3532 9.521L12.2809 4.59229C12.2837 4.58949 12.2871 4.58698 12.2907 4.58545C12.2943 4.58396 12.2985 4.58354 12.3024 4.5835Z" stroke="white"></path>
@@ -178,7 +178,7 @@
                 </div>
               </div>
               <div data-lead-icon="false" data-size="medium"  data-text="true" data-trail-icon="true" data-type="outline" class="px-4 py-3 rounded outline outline-1 outline-offset-[-1px] outline-white flex justify-center items-center gap-2 overflow-hidden">
-                <div class="justify-start text-white text-sm font-medium font-['Inter'] leading-4">Batch Actions</div>
+                <div class="justify-start text-white text-sm font-medium font-['Inter'] leading-4 hover:text-white active:text-white">Batch Actions</div>
                 <div data-property-1="down" class="w-3.5 h-3.5 relative overflow-hidden">
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12.3024 4.5835C12.3063 4.5835 12.3105 4.58402 12.3141 4.58545C12.3177 4.58693 12.3211 4.5896 12.3239 4.59229C12.3266 4.59503 12.3292 4.59848 12.3307 4.60205C12.3322 4.60567 12.3336 4.60986 12.3337 4.61377C12.3337 4.61773 12.3322 4.62182 12.3307 4.62549C12.3292 4.6292 12.3267 4.63242 12.3239 4.63525L7.02116 9.93799V9.93896C7.01841 9.94164 7.01495 9.94335 7.0114 9.94482C7.00774 9.94634 7.00365 9.94775 6.99968 9.94775C6.99581 9.94771 6.99153 9.94631 6.98796 9.94482C6.98449 9.94331 6.98087 9.94165 6.9782 9.93896V9.93799L1.67546 4.63525C1.66991 4.62955 1.66667 4.62174 1.66667 4.61377C1.66675 4.60577 1.6698 4.59795 1.67546 4.59229C1.68112 4.58662 1.68894 4.58357 1.69695 4.5835C1.70491 4.5835 1.71273 4.58674 1.71843 4.59229L6.64616 9.521L6.99968 9.87451L7.3532 9.521L12.2809 4.59229C12.2837 4.58949 12.2871 4.58698 12.2907 4.58545C12.2943 4.58396 12.2985 4.58354 12.3024 4.5835Z" stroke="white"></path>
@@ -188,7 +188,7 @@
             </div>
             <div class="flex justify-start items-center gap-6 sm:gap-8">
               <button id="notification-btn" class="h-8 relative flex justify-start items-center gap-2 sm:gap-3">
-                <span id="notification-count" class="w-2 h-2 left-[13px] top-[4px] absolute bg-red-600 rounded-full border border-[#003882] inline-flex items-center justify-center text-[10px] font-semibold hidden"></span>
+                <span id="notification-count" class="w-2 h-2 left-[13px] top-[4px] absolute bg-red-600 rounded-full border border-[#003882] inline-flex items-center justify-center text-[10px] font-semibold hidden hover:bg-red-600 active:bg-red-600 hover:border-[#003882] active:border-[#003882] hover:text-[10px] active:text-[10px]"></span>
                 <div data-state="fill" class="w-6 h-6 relative overflow-hidden">
                   <svg width="19" height="20" viewBox="0 0 19 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M13.0758 19.2308C13.0758 19.4348 12.9948 19.6304 12.8505 19.7747C12.7062 19.919 12.5106 20 12.3066 20H6.15273C5.94872 20 5.75306 19.919 5.6088 19.7747C5.46455 19.6304 5.3835 19.4348 5.3835 19.2308C5.3835 19.0268 5.46455 18.8311 5.6088 18.6868C5.75306 18.5426 5.94872 18.4615 6.15273 18.4615H12.3066C12.5106 18.4615 12.7062 18.5426 12.8505 18.6868C12.9948 18.8311 13.0758 19.0268 13.0758 19.2308ZM18.2498 14.6096C17.7152 13.6904 16.922 11.0894 16.922 7.69231C16.922 5.65218 16.1115 3.69561 14.6689 2.25302C13.2263 0.810437 11.2698 0 9.22966 0C7.18953 0 5.23296 0.810437 3.79037 2.25302C2.34778 3.69561 1.53735 5.65218 1.53735 7.69231C1.53735 11.0904 0.743116 13.6904 0.209462 14.6096C0.0731841 14.8433 0.000937784 15.1088 9.06823e-06 15.3793C-0.000919647 15.6499 0.0695022 15.9158 0.204173 16.1505C0.338843 16.3851 0.533 16.5801 0.767064 16.7157C1.00113 16.8514 1.26682 16.9229 1.53735 16.9231H16.922C17.1924 16.9227 17.458 16.8511 17.6919 16.7153C17.9258 16.5796 18.1199 16.3847 18.2544 16.1501C18.389 15.9155 18.4593 15.6495 18.4583 15.3791C18.4574 15.1087 18.3851 14.8432 18.2489 14.6096H18.2498Z" fill="white"/>
@@ -197,9 +197,9 @@
               </button>
               <div class="flex justify-start items-center gap-3">
                 <div class="h-8 flex justify-start items-center gap-2">
-                  <img class="w-6 h-6 relative rounded-[35px] border border-white" src="https://placehold.co/24x24" />
+                  <img class="w-6 h-6 relative rounded-[35px] border border-white hover:border-white active:border-white" src="https://placehold.co/24x24" />
                   <div class="inline-flex flex-col justify-start items-start gap-1">
-                    <div class="self-stretch justify-end text-white text-sm font-medium font-['Inter'] leading-4">Rita Ora</div>
+                    <div class="self-stretch justify-end text-white text-sm font-medium font-['Inter'] leading-4 hover:text-white active:text-white">Rita Ora</div>
                   </div>
                 </div>
                 <div data-property-1="out" class="w-4 h-4 relative overflow-hidden">
@@ -220,9 +220,9 @@
             type="button"
             aria-controls="filters-panel"
             aria-expanded="false"
-            class="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm"
+            class="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:border-slate-300 active:border-slate-300 hover:bg-white active:bg-white hover:text-slate-700 active:text-slate-700"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-600" viewBox="0 0 20 20" fill="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-600 hover:text-slate-600 active:text-slate-600" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M3 4.5A1.5 1.5 0 014.5 3h11a1.5 1.5 0 011.106 2.5L13 9.117V15.5a1.5 1.5 0 01-2.316 1.236l-2.5-1.667A1.5 1.5 0 017.5 13.75V9.117L3 5.5A1.5 1.5 0 013 4.5zm1.5-.5a.5.5 0 00-.293.9l4.707 3.764a.5.5 0 01.186.388v4.633l2.5 1.666a.5.5 0 00.8-.416V8.952a.5.5 0 01.186-.388L16.793 4.9A.5.5 0 0016.5 4h-12z" clip-rule="evenodd" />
             </svg>
             Filters
@@ -230,36 +230,36 @@
         </div>
         <!-- Filters -->
         <aside id="filters-panel" class="hidden w-full lg:block lg:w-[340px] lg:shrink-0 lg:grow-0 lg:basis-[360px]">
-          <div class="flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <div class="flex items-center justify-between border-b border-slate-200 px-3 py-2">
+          <div class="flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm hover:border-slate-200 active:border-slate-200 hover:bg-white active:bg-white">
+            <div class="flex items-center justify-between border-b border-slate-200 px-3 py-2 hover:border-slate-200 active:border-slate-200">
               <div class="flex items-center gap-3">
-                <div class="justify-center text-neutral-700 font-semibold font-['Inter'] leading-tight">All Filters</div>
-                <button id="filters-close" type="button" class="lg:hidden rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600 transition hover:bg-slate-50">
+                <div class="justify-center text-neutral-700 font-semibold font-['Inter'] leading-tight hover:text-neutral-700 active:text-neutral-700">All Filters</div>
+                <button id="filters-close" type="button" class="lg:hidden rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600 transition hover:bg-slate-50 hover:border-slate-200 active:border-slate-200 hover:text-slate-600 active:text-slate-600">
                   Close
                 </button>
               </div>
               <div class="ml-4 inline-flex items-center gap-2">
                 
-                <button id="apply-filters-btn" data-lead-icon="false" data-size="medium"  data-text="true" data-trail-icon="false" data-type="main" class="px-2 py-2 bg-brand-600 rounded outline outline-1 outline-offset-[-1px] outline-[#003882] inline-flex justify-center items-center gap-2 overflow-hidden">
-                  <div class="justify-start text-white text-sm font-medium font-['Inter'] leading-none">Apply Filters</div>
+                <button id="apply-filters-btn" data-lead-icon="false" data-size="medium"  data-text="true" data-trail-icon="false" data-type="main" class="px-2 py-2 bg-brand-600 rounded outline outline-1 outline-offset-[-1px] outline-[#003882] inline-flex justify-center items-center gap-2 overflow-hidden hover:bg-brand-600 active:bg-brand-600">
+                  <div class="justify-start text-white text-sm font-medium font-['Inter'] leading-none hover:text-white active:text-white">Apply Filters</div>
                 </button>
 
-                <button id="reset-filters-btn" data-lead-icon="false" data-size="medium"  data-text="true" data-trail-icon="false" data-type="main" class="hidden px-2 py-2 bg-brand-600 rounded outline outline-1 outline-offset-[-1px] outline-[#003882] inline-flex justify-center items-center gap-2 overflow-hidden" aria-hidden="true" tabindex="-1">
-                  <div class="justify-start text-white text-sm font-medium font-['Inter'] leading-none">Reset Filters</div>
+                <button id="reset-filters-btn" data-lead-icon="false" data-size="medium"  data-text="true" data-trail-icon="false" data-type="main" class="hidden px-2 py-2 bg-brand-600 rounded outline outline-1 outline-offset-[-1px] outline-[#003882] inline-flex justify-center items-center gap-2 overflow-hidden hover:bg-brand-600 active:bg-brand-600" aria-hidden="true" tabindex="-1">
+                  <div class="justify-start text-white text-sm font-medium font-['Inter'] leading-none hover:text-white active:text-white">Reset Filters</div>
                 </button>
               </div>
             </div>
             <div class="flex-1 space-y-0 overflow-y-auto">
-              <div class="hidden space-y-3 border-b border-slate-200 px-3 py-4" id="related-filters">
-                <button id="status-filter-btn" type="button" class="hidden relative flex w-full items-center justify-between rounded border border-slate-200 px-4 py-2 text-left text-sm font-medium transition min-h-[44px]">
-                  <span class="text-slate-500">Status</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
+              <div class="hidden space-y-3 border-b border-slate-200 px-3 py-4 hover:border-slate-200 active:border-slate-200" id="related-filters">
+                <button id="status-filter-btn" type="button" class="hidden relative flex w-full items-center justify-between rounded border border-slate-200 px-4 py-2 text-left text-sm font-medium transition min-h-[44px] hover:border-slate-200 active:border-slate-200">
+                  <span class="text-slate-500 hover:text-slate-500 active:text-slate-500">Status</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 hover:text-slate-400 active:text-slate-400" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.21l3.71-3.98a.75.75 0 111.08 1.04l-4.25 4.56a.75.75 0 01-1.1 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
                   </svg>
                 </button>
                 <!-- Status dropdown -->
-                <div id="status-filter-card" class="hidden mt-2 w-full rounded border border-slate-200 bg-white shadow-xl p-2">
-                  <ul id="status-filter-list" class="max-h-64 overflow-auto text-sm text-slate-700 space-y-1">
+                <div id="status-filter-card" class="hidden mt-2 w-full rounded border border-slate-200 bg-white shadow-xl p-2 hover:border-slate-200 active:border-slate-200 hover:bg-white active:bg-white">
+                  <ul id="status-filter-list" class="max-h-64 overflow-auto text-sm text-slate-700 space-y-1 hover:text-slate-700 active:text-slate-700">
                     <li class="px-2 py-1 flex items-center gap-2">
                       <input id="status-all" type="checkbox" class="h-4 w-4 accent-[#003882]">
                       <label for="status-all">All</label>
@@ -267,15 +267,15 @@
                     </ul>
                 </div>
 
-                <button id="service-provider-filter-btn" type="button" class="hidden relative flex w-full items-center justify-between rounded border border-slate-200 px-4 py-2 text-left text-sm font-medium transition min-h-[44px]">
-                  <span class="text-slate-500">Service Provider</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
+                <button id="service-provider-filter-btn" type="button" class="hidden relative flex w-full items-center justify-between rounded border border-slate-200 px-4 py-2 text-left text-sm font-medium transition min-h-[44px] hover:border-slate-200 active:border-slate-200">
+                  <span class="text-slate-500 hover:text-slate-500 active:text-slate-500">Service Provider</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 hover:text-slate-400 active:text-slate-400" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.21l3.71-3.98a.75.75 0 111.08 1.04l-4.25 4.56a.75.75 0 01-1.1 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
                   </svg>
                 </button>
                 <!-- Service Provider dropdown -->
-                <div id="service-provider-filter-card" class="hidden mt-2 w-full rounded border border-slate-200 bg-white shadow-xl p-2">
-                  <ul class="max-h-64 overflow-auto text-sm text-slate-700 space-y-1">
+                <div id="service-provider-filter-card" class="hidden mt-2 w-full rounded border border-slate-200 bg-white shadow-xl p-2 hover:border-slate-200 active:border-slate-200 hover:bg-white active:bg-white">
+                  <ul class="max-h-64 overflow-auto text-sm text-slate-700 space-y-1 hover:text-slate-700 active:text-slate-700">
                     <li class="px-2 py-1 flex items-center gap-2">
                       <input id="sp-all" type="checkbox" class="h-4 w-4 accent-[#003882]">
                       <label for="sp-all">All</label>
@@ -299,42 +299,42 @@
                   </ul>
                 </div>
 
-                <div id="account-name-filter"  class="w-full hidden self-stretch bg-white inline-flex flex-col justify-start items-start">
+                <div id="account-name-filter"  class="w-full hidden self-stretch bg-white inline-flex flex-col justify-start items-start hover:bg-white active:bg-white">
                   <div class="w-full self-stretch min-h-[44px] px-4 py-2 rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-center items-center gap-2 overflow-hidden">
-                    <input id="filter-account-name" type="text" placeholder="Account Name" class="flex-1 outline-none text-slate-500 placeholder:text-slate-500 text-sm font-medium bg-transparent" />
+                    <input id="filter-account-name" type="text" placeholder="Account Name" class="flex-1 outline-none text-slate-500 placeholder:text-slate-500 text-sm font-medium bg-transparent hover:text-slate-500 active:text-slate-500 hover:bg-transparent active:bg-transparent" />
                     <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M10.8874 10.3438L8.4828 7.93964C9.17975 7.10291 9.52729 6.02969 9.45311 4.94324C9.37894 3.8568 8.88876 2.84077 8.08455 2.10653C7.28034 1.37228 6.22402 0.976351 5.13533 1.00109C4.04664 1.02584 3.00939 1.46935 2.23937 2.23937C1.46935 3.00939 1.02584 4.04664 1.00109 5.13533C0.976351 6.22402 1.37228 7.28034 2.10653 8.08455C2.84077 8.88876 3.8568 9.37894 4.94324 9.45311C6.02969 9.52729 7.10291 9.17975 7.93964 8.4828L10.3438 10.8874C10.3795 10.9231 10.4218 10.9514 10.4685 10.9707C10.5151 10.9901 10.5651 11 10.6156 11C10.6661 11 10.7161 10.9901 10.7627 10.9707C10.8093 10.9514 10.8517 10.9231 10.8874 10.8874C10.9231 10.8517 10.9514 10.8093 10.9707 10.7627C10.9901 10.7161 11 10.6661 11 10.6156C11 10.5651 10.9901 10.5151 10.9707 10.4685C10.9514 10.4218 10.9231 10.3795 10.8874 10.3438ZM1.77901 5.2368C1.77901 4.55292 1.98181 3.88439 2.36176 3.31576C2.7417 2.74713 3.28174 2.30393 3.91356 2.04222C4.54539 1.78051 5.24064 1.71203 5.91138 1.84545C6.58213 1.97887 7.19825 2.3082 7.68183 2.79178C8.16541 3.27536 8.49473 3.89148 8.62815 4.56222C8.76157 5.23297 8.6931 5.92821 8.43138 6.56004C8.16967 7.19187 7.72648 7.7319 7.15785 8.11185C6.58922 8.4918 5.92069 8.69459 5.2368 8.69459C4.32005 8.69358 3.44114 8.32895 2.7929 7.68071C2.14466 7.03247 1.78003 6.15355 1.77901 5.2368Z" fill="#78829D"/>
                   </svg>
                   </div>
                 </div>
 
-                <div id="resident-search-filter" class="hidden w-full self-stretch bg-white inline-flex flex-col justify-start items-start">
+                <div id="resident-search-filter" class="hidden w-full self-stretch bg-white inline-flex flex-col justify-start items-start hover:bg-white active:bg-white">
                   <div class="w-full self-stretch min-h-[44px] px-4 py-2 rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-center items-center gap-2 overflow-hidden">
-                    <input id="filter-resident" type="text" placeholder="Resident Search" class="flex-1 outline-none text-slate-500 placeholder:text-slate-500 text-sm font-medium bg-transparent" />
+                    <input id="filter-resident" type="text" placeholder="Resident Search" class="flex-1 outline-none text-slate-500 placeholder:text-slate-500 text-sm font-medium bg-transparent hover:text-slate-500 active:text-slate-500 hover:bg-transparent active:bg-transparent" />
                     <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M10.8874 10.3438L8.4828 7.93964C9.17975 7.10291 9.52729 6.02969 9.45311 4.94324C9.37894 3.8568 8.88876 2.84077 8.08455 2.10653C7.28034 1.37228 6.22402 0.976351 5.13533 1.00109C4.04664 1.02584 3.00939 1.46935 2.23937 2.23937C1.46935 3.00939 1.02584 4.04664 1.00109 5.13533C0.976351 6.22402 1.37228 7.28034 2.10653 8.08455C2.84077 8.88876 3.8568 9.37894 4.94324 9.45311C6.02969 9.52729 7.10291 9.17975 7.93964 8.4828L10.3438 10.8874C10.3795 10.9231 10.4218 10.9514 10.4685 10.9707C10.5151 10.9901 10.5651 11 10.6156 11C10.6661 11 10.7161 10.9901 10.7627 10.9707C10.8093 10.9514 10.8517 10.9231 10.8874 10.8874C10.9231 10.8517 10.9514 10.8093 10.9707 10.7627C10.9901 10.7161 11 10.6661 11 10.6156C11 10.5651 10.9901 10.5151 10.9707 10.4685C10.9514 10.4218 10.9231 10.3795 10.8874 10.3438ZM1.77901 5.2368C1.77901 4.55292 1.98181 3.88439 2.36176 3.31576C2.7417 2.74713 3.28174 2.30393 3.91356 2.04222C4.54539 1.78051 5.24064 1.71203 5.91138 1.84545C6.58213 1.97887 7.19825 2.3082 7.68183 2.79178C8.16541 3.27536 8.49473 3.89148 8.62815 4.56222C8.76157 5.23297 8.6931 5.92821 8.43138 6.56004C8.16967 7.19187 7.72648 7.7319 7.15785 8.11185C6.58922 8.4918 5.92069 8.69459 5.2368 8.69459C4.32005 8.69358 3.44114 8.32895 2.7929 7.68071C2.14466 7.03247 1.78003 6.15355 1.77901 5.2368Z" fill="#78829D"/>
                   </svg>
                   </div>
                 </div>
 
-                <div id="address-filter" class="hidden w-full self-stretch bg-white inline-flex flex-col justify-start items-start">
+                <div id="address-filter" class="hidden w-full self-stretch bg-white inline-flex flex-col justify-start items-start hover:bg-white active:bg-white">
                   <div class="w-full self-stretch min-h-[44px] px-4 py-2 rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-center items-center gap-2 overflow-hidden">
-                    <input id="filter-address" type="text" placeholder="Address" class="flex-1 outline-none text-slate-500 placeholder:text-slate-500 text-sm font-medium bg-transparent" />
+                    <input id="filter-address" type="text" placeholder="Address" class="flex-1 outline-none text-slate-500 placeholder:text-slate-500 text-sm font-medium bg-transparent hover:text-slate-500 active:text-slate-500 hover:bg-transparent active:bg-transparent" />
                     <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M10.8874 10.3438L8.4828 7.93964C9.17975 7.10291 9.52729 6.02969 9.45311 4.94324C9.37894 3.8568 8.88876 2.84077 8.08455 2.10653C7.28034 1.37228 6.22402 0.976351 5.13533 1.00109C4.04664 1.02584 3.00939 1.46935 2.23937 2.23937C1.46935 3.00939 1.02584 4.04664 1.00109 5.13533C0.976351 6.22402 1.37228 7.28034 2.10653 8.08455C2.84077 8.88876 3.8568 9.37894 4.94324 9.45311C6.02969 9.52729 7.10291 9.17975 7.93964 8.4828L10.3438 10.8874C10.3795 10.9231 10.4218 10.9514 10.4685 10.9707C10.5151 10.9901 10.5651 11 10.6156 11C10.6661 11 10.7161 10.9901 10.7627 10.9707C10.8093 10.9514 10.8517 10.9231 10.8874 10.8874C10.9231 10.8517 10.9514 10.8093 10.9707 10.7627C10.9901 10.7161 11 10.6661 11 10.6156C11 10.5651 10.9901 10.5151 10.9707 10.4685C10.9514 10.4218 10.9231 10.3795 10.8874 10.3438ZM1.77901 5.2368C1.77901 4.55292 1.98181 3.88439 2.36176 3.31576C2.7417 2.74713 3.28174 2.30393 3.91356 2.04222C4.54539 1.78051 5.24064 1.71203 5.91138 1.84545C6.58213 1.97887 7.19825 2.3082 7.68183 2.79178C8.16541 3.27536 8.49473 3.89148 8.62815 4.56222C8.76157 5.23297 8.6931 5.92821 8.43138 6.56004C8.16967 7.19187 7.72648 7.7319 7.15785 8.11185C6.58922 8.4918 5.92069 8.69459 5.2368 8.69459C4.32005 8.69358 3.44114 8.32895 2.7929 7.68071C2.14466 7.03247 1.78003 6.15355 1.77901 5.2368Z" fill="#78829D"/>
                   </svg>
                   </div>
                 </div>
 
-                <button id="account-type-filter" type="button" class=" hidden relative flex w-full items-center justify-between rounded border border-slate-200 px-4 py-2 text-left text-sm font-medium transition min-h-[44px]">
-                  <span class="text-slate-500">Account Type</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
+                <button id="account-type-filter" type="button" class="hidden relative flex w-full items-center justify-between rounded border border-slate-200 px-4 py-2 text-left text-sm font-medium transition min-h-[44px] hover:border-slate-200 active:border-slate-200">
+                  <span class="text-slate-500 hover:text-slate-500 active:text-slate-500">Account Type</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 hover:text-slate-400 active:text-slate-400" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.21l3.71-3.98a.75.75 0 111.08 1.04l-4.25 4.56a.75.75 0 01-1.1 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
                   </svg>
                 </button>
                 <!-- Account Type dropdown -->
-                <div id="account-type-filter-card" class="hidden mt-2 w-full rounded border border-slate-200 bg-white shadow-xl p-2">
-                  <ul class="max-h-64 overflow-auto text-sm text-slate-700 space-y-1">
+                <div id="account-type-filter-card" class="hidden mt-2 w-full rounded border border-slate-200 bg-white shadow-xl p-2 hover:border-slate-200 active:border-slate-200 hover:bg-white active:bg-white">
+                  <ul class="max-h-64 overflow-auto text-sm text-slate-700 space-y-1 hover:text-slate-700 active:text-slate-700">
                     <li class="px-2 py-1 flex items-center gap-2">
                       <input id="account-type-all" type="checkbox" class="h-4 w-4 accent-[#003882]">
                       <label for="account-type-all">All</label>
@@ -350,21 +350,21 @@
                   </ul>
                 </div>
 
-                <button id="taken-by-filter" type="button" class="hidden flex w-full items-center justify-between rounded border border-slate-200 px-4 py-2 text-left text-sm font-medium text-slate-500 transition hover:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-100">
-                  <span class="text-slate-500">Taken By</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
+                <button id="taken-by-filter" type="button" class="hidden flex w-full items-center justify-between rounded border border-slate-200 px-4 py-2 text-left text-sm font-medium text-slate-500 transition hover:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-100 hover:border-slate-200 active:border-slate-200 hover:text-slate-500 active:text-slate-500">
+                  <span class="text-slate-500 hover:text-slate-500 active:text-slate-500">Taken By</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 hover:text-slate-400 active:text-slate-400" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.21l3.71-3.98a.75.75 0 111.08 1.04l-4.25 4.56a.75.75 0 01-1.1 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
                   </svg>
                 </button>
 
-                <button id="source-filter-btn" type="button" class="flex w-full items-center justify-between rounded border border-slate-200 px-4 py-2 text-left text-sm font-medium text-slate-500 transition hover:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-100 min-h-[44px]">
-                  <span class="text-slate-500">Source</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
+                <button id="source-filter-btn" type="button" class="flex w-full items-center justify-between rounded border border-slate-200 px-4 py-2 text-left text-sm font-medium text-slate-500 transition hover:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-100 min-h-[44px] hover:border-slate-200 active:border-slate-200 hover:text-slate-500 active:text-slate-500">
+                  <span class="text-slate-500 hover:text-slate-500 active:text-slate-500">Source</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 hover:text-slate-400 active:text-slate-400" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.21l3.71-3.98a.75.75 0 111.08 1.04l-4.25 4.56a.75.75 0 01-1.1 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
                   </svg>
                 </button>
-                <div id="source-filter-card" class="hidden mt-2 w-full rounded border border-slate-200 bg-white shadow-xl p-2">
-                  <ul id="source-filter-list" class="max-h-64 overflow-auto text-sm text-slate-700 space-y-1">
+                <div id="source-filter-card" class="hidden mt-2 w-full rounded border border-slate-200 bg-white shadow-xl p-2 hover:border-slate-200 active:border-slate-200 hover:bg-white active:bg-white">
+                  <ul id="source-filter-list" class="max-h-64 overflow-auto text-sm text-slate-700 space-y-1 hover:text-slate-700 active:text-slate-700">
                     <li class="px-2 py-1 flex items-center gap-2">
                       <input id="source-none" type="checkbox" class="h-4 w-4 accent-[#003882]">
                       <label for="source-none">None</label>
@@ -372,9 +372,9 @@
                   </ul>
                 </div>
 
-                <div id="Service Provider" class="hidden self-stretch bg-white inline-flex flex-col justify-start items-start">
+                <div id="Service Provider" class="hidden self-stretch bg-white inline-flex flex-col justify-start items-start hover:bg-white active:bg-white">
                   <div class="w-full self-stretch min-h-[44px] px-4 py-2 rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-center items-center gap-2 overflow-hidden">
-                    <input id="filter-serviceman" type="text" placeholder="Service Provider" class="flex-1 outline-none text-slate-500 placeholder:text-slate-500 text-sm font-medium bg-transparent" />
+                    <input id="filter-serviceman" type="text" placeholder="Service Provider" class="flex-1 outline-none text-slate-500 placeholder:text-slate-500 text-sm font-medium bg-transparent hover:text-slate-500 active:text-slate-500 hover:bg-transparent active:bg-transparent" />
                     <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M10.8874 10.3438L8.4828 7.93964C9.17975 7.10291 9.52729 6.02969 9.45311 4.94324C9.37894 3.8568 8.88876 2.84077 8.08455 2.10653C7.28034 1.37228 6.22402 0.976351 5.13533 1.00109C4.04664 1.02584 3.00939 1.46935 2.23937 2.23937C1.46935 3.00939 1.02584 4.04664 1.00109 5.13533C0.976351 6.22402 1.37228 7.28034 2.10653 8.08455C2.84077 8.88876 3.8568 9.37894 4.94324 9.45311C6.02969 9.52729 7.10291 9.17975 7.93964 8.4828L10.3438 10.8874C10.3795 10.9231 10.4218 10.9514 10.4685 10.9707C10.5151 10.9901 10.5651 11 10.6156 11C10.6661 11 10.7161 10.9901 10.7627 10.9707C10.8093 10.9514 10.8517 10.9231 10.8874 10.8874C10.9231 10.8517 10.9514 10.8093 10.9707 10.7627C10.9901 10.7161 11 10.6661 11 10.6156C11 10.5651 10.9901 10.5151 10.9707 10.4685C10.9514 10.4218 10.9231 10.3795 10.8874 10.3438ZM1.77901 5.2368C1.77901 4.55292 1.98181 3.88439 2.36176 3.31576C2.7417 2.74713 3.28174 2.30393 3.91356 2.04222C4.54539 1.78051 5.24064 1.71203 5.91138 1.84545C6.58213 1.97887 7.19825 2.3082 7.68183 2.79178C8.16541 3.27536 8.49473 3.89148 8.62815 4.56222C8.76157 5.23297 8.6931 5.92821 8.43138 6.56004C8.16967 7.19187 7.72648 7.7319 7.15785 8.11185C6.58922 8.4918 5.92069 8.69459 5.2368 8.69459C4.32005 8.69358 3.44114 8.32895 2.7929 7.68071C2.14466 7.03247 1.78003 6.15355 1.77901 5.2368Z" fill="#78829D"/>
                   </svg>
@@ -382,53 +382,53 @@
                 </div>
               </div>
 
-              <div id="date-filters" class="hidden space-y-3 border-b border-slate-200 px-3 py-4">
+              <div id="date-filters" class="hidden space-y-3 border-b border-slate-200 px-3 py-4 hover:border-slate-200 active:border-slate-200">
                 <div class="flex gap-3">
-                  <label for="date-from" id="start-date" class="min-w-0 flex-1 rounded border border-slate-200 px-4 py-2 text-sm text-slate-500 focus-within:ring-2 focus-within:ring-sky-100">
+                  <label for="date-from" id="start-date" class="min-w-0 flex-1 rounded border border-slate-200 px-4 py-2 text-sm text-slate-500 focus-within:ring-2 focus-within:ring-sky-100 hover:border-slate-200 active:border-slate-200 hover:text-slate-500 active:text-slate-500">
                     <div class="flex items-center gap-2">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 hover:text-slate-400 active:text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M6 2v2m12-2v2M4 7h16M5 5h14a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2z" />
                       </svg>
-                      <input id="date-from" type="text" class="date-picker flatpickr-input min-w-0 flex-1 outline-none text-slate-700 text-sm mb-0 !mb-0" placeholder="Start date" />
+                      <input id="date-from" type="text" class="date-picker flatpickr-input min-w-0 flex-1 outline-none text-slate-700 text-sm mb-0 !mb-0 hover:text-slate-700 active:text-slate-700" placeholder="Start date" />
                     </div>
                   </label>
-                  <label for="date-to" id="end-date" class="min-w-0 flex-1 rounded border border-slate-200 px-4 py-2 text-sm text-slate-500 focus-within:ring-2 focus-within:ring-sky-100">
+                  <label for="date-to" id="end-date" class="min-w-0 flex-1 rounded border border-slate-200 px-4 py-2 text-sm text-slate-500 focus-within:ring-2 focus-within:ring-sky-100 hover:border-slate-200 active:border-slate-200 hover:text-slate-500 active:text-slate-500">
                     <div class="flex items-center gap-2">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 hover:text-slate-400 active:text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M6 2v2m12-2v2M4 7h16M5 5h14a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2z" />
                       </svg>
-                      <input id="date-to" type="text" class="date-picker flatpickr-input min-w-0 flex-1 outline-none text-slate-700 text-sm mb-0 !mb-0" placeholder="End date" />
+                      <input id="date-to" type="text" class="date-picker flatpickr-input min-w-0 flex-1 outline-none text-slate-700 text-sm mb-0 !mb-0 hover:text-slate-700 active:text-slate-700" placeholder="End date" />
                     </div>
                   </label>
                 </div>
-                <button id="filter-by-btn" type="button" class="flex w-full items-center justify-between rounded border border-slate-200 px-4 py-2 text-left text-sm font-medium text-slate-500 transition hover:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-100 min-h-[44px]">
+                <button id="filter-by-btn" type="button" class="flex w-full items-center justify-between rounded border border-slate-200 px-4 py-2 text-left text-sm font-medium text-slate-500 transition hover:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-100 min-h-[44px] hover:border-slate-200 active:border-slate-200 hover:text-slate-500 active:text-slate-500">
                   <span>Filter by: All Dates</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 hover:text-slate-400 active:text-slate-400" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.21l3.71-3.98a.75.75 0 111.08 1.04l-4.25 4.56a.75.75 0 01-1.1 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
                   </svg>
                 </button>
               </div>
 
-              <div id="payment-related-filter" class="hidden space-y-3 border-b border-slate-200 px-3 py-4">
-                <div id="quote-number-filter"  class="self-stretch bg-white inline-flex flex-col justify-start items-start w-full">
+              <div id="payment-related-filter" class="hidden space-y-3 border-b border-slate-200 px-3 py-4 hover:border-slate-200 active:border-slate-200">
+                <div id="quote-number-filter"  class="self-stretch bg-white inline-flex flex-col justify-start items-start w-full hover:bg-white active:bg-white">
                   <div class="w-full self-stretch min-h-[44px] px-4 py-2 rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-center items-center gap-2 overflow-hidden">
-                    <input id="filter-quote-number" type="text" placeholder="Quote Number" class="flex-1 outline-none text-slate-500 placeholder:text-slate-500 text-sm font-sm mb-0  !mb-0" />
+                    <input id="filter-quote-number" type="text" placeholder="Quote Number" class="flex-1 outline-none text-slate-500 placeholder:text-slate-500 text-sm font-sm mb-0 !mb-0 hover:text-slate-500 active:text-slate-500" />
                     <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M10.8874 10.3438L8.4828 7.93964C9.17975 7.10291 9.52729 6.02969 9.45311 4.94324C9.37894 3.8568 8.88876 2.84077 8.08455 2.10653C7.28034 1.37228 6.22402 0.976351 5.13533 1.00109C4.04664 1.02584 3.00939 1.46935 2.23937 2.23937C1.46935 3.00939 1.02584 4.04664 1.00109 5.13533C0.976351 6.22402 1.37228 7.28034 2.10653 8.08455C2.84077 8.88876 3.8568 9.37894 4.94324 9.45311C6.02969 9.52729 7.10291 9.17975 7.93964 8.4828L10.3438 10.8874C10.3795 10.9231 10.4218 10.9514 10.4685 10.9707C10.5151 10.9901 10.5651 11 10.6156 11C10.6661 11 10.7161 10.9901 10.7627 10.9707C10.8093 10.9514 10.8517 10.9231 10.8874 10.8874C10.9231 10.8517 10.9514 10.8093 10.9707 10.7627C10.9901 10.7161 11 10.6661 11 10.6156C11 10.5651 10.9901 10.5151 10.9707 10.4685C10.9514 10.4218 10.9231 10.3795 10.8874 10.3438ZM1.77901 5.2368C1.77901 4.55292 1.98181 3.88439 2.36176 3.31576C2.7417 2.74713 3.28174 2.30393 3.91356 2.04222C4.54539 1.78051 5.24064 1.71203 5.91138 1.84545C6.58213 1.97887 7.19825 2.3082 7.68183 2.79178C8.16541 3.27536 8.49473 3.89148 8.62815 4.56222C8.76157 5.23297 8.6931 5.92821 8.43138 6.56004C8.16967 7.19187 7.72648 7.7319 7.15785 8.11185C6.58922 8.4918 5.92069 8.69459 5.2368 8.69459C4.32005 8.69358 3.44114 8.32895 2.7929 7.68071C2.14466 7.03247 1.78003 6.15355 1.77901 5.2368Z" fill="#78829D"/>
                     </svg>
                   </div>
                 </div>
-                <div id="invoice-number-filter" class="self-stretch bg-white inline-flex flex-col justify-start items-start w-full">
+                <div id="invoice-number-filter" class="self-stretch bg-white inline-flex flex-col justify-start items-start w-full hover:bg-white active:bg-white">
                   <div class="w-full self-stretch min-h-[44px] px-4 py-2 rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-center items-center gap-2 overflow-hidden">
-                    <input id="filter-invoice-number" type="text" placeholder="Invoice Number" class="flex-1 outline-none text-slate-500 placeholder:text-slate-500 text-sm font-sm mb-0  !mb-0" />
+                    <input id="filter-invoice-number" type="text" placeholder="Invoice Number" class="flex-1 outline-none text-slate-500 placeholder:text-slate-500 text-sm font-sm mb-0 !mb-0 hover:text-slate-500 active:text-slate-500" />
                     <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M10.8874 10.3438L8.4828 7.93964C9.17975 7.10291 9.52729 6.02969 9.45311 4.94324C9.37894 3.8568 8.88876 2.84077 8.08455 2.10653C7.28034 1.37228 6.22402 0.976351 5.13533 1.00109C4.04664 1.02584 3.00939 1.46935 2.23937 2.23937C1.46935 3.00939 1.02584 4.04664 1.00109 5.13533C0.976351 6.22402 1.37228 7.28034 2.10653 8.08455C2.84077 8.88876 3.8568 9.37894 4.94324 9.45311C6.02969 9.52729 7.10291 9.17975 7.93964 8.4828L10.3438 10.8874C10.3795 10.9231 10.4218 10.9514 10.4685 10.9707C10.5151 10.9901 10.5651 11 10.6156 11C10.6661 11 10.7161 10.9901 10.7627 10.9707C10.8093 10.9514 10.8517 10.9231 10.8874 10.8874C10.9231 10.8517 10.9514 10.8093 10.9707 10.7627C10.9901 10.7161 11 10.6661 11 10.6156C11 10.5651 10.9901 10.5151 10.9707 10.4685C10.9514 10.4218 10.9231 10.3795 10.8874 10.3438ZM1.77901 5.2368C1.77901 4.55292 1.98181 3.88439 2.36176 3.31576C2.7417 2.74713 3.28174 2.30393 3.91356 2.04222C4.54539 1.78051 5.24064 1.71203 5.91138 1.84545C6.58213 1.97887 7.19825 2.3082 7.68183 2.79178C8.16541 3.27536 8.49473 3.89148 8.62815 4.56222C8.76157 5.23297 8.6931 5.92821 8.43138 6.56004C8.16967 7.19187 7.72648 7.7319 7.15785 8.11185C6.58922 8.4918 5.92069 8.69459 5.2368 8.69459C4.32005 8.69358 3.44114 8.32895 2.7929 7.68071C2.14466 7.03247 1.78003 6.15355 1.77901 5.2368Z" fill="#78829D"/>
                     </svg>
                   </div>
                 </div>
-                <div id="recommendation-filter" class="self-stretch bg-white inline-flex flex-col justify-start items-start w-full">
+                <div id="recommendation-filter" class="self-stretch bg-white inline-flex flex-col justify-start items-start w-full hover:bg-white active:bg-white">
                   <div class="w-full self-stretch min-h-[44px] px-4 py-2 rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-center items-center gap-2 overflow-hidden">
-                    <input id="filter-recommendation" type="text" placeholder="Recommendation" class="flex-1 outline-none text-slate-500 placeholder:text-slate-500 text-sm font-sm mb-0  !mb-0" />
+                    <input id="filter-recommendation" type="text" placeholder="Recommendation" class="flex-1 outline-none text-slate-500 placeholder:text-slate-500 text-sm font-sm mb-0 !mb-0 hover:text-slate-500 active:text-slate-500" />
                     <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M10.8874 10.3438L8.4828 7.93964C9.17975 7.10291 9.52729 6.02969 9.45311 4.94324C9.37894 3.8568 8.88876 2.84077 8.08455 2.10653C7.28034 1.37228 6.22402 0.976351 5.13533 1.00109C4.04664 1.02584 3.00939 1.46935 2.23937 2.23937C1.46935 3.00939 1.02584 4.04664 1.00109 5.13533C0.976351 6.22402 1.37228 7.28034 2.10653 8.08455C2.84077 8.88876 3.8568 9.37894 4.94324 9.45311C6.02969 9.52729 7.10291 9.17975 7.93964 8.4828L10.3438 10.8874C10.3795 10.9231 10.4218 10.9514 10.4685 10.9707C10.5151 10.9901 10.5651 11 10.6156 11C10.6661 11 10.7161 10.9901 10.7627 10.9707C10.8093 10.9514 10.8517 10.9231 10.8874 10.8874C10.9231 10.8517 10.9514 10.8093 10.9707 10.7627C10.9901 10.7161 11 10.6661 11 10.6156C11 10.5651 10.9901 10.5151 10.9707 10.4685C10.9514 10.4218 10.9231 10.3795 10.8874 10.3438ZM1.77901 5.2368C1.77901 4.55292 1.98181 3.88439 2.36176 3.31576C2.7417 2.74713 3.28174 2.30393 3.91356 2.04222C4.54539 1.78051 5.24064 1.71203 5.91138 1.84545C6.58213 1.97887 7.19825 2.3082 7.68183 2.79178C8.16541 3.27536 8.49473 3.89148 8.62815 4.56222C8.76157 5.23297 8.6931 5.92821 8.43138 6.56004C8.16967 7.19187 7.72648 7.7319 7.15785 8.11185C6.58922 8.4918 5.92069 8.69459 5.2368 8.69459C4.32005 8.69358 3.44114 8.32895 2.7929 7.68071C2.14466 7.03247 1.78003 6.15355 1.77901 5.2368Z" fill="#78829D"/>
                     </svg>
@@ -436,14 +436,14 @@
                 </div>
               </div>
 
-              <div id="price-range-filter" class=" hidden space-y-4 px-3 py-4">
-                <span class="text-sm font-medium text-slate-500">Price Range</span>
+              <div id="price-range-filter" class="hidden space-y-4 px-3 py-4">
+                <span class="text-sm font-medium text-slate-500 hover:text-slate-500 active:text-slate-500">Price Range</span>
                 <div class="flex flex-col gap-3">
-                  <div id="price-range" class="relative h-2 rounded-full bg-slate-200">
+                  <div id="price-range" class="relative h-2 rounded-full bg-slate-200 hover:bg-slate-200 active:bg-slate-200">
                     <!-- Progress bar -->
                     <div
                       id="price-progress"
-                      class="absolute h-2 rounded-full bg-sky-400 transition-all duration-200"
+                      class="absolute h-2 rounded-full bg-sky-400 transition-all duration-200 hover:bg-sky-400 active:bg-sky-400"
                       style="left: 0%; right: 0%"
                     ></div>
                   
@@ -456,25 +456,7 @@
                       step="50"
                       style="pointer-events:auto; position:absolute;"
                       value="0"
-                      class="-mt-3 absolute inset-0 w-full appearance-none bg-transparent pointer-events-auto 
-                      [&::-webkit-slider-thumb]:appearance-none 
-                      [&::-webkit-slider-thumb]:h-4 
-                      [&::-webkit-slider-thumb]:w-4 
-                      [&::-webkit-slider-thumb]:rounded-full 
-                      [&::-webkit-slider-thumb]:bg-sky-600 
-                      [&::-webkit-slider-thumb]:border-2 
-                      [&::-webkit-slider-thumb]:border-white 
-                      [&::-webkit-slider-thumb]:cursor-pointer 
-                      [&::-webkit-slider-thumb]:shadow-sm 
-                      [&::-webkit-slider-thumb]:transition-all 
-                      [&::-webkit-slider-thumb]:duration-200
-                      [&::-moz-range-thumb]:h-4 
-                      [&::-moz-range-thumb]:w-4 
-                      [&::-moz-range-thumb]:rounded-full 
-                      [&::-moz-range-thumb]:bg-sky-600 
-                      [&::-moz-range-thumb]:border-2 
-                      [&::-moz-range-thumb]:border-white 
-                      [&::-moz-range-thumb]:cursor-pointer"
+                      class="-mt-3 absolute inset-0 w-full appearance-none bg-transparent pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-sky-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:shadow-sm [&::-webkit-slider-thumb]:transition-all [&::-webkit-slider-thumb]:duration-200 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-sky-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:cursor-pointer hover:bg-transparent active:bg-transparent"
                     />
                   
                     <!-- Max Slider -->
@@ -486,29 +468,11 @@
                       style="pointer-events:auto; position:absolute;"
                       step="50"
                       value="10000"
-                      class="-mt-3 absolute inset-0 w-full appearance-none bg-transparent pointer-events-auto 
-                      [&::-webkit-slider-thumb]:appearance-none 
-                      [&::-webkit-slider-thumb]:h-4 
-                      [&::-webkit-slider-thumb]:w-4 
-                      [&::-webkit-slider-thumb]:rounded-full 
-                      [&::-webkit-slider-thumb]:bg-sky-600 
-                      [&::-webkit-slider-thumb]:border-2 
-                      [&::-webkit-slider-thumb]:border-white 
-                      [&::-webkit-slider-thumb]:cursor-pointer 
-                      [&::-webkit-slider-thumb]:shadow-sm 
-                      [&::-webkit-slider-thumb]:transition-all 
-                      [&::-webkit-slider-thumb]:duration-200
-                      [&::-moz-range-thumb]:h-4 
-                      [&::-moz-range-thumb]:w-4 
-                      [&::-moz-range-thumb]:rounded-full 
-                      [&::-moz-range-thumb]:bg-sky-600 
-                      [&::-moz-range-thumb]:border-2 
-                      [&::-moz-range-thumb]:border-white 
-                      [&::-moz-range-thumb]:cursor-pointer"
+                      class="-mt-3 absolute inset-0 w-full appearance-none bg-transparent pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-sky-600 [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:shadow-sm [&::-webkit-slider-thumb]:transition-all [&::-webkit-slider-thumb]:duration-200 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-sky-600 [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-white [&::-moz-range-thumb]:cursor-pointer hover:bg-transparent active:bg-transparent"
                     />
                   </div>
                   
-                  <div class="flex justify-between mt-2 text-sm text-slate-600">
+                  <div class="flex justify-between mt-2 text-sm text-slate-600 hover:text-slate-600 active:text-slate-600">
                     <span id="min-display"></span>
                     <span id="max-display"></span>
                   </div>
@@ -524,38 +488,38 @@
                 </div>
               </div>
 
-             <div class="hidden  flex flex-col gap-4 px-3 py-4" id="job-filters">
+             <div class="hidden flex flex-col gap-4 px-3 py-4" id="job-filters">
               <label>Job filters</label>
-              <div class="w-full bg-white inline-flex flex-col justify-start items-start">
+              <div class="w-full bg-white inline-flex flex-col justify-start items-start hover:bg-white active:bg-white">
                 <div class="w-full self-stretch min-h-[44px] px-4 py-2 rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-center items-center gap-2 overflow-hidden">
-                  <input id="filter-address" type="text" placeholder="Job Id" class="flex-1 outline-none text-slate-500 placeholder:text-slate-500 text-sm font-medium bg-transparent" />
+                  <input id="filter-address" type="text" placeholder="Job Id" class="flex-1 outline-none text-slate-500 placeholder:text-slate-500 text-sm font-medium bg-transparent hover:text-slate-500 active:text-slate-500 hover:bg-transparent active:bg-transparent" />
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M10.8874 10.3438L8.4828 7.93964C9.17975 7.10291 9.52729 6.02969 9.45311 4.94324C9.37894 3.8568 8.88876 2.84077 8.08455 2.10653C7.28034 1.37228 6.22402 0.976351 5.13533 1.00109C4.04664 1.02584 3.00939 1.46935 2.23937 2.23937C1.46935 3.00939 1.02584 4.04664 1.00109 5.13533C0.976351 6.22402 1.37228 7.28034 2.10653 8.08455C2.84077 8.88876 3.8568 9.37894 4.94324 9.45311C6.02969 9.52729 7.10291 9.17975 7.93964 8.4828L10.3438 10.8874C10.3795 10.9231 10.4218 10.9514 10.4685 10.9707C10.5151 10.9901 10.5651 11 10.6156 11C10.6661 11 10.7161 10.9901 10.7627 10.9707C10.8093 10.9514 10.8517 10.9231 10.8874 10.8874C10.9231 10.8517 10.9514 10.8093 10.9707 10.7627C10.9901 10.7161 11 10.6661 11 10.6156C11 10.5651 10.9901 10.5151 10.9707 10.4685C10.9514 10.4218 10.9231 10.3795 10.8874 10.3438ZM1.77901 5.2368C1.77901 4.55292 1.98181 3.88439 2.36176 3.31576C2.7417 2.74713 3.28174 2.30393 3.91356 2.04222C4.54539 1.78051 5.24064 1.71203 5.91138 1.84545C6.58213 1.97887 7.19825 2.3082 7.68183 2.79178C8.16541 3.27536 8.49473 3.89148 8.62815 4.56222C8.76157 5.23297 8.6931 5.92821 8.43138 6.56004C8.16967 7.19187 7.72648 7.7319 7.15785 8.11185C6.58922 8.4918 5.92069 8.69459 5.2368 8.69459C4.32005 8.69358 3.44114 8.32895 2.7929 7.68071C2.14466 7.03247 1.78003 6.15355 1.77901 5.2368Z" fill="#78829D"/>
                 </svg>
                 </div>
               </div>
 
-              <div class="w-full bg-white inline-flex flex-col justify-start items-start">
+              <div class="w-full bg-white inline-flex flex-col justify-start items-start hover:bg-white active:bg-white">
                 <div class="w-full self-stretch min-h-[44px] px-4 py-2 rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-center items-center gap-2 overflow-hidden">
-                  <input id="filter-property-search" type="text" placeholder="Property Search" class="flex-1 outline-none text-slate-500 placeholder:text-slate-500 text-sm font-medium bg-transparent" />
+                  <input id="filter-property-search" type="text" placeholder="Property Search" class="flex-1 outline-none text-slate-500 placeholder:text-slate-500 text-sm font-medium bg-transparent hover:text-slate-500 active:text-slate-500 hover:bg-transparent active:bg-transparent" />
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M10.8874 10.3438L8.4828 7.93964C9.17975 7.10291 9.52729 6.02969 9.45311 4.94324C9.37894 3.8568 8.88876 2.84077 8.08455 2.10653C7.28034 1.37228 6.22402 0.976351 5.13533 1.00109C4.04664 1.02584 3.00939 1.46935 2.23937 2.23937C1.46935 3.00939 1.02584 4.04664 1.00109 5.13533C0.976351 6.22402 1.37228 7.28034 2.10653 8.08455C2.84077 8.88876 3.8568 9.37894 4.94324 9.45311C6.02969 9.52729 7.10291 9.17975 7.93964 8.4828L10.3438 10.8874C10.3795 10.9231 10.4218 10.9514 10.4685 10.9707C10.5151 10.9901 10.5651 11 10.6156 11C10.6661 11 10.7161 10.9901 10.7627 10.9707C10.8093 10.9514 10.8517 10.9231 10.8874 10.8874C10.9231 10.8517 10.9514 10.8093 10.9707 10.7627C10.9901 10.7161 11 10.6661 11 10.6156C11 10.5651 10.9901 10.5151 10.9707 10.4685C10.9514 10.4218 10.9231 10.3795 10.8874 10.3438ZM1.77901 5.2368C1.77901 4.55292 1.98181 3.88439 2.36176 3.31576C2.7417 2.74713 3.28174 2.30393 3.91356 2.04222C4.54539 1.78051 5.24064 1.71203 5.91138 1.84545C6.58213 1.97887 7.19825 2.3082 7.68183 2.79178C8.16541 3.27536 8.49473 3.89148 8.62815 4.56222C8.76157 5.23297 8.6931 5.92821 8.43138 6.56004C8.16967 7.19187 7.72648 7.7319 7.15785 8.11185C6.58922 8.4918 5.92069 8.69459 5.2368 8.69459C4.32005 8.69358 3.44114 8.32895 2.7929 7.68071C2.14466 7.03247 1.78003 6.15355 1.77901 5.2368Z" fill="#78829D"/>
                 </svg>
                 </div>
              </div>
 
-             <div id="account-name-filter" class="w-full bg-white inline-flex flex-col justify-start items-start">
+             <div id="account-name-filter" class="w-full bg-white inline-flex flex-col justify-start items-start hover:bg-white active:bg-white">
               <div class="w-full self-stretch min-h-[44px] px-4 py-2 rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-center items-center gap-2 overflow-hidden">
-                <input id="filter-account-name" type="text" placeholder="Account Name" class="flex-1 outline-none text-slate-500 placeholder:text-slate-500 text-sm font-medium bg-transparent">
+                <input id="filter-account-name" type="text" placeholder="Account Name" class="flex-1 outline-none text-slate-500 placeholder:text-slate-500 text-sm font-medium bg-transparent hover:text-slate-500 active:text-slate-500 hover:bg-transparent active:bg-transparent">
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M10.8874 10.3438L8.4828 7.93964C9.17975 7.10291 9.52729 6.02969 9.45311 4.94324C9.37894 3.8568 8.88876 2.84077 8.08455 2.10653C7.28034 1.37228 6.22402 0.976351 5.13533 1.00109C4.04664 1.02584 3.00939 1.46935 2.23937 2.23937C1.46935 3.00939 1.02584 4.04664 1.00109 5.13533C0.976351 6.22402 1.37228 7.28034 2.10653 8.08455C2.84077 8.88876 3.8568 9.37894 4.94324 9.45311C6.02969 9.52729 7.10291 9.17975 7.93964 8.4828L10.3438 10.8874C10.3795 10.9231 10.4218 10.9514 10.4685 10.9707C10.5151 10.9901 10.5651 11 10.6156 11C10.6661 11 10.7161 10.9901 10.7627 10.9707C10.8093 10.9514 10.8517 10.9231 10.8874 10.8874C10.9231 10.8517 10.9514 10.8093 10.9707 10.7627C10.9901 10.7161 11 10.6661 11 10.6156C11 10.5651 10.9901 10.5151 10.9707 10.4685C10.9514 10.4218 10.9231 10.3795 10.8874 10.3438ZM1.77901 5.2368C1.77901 4.55292 1.98181 3.88439 2.36176 3.31576C2.7417 2.74713 3.28174 2.30393 3.91356 2.04222C4.54539 1.78051 5.24064 1.71203 5.91138 1.84545C6.58213 1.97887 7.19825 2.3082 7.68183 2.79178C8.16541 3.27536 8.49473 3.89148 8.62815 4.56222C8.76157 5.23297 8.6931 5.92821 8.43138 6.56004C8.16967 7.19187 7.72648 7.7319 7.15785 8.11185C6.58922 8.4918 5.92069 8.69459 5.2368 8.69459C4.32005 8.69358 3.44114 8.32895 2.7929 7.68071C2.14466 7.03247 1.78003 6.15355 1.77901 5.2368Z" fill="#78829D"></path>
               </svg>
               </div>
               </div>
 
-            <button id="account-type-filter" type="button" class="relative flex w-full items-center justify-between rounded border border-slate-200 px-4 py-2 text-left text-sm font-medium transition min-h-[44px]">
-              <span class="text-slate-500">Account Type</span>
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
+            <button id="account-type-filter" type="button" class="relative flex w-full items-center justify-between rounded border border-slate-200 px-4 py-2 text-left text-sm font-medium transition min-h-[44px] hover:border-slate-200 active:border-slate-200">
+              <span class="text-slate-500 hover:text-slate-500 active:text-slate-500">Account Type</span>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 hover:text-slate-400 active:text-slate-400" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.21l3.71-3.98a.75.75 0 111.08 1.04l-4.25 4.56a.75.75 0 01-1.1 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd"></path>
               </svg>
             </button>
@@ -565,53 +529,53 @@
               <div class="hidden flex flex-col gap-4 px-3 py-4" id="task-filters">
                 <label> Task Filters</label>
                 <!-- Task Type dropdown -->
-              <button id="task-type-filter-btn" type="button" class="relative flex w-full items-center justify-between rounded border border-slate-200 px-4 py-2 text-left text-sm font-medium transition min-h-[44px]">
-                <span class="text-slate-500">Task Type</span>
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
+              <button id="task-type-filter-btn" type="button" class="relative flex w-full items-center justify-between rounded border border-slate-200 px-4 py-2 text-left text-sm font-medium transition min-h-[44px] hover:border-slate-200 active:border-slate-200">
+                <span class="text-slate-500 hover:text-slate-500 active:text-slate-500">Task Type</span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 hover:text-slate-400 active:text-slate-400" viewBox="0 0 20 20" fill="currentColor">
                   <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.21l3.71-3.98a.75.75 0 111.08 1.04l-4.25 4.56a.75.75 0 01-1.1 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
                 </svg>
               </button>
-              <div id="task-type-filter-card" class="hidden mt-2 w-full rounded border border-slate-200 bg-white shadow-xl p-2">
-                <ul class="max-h-64 overflow-auto text-sm text-slate-700 space-y-1">
+              <div id="task-type-filter-card" class="hidden mt-2 w-full rounded border border-slate-200 bg-white shadow-xl p-2 hover:border-slate-200 active:border-slate-200 hover:bg-white active:bg-white">
+                <ul class="max-h-64 overflow-auto text-sm text-slate-700 space-y-1 hover:text-slate-700 active:text-slate-700">
                   <li class="px-2 py-1 flex items-center gap-2"><input id="task-type-inspection" data-task-type value="Inspection" type="checkbox" class="h-4 w-4 accent-[#003882]"><label for="task-type-inspection">Inspection</label></li>
                   <li class="px-2 py-1 flex items-center gap-2"><input id="task-type-repair" data-task-type value="Repair" type="checkbox" class="h-4 w-4 accent-[#003882]"><label for="task-type-repair">Repair</label></li>
                 </ul>
               </div>
               <!-- Task Status dropdown -->
-              <button id="task-status-filter-btn" type="button" class="relative flex w-72 h-9 items-center justify-between px-4 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 text-left text-sm font-medium text-slate-500 transition min-h-[44px]">
+              <button id="task-status-filter-btn" type="button" class="relative flex w-72 h-9 items-center justify-between px-4 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 text-left text-sm font-medium text-slate-500 transition min-h-[44px] hover:bg-white active:bg-white hover:text-slate-500 active:text-slate-500">
                 <span class="flex-1 text-left">Task Status</span>
                 <div class="w-3.5 h-3.5 relative overflow-hidden">
-                  <div class="w-3 h-1.5 left-[1.17px] top-[4.08px] absolute bg-slate-500"></div>
+                  <div class="w-3 h-1.5 left-[1.17px] top-[4.08px] absolute bg-slate-500 hover:bg-slate-500 active:bg-slate-500"></div>
                 </div>
               </button>
-              <div id="task-status-filter-card" class="hidden mt-2 w-full rounded border border-slate-200 bg-white shadow-xl p-2">
-                <ul class="max-h-64 overflow-auto text-sm text-slate-700 space-y-1">
+              <div id="task-status-filter-card" class="hidden mt-2 w-full rounded border border-slate-200 bg-white shadow-xl p-2 hover:border-slate-200 active:border-slate-200 hover:bg-white active:bg-white">
+                <ul class="max-h-64 overflow-auto text-sm text-slate-700 space-y-1 hover:text-slate-700 active:text-slate-700">
                   <li class="px-2 py-1 flex items-center gap-2"><input id="task-status-open" data-task-status value="Open" type="checkbox" class="h-4 w-4 accent-[#003882]"><label for="task-status-open">Open</label></li>
                   <li class="px-2 py-1 flex items-center gap-2"><input id="task-status-closed" data-task-status value="Closed" type="checkbox" class="h-4 w-4 accent-[#003882]"><label for="task-status-closed">Closed</label></li>
                 </ul>
               </div>
               <!-- Due Today dropdown -->
-              <button id="due-today-filter-btn" type="button" class="relative flex w-full items-center justify-between rounded border border-slate-200 px-4 py-2 text-left text-sm font-medium transition min-h-[44px]">
-                <span class="text-slate-500">Due Today</span>
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
+              <button id="due-today-filter-btn" type="button" class="relative flex w-full items-center justify-between rounded border border-slate-200 px-4 py-2 text-left text-sm font-medium transition min-h-[44px] hover:border-slate-200 active:border-slate-200">
+                <span class="text-slate-500 hover:text-slate-500 active:text-slate-500">Due Today</span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 hover:text-slate-400 active:text-slate-400" viewBox="0 0 20 20" fill="currentColor">
                   <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.21l3.71-3.98a.75.75 0 111.08 1.04l-4.25 4.56a.75.75 0 01-1.1 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
                 </svg>
               </button>
-              <div id="due-today-filter-card" class="hidden mt-2 w-full rounded border border-slate-200 bg-white shadow-xl p-2">
-                <ul class="max-h-64 overflow-auto text-sm text-slate-700 space-y-1">
+              <div id="due-today-filter-card" class="hidden mt-2 w-full rounded border border-slate-200 bg-white shadow-xl p-2 hover:border-slate-200 active:border-slate-200 hover:bg-white active:bg-white">
+                <ul class="max-h-64 overflow-auto text-sm text-slate-700 space-y-1 hover:text-slate-700 active:text-slate-700">
                   <li class="px-2 py-1 flex items-center gap-2"><input id="due-today-yes" data-due-today value="Yes" type="checkbox" class="h-4 w-4 accent-[#003882]"><label for="due-today-yes">Yes</label></li>
                   <li class="px-2 py-1 flex items-center gap-2"><input id="due-today-no" data-due-today value="No" type="checkbox" class="h-4 w-4 accent-[#003882]"><label for="due-today-no">No</label></li>
                 </ul>
               </div>
               <!-- Assigned To dropdown -->
-              <button id="assigned-to-filter-btn" type="button" class="relative flex w-full items-center justify-between rounded border border-slate-200 px-4 py-2 text-left text-sm font-medium transition min-h-[44px]">
-                <span class="text-slate-500">Assigned To</span>
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
+              <button id="assigned-to-filter-btn" type="button" class="relative flex w-full items-center justify-between rounded border border-slate-200 px-4 py-2 text-left text-sm font-medium transition min-h-[44px] hover:border-slate-200 active:border-slate-200">
+                <span class="text-slate-500 hover:text-slate-500 active:text-slate-500">Assigned To</span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400 hover:text-slate-400 active:text-slate-400" viewBox="0 0 20 20" fill="currentColor">
                   <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.21l3.71-3.98a.75.75 0 111.08 1.04l-4.25 4.56a.75.75 0 01-1.1 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
                 </svg>
               </button>
-              <div id="assigned-to-filter-card" class="hidden mt-2 w-full rounded border border-slate-200 bg-white shadow-xl p-2">
-                <ul class="max-h-64 overflow-auto text-sm text-slate-700 space-y-1">
+              <div id="assigned-to-filter-card" class="hidden mt-2 w-full rounded border border-slate-200 bg-white shadow-xl p-2 hover:border-slate-200 active:border-slate-200 hover:bg-white active:bg-white">
+                <ul class="max-h-64 overflow-auto text-sm text-slate-700 space-y-1 hover:text-slate-700 active:text-slate-700">
                   <li class="px-2 py-1 flex items-center gap-2"><input id="assigned-alice" data-assigned-to value="Alice" type="checkbox" class="h-4 w-4 accent-[#003882]"><label for="assigned-alice">Alice</label></li>
                   <li class="px-2 py-1 flex items-center gap-2"><input id="assigned-bob" data-assigned-to value="Bob" type="checkbox" class="h-4 w-4 accent-[#003882]"><label for="assigned-bob">Bob</label></li>
                 </ul>
@@ -626,26 +590,26 @@
 
           <!-- Calendar summary -->
         <section class="rounded-xl">
-          <div id="calendar-grid" class="flex w-full flex-wrap gap-3 overflow-x-auto rounded-lg bg-slate-100 sm:flex-nowrap sm:overflow-visible"></div>
+          <div id="calendar-grid" class="flex w-full flex-wrap gap-3 overflow-x-auto rounded-lg bg-slate-100 sm:flex-nowrap sm:overflow-visible hover:bg-slate-100 active:bg-slate-100"></div>
         </section>
 
         <!-- Tabs and chips -->
-        <section class="w-full max-w-[1570px] flex flex-col justify-start items-start gap-2 bg-white rounded-lg outline outline-1 outline-offset-[-1px] outline-gray-300 shadow-card overflow-hidden">
+        <section class="w-full max-w-[1570px] flex flex-col justify-start items-start gap-2 bg-white rounded-lg outline outline-1 outline-offset-[-1px] outline-gray-300 shadow-card overflow-hidden hover:bg-white active:bg-white">
           <div class="flex flex-col w-full">
-            <div class="self-stretch px-6 py-4 border-b border-gray-300 inline-flex justify-between items-center gap-4">
+            <div class="self-stretch px-6 py-4 border-b border-gray-300 inline-flex justify-between items-center gap-4 hover:border-gray-300 active:border-gray-300">
               <div id="top-tabs" class="flex flex-wrap items-center gap-1 sm:gap-1 text-base font-medium text-neutral-700">
                 <a href="#" data-tab="inquiry" class="px-6 py-3 text-[#003882] border-b-2 border-[#003882] flex items-center gap-2">Inquiry</a>
-                <a href="#" data-tab="quote" class="px-6 py-3 text-neutral-700 border-b-2 border-transparent transition hover:text-[#003882] hover:border-sky-200">Quote</a>
-                <a href="#" data-tab="jobs" class="px-6 py-3 text-neutral-700 border-b-2 border-transparent transition hover:text-[#003882] hover:border-sky-200">Jobs</a>
-                <a href="#" data-tab="payment" class="px-6 py-3 text-neutral-700 border-b-2 border-transparent transition hover:text-[#003882] hover:border-sky-200">Payment</a>
-                <a href="#" data-tab="active-jobs" class="px-6 py-3 flex items-center gap-2 text-neutral-700 border-b-2 border-transparent transition hover:text-emerald-700">
+                <a href="#" data-tab="quote" class="px-6 py-3 text-neutral-700 border-b-2 border-transparent transition">Quote</a>
+                <a href="#" data-tab="jobs" class="px-6 py-3 text-neutral-700 border-b-2 border-transparent transition">Jobs</a>
+                <a href="#" data-tab="payment" class="px-6 py-3 text-neutral-700 border-b-2 border-transparent transition">Payment</a>
+                <a href="#" data-tab="active-jobs" class="px-6 py-3 flex items-center gap-2 text-neutral-700 border-b-2 border-transparent transition">
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="6" cy="6" r="6" fill="#36926B"/>
                     </svg>
                     
                   Active Jobs
                 </a>
-                <a href="#" data-tab="urgent-calls" class="px-6 py-2.5 flex items-center gap-2 text-neutral-700 border-b-2 border-transparent transition hover:text-rose-600">
+                <a href="#" data-tab="urgent-calls" class="px-6 py-2.5 flex items-center gap-2 text-neutral-700 border-b-2 border-transparent transition">
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M14 4.66667V2H11.3334M10 6L13.7294 2.27067L10 6ZM6.10537 3.808L5.83737 3.204C5.66137 2.80933 5.57404 2.612 5.44271 2.46067C5.2784 2.27114 5.06397 2.13181 4.82404 2.05867C4.63271 2 4.41604 2 3.98404 2C3.35204 2 3.03604 2 2.77071 2.12133C2.44339 2.28036 2.19003 2.55951 2.06337 2.90067C1.96804 3.176 1.99537 3.45933 2.05004 4.02667C2.63226 10.06 5.94004 13.3678 11.9734 13.95C12.54 14.0047 12.824 14.032 13.1 13.9367C13.4408 13.81 13.7197 13.5569 13.8787 13.23C14 12.964 14 12.648 14 12.016C14 11.5833 14 11.3673 13.9414 11.176C13.8682 10.9361 13.7289 10.7216 13.5394 10.5573C13.388 10.426 13.1907 10.3387 12.796 10.1627L12.192 9.89467C11.764 9.70467 11.5507 9.60933 11.3334 9.58867C11.1253 9.56869 10.9154 9.59792 10.7207 9.674C10.5174 9.75333 10.3374 9.90267 9.97804 10.2027C9.62004 10.5007 9.44137 10.6493 9.22271 10.7293C9.01261 10.802 8.78853 10.8251 8.56804 10.7967C8.33804 10.7633 8.16137 10.6687 7.80871 10.48C6.71137 9.89333 6.10671 9.28867 5.52004 8.19133C5.33137 7.838 5.23737 7.662 5.20337 7.43133C5.17498 7.21133 5.19779 6.98774 5.27004 6.778C5.35004 6.55867 5.49937 6.38 5.79737 6.022C6.09737 5.662 6.24671 5.48267 6.32604 5.27933C6.40204 5.08467 6.43137 4.87467 6.41137 4.66667C6.39071 4.45 6.29537 4.236 6.10537 3.808Z" fill="white"/>
                     <path d="M14 4.66667V2H11.3334M10 6L13.7294 2.27067M6.10537 3.808L5.83737 3.204C5.66137 2.80933 5.57404 2.612 5.44271 2.46067C5.2784 2.27114 5.06397 2.13181 4.82404 2.05867C4.63271 2 4.41604 2 3.98404 2C3.35204 2 3.03604 2 2.77071 2.12133C2.44339 2.28036 2.19003 2.55951 2.06337 2.90067C1.96804 3.176 1.99537 3.45933 2.05004 4.02667C2.63226 10.06 5.94004 13.3678 11.9734 13.95C12.54 14.0047 12.824 14.032 13.1 13.9367C13.4408 13.81 13.7197 13.5569 13.8787 13.23C14 12.964 14 12.648 14 12.016C14 11.5833 14 11.3673 13.9414 11.176C13.8682 10.9361 13.7289 10.7216 13.5394 10.5573C13.388 10.426 13.1907 10.3387 12.796 10.1627L12.192 9.89467C11.764 9.70467 11.5507 9.60933 11.3334 9.58867C11.1253 9.56869 10.9154 9.59792 10.7207 9.674C10.5174 9.75333 10.3374 9.90267 9.97804 10.2027C9.62004 10.5007 9.44137 10.6493 9.22271 10.7293C9.01261 10.802 8.78853 10.8251 8.56804 10.7967C8.33804 10.7633 8.16137 10.6687 7.80871 10.48C6.71137 9.89333 6.10671 9.28867 5.52004 8.19133C5.33137 7.838 5.23737 7.662 5.20337 7.43133C5.17498 7.21133 5.19779 6.98774 5.27004 6.778C5.35004 6.55867 5.49937 6.38 5.79737 6.022C6.09737 5.662 6.24671 5.48267 6.32604 5.27933C6.40204 5.08467 6.43137 4.87467 6.41137 4.66667C6.39071 4.45 6.29537 4.236 6.10537 3.808Z" stroke="#414042" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -653,7 +617,7 @@
                     Urgent Calls
                   <span class="rounded-full bg-rose-100 px-2 py-0.5 text-[11px] font-semibold text-rose-600">23</span>
                 </a>
-                <button class="ml-12 inline-flex items-center pl-6 rounded-[32px] outline outline-1 outline-offset-[-1px] outline-[#003882] px-6 py-2 text-base font-medium text-[#003882] transition hover:bg-sky-50">
+                <button class="ml-12 inline-flex items-center pl-6 rounded-[32px] outline outline-1 outline-offset-[-1px] outline-[#003882] px-6 py-2 text-base font-medium text-[#003882] transition hover:bg-sky-50 hover:text-[#003882] active:text-[#003882]">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M8.5 3a5.5 5.5 0 014.267 8.97l3.131 3.132a.75.75 0 11-1.06 1.06l-3.132-3.131A5.5 5.5 0 118.5 3zm0 1.5a4 4 0 100 8 4 4 0 000-8z" clip-rule="evenodd" />
                   </svg>
@@ -663,10 +627,10 @@
               
               <div class="flex flex-wrap items-center gap-3">
                 
-                <button class="px-4 py-2 bg-neutral-100 rounded outline outline-1 outline-offset-[-1px] outline-gray-300 text-sm font-medium text-neutral-700 transition hover:bg-neutral-50">
+                <button class="px-4 py-2 bg-neutral-100 rounded outline outline-1 outline-offset-[-1px] outline-gray-300 text-sm font-medium text-neutral-700 transition hover:bg-neutral-50 hover:bg-neutral-100 active:bg-neutral-100 hover:text-neutral-700 active:text-neutral-700">
                   Edit Columns
                 </button>
-                <button class="px-4 py-2 bg-[#003882] rounded outline outline-1 outline-offset-[-1px] outline-[#003882] text-sm font-medium text-white transition hover:bg-[#003882]">
+                <button class="px-4 py-2 bg-[#003882] rounded outline outline-1 outline-offset-[-1px] outline-[#003882] text-sm font-medium text-white transition hover:bg-[#003882] active:bg-[#003882] hover:text-white active:text-white">
                   Save View As
                 </button>
               </div>
@@ -678,19 +642,19 @@
           </div>
 
             <!-- Data table -->
-            <div class="self-stretch flex-1 inline-flex justify-start items-start overflow-hidden border-t border-slate-200 shadow-sm">
+            <div class="self-stretch flex-1 inline-flex justify-start items-start overflow-hidden border-t border-slate-200 shadow-sm hover:border-slate-200 active:border-slate-200">
               <div id="inquiry-table-container" class="w-full overflow-x-auto"></div>
             </div>
 
             <!-- Pagination -->
-            <div class="self-stretch p-3 border-t border-gray-300 inline-flex justify-center items-start text-sm text-slate-600">
+            <div class="self-stretch p-3 border-t border-gray-300 inline-flex justify-center items-start text-sm text-slate-600 hover:border-gray-300 active:border-gray-300 hover:text-slate-600 active:text-slate-600">
               <div class="flex items-center gap-2">
-                <button id="lt-btn" class="h-8 px-3 py-1 rounded text-slate-500 transition hover:text-brand-600">&lt;</button>
-                <button id="prev-page-btn" class="h-8 px-3 py-1 rounded text-slate-500 transition hover:text-brand-600">Previous</button>
+                <button id="lt-btn" class="h-8 px-3 py-1 rounded text-slate-500 transition hover:text-brand-600 hover:text-slate-500 active:text-slate-500">&lt;</button>
+                <button id="prev-page-btn" class="h-8 px-3 py-1 rounded text-slate-500 transition hover:text-brand-600 hover:text-slate-500 active:text-slate-500">Previous</button>
                 
                 <div id="pagination-pages" class="flex gap-2"></div>
-                <button id="next-page-btn" class="h-8 px-3 py-1 rounded text-slate-500 transition hover:text-brand-600">Next</button>
-                <button id="gt-btn" class="h-8 px-3 py-1 rounded text-slate-500 transition hover:text-brand-600">&gt;</button>
+                <button id="next-page-btn" class="h-8 px-3 py-1 rounded text-slate-500 transition hover:text-brand-600 hover:text-slate-500 active:text-slate-500">Next</button>
+                <button id="gt-btn" class="h-8 px-3 py-1 rounded text-slate-500 transition hover:text-brand-600 hover:text-slate-500 active:text-slate-500">&gt;</button>
               </div>
             </div>
         </section>

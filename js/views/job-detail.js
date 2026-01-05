@@ -88,10 +88,10 @@ export class JobDetailView {
       "hidden w-full h-full flex flex-row gap-4 p-4 bg-gray-50";
 
     wrapper.innerHTML = `
-      <div data-section="add-activities" class="w-[440px] bg-white rounded-lg border border-slate-200 p-5 flex flex-col gap-4 shadow-sm">
+      <div data-section="add-activities" class="w-[440px] bg-white rounded-lg border border-slate-200 p-5 flex flex-col gap-4 shadow-sm hover:bg-white active:bg-white hover:border-slate-200 active:border-slate-200">
         <div class="flex flex-col items-start gap-2">
-          <div class="text-neutral-800 text-base font-semibold">Add New Activity</div>
-          <label class="flex items-center gap-2 text-slate-600 text-sm">
+          <div class="text-neutral-800 text-base font-semibold hover:text-neutral-800 active:text-neutral-800">Add New Activity</div>
+          <label class="flex items-center gap-2 text-slate-600 text-sm hover:text-slate-600 active:text-slate-600">
             <input type="checkbox" data-field="invoice_to_client" class="w-4 h-4 accent-[#0A3E8C]" />
             <span class="!pl-0">Invoice to client</span>
           </label>
@@ -99,118 +99,118 @@ export class JobDetailView {
 
         <div class="grid grid-cols-2 gap-5">
           <div class="flex flex-col gap-1">
-            <label class="text-neutral-700 text-sm font-medium">Task</label>
+            <label class="text-neutral-700 text-sm font-medium hover:text-neutral-700 active:text-neutral-700">Task</label>
             <div class="relative">
-              <select data-field="task" data-activity-select="task" class="appearance-none w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10"></select>
-              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+              <select data-field="task" data-activity-select="task" class="appearance-none w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10 hover:bg-white active:bg-white hover:border-slate-300 active:border-slate-300 hover:text-slate-700 active:text-slate-700"></select>
+              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-400 active:text-slate-400">
                 <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"/></svg>
               </span>
             </div>
           </div>
 
           <div class="hidden flex flex-col gap-1">
-            <label class="text-neutral-700 text-sm font-medium">Options</label>
+            <label class="text-neutral-700 text-sm font-medium hover:text-neutral-700 active:text-neutral-700">Options</label>
             <div class="relative">
-              <select data-field="option" data-activity-select="option" class="appearance-none w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10"></select>
-              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+              <select data-field="option" data-activity-select="option" class="appearance-none w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10 hover:bg-white active:bg-white hover:border-slate-300 active:border-slate-300 hover:text-slate-700 active:text-slate-700"></select>
+              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-400 active:text-slate-400">
                 <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"/></svg>
               </span>
             </div>
           </div>
 
           <div class="flex flex-col gap-1">
-            <label class="text-neutral-700 text-sm font-medium">Primary Service</label>
+            <label class="text-neutral-700 text-sm font-medium hover:text-neutral-700 active:text-neutral-700">Primary Service</label>
             <div class="relative">
-              <select data-field="service_name" data-activity-select="service" class="appearance-none w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10"></select>
-              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+              <select data-field="service_name" data-activity-select="service" class="appearance-none w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10 hover:bg-white active:bg-white hover:border-slate-300 active:border-slate-300 hover:text-slate-700 active:text-slate-700"></select>
+              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-400 active:text-slate-400">
                 <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"/></svg>
               </span>
             </div>
           </div>
 
           <div data-element= "service_name_secondary" class="hidden flex flex-col gap-1">
-            <label class="text-neutral-700 text-sm font-medium">Secondary Service</label>
+            <label class="text-neutral-700 text-sm font-medium hover:text-neutral-700 active:text-neutral-700">Secondary Service</label>
             <div class="relative">
-              <select data-field="service_name" data-activity-select="service" class="hidden appearance-none w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10"></select>
-              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+              <select data-field="service_name" data-activity-select="service" class="hidden appearance-none w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10 hover:bg-white active:bg-white hover:border-slate-300 active:border-slate-300 hover:text-slate-700 active:text-slate-700"></select>
+              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-400 active:text-slate-400">
                 <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"/></svg>
               </span>
             </div>
           </div>
 
           <div class="flex flex-col gap-1">
-            <label class="text-neutral-700 text-sm font-medium">Quantity</label>
-            <input type="number" data-field="quantity" value="1" class="w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700" />
+            <label class="text-neutral-700 text-sm font-medium hover:text-neutral-700 active:text-neutral-700">Quantity</label>
+            <input type="number" data-field="quantity" value="1" class="w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 hover:bg-white active:bg-white hover:border-slate-300 active:border-slate-300 hover:text-slate-700 active:text-slate-700" />
           </div>
 
           <div class="flex flex-col gap-1">
-            <label class="text-neutral-700 text-sm font-medium">Activity Price</label>
+            <label class="text-neutral-700 text-sm font-medium hover:text-neutral-700 active:text-neutral-700">Activity Price</label>
             <div class="relative">
-              <input type="text" data-field="activity_price" placeholder="$ 0.00" class="w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10" />
-              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">$</span>
+              <input type="text" data-field="activity_price" placeholder="$ 0.00" class="w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10 hover:bg-white active:bg-white hover:border-slate-300 active:border-slate-300 hover:text-slate-700 active:text-slate-700" />
+              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-400 active:text-slate-400">$</span>
             </div>
           </div>
 
           <div class="flex flex-col gap-1">
-            <label class="text-neutral-700 text-sm font-medium">Activity Text</label>
+            <label class="text-neutral-700 text-sm font-medium hover:text-neutral-700 active:text-neutral-700">Activity Text</label>
             <div class="relative">
-              <input data-field="activity_text" data-activity-select="text" class="appearance-none w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10"></input>
+              <input data-field="activity_text" data-activity-select="text" class="appearance-none w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10 hover:bg-white active:bg-white hover:border-slate-300 active:border-slate-300 hover:text-slate-700 active:text-slate-700"></input>
             </div>
           </div>
 
           <div class="flex flex-col gap-1">
-            <label class="text-neutral-700 text-sm font-medium">Activity Status</label>
+            <label class="text-neutral-700 text-sm font-medium hover:text-neutral-700 active:text-neutral-700">Activity Status</label>
             <div class="relative">
-              <select data-field="activity_status" data-activity-select="status" class="appearance-none w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10">
+              <select data-field="activity_status" data-activity-select="status" class="appearance-none w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10 hover:bg-white active:bg-white hover:border-slate-300 active:border-slate-300 hover:text-slate-700 active:text-slate-700">
                 <option value="" disabled selected>Select One</option>
               </select>
-              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-400 active:text-slate-400">
                 <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"/></svg>
               </span>
             </div>
           </div>
 
           <div class="flex flex-col gap-1">
-            <label class="text-neutral-700 text-sm font-medium">Date Required</label>
+            <label class="text-neutral-700 text-sm font-medium hover:text-neutral-700 active:text-neutral-700">Date Required</label>
             <div class="relative">
-              <input type="text" data-field="date_required" placeholder="dd/mm/yyyy" class="flatpickr-input date-picker w-full pr-10 pl-3 py-2 bg-white rounded border border-slate-300 text-slate-700 placeholder:text-slate-400" />
-              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+              <input type="text" data-field="date_required" placeholder="dd/mm/yyyy" class="flatpickr-input date-picker w-full pr-10 pl-3 py-2 bg-white rounded border border-slate-300 text-slate-700 placeholder:text-slate-400 hover:bg-white active:bg-white hover:border-slate-300 active:border-slate-300 hover:text-slate-700 active:text-slate-700" />
+              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-400 active:text-slate-400">
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 2.5V4.5M13 2.5V4.5M3.5 7.5H14.5M4 3.5H14C14.5523 3.5 15 3.94772 15 4.5V14C15 14.5523 14.5523 15 14 15H4C3.44772 15 3 14.5523 3 14V4.5C3 3.94772 3.44772 3.5 4 3.5Z" stroke="#94A3B8" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </span>
             </div>
           </div>
 
           <div class="hidden flex flex-col gap-1">
-            <label class="text-neutral-700 text-sm font-medium">Quoted Price</label>
+            <label class="text-neutral-700 text-sm font-medium hover:text-neutral-700 active:text-neutral-700">Quoted Price</label>
             <div class="relative">
-              <input type="text" data-field="quoted_price" placeholder="$ 0.00" class="hidden w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10" />
-              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">$</span>
+              <input type="text" data-field="quoted_price" placeholder="$ 0.00" class="hidden w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10 hover:bg-white active:bg-white hover:border-slate-300 active:border-slate-300 hover:text-slate-700 active:text-slate-700" />
+              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-400 active:text-slate-400">$</span>
             </div>
           </div>
 
           <div class="hidden flex flex-col gap-1 col-span-2">
-            <label class="text-neutral-700 text-sm font-medium">Quoted Text</label>
-            <textarea data-field="quoted_text" rows="2" class="hidden w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700"></textarea>
+            <label class="text-neutral-700 text-sm font-medium hover:text-neutral-700 active:text-neutral-700">Quoted Text</label>
+            <textarea data-field="quoted_text" rows="2" class="hidden w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 hover:bg-white active:bg-white hover:border-slate-300 active:border-slate-300 hover:text-slate-700 active:text-slate-700"></textarea>
           </div>
 
           <div class="flex flex-col gap-1 col-span-2">
-            <label class="text-neutral-700 text-sm font-medium">Warranty</label>
-            <textarea data-field="warranty" rows="2" class="w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700"></textarea>
+            <label class="text-neutral-700 text-sm font-medium hover:text-neutral-700 active:text-neutral-700">Warranty</label>
+            <textarea data-field="warranty" rows="2" class="w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 hover:bg-white active:bg-white hover:border-slate-300 active:border-slate-300 hover:text-slate-700 active:text-slate-700"></textarea>
           </div>
 
           <div class="flex flex-col gap-1 col-span-2">
-            <label class="text-neutral-700 text-sm font-medium">Note</label>
-            <textarea data-field="note" rows="2" class="w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700"></textarea>
+            <label class="text-neutral-700 text-sm font-medium hover:text-neutral-700 active:text-neutral-700">Note</label>
+            <textarea data-field="note" rows="2" class="w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 hover:bg-white active:bg-white hover:border-slate-300 active:border-slate-300 hover:text-slate-700 active:text-slate-700"></textarea>
           </div>
         </div>
 
-        <div class="flex justify-end items-center gap-3 border-t border-slate-200 pt-3">
-          <button id="cancel-activities" class="text-slate-600 text-sm font-medium px-3 py-2 rounded">Cancel</button>
-          <button id="add-activities" class="text-white bg-[#003882] text-sm font-medium px-4 py-2 rounded">Add</button>
+        <div class="flex justify-end items-center gap-3 border-t border-slate-200 pt-3 hover:border-slate-200 active:border-slate-200">
+          <button id="cancel-activities" class="text-slate-600 text-sm font-medium px-3 py-2 rounded hover:text-slate-600 active:text-slate-600">Cancel</button>
+          <button id="add-activities" class="text-white bg-[#003882] text-sm font-medium px-4 py-2 rounded hover:text-white active:text-white hover:bg-[#003882] active:bg-[#003882]">Add</button>
         </div>
       </div>
 
-      <div class="flex-1 bg-white rounded-lg outline outline-1 outline-gray-300 p-4">
+      <div class="flex-1 bg-white rounded-lg outline outline-1 outline-gray-300 p-4 hover:bg-white active:bg-white">
         <div id="addActivitiesTable" class="w-full"></div>
       </div>
     `;
@@ -388,62 +388,62 @@ export class JobDetailView {
 
     wrapper.innerHTML = `<div
         data-section="add-materials"
-        class="w-full h-full flex flex-row gap-4 p-4 bg-gray-50"
+        class="w-full h-full flex flex-row gap-4 p-4 bg-gray-50 hover:bg-gray-50 active:bg-gray-50"
       >
         <div class="flex flex-col gap-5">
           <div
-            class="w-[440px] bg-white rounded-lg outline outline-1 outline-gray-300 p-4 flex flex-col gap-4"
+            class="w-[440px] bg-white rounded-lg outline outline-1 outline-gray-300 p-4 flex flex-col gap-4 hover:bg-white active:bg-white"
           >
-            <div class="text-neutral-700 text-base font-semibold">Add Materials</div>
+            <div class="text-neutral-700 text-base font-semibold hover:text-neutral-700 active:text-neutral-700">Add Materials</div>
 
             <div class="flex flex-col gap-5">
               <div class="flex flex-col gap-1">
-                <label class="text-neutral-700 text-sm font-medium"
+                <label class="text-neutral-700 text-sm font-medium hover:text-neutral-700 active:text-neutral-700"
                   >Material Name</label
                 >
                 <input
                   type="text"
                   data-field="material_name"
                   placeholder="Enter material name"
-                  class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700"
+                  class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 hover:bg-white active:bg-white hover:text-slate-700 active:text-slate-700"
                 />
               </div>
 
               <div class="flex flex-col gap-1">
-                <label class="text-neutral-700 text-sm font-medium">Total</label>
+                <label class="text-neutral-700 text-sm font-medium hover:text-neutral-700 active:text-neutral-700">Total</label>
                 <div class="relative">
                   <input
                     type="text"
                     data-field="total"
-                    class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10"
+                    class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10 hover:bg-white active:bg-white hover:text-slate-700 active:text-slate-700"
                   />
                   <span
-                    class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"
+                    class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-400 active:text-slate-400"
                     >$</span
                   >
                 </div>
               </div>
 
               <div class="flex flex-col gap-1">
-                <label class="text-neutral-700 text-sm font-medium"
+                <label class="text-neutral-700 text-sm font-medium hover:text-neutral-700 active:text-neutral-700"
                   >Description</label
                 >
                 <textarea
                   data-field="description"
                   rows="2"
-                  class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700"
+                  class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 hover:bg-white active:bg-white hover:text-slate-700 active:text-slate-700"
                 ></textarea>
               </div>
 
               <div class="grid grid-cols-2 gap-3">
                 <div class="flex flex-col gap-1">
-                  <label class="text-neutral-700 text-sm font-medium"
+                  <label class="text-neutral-700 text-sm font-medium hover:text-neutral-700 active:text-neutral-700"
                     >Transaction Type</label
                   >
                   <div class="relative">
                     <select
                       data-field="transaction_type"
-                      class="appearance-none w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10"
+                      class="appearance-none w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10 hover:bg-white active:bg-white hover:text-slate-700 active:text-slate-700"
                     >
                       <option disabled="" value="">Select one</option>
                       <option value="Reimburse">Reimburse</option>
@@ -468,11 +468,11 @@ export class JobDetailView {
                   </div>
                 </div>
                 <div class="flex flex-col gap-1">
-                  <label class="text-neutral-700 text-sm font-medium">Tax</label>
+                  <label class="text-neutral-700 text-sm font-medium hover:text-neutral-700 active:text-neutral-700">Tax</label>
                   <div class="relative">
                     <select
                       data-field="tax"
-                      class="appearance-none w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10"
+                      class="appearance-none w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10 hover:bg-white active:bg-white hover:text-slate-700 active:text-slate-700"
                     >
                       <option disabled="" value="">Select one</option>
                       <option value="exemptexpenses">Exemptexpenses</option>
@@ -498,13 +498,13 @@ export class JobDetailView {
                 </div>
               </div>
               <div class="flex flex-col gap-1">
-                <label class="text-neutral-700 text-sm font-medium">Receipt</label>
+                <label class="text-neutral-700 text-sm font-medium hover:text-neutral-700 active:text-neutral-700">Receipt</label>
                 <div class="flex flex-col gap-2">
                   <div
                     data-material-receipt-trigger
-                    class="cursor-pointer w-full h-20 border border-dashed border-gray-300 rounded bg-gray-50 flex items-center justify-center text-sky-700 text-sm text-center px-4"
+                    class="cursor-pointer w-full h-20 border border-dashed border-gray-300 rounded bg-gray-50 flex items-center justify-center text-sky-700 text-sm text-center px-4 hover:border-gray-300 active:border-gray-300 hover:bg-gray-50 active:bg-gray-50 hover:text-sky-700 active:text-sky-700"
                   >
-                    <span class="font-medium text-sky-900"
+                    <span class="font-medium text-sky-900 hover:text-sky-900 active:text-sky-900"
                       >Click to upload receipt</span
                     >
                   </div>
@@ -518,14 +518,14 @@ export class JobDetailView {
                 </div>
               </div>
               <div class="flex flex-col gap-1">
-                <label class="text-neutral-700 text-sm font-medium"
+                <label class="text-neutral-700 text-sm font-medium hover:text-neutral-700 active:text-neutral-700"
                   >Service Provider</label
                 >
                 <div class="relative" data-material-sp-search="root">
                   <input
                     type="text"
                     placeholder="Search by name, phone"
-                    class="w-full text-sm pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-500 placeholder:text-slate-500"
+                    class="w-full text-sm pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-500 placeholder:text-slate-500 hover:bg-white active:bg-white hover:text-slate-500 active:text-slate-500"
                     data-material-sp-search="input"
                   />
                   <input
@@ -551,24 +551,24 @@ export class JobDetailView {
                   </span>
                   <div
                     data-material-sp-search="results"
-                    class="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded shadow hidden max-h-64 overflow-y-auto z-20"
+                    class="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded shadow hidden max-h-64 overflow-y-auto z-20 hover:bg-white active:bg-white hover:border-gray-200 active:border-gray-200"
                   ></div>
                 </div>
               </div>
 
               <div class="flex flex-col gap-3 pt-2">
                 <div
-                  class="flex justify-end items-center gap-3 border-t border-gray-300 mt-6 mb-4 py-2"
+                  class="flex justify-end items-center gap-3 border-t border-gray-300 mt-6 mb-4 py-2 hover:border-gray-300 active:border-gray-300"
                 >
                   <button
                     id="cancel-material-btn"
-                    class="text-sky-700 text-sm font-medium px-3 py-2 rounded"
+                    class="text-sky-700 text-sm font-medium px-3 py-2 rounded hover:text-sky-700 active:text-sky-700"
                   >
                     Cancel
                   </button>
                   <button
                     id="add-material-btn"
-                    class="text-white bg-[#003882] text-sm font-medium px-4 py-2 rounded"
+                    class="text-white bg-[#003882] text-sm font-medium px-4 py-2 rounded hover:text-white active:text-white hover:bg-[#003882] active:bg-[#003882]"
                   >
                     Add
                   </button>
@@ -579,7 +579,7 @@ export class JobDetailView {
         </div>
 
         <div
-          class="flex-1 bg-white rounded-lg outline outline-1 outline-gray-300 p-4"
+          class="flex-1 bg-white rounded-lg outline outline-1 outline-gray-300 p-4 hover:bg-white active:bg-white"
         >
           <div id="addMaterialsTable" class="w-full"></div>
         </div>
@@ -693,24 +693,24 @@ export class JobDetailView {
       "hidden w-full h-full flex flex-row gap-4 p-4 bg-gray-50";
 
     wrapper.innerHTML = `
-      <div class="w-[440px] h-fit bg-white rounded-lg outline outline-1 outline-gray-300 p-4 flex flex-col gap-4">
-        <div class="text-neutral-700 text-base font-semibold">Uploads</div>
+      <div class="w-[440px] h-fit bg-white rounded-lg outline outline-1 outline-gray-300 p-4 flex flex-col gap-4 hover:bg-white active:bg-white">
+        <div class="text-neutral-700 text-base font-semibold hover:text-neutral-700 active:text-neutral-700">Uploads</div>
         <div class="flex flex-col gap-3">
           <div class="flex flex-col gap-1">
             <div
               data-upload-trigger
-              class="relative cursor-pointer w-full flex flex-col h-24 border border-dashed border-gray-300 rounded bg-gray-50 items-center justify-center text-sky-700 text-sm"
+              class="relative cursor-pointer w-full flex flex-col h-24 border border-dashed border-gray-300 rounded bg-gray-50 items-center justify-center text-sky-700 text-sm hover:border-gray-300 active:border-gray-300 hover:bg-gray-50 active:bg-gray-50 hover:text-sky-700 active:text-sky-700"
             >
-              <span class="text-sky-900 text-sm font-medium leading-4"
+              <span class="text-sky-900 text-sm font-medium leading-4 hover:text-sky-900 active:text-sky-900"
                 >Click to upload</span
               >
-              <span class="text-neutral-700 text-sm font-normal leading-5"
+              <span class="text-neutral-700 text-sm font-normal leading-5 hover:text-neutral-700 active:text-neutral-700"
                 >or drag and drop</span
               >
             </div>
             <input type="file" data-field="upload-file" class="hidden" multiple />
             <p
-              class="text-center justify-start text-slate-500 text-xs font-normal leading-3"
+              class="text-center justify-start text-slate-500 text-xs font-normal leading-3 hover:text-slate-500 active:text-slate-500"
             >
               SVG, PNG, JPG or GIF (max 800*400px)
             </p>
@@ -718,12 +718,12 @@ export class JobDetailView {
           </div>
         </div>
         <div class="flex justify-end items-center gap-3">
-          <button class="text-sky-700 text-sm font-medium px-3 py-2 rounded">Cancel</button>
-          <button id="add-images-btn" class="text-white bg-[#003882] text-sm font-medium px-4 py-2 rounded">Add</button>
+          <button class="text-sky-700 text-sm font-medium px-3 py-2 rounded hover:text-sky-700 active:text-sky-700">Cancel</button>
+          <button id="add-images-btn" class="text-white bg-[#003882] text-sm font-medium px-4 py-2 rounded hover:text-white active:text-white hover:bg-[#003882] active:bg-[#003882]">Add</button>
         </div>
       </div>
       <div class="flex-1 h-fit p-4 rounded-lg overflow-auto">
-        <div class="text-slate-800 text-base font-semibold mb-3">Existing uploads</div>
+        <div class="text-slate-800 text-base font-semibold mb-3 hover:text-slate-800 active:text-slate-800">Existing uploads</div>
         <div class="flex flex-col gap-2" data-section="existing-uploads"></div>
       </div>
     `;
@@ -977,39 +977,39 @@ export class JobDetailView {
       "hidden w-[95vw] h-screen flex flex-col gap-4 p-4 bg-gray-50";
 
     wrapper.innerHTML = `
-      <div class="bg-white rounded-lg outline outline-1 outline-gray-300 w-full">
-        <div class="h-2 bg-[#003882] rounded-t-lg"></div>
+      <div class="bg-white rounded-lg outline outline-1 outline-gray-300 w-full hover:bg-white active:bg-white">
+        <div class="h-2 bg-[#003882] rounded-t-lg hover:bg-[#003882] active:bg-[#003882]"></div>
 
         <div class="p-4 flex flex-col gap-4">
           <div class="flex justify-between items-center">
             <div class="flex flex-col gap-1">
-              <div class="text-neutral-700 text-base font-semibold">Invoice Detail</div>
-              <div class="flex gap-2 text-sm text-neutral-700">
+              <div class="text-neutral-700 text-base font-semibold hover:text-neutral-700 active:text-neutral-700">Invoice Detail</div>
+              <div class="flex gap-2 text-sm text-neutral-700 hover:text-neutral-700 active:text-neutral-700">
                 Invoice Number:
-                <p data-field="invoice_number" class="text-sky-700 font-medium underline-offset-2 hover:underline">--</p>
+                <p data-field="invoice_number" class="text-sky-700 font-medium underline-offset-2 hover:underline hover:text-sky-700 active:text-sky-700">--</p>
               </div>
             </div>
             <div class="flex items-center gap-2">
-              <div class="text-neutral-700 text-sm">Xero Invoice Status:</div>
-              <div class="px-3 py-1 rounded-full bg-slate-100 text-neutral-700 text-xs font-semibold" data-field="xero_invoice_status">Create Invoice</div>
+              <div class="text-neutral-700 text-sm hover:text-neutral-700 active:text-neutral-700">Xero Invoice Status:</div>
+              <div class="px-3 py-1 rounded-full bg-slate-100 text-neutral-700 text-xs font-semibold hover:bg-slate-100 active:bg-slate-100 hover:text-neutral-700 active:text-neutral-700" data-field="xero_invoice_status">Create Invoice</div>
             </div>
           </div>
 
           <div class="hidden grid grid-cols-1 lg:grid-cols-3 gap-3 items-start">
             <div class="flex flex-col gap-2">
-              <div class="text-neutral-700 text-sm font-semibold">Xero Entity Info</div>
-              <div class="flex items-center gap-2 text-sky-700 text-sm"><span>◆</span><span>Contact Xero ID</span></div>
-              <div class="flex items-center gap-2 text-sky-700 text-sm"><span>◆</span><span>Company Xero ID</span></div>
-              <div class="flex items-center gap-2 text-sky-700 text-sm"><span>◆</span><span>Accounts Contact</span></div>
+              <div class="text-neutral-700 text-sm font-semibold hover:text-neutral-700 active:text-neutral-700">Xero Entity Info</div>
+              <div class="flex items-center gap-2 text-sky-700 text-sm hover:text-sky-700 active:text-sky-700"><span>◆</span><span>Contact Xero ID</span></div>
+              <div class="flex items-center gap-2 text-sky-700 text-sm hover:text-sky-700 active:text-sky-700"><span>◆</span><span>Company Xero ID</span></div>
+              <div class="flex items-center gap-2 text-sky-700 text-sm hover:text-sky-700 active:text-sky-700"><span>◆</span><span>Accounts Contact</span></div>
             </div>
-            <div class="text-sm text-neutral-700 flex items-center gap-2">
+            <div class="text-sm text-neutral-700 flex items-center gap-2 hover:text-neutral-700 active:text-neutral-700">
               <span>Invoice ID:</span>
-              <a href="#" class="text-sky-700 underline-offset-2 hover:underline" data-field="invoice_id">--</a>
+              <a href="#" class="text-sky-700 underline-offset-2 hover:underline hover:text-sky-700 active:text-sky-700" data-field="invoice_id">--</a>
             </div>
           </div>
 
-          <div class="border-t border-gray-200 pt-6 pb-4 flex flex-col items-center gap-4">
-            <div data-invoice-placeholder class="flex flex-col w-fit w-fit gap-7 py-5 bg-slate-100 rounded-md flex items-center justify-center text-neutral-500 text-sm">
+          <div class="border-t border-gray-200 pt-6 pb-4 flex flex-col items-center gap-4 hover:border-gray-200 active:border-gray-200">
+            <div data-invoice-placeholder class="flex flex-col w-fit w-fit gap-7 py-5 bg-slate-100 rounded-md flex items-center justify-center text-neutral-500 text-sm hover:bg-slate-100 active:bg-slate-100 hover:text-neutral-500 active:text-neutral-500">
               <svg width="251" height="106" viewBox="0 0 251 106" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M78.3667 0.122178C80.3453 -0.0320611 82.3803 0.0548375 84.366 0.0652463L94.118 0.0994683L129.088 0.0750237L141.494 0.083066C143.384 0.0808581 145.584 -0.156493 147.427 0.181319C148.232 0.328618 149.053 0.763894 149.621 1.35357C149.903 1.64738 150.203 2.06546 150.203 2.48733C150.203 2.57549 150.192 2.65829 150.168 2.74282C150.561 3.16658 151.039 8.98256 150.985 9.89049C150.973 10.1065 150.935 10.2846 150.853 10.4839C151.312 11.0583 151.55 15.9896 151.454 16.8957C151.433 17.0861 151.381 17.2265 151.293 17.3947L166.411 17.3842C168.601 17.3824 171.177 17.1049 173.318 17.4767C173.951 17.5867 174.517 17.8915 174.966 18.3519C175.526 18.9251 175.689 19.6295 175.782 20.4059C176.122 23.2195 175.843 26.8618 175.834 29.7539C175.817 34.6107 175.951 39.482 175.824 44.3367C175.813 44.7482 175.828 45.1074 175.616 45.473C176.848 45.6127 180.228 45.15 181.472 44.8311C181.522 44.7469 181.567 44.6618 181.604 44.5703C181.948 43.7098 182.014 39.3995 181.675 38.6469C185.016 38.9319 188.236 39.482 191.611 39.5408C191.674 40.9573 191.928 43.6848 191.592 44.9698C199.159 45.852 207.727 47.906 212.705 54.187C214.343 56.2544 215.318 58.675 216.135 61.1608C217.54 65.4293 218.451 69.9686 219.483 74.3408L223.56 91.1852L225.884 101C226.16 102.209 226.684 103.747 226.704 104.976L226.731 105.235C232.175 105.395 237.654 105.272 243.101 105.266C245.361 105.263 248.525 104.902 250.654 105.47L250.752 105.641C250.624 105.712 250.499 105.762 250.357 105.797C248.886 106.163 246.847 105.883 245.322 105.881L235.161 105.893L193.772 105.951L4.10973 105.934C3.28128 105.938 0.584468 106.143 0.0499938 105.808L0 105.55C0.274886 105.329 0.533055 105.292 0.874021 105.267C3.19281 105.103 5.66584 105.286 8.00245 105.284L23.8195 105.29C24.8796 105.277 25.9398 105.272 27 105.276L34.7344 105.298C34.4997 103.248 32.8518 90.516 33.2841 89.5612C34.6576 89.173 40.1876 89.4863 42.0388 89.5079C41.9807 88.9636 41.9108 88.4208 41.8292 87.8796C41.7475 87.3383 41.6542 86.7991 41.5493 86.2618C41.4442 85.7246 41.3276 85.1899 41.1995 84.6578C41.0713 84.1255 40.9317 83.5964 40.7808 83.0703C40.6297 82.544 40.4673 82.0214 40.2936 81.5023C40.12 80.9833 39.9352 80.4682 39.7393 79.9571C39.5433 79.446 39.3363 78.9394 39.1184 78.4373C38.9004 77.9351 38.6717 77.4379 38.4323 76.9456C37.6387 77.2286 36.8174 77.4128 35.9749 77.4579C31.3805 77.703 26.5411 74.8073 23.274 71.8152C20.0448 68.858 17.3689 65.064 17.1942 60.5425C17.1175 58.5622 17.7094 56.5514 19.0946 55.0921C20.3126 53.8089 21.9451 53.2909 23.6833 53.2659C27.4515 53.2115 30.7221 55.2139 33.3246 57.7787C36.6076 61.0142 40.7405 67.0498 40.7379 71.8373C40.7369 73.7156 40.1477 75.2484 38.8272 76.5796C40.9571 80.4477 42.1047 85.1593 42.548 89.5291C43.6342 89.5488 45.4914 89.8039 46.4997 89.4144L46.6343 89.0195C47.0812 83.7527 47.7808 78.5997 48.6665 73.3887C47.7411 72.8889 46.9051 72.3601 46.1987 71.5616C44.6287 69.7873 44.2764 67.1116 44.4107 64.8169C44.7216 59.5054 47.9396 50.0505 52.0752 46.4366C53.4468 45.238 54.8375 44.626 56.6615 44.761C56.6002 39.1983 56.6715 33.637 56.6473 28.0743C56.6371 25.7206 56.3486 21.7273 56.6731 19.5511C56.7617 18.9559 57.053 18.4301 57.4764 18.0046C57.8975 17.5815 58.3836 17.3011 58.9717 17.1891C60.5368 16.8909 62.3972 17.093 63.9992 17.1083L73.3747 17.2055C73.349 14.0068 73.3516 10.8082 73.3827 7.60971C73.3528 6.53697 73.2916 5.44973 73.3263 4.37716C73.3654 3.1617 73.7046 1.9363 74.6285 1.09272C75.6993 0.114924 76.9987 0.0559403 78.3667 0.122178ZM111.789 70.6354L111.787 70.3451L113.042 70.3274C113.633 68.5519 114.595 67.0845 115.684 65.5813L115.92 65.1995C114.45 65.1377 112.961 65.1809 111.489 65.1744L111.571 64.9447C109.393 64.3334 106.786 63.2097 105.056 61.708C104.921 61.4047 104.881 61.3505 104.928 61.009C105.178 60.8272 105.432 60.6592 105.693 60.4954C105.773 60.1016 105.637 59.9723 105.459 59.6363C105.47 59.2542 105.547 59.1766 105.762 58.8522C107.3 58.8686 108.85 58.9257 110.387 58.8904C111.296 58.8194 112.203 58.8353 113.114 58.8428C112.486 58.4102 111.616 57.7897 111.406 57.0006C111.319 56.6749 111.43 56.5517 111.594 56.2942C112.21 55.9181 112.808 55.8799 113.496 56.0475C115.326 56.4924 117.935 58.8079 119.496 58.8874L139.312 58.8883C143.01 58.8857 146.793 58.7052 150.476 58.9804C149.87 59.4408 140.736 59.2116 139.241 59.2162C139.259 61.2523 139.287 63.2883 139.325 65.3241L150.107 65.318C150.85 64.8579 153.87 61.3863 154.078 60.6033L154.039 60.4107C154.225 59.7624 150.528 11.2059 150.342 10.6197L150.853 10.4839C150.935 10.2846 150.973 10.1065 150.985 9.89049C151.039 8.98256 150.561 3.16658 150.168 2.74282C150.192 2.65829 150.203 2.57549 150.203 2.48733C150.203 2.06546 149.903 1.64738 149.621 1.35357C149.053 0.763894 148.232 0.328618 147.427 0.181319C145.584 -0.156493 143.384 0.0808581 141.494 0.083066L129.088 0.0750237L94.118 0.0994683L84.366 0.0652463C82.3803 0.0548375 80.3453 -0.0320611 78.3667 0.122178C76.9987 0.0559403 75.6993 0.114924 74.6285 1.09272C73.7046 1.9363 73.3654 3.1617 73.3263 4.37716C73.2916 5.44973 73.3528 6.53697 73.3827 7.60971C73.3516 10.8082 73.349 14.0068 73.3747 17.2055L63.9992 17.1083C62.3972 17.093 60.5368 16.8909 58.9717 17.1891C58.3836 17.3011 57.8975 17.5815 57.4764 18.0046C57.053 18.4301 56.7617 18.9559 56.6731 19.5511C56.3486 21.7273 56.6371 25.7206 56.6473 28.0743C56.6715 33.637 56.6002 39.1983 56.6615 44.761C54.8375 44.626 53.4468 45.238 52.0752 46.4366C47.9396 50.0505 44.7216 59.5054 44.4107 64.8169C44.2764 67.1116 44.6287 69.7873 46.1987 71.5616C46.9051 72.3601 47.7411 72.8889 48.6665 73.3887C47.7808 78.5997 47.0812 83.7527 46.6343 89.0195L46.4997 89.4144C45.4914 89.8039 43.6342 89.5488 42.548 89.5291C42.1047 85.1593 40.9571 80.4477 38.8272 76.5796C40.1477 75.2484 40.7369 73.7156 40.7379 71.8373C40.7405 67.0498 36.6076 61.0142 33.3246 57.7787C30.7221 55.2139 27.4515 53.2115 23.6833 53.2659C21.9451 53.2909 20.3126 53.8089 19.0946 55.0921C17.7094 56.5514 17.1175 58.5622 17.1942 60.5425C17.3689 65.064 20.0448 68.858 23.274 71.8152C26.5411 74.8073 31.3805 77.703 35.9749 77.4579C36.8174 77.4128 37.6387 77.2286 38.4323 76.9456C38.6717 77.4379 38.9004 77.9351 39.1184 78.4373C39.3363 78.9394 39.5433 79.446 39.7393 79.9571C39.9352 80.4682 40.12 80.9833 40.2936 81.5023C40.4673 82.0214 40.6297 82.544 40.7808 83.0703C40.9317 83.5964 41.0713 84.1255 41.1995 84.6578C41.3276 85.1899 41.4442 85.7246 41.5493 86.2618C41.6542 86.7991 41.7475 87.3383 41.8292 87.8796C41.9108 88.4208 41.9807 88.9636 42.0388 89.5079C40.1876 89.4863 34.6576 89.173 33.2841 89.5612L33.3959 89.9096C33.9651 90.1097 54.3076 90.1791 55.4003 89.9697C55.359 93.7971 54.5886 97.9135 54.1833 101.745C54.0593 102.917 53.8195 104.202 53.8545 105.378C58.0475 105.252 89.5379 105.58 90.3183 105.253C90.0128 104.999 89.6671 104.604 89.6053 104.195C89.5629 103.916 89.6168 103.705 89.7982 103.483C90.1025 103.109 90.8857 102.956 91.3431 102.899C92.3415 102.776 93.4171 102.855 94.4264 102.863C97.1068 102.884 99.8688 103.042 102.539 102.899C102.906 102.88 103.069 102.903 103.319 102.616L103.413 102.95C104.297 103.17 108.886 102.948 110.147 102.95C118.868 102.907 127.588 102.964 136.308 103.122C138.771 103.177 141.354 102.924 143.794 103.136C144.144 103.167 144.403 103.262 144.644 103.524C144.843 103.957 144.828 104.239 144.743 104.7L144.655 105.178C144.992 105.411 145.391 105.31 145.795 105.299L157.32 105.286C159.278 105.29 161.361 105.43 163.309 105.251C163.447 105.101 163.526 104.904 163.559 104.702C163.794 103.228 163.731 101.586 163.829 100.085C163.985 97.7152 164.331 95.2045 164.283 92.837C164.279 92.5978 164.206 92.4268 164.07 92.2306C161.064 92.1117 158.036 92.1994 155.027 92.1918C154.818 92.1842 154.65 92.2156 154.464 92.3166C153.778 92.6872 153.129 93.3587 152.521 93.8523C152.031 94.2458 151.522 94.6112 150.992 94.9486C150.462 95.2858 149.915 95.5931 149.351 95.8702C149.155 95.9645 148.956 96.0535 148.754 96.1372C148.552 96.2209 148.348 96.2992 148.143 96.3722C147.937 96.4451 147.73 96.5125 147.52 96.5744C147.311 96.6363 147.1 96.6926 146.888 96.7433C146.676 96.794 146.462 96.839 146.248 96.8784C146.032 96.9179 145.816 96.9516 145.6 96.9795C145.384 97.0075 145.167 97.0297 144.95 97.0462C144.732 97.0626 144.514 97.0733 144.295 97.0783C139.827 97.189 136.833 95.0787 133.74 92.1202L121.791 80.2514L111.248 80.2793C108.729 80.2905 106.183 80.3823 103.668 80.2698L62.1544 80.3058C62.1386 79.1359 62.1033 77.9614 62.1705 76.7928L84.0254 76.8092C84.0833 77.583 84.1528 78.3579 84.1907 79.1329L99.7038 79.1443C102.388 79.1459 105.101 79.2271 107.782 79.1375C112.107 79.148 116.437 79.2055 120.762 79.1681L120.308 78.601C118.65 77.0214 115.378 74.2277 114.077 72.6044C113.651 72.0732 113.33 71.3748 113.015 70.7693C112.699 70.5368 112.169 70.6282 111.789 70.6354ZM119.848 59.2755C120.458 59.7594 121.058 60.2662 121.696 60.7119C122.529 60.3041 123.394 59.9633 124.25 59.6078C126.953 61.6874 130.003 63.4742 132.863 65.3418L138.982 65.334L138.978 59.2192C132.602 59.2648 126.225 59.1628 119.848 59.2755ZM133.35 65.6376C134.89 67.1597 137.17 68.3791 138.988 69.5699L138.981 65.6272L133.35 65.6376ZM140.348 70.4794C142.132 70.481 143.918 70.5063 145.7 70.4746C146.218 70.1766 147.478 68.9609 147.601 68.3821C147.606 68.3575 147.604 68.3319 147.606 68.3069C148.118 67.9787 149.665 66.3155 149.773 65.7424C149.779 65.7105 149.776 65.6777 149.777 65.6454C146.29 65.6008 142.803 65.5919 139.316 65.6187L139.312 69.7787C139.65 70.0139 139.988 70.2806 140.348 70.4794ZM165.23 27.7958C163.255 27.6247 161.148 27.7598 159.161 27.751C156.972 27.7414 154.376 27.4685 152.23 27.8519C152.531 28.7147 153.089 34.206 152.748 34.9092C152.731 34.9456 152.709 34.9803 152.69 35.016C154.004 35.0136 161.135 34.7991 161.774 35.1284L161.817 35.3743C161.154 35.8047 154.169 35.5864 152.747 35.5943C153.058 36.1198 153.193 36.9277 153.047 37.5275C153.018 37.6412 152.969 37.7287 152.913 37.8295C154.395 37.8251 162.873 37.5808 163.6 38.0235C163.318 38.2932 162.924 38.36 162.536 38.3992C161.41 38.5127 160.205 38.4023 159.069 38.3955L152.968 38.4056C153.364 39.0117 153.099 39.7375 153.472 40.303C153.944 40.3189 154.513 40.2402 154.9 40.506L154.889 40.8089C154.39 41.0236 153.906 40.7944 153.439 41.0569C153.125 44.2031 155.108 57.949 154.521 59.5808L154.814 59.7713C155.762 59.401 157.713 56.5514 158.478 55.6791C160.027 53.9122 161.918 52.19 163.861 50.8652C164.674 50.3115 166.753 49.273 167.206 48.6215C167.25 48.537 167.294 48.4476 167.321 48.3556C167.572 47.498 167.499 33.1024 167.384 31.3215C167.368 31.0901 167.299 30.8858 167.201 30.6765L165.204 30.6711C165.26 30.5837 165.293 30.5424 165.329 30.4511C165.603 29.7738 165.532 28.4496 165.23 27.7958Z" fill="#274E82"></path>
               <path d="M85.9609 29.0964L146.73 29.1161C146.742 29.1373 146.753 29.1584 146.766 29.1792C146.821 29.2724 146.87 29.3639 146.911 29.4644C147.225 30.2296 147.434 33.0322 147.165 33.7195C147.007 33.7955 146.892 33.8443 146.714 33.8479C140.7 33.9698 134.646 33.7723 128.627 33.7725L86.3505 33.7995C86.2513 32.2298 86.1734 30.6559 85.9609 29.0964Z" fill="#C0C9D5"></path>
@@ -1045,38 +1045,38 @@ export class JobDetailView {
             </div>
             
             <div field-section="invoice-input" class="flex gap-2"><div class="flex flex-col gap-1">
-              <label class="text-neutral-700 text-sm font-medium">Invoice Date</label>
+              <label class="text-neutral-700 text-sm font-medium hover:text-neutral-700 active:text-neutral-700">Invoice Date</label>
               <div class="relative">
-                <input data-field="invoice_date" type="text" placeholder="dd/mm/yyyy" class="date-picker flatpickr-input w-full pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 placeholder:text-slate-500">
-                <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+                <input data-field="invoice_date" type="text" placeholder="dd/mm/yyyy" class="date-picker flatpickr-input w-full pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 placeholder:text-slate-500 hover:bg-white active:bg-white hover:text-slate-700 active:text-slate-700">
+                <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-400 active:text-slate-400">
                   <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 2.5V4.5M13 2.5V4.5M3.5 7.5H14.5M4 3.5H14C14.5523 3.5 15 3.94772 15 4.5V14C15 14.5523 14.5523 15 14 15H4C3.44772 15 3 14.5523 3 14V4.5C3 3.94772 3.44772 3.5 4 3.5Z" stroke="#94A3B8" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"></path></svg>
                 </span>
               </div>
             </div><div class="flex flex-col gap-1">
-              <label class="text-neutral-700 text-sm font-medium">Due Date</label>
+              <label class="text-neutral-700 text-sm font-medium hover:text-neutral-700 active:text-neutral-700">Due Date</label>
               <div class="relative">
-                <input data-field="due_date" type="text" placeholder="dd/mm/yyyy" class="date-picker flatpickr-input w-full pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 placeholder:text-slate-500">
-                <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+                <input data-field="due_date" type="text" placeholder="dd/mm/yyyy" class="date-picker flatpickr-input w-full pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 placeholder:text-slate-500 hover:bg-white active:bg-white hover:text-slate-700 active:text-slate-700">
+                <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-400 active:text-slate-400">
                   <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 2.5V4.5M13 2.5V4.5M3.5 7.5H14.5M4 3.5H14C14.5523 3.5 15 3.94772 15 4.5V14C15 14.5523 14.5523 15 14 15H4C3.44772 15 3 14.5523 3 14V4.5C3 3.94772 3.44772 3.5 4 3.5Z" stroke="#94A3B8" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"></path></svg>
                 </span>
               </div>
             </div></div>
             <div data-invoice-activity-table class="hidden w-full"></div>
               <div id="invoice-total" class="flex justify-end gap-8 w-full items-center hidden">
-                  <div class="text-neutral-700 text-sm font-semibold">Invoice Total</div>
-                  <div class="text-neutral-700 text-base font-bold" data-field="invoice_total">$ 0.00</div>
+                  <div class="text-neutral-700 text-sm font-semibold hover:text-neutral-700 active:text-neutral-700">Invoice Total</div>
+                  <div class="text-neutral-700 text-base font-bold hover:text-neutral-700 active:text-neutral-700" data-field="invoice_total">$ 0.00</div>
               </div>
-          <button id="generate-invoice-btn" class="px-4 py-2 bg-[#003882] text-white text-sm font-medium rounded">Generate Invoice</button></div>
+          <button id="generate-invoice-btn" class="px-4 py-2 bg-[#003882] text-white text-sm font-medium rounded hover:bg-[#003882] active:bg-[#003882] hover:text-white active:text-white">Generate Invoice</button></div>
 
           <div class="hidden grid grid-cols-1 md:grid-cols-4 gap-3">
             <div class="flex flex-col gap-1">
-              <label class="text-neutral-700 text-sm font-medium">Payment ID</label>
-              <input data-field="payment_id" type="text" class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700" />
+              <label class="text-neutral-700 text-sm font-medium hover:text-neutral-700 active:text-neutral-700">Payment ID</label>
+              <input data-field="payment_id" type="text" class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 hover:bg-white active:bg-white hover:text-slate-700 active:text-slate-700" />
             </div>
             <div class="flex flex-col gap-1">
-              <label class="text-neutral-700 text-sm font-medium">Payment Method</label>
+              <label class="text-neutral-700 text-sm font-medium hover:text-neutral-700 active:text-neutral-700">Payment Method</label>
               <div class="relative">
-                <select data-field="payment_method" class="appearance-none w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10"></select>
+                <select data-field="payment_method" class="appearance-none w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10 hover:bg-white active:bg-white hover:text-slate-700 active:text-slate-700"></select>
                 <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
                   <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"/></svg>
                 </span>
@@ -1086,12 +1086,12 @@ export class JobDetailView {
         </div>
       </div>
 
-      <div class="bg-white rounded-lg outline outline-1 outline-gray-300 w-full flex flex-col gap-4 p-4">
+      <div class="bg-white rounded-lg outline outline-1 outline-gray-300 w-full flex flex-col gap-4 p-4 hover:bg-white active:bg-white">
         <div class="flex flex-wrap justify-end gap-3">
-          <a target="_blank" data-field= "Xero_Invoice_PDF" class="px-4 py-2 rounded outline outline-1 outline-gray-300 text-slate-500 text-sm" disabled>Download Invoice (PDF)</a>
-          <a target="_blank" data-field= "View_Xero_Invoice_(Admin)" class="px-4 py-2 rounded outline outline-1 outline-gray-300 text-slate-500 text-sm" disabled>View Xero Invoice (Admin)</a>
-          <a target="_blank" data-field= "Invoice_URL_Client" class="px-4 py-2 rounded outline outline-1 outline-gray-300 text-slate-500 text-sm" disabled>Send To Customer</a>
-          <button data-field= "" class="hidden px-4 py-2 bg-[#003882] text-white text-sm font-medium rounded">Generate Invoice</button>
+          <a target="_blank" data-field= "Xero_Invoice_PDF" class="px-4 py-2 rounded outline outline-1 outline-gray-300 text-slate-500 text-sm hover:text-slate-500 active:text-slate-500" disabled>Download Invoice (PDF)</a>
+          <a target="_blank" data-field= "View_Xero_Invoice_(Admin)" class="px-4 py-2 rounded outline outline-1 outline-gray-300 text-slate-500 text-sm hover:text-slate-500 active:text-slate-500" disabled>View Xero Invoice (Admin)</a>
+          <a target="_blank" data-field= "Invoice_URL_Client" class="px-4 py-2 rounded outline outline-1 outline-gray-300 text-slate-500 text-sm hover:text-slate-500 active:text-slate-500" disabled>Send To Customer</a>
+          <button data-field= "" class="hidden px-4 py-2 bg-[#003882] text-white text-sm font-medium rounded hover:bg-[#003882] active:bg-[#003882] hover:text-white active:text-white">Generate Invoice</button>
         </div>
       </div>
     `;
@@ -1353,11 +1353,11 @@ export class JobDetailView {
       "flex flex-col items-center justify-center fixed inset-0 bg-black bg-opacity-50 hidden z-50";
 
     modalWrapper.innerHTML = `
-      <div id="dealInformationBox" class="bg-white rounded-lg shadow-lg w-full max-w-4xl p-6">
+      <div id="dealInformationBox" class="bg-white rounded-lg shadow-lg w-full max-w-4xl p-6 hover:bg-white active:bg-white">
         <!-- Header -->
         <div class="flex justify-between items-center border-b pb-3">
-          <div class="text-neutral-700 text-lg font-semibold leading-tight">Deal Information</div>
-          <button id="dealInformationCloseBtn" class="text-gray-600 hover:text-gray-800">
+          <div class="text-neutral-700 text-lg font-semibold leading-tight hover:text-neutral-700 active:text-neutral-700">Deal Information</div>
+          <button id="dealInformationCloseBtn" class="text-gray-600 hover:text-gray-800 hover:text-gray-600 active:text-gray-600">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
               <path d="M18.75 6.81984L17.1802 5.25L12 10.4302L6.81984 5.25L5.25 6.81984L10.4302 12L5.25 17.1802L6.81984 18.75L12 13.5698L17.1802 18.75L18.75 17.1802L13.5698 12L18.75 6.81984Z" fill="#21272A"/>
             </svg>
@@ -1367,47 +1367,47 @@ export class JobDetailView {
         <!-- Content (template only) -->
         <div class="py-6 space-y-4">
           <label class="block">
-            <span class="block text-sm text-neutral-700 mb-2">Deal Name</span>
-            <input class="w-full rounded border border-neutral-300 px-3 py-2 bg-neutral-100 outline-none" placeholder="Deal name"/>
+            <span class="block text-sm text-neutral-700 mb-2 hover:text-neutral-700 active:text-neutral-700">Deal Name</span>
+            <input class="w-full rounded border border-neutral-300 px-3 py-2 bg-neutral-100 outline-none hover:border-neutral-300 active:border-neutral-300 hover:bg-neutral-100 active:bg-neutral-100" placeholder="Deal name"/>
           </label>
   
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <label class="block">
-              <span class="block text-sm text-neutral-700 mb-2">Deal Value</span>
-              <input class="w-full rounded border border-neutral-300 px-3 py-2" placeholder="0.00"/>
+              <span class="block text-sm text-neutral-700 mb-2 hover:text-neutral-700 active:text-neutral-700">Deal Value</span>
+              <input class="w-full rounded border border-neutral-300 px-3 py-2 hover:border-neutral-300 active:border-neutral-300" placeholder="0.00"/>
             </label>
   
             <label class="block">
-              <span class="block text-sm text-neutral-700 mb-2">Sales Stage</span>
-              <select class="w-full rounded border border-neutral-300 px-3 py-2">
+              <span class="block text-sm text-neutral-700 mb-2 hover:text-neutral-700 active:text-neutral-700">Sales Stage</span>
+              <select class="w-full rounded border border-neutral-300 px-3 py-2 hover:border-neutral-300 active:border-neutral-300">
                 <option>Select</option>
               </select>
             </label>
   
             <label class="block">
-              <span class="block text-sm text-neutral-700 mb-2">Expected Win Percentage</span>
-              <input class="w-full rounded border border-neutral-300 px-3 py-2" placeholder=""/>
+              <span class="block text-sm text-neutral-700 mb-2 hover:text-neutral-700 active:text-neutral-700">Expected Win Percentage</span>
+              <input class="w-full rounded border border-neutral-300 px-3 py-2 hover:border-neutral-300 active:border-neutral-300" placeholder=""/>
             </label>
   
             <div class="grid grid-cols-2 gap-4">
               <label class="block">
-                <span class="block text-sm text-neutral-700 mb-2">Expected Close Date</span>
-                <input class="w-full rounded border border-neutral-300 px-3 py-2" placeholder="DD/MM/YYYY"/>
+                <span class="block text-sm text-neutral-700 mb-2 hover:text-neutral-700 active:text-neutral-700">Expected Close Date</span>
+                <input class="w-full rounded border border-neutral-300 px-3 py-2 hover:border-neutral-300 active:border-neutral-300" placeholder="DD/MM/YYYY"/>
               </label>
               <label class="block">
-                <span class="block text-sm text-neutral-700 mb-2">Actual Close Date</span>
-                <input class="w-full rounded border border-neutral-300 px-3 py-2" placeholder="DD/MM/YYYY"/>
+                <span class="block text-sm text-neutral-700 mb-2 hover:text-neutral-700 active:text-neutral-700">Actual Close Date</span>
+                <input class="w-full rounded border border-neutral-300 px-3 py-2 hover:border-neutral-300 active:border-neutral-300" placeholder="DD/MM/YYYY"/>
               </label>
             </div>
   
             <label class="block">
-              <span class="block text-sm text-neutral-700 mb-2">Weighted Value</span>
-              <input class="w-full rounded border border-neutral-300 px-3 py-2" placeholder="0.00"/>
+              <span class="block text-sm text-neutral-700 mb-2 hover:text-neutral-700 active:text-neutral-700">Weighted Value</span>
+              <input class="w-full rounded border border-neutral-300 px-3 py-2 hover:border-neutral-300 active:border-neutral-300" placeholder="0.00"/>
             </label>
   
             <label class="block">
-              <span class="block text-sm text-neutral-700 mb-2">Recent Activity</span>
-              <select class="w-full rounded border border-neutral-300 px-3 py-2">
+              <span class="block text-sm text-neutral-700 mb-2 hover:text-neutral-700 active:text-neutral-700">Recent Activity</span>
+              <select class="w-full rounded border border-neutral-300 px-3 py-2 hover:border-neutral-300 active:border-neutral-300">
                 <option>Select</option>
               </select>
             </label>
@@ -1417,10 +1417,10 @@ export class JobDetailView {
         <!-- Actions -->
         <div class="pt-3 flex justify-end items-center gap-3 border-t">
           <button id="dealInformationCancelBtn"
-            class="px-4 py-3 rounded text-neutral-700 text-sm font-medium">Cancel</button>
+            class="px-4 py-3 rounded text-neutral-700 text-sm font-medium hover:text-neutral-700 active:text-neutral-700">Cancel</button>
   
           <button id="dealInformationSaveBtn"
-            class="px-4 py-3 bg-[#003882] rounded text-white text-sm font-medium">Save</button>
+            class="px-4 py-3 bg-[#003882] rounded text-white text-sm font-medium hover:bg-[#003882] active:bg-[#003882] hover:text-white active:text-white">Save</button>
         </div>
       </div>
     `;
@@ -1466,13 +1466,13 @@ export class JobDetailView {
       "flex flex-col items-center justify-center fixed inset-0 bg-black bg-opacity-50 hidden z-50";
 
     modalWrapper.innerHTML = `
-      <div id="createQuoteBox" class="bg-white rounded-lg shadow-lg w-full max-w-xl p-6">
+      <div id="createQuoteBox" class="bg-white rounded-lg shadow-lg w-full max-w-xl p-6 hover:bg-white active:bg-white">
         <!-- Header -->
         <div class="flex justify-between items-center border-b pb-3">
-          <div class="text-neutral-700 text-lg font-semibold leading-tight">
+          <div class="text-neutral-700 text-lg font-semibold leading-tight hover:text-neutral-700 active:text-neutral-700">
             Create Quote on Behalf of Serviceman?
           </div>
-          <button id="createQuoteCloseBtn" class="text-gray-600 hover:text-gray-800">
+          <button id="createQuoteCloseBtn" class="text-gray-600 hover:text-gray-800 hover:text-gray-600 active:text-gray-600">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
               <path d="M18.75 6.81984L17.1802 5.25L12 10.4302L6.81984 5.25L5.25 6.81984L10.4302 12L5.25 17.1802L6.81984 18.75L12 13.5698L17.1802 18.75L18.75 17.1802L13.5698 12L18.75 6.81984Z" fill="#21272A"/>
             </svg>
@@ -1481,24 +1481,24 @@ export class JobDetailView {
   
         <!-- Content (template only, no data wiring) -->
         <div class="py-6 space-y-4">
-          <p class="text-neutral-700 text-base">
+          <p class="text-neutral-700 text-base hover:text-neutral-700 active:text-neutral-700">
             You're creating this quote as the admin, but it will be attributed to:
           </p>
-          <p class="text-neutral-900">
+          <p class="text-neutral-900 hover:text-neutral-900 active:text-neutral-900">
             <span class="font-semibold">Jack Lawson</span>
-            <span class="text-neutral-600">(Serviceman ID:
-              <a href="#" class="text-sky-700 hover:underline">#JL-042</a>)</span>
+            <span class="text-neutral-600 hover:text-neutral-600 active:text-neutral-600">(Serviceman ID:
+              <a href="#" class="text-sky-700 hover:underline hover:text-sky-700 active:text-sky-700">#JL-042</a>)</span>
           </p>
-          <p class="text-neutral-700">Do you want to proceed?</p>
+          <p class="text-neutral-700 hover:text-neutral-700 active:text-neutral-700">Do you want to proceed?</p>
         </div>
   
         <!-- Actions -->
         <div class="pt-3 flex justify-end gap-3 border-t">
           <button id="createQuoteCancelBtn"
-            class="px-4 py-3 rounded text-neutral-700 text-sm font-medium">Cancel</button>
+            class="px-4 py-3 rounded text-neutral-700 text-sm font-medium hover:text-neutral-700 active:text-neutral-700">Cancel</button>
   
           <button id="createQuoteConfirmBtn"
-            class="px-4 py-3 bg-[#003882] rounded text-white text-sm font-medium">Create & Notify</button>
+            class="px-4 py-3 bg-[#003882] rounded text-white text-sm font-medium hover:bg-[#003882] active:bg-[#003882] hover:text-white active:text-white">Create & Notify</button>
         </div>
       </div>
     `;
@@ -1546,12 +1546,12 @@ export class JobDetailView {
 
     // Modal HTML
     wrapper.innerHTML = `
-      <div id="editNotesBox" class="w-full max-w-2xl rounded-lg bg-white shadow-lg">
+      <div id="editNotesBox" class="w-full max-w-2xl rounded-lg bg-white shadow-lg hover:bg-white active:bg-white">
         <!-- Header -->
         <div class="flex items-center justify-between border-b px-6 py-4">
-          <h2 class="text-lg font-semibold text-neutral-800">Edit Notes</h2>
+          <h2 class="text-lg font-semibold text-neutral-800 hover:text-neutral-800 active:text-neutral-800">Edit Notes</h2>
           <button id="editNotesCloseBtn" type="button" aria-label="Close"
-                  class="text-neutral-500 hover:text-neutral-700">
+                  class="text-neutral-500 hover:text-neutral-700 hover:text-neutral-500 active:text-neutral-500">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
               <path d="M18.75 6.82 17.18 5.25 12 10.43 6.82 5.25 5.25 6.82 10.43 12 5.25 17.18 6.82 18.75 12 13.57 17.18 18.75 18.75 17.18 13.57 12 18.75 6.82Z"
                     fill="#4B5563"/>
@@ -1561,22 +1561,22 @@ export class JobDetailView {
   
         <!-- Body -->
         <div class="px-6 py-5">
-          <label for="notesRecommendations" class="mb-2 block text-sm font-medium text-neutral-700">
+          <label for="notesRecommendations" class="mb-2 block text-sm font-medium text-neutral-700 hover:text-neutral-700 active:text-neutral-700">
             Recommendations
           </label>
           <textarea id="notesRecommendations" rows="3"
-            class="w-full resize-y rounded-md border border-slate-300 bg-white p-3 outline-none focus:border-sky-600 focus:ring-1 focus:ring-sky-600"
+            class="w-full resize-y rounded-md border border-slate-300 bg-white p-3 outline-none focus:border-sky-600 focus:ring-1 focus:ring-sky-600 hover:border-slate-300 active:border-slate-300 hover:bg-white active:bg-white"
             placeholder=""></textarea>
         </div>
   
         <!-- Footer -->
         <div class="flex items-center justify-end gap-3 border-t px-6 py-4">
           <button id="editNotesCancelBtn" type="button"
-            class="rounded px-4 py-2 text-sm font-medium text-neutral-700 hover:bg-slate-100">
+            class="rounded px-4 py-2 text-sm font-medium text-neutral-700 hover:bg-slate-100 hover:text-neutral-700 active:text-neutral-700">
             Cancel
           </button>
           <button id="editNotesSaveBtn" type="button"
-            class="rounded bg-[#003882] px-4 py-2 text-sm font-medium text-white hover:bg-[#003882]">
+            class="rounded bg-[#003882] px-4 py-2 text-sm font-medium text-white hover:bg-[#003882] active:bg-[#003882] hover:text-white active:text-white">
             Save
           </button>
         </div>
@@ -1625,33 +1625,33 @@ export class JobDetailView {
       "flex flex-col items-center justify-center fixed inset-0 bg-black bg-opacity-50 hidden z-50";
 
     modalWrapper.innerHTML = `
-      <div id="quoteDocsModalBox" class="bg-white rounded-lg shadow-lg w-full max-w-xl p-6">
+      <div id="quoteDocsModalBox" class="bg-white rounded-lg shadow-lg w-full max-w-xl p-6 hover:bg-white active:bg-white">
         <!-- Header -->
         <div class="flex justify-between items-center border-b pb-3">
-          <div class="text-neutral-700 text-lg font-semibold leading-tight">
+          <div class="text-neutral-700 text-lg font-semibold leading-tight hover:text-neutral-700 active:text-neutral-700">
             Quote Documents
           </div>
-          <button id="closeQuoteDocsBtn" class="text-gray-600 hover:text-gray-800">
+          <button id="closeQuoteDocsBtn" class="text-gray-600 hover:text-gray-800 hover:text-gray-600 active:text-gray-600">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
               <path d="M18.75 6.81984L17.1802 5.25L12 10.4302L6.81984 5.25L5.25 6.81984L10.4302 12L5.25 17.1802L6.81984 18.75L12 13.5698L17.1802 18.75L18.75 17.1802L13.5698 12L18.75 6.81984Z" fill="#21272A"/>
             </svg>
           </button>
         </div>
 
-        <div class="my-3 p-3 flex flex-col gap-2 border border-slate-200 rounded-xl">
+        <div class="my-3 p-3 flex flex-col gap-2 border border-slate-200 rounded-xl hover:border-slate-200 active:border-slate-200">
         <!-- Upload Dropzone -->
         <div class="py-6">
-          <div class="border-2 border-dashed border-gray-300 rounded-lg bg-slate-50">
+          <div class="border-2 border-dashed border-gray-300 rounded-lg bg-slate-50 hover:border-gray-300 active:border-gray-300 hover:bg-slate-50 active:bg-slate-50">
             <div class="flex flex-col items-center justify-center text-center px-6 py-10">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 mb-3" viewBox="0 0 24 24" fill="none">
                 <path d="M12 3l-4 4h3v6h2V7h3l-4-4Z" fill="#64748B"/>
                 <path d="M5 14a5 5 0 0 0 5 5h4a5 5 0 0 0 0-10" stroke="#CBD5E1" stroke-width="2" stroke-linecap="round"/>
               </svg>
               <p class="text-sm">
-                <button id="quoteDocsUploadBtn" class="text-blue-600 hover:underline font-medium">Click to upload</button>
-                <span class="text-gray-500"> or drag and drop</span>
+                <button id="quoteDocsUploadBtn" class="text-blue-600 hover:underline font-medium hover:text-blue-600 active:text-blue-600">Click to upload</button>
+                <span class="text-gray-500 hover:text-gray-500 active:text-gray-500"> or drag and drop</span>
               </p>
-              <p class="text-gray-500 text-xs mt-2">SVG, PNG, JPG or GIF (max 800×400px)</p>
+              <p class="text-gray-500 text-xs mt-2 hover:text-gray-500 active:text-gray-500">SVG, PNG, JPG or GIF (max 800×400px)</p>
               <input id="quoteDocsFileInput" type="file" class="hidden" multiple accept=".svg,.png,.jpg,.jpeg,.gif" />
             </div>
           </div>
@@ -1662,14 +1662,14 @@ export class JobDetailView {
           ${["image1.jpg", "image1.jpg", "image1.jpg"]
             .map(
               (name) => `
-            <div class="flex items-center justify-between bg-gray-100 rounded-md px-4 py-3">
+            <div class="flex items-center justify-between bg-gray-100 rounded-md px-4 py-3 hover:bg-gray-100 active:bg-gray-100">
               <div class="flex items-center space-x-3">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-600 hover:text-blue-600 active:text-blue-600" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 5c-7 0-10 7-10 7s3 7 10 7 10-7 10-7-3-7-10-7zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-8a3 3 0 1 0 .001 6.001A3 3 0 0 0 12 9z"/>
                 </svg>
-                <span class="text-sm text-gray-700">${name}</span>
+                <span class="text-sm text-gray-700 hover:text-gray-700 active:text-gray-700">${name}</span>
               </div>
-              <button class="quoteDocsDeleteBtn text-gray-500 hover:text-gray-700" aria-label="Delete">
+              <button class="quoteDocsDeleteBtn text-gray-500 hover:text-gray-700 hover:text-gray-500 active:text-gray-500" aria-label="Delete">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none">
                   <path d="M9 3h6m-8 4h10m-8 0v12m6-12v12M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12" stroke="#64748B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
@@ -1684,10 +1684,10 @@ export class JobDetailView {
   
         <!-- Actions -->
         <div class="pt-6 mt-6 flex justify-end space-x-3 border-t">
-          <button id="cancelQuoteDocsBtn" class="text-slate-500 text-sm font-medium hover:text-gray-700">
+          <button id="cancelQuoteDocsBtn" class="text-slate-500 text-sm font-medium hover:text-gray-700 hover:text-slate-500 active:text-slate-500">
             Cancel
           </button>
-          <button id="saveQuoteDocsBtn" class="px-4 py-3 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700">
+          <button id="saveQuoteDocsBtn" class="px-4 py-3 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700 hover:bg-blue-600 active:bg-blue-600 hover:text-white active:text-white">
             Save
           </button>
         </div>
@@ -1742,12 +1742,12 @@ export class JobDetailView {
           "flex items-center justify-between bg-gray-100 rounded-md px-4 py-3";
         row.innerHTML = `
           <div class="flex items-center space-x-3">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-600 hover:text-blue-600 active:text-blue-600" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 5c-7 0-10 7-10 7s3 7 10 7 10-7 10-7-3-7-10-7zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-8a3 3 0 1 0 .001 6.001A3 3 0 0 0 12 9z"/>
             </svg>
-            <span class="text-sm text-gray-700">${f.name}</span>
+            <span class="text-sm text-gray-700 hover:text-gray-700 active:text-gray-700">${f.name}</span>
           </div>
-          <button class="quoteDocsDeleteBtn text-gray-500 hover:text-gray-700" aria-label="Delete">
+          <button class="quoteDocsDeleteBtn text-gray-500 hover:text-gray-700 hover:text-gray-500 active:text-gray-500" aria-label="Delete">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none">
               <path d="M9 3h6m-8 4h10m-8 0v12m6-12v12M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12" stroke="#64748B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
@@ -1821,9 +1821,9 @@ export class JobDetailView {
       "flex flex-col items-center justify-center fixed inset-0 bg-black bg-opacity-50 hidden z-50";
 
     modalWrapper.innerHTML = `
-      <div id="activityListModalBox" class="bg-white rounded-lg shadow-lg w-[90vw]">
+      <div id="activityListModalBox" class="bg-white rounded-lg shadow-lg w-[90vw] hover:bg-white active:bg-white">
         <!-- Header -->
-        <div class="flex items-center justify-between bg-blue-800 text-white rounded-t-lg px-6 py-3">
+        <div class="flex items-center justify-between bg-blue-800 text-white rounded-t-lg px-6 py-3 hover:bg-blue-800 active:bg-blue-800 hover:text-white active:text-white">
           <h3 class="text-lg font-semibold leading-tight">Activity List</h3>
           <button id="closeActivityListBtn" class="p-1 rounded hover:bg-blue-700/60">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -1837,7 +1837,7 @@ export class JobDetailView {
           <div class="overflow-x-auto">
             <table class="min-w-full text-left">
               <thead>
-                <tr class="text-gray-600 text-sm">
+                <tr class="text-gray-600 text-sm hover:text-gray-600 active:text-gray-600">
                   <th class="font-medium py-3 px-4">Task</th>
                   <th class="font-medium py-3 px-4">Option</th>
                   <th class="font-medium py-3 px-4">Service</th>
@@ -1846,7 +1846,7 @@ export class JobDetailView {
                   <th class="font-medium py-3 px-4">Activity Status</th>
                 </tr>
               </thead>
-              <tbody id="activityListTbody" class="text-gray-800"></tbody>
+              <tbody id="activityListTbody" class="text-gray-800 hover:text-gray-800 active:text-gray-800"></tbody>
             </table>
           </div>
         </div>
@@ -1865,7 +1865,7 @@ export class JobDetailView {
             typeof r.price === "number" ? `$${r.price.toFixed(2)}` : r.price;
 
           return `
-          <tr class="${i % 2 ? "bg-gray-50" : "bg-white"}">
+          <tr class="${i % 2 ?"bg-gray-50" : "bg-white"}">
             <td class="py-4 px-4 whitespace-nowrap">${r.task ?? "-"}</td>
             <td class="py-4 px-4 whitespace-nowrap">${r.option ?? "-"}</td>
             <td class="py-4 px-4 whitespace-nowrap">${r.service ?? "-"}</td>
@@ -1937,9 +1937,9 @@ export class JobDetailView {
       "flex flex-col items-center justify-center fixed inset-0 bg-black/50 hidden z-50";
 
     modalWrapper.innerHTML = `
-      <div id="wildlifeReportModalBox" class="bg-white rounded-lg shadow-lg w-[95vw] max-w-md">
+      <div id="wildlifeReportModalBox" class="bg-white rounded-lg shadow-lg w-[95vw] max-w-md hover:bg-white active:bg-white">
         <!-- Header -->
-        <div class="flex items-center justify-between bg-blue-800 text-white rounded-t-lg px-4 py-3">
+        <div class="flex items-center justify-between bg-blue-800 text-white rounded-t-lg px-4 py-3 hover:bg-blue-800 active:bg-blue-800 hover:text-white active:text-white">
           <div class="flex items-center gap-2">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M21.4566 7.97344C21.29 7.90795 21.1125 7.87455 20.9335 7.875H20.9147C19.9693 7.88906 18.9089 8.77453 18.3525 10.1138C17.6855 11.7159 17.9925 13.3552 19.0435 13.7766C19.2099 13.8421 19.3873 13.8755 19.5661 13.875C20.5163 13.875 21.5911 12.9844 22.1522 11.6363C22.8146 10.0341 22.5028 8.39484 21.4566 7.97344ZM15.3563 14.2256C14.0532 12.0633 13.4907 11.25 12 11.25C10.5094 11.25 9.94222 12.0684 8.6391 14.2256C7.52347 16.0706 5.26879 16.2244 4.70629 17.7914C4.59216 18.0784 4.53485 18.3849 4.53754 18.6937C4.53754 19.9683 5.51254 21 6.71254 21C8.20316 21 10.2328 19.8098 12.0047 19.8098C13.7766 19.8098 15.7969 21 17.2875 21C18.4875 21 19.4579 19.9687 19.4579 18.6937C19.4589 18.3846 19.4 18.0781 19.2844 17.7914C18.7219 16.2187 16.4719 16.0706 15.3563 14.2256ZM9.02394 9.1875C9.08671 9.18756 9.14939 9.18286 9.21144 9.17344C10.2994 9.01547 10.9786 7.50797 10.7321 5.80547C10.5 4.20047 9.52597 3 8.50738 3C8.44462 2.99994 8.38194 3.00465 8.31988 3.01406C7.23191 3.17203 6.55269 4.67953 6.79926 6.38203C7.03129 7.98234 8.00535 9.1875 9.02394 9.1875ZM17.1994 6.38203C17.446 4.67953 16.7668 3.17203 15.6788 3.01406C15.6167 3.00465 15.5541 2.99994 15.4913 3C14.4727 3 13.5005 4.20047 13.268 5.80547C13.0214 7.50797 13.7007 9.01547 14.7886 9.17344C14.8507 9.18286 14.9134 9.18756 14.9761 9.1875C15.9947 9.1875 16.9688 7.98234 17.1994 6.38203ZM4.95801 13.7766C6.00754 13.3547 6.3141 11.7141 5.64801 10.1138C5.08738 8.76563 4.01347 7.875 3.06472 7.875C2.88585 7.8745 2.7085 7.9079 2.54207 7.97344C1.49254 8.39531 1.18597 10.0359 1.85207 11.6363C2.41269 12.9844 3.4866 13.875 4.43535 13.875C4.61422 13.8755 4.79157 13.8421 4.95801 13.7766Z" stroke="white" stroke-miterlimit="10"/>
@@ -1957,9 +1957,9 @@ export class JobDetailView {
         <div class="px-4 py-4 space-y-4">
           <!-- Possums -->
           <div>
-            <label class="block text-sm text-gray-700 mb-1">Possums</label>
+            <label class="block text-sm text-gray-700 mb-1 hover:text-gray-700 active:text-gray-700">Possums</label>
             <div class="relative">
-              <select id="wrPossums" class="appearance-none w-full border border-gray-300 rounded-md px-3 py-2 pr-9 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              <select id="wrPossums" class="appearance-none w-full border border-gray-300 rounded-md px-3 py-2 pr-9 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-300 active:border-gray-300 hover:text-gray-800 active:text-gray-800">
                 ${Array.from(
                   { length: 10 },
                   (_, i) =>
@@ -1968,21 +1968,21 @@ export class JobDetailView {
                     }>${i + 1}</option>`
                 ).join("")}
               </select>
-              <svg class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" viewBox="0 0 24 24" fill="currentColor">
+              <svg class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 hover:text-gray-500 active:text-gray-500" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M7 10l5 5 5-5H7z"/>
               </svg>
             </div>
           </div>
           <div>
-            <label class="block text-sm text-gray-700 mb-1">Comment</label>
-            <textarea id="wrPossumComment" rows="3" class="w-full border border-gray-300 rounded-md px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder=""></textarea>
+            <label class="block text-sm text-gray-700 mb-1 hover:text-gray-700 active:text-gray-700">Comment</label>
+            <textarea id="wrPossumComment" rows="3" class="w-full border border-gray-300 rounded-md px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-300 active:border-gray-300 hover:text-gray-800 active:text-gray-800" placeholder=""></textarea>
           </div>
   
           <!-- Turkeys -->
           <div>
-            <label class="block text-sm text-gray-700 mb-1">Turkeys</label>
+            <label class="block text-sm text-gray-700 mb-1 hover:text-gray-700 active:text-gray-700">Turkeys</label>
             <div class="relative">
-              <select id="wrTurkeys" class="appearance-none w-full border border-gray-300 rounded-md px-3 py-2 pr-9 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              <select id="wrTurkeys" class="appearance-none w-full border border-gray-300 rounded-md px-3 py-2 pr-9 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-300 active:border-gray-300 hover:text-gray-800 active:text-gray-800">
                 ${Array.from(
                   { length: 10 },
                   (_, i) =>
@@ -1991,27 +1991,27 @@ export class JobDetailView {
                     }>${i + 1}</option>`
                 ).join("")}
               </select>
-              <svg class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" viewBox="0 0 24 24" fill="currentColor">
+              <svg class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 hover:text-gray-500 active:text-gray-500" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M7 10l5 5 5-5H7z"/>
               </svg>
             </div>
           </div>
           <div>
-            <label class="block text-sm text-gray-700 mb-1">Comment</label>
-            <textarea id="wrTurkeyComment" rows="3" class="w-full border border-gray-300 rounded-md px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder=""></textarea>
+            <label class="block text-sm text-gray-700 mb-1 hover:text-gray-700 active:text-gray-700">Comment</label>
+            <textarea id="wrTurkeyComment" rows="3" class="w-full border border-gray-300 rounded-md px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-300 active:border-gray-300 hover:text-gray-800 active:text-gray-800" placeholder=""></textarea>
           </div>
   
           <!-- Address -->
           <div>
-            <label class="block text-sm text-gray-700 mb-1">Release Address</label>
-            <input id="wrAddress" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+            <label class="block text-sm text-gray-700 mb-1 hover:text-gray-700 active:text-gray-700">Release Address</label>
+            <input id="wrAddress" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-300 active:border-gray-300 hover:text-gray-800 active:text-gray-800" />
           </div>
         </div>
   
         <!-- Footer -->
         <div class="flex justify-end gap-3 px-4 py-3 border-t rounded-b-lg">
-          <button id="cancelWildlifeReportBtn" class="text-sm text-slate-500 font-medium hover:text-gray-700">Cancel</button>
-          <button id="saveWildlifeReportBtn" class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700">Save</button>
+          <button id="cancelWildlifeReportBtn" class="text-sm text-slate-500 font-medium hover:text-gray-700 hover:text-slate-500 active:text-slate-500">Cancel</button>
+          <button id="saveWildlifeReportBtn" class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded hover:bg-blue-700 hover:bg-blue-600 active:bg-blue-600 hover:text-white active:text-white">Save</button>
         </div>
       </div>
     `;
@@ -2113,9 +2113,9 @@ export class JobDetailView {
       "flex flex-col items-center justify-center fixed inset-0 bg-black/50 hidden z-50";
 
     modalWrapper.innerHTML = `
-      <div id="tasksModalBox" class="bg-white rounded-lg shadow-lg">
+      <div id="tasksModalBox" class="bg-white rounded-lg shadow-lg hover:bg-white active:bg-white">
         <!-- Header -->
-        <div class="flex items-center justify-between bg-blue-800 text-white rounded-t-lg px-5 py-3">
+        <div class="flex items-center justify-between bg-blue-800 text-white rounded-t-lg px-5 py-3 hover:bg-blue-800 active:bg-blue-800 hover:text-white active:text-white">
           <h3 class="text-base font-semibold">Tasks</h3>
           <button id="closeTasksBtn" class="p-1 rounded hover:bg-white/10">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
@@ -2147,7 +2147,7 @@ export class JobDetailView {
                 <!-- left icon -->
                 <div class="flex-shrink-0">
                   <span class="inline-flex items-center justify-center w-6 h-6">
-                    <svg viewBox="0 0 24 24" class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" stroke-width="2">
+                    <svg viewBox="0 0 24 24" class="w-3.5 h-3.5 text-gray-500 hover:text-gray-500 active:text-gray-500" fill="none" stroke="currentColor" stroke-width="2">
                       <circle cx="12" cy="12" r="9" />
                       <path d="M8 12l2.5 2.5L16 9" />
                     </svg>
@@ -2157,10 +2157,10 @@ export class JobDetailView {
                 <!-- text block -->
                 <div class="flex-1 w-full flex items-center gap-3">
                   <div class="flex flex-nowrap min-w-0 gap-9">
-                    <div class="w-fit text-neutral-700">
+                    <div class="w-fit text-neutral-700 hover:text-neutral-700 active:text-neutral-700">
                       ${t.title ?? "-"}
                     </div>
-                    <div class="text-sm text-gray-600 truncate min-w-0">
+                    <div class="text-sm text-gray-600 truncate min-w-0 hover:text-gray-600 active:text-gray-600">
                       ${t.description ?? ""}
                     </div>
                   </div>
@@ -2503,10 +2503,10 @@ export class JobDetailView {
         btn.innerHTML = `
           <div class="flex items-start justify-between gap-3">
             <div>
-              <p class="text-sm font-medium text-slate-700">${item.name}</p>
-              <p class="text-xs text-slate-500">${item.account_type || ""}</p>
+              <p class="text-sm font-medium text-slate-700 hover:text-slate-700 active:text-slate-700">${item.name}</p>
+              <p class="text-xs text-slate-500 hover:text-slate-500 active:text-slate-500">${item.account_type || ""}</p>
             </div>
-            <span class="text-xs text-slate-400">#${item.id}</span>
+            <span class="text-xs text-slate-400 hover:text-slate-400 active:text-slate-400">#${item.id}</span>
           </div>
         `;
 
@@ -3056,27 +3056,25 @@ export class JobDetailView {
               >
   
               <div class="flex flex-col flex-1">
-                <div class="text-gray-900 font-semibold text-sm">
+                <div class="text-gray-900 font-semibold text-sm hover:text-gray-900 active:text-gray-900">
                   ${item.Contact_Information_First_Name} ${
             item.Contact_Information_Last_Name
           }
                 </div>
-                <div class="text-gray-500 text-xs">
+                <div class="text-gray-500 text-xs hover:text-gray-500 active:text-gray-500">
                   ${item.Contact_Information_SMS_Number}
                 </div>
               </div>
   
               <div class="flex items-center gap-2">
-                <div class="h-2.5 w-2.5 rounded-full 
-                  ${item.Status === "Active" ? "bg-green-200" : ""}
+                <div class="h-2.5 w-2.5 rounded-full ${item.Status ==="Active" ? "bg-green-200" : ""}
                   ${item.Status === "Offline" ? "bg-gray-200" : ""}
                   ${item.Status === "On-Site" ? "bg-orange-200" : ""}
                   ${item.Status === "Archived" ? "bg-purple-200" : ""}
                   ">
                 </div>
   
-                <span class="text-xs 
-                ${item.Status === "Active" ? "text-green-500" : ""}
+                <span class="text-xs ${item.Status ==="Active" ? "text-green-500" : ""}
                 ${item.Status === "Offline" ? "text-gray-500" : ""}
                 ${item.Status === "On-Site" ? "text-orange-500" : ""}
                 ${item.Status === "Archived" ? "text-purple-500" : ""}">
@@ -3089,8 +3087,8 @@ export class JobDetailView {
         .join("");
 
       const footer = `
-        <div data-field="confirm-allocation" class="p-2 bg-[#003882] flex justify-center sticky bottom-0">
-          <button class="text-white text-sm font-medium flex items-center gap-2">
+        <div data-field="confirm-allocation" class="p-2 bg-[#003882] flex justify-center sticky bottom-0 hover:bg-[#003882] active:bg-[#003882]">
+          <button class="text-white text-sm font-medium flex items-center gap-2 hover:text-white active:text-white">
             Confirm Allocation ✓
           </button>
         </div>
@@ -4355,14 +4353,14 @@ export class JobDetailView {
           render: () => {
             const divElement = document.createElement("div");
             divElement.className = "flex flex-wrap gap-2";
-            divElement.innerHTML = `<div class="flex items-center justify-end gap-3 text-slate-500">
+            divElement.innerHTML = `<div class="flex items-center justify-end gap-3 text-slate-500 hover:text-slate-500 active:text-slate-500">
               <button type="button" class="edit-btn hover:text-sky-700" title="Edit">
                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M12 20h9"></path>
                   <path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4 12.5-12.5z"></path>
                 </svg>
               </button>
-              <button type="button" class="delete-btn text-rose-600 hover:text-rose-700" title="Delete">
+              <button type="button" class="delete-btn text-rose-600 hover:text-rose-700 hover:text-rose-600 active:text-rose-600" title="Delete">
                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="3 6 5 6 21 6"></polyline>
                   <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"></path>
@@ -4505,14 +4503,14 @@ export class JobDetailView {
       modal.className =
         "fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 backdrop-blur-sm";
       modal.innerHTML = `
-        <div class="bg-white rounded-xl shadow-lg w-full max-w-sm p-5 space-y-4">
+        <div class="bg-white rounded-xl shadow-lg w-full max-w-sm p-5 space-y-4 hover:bg-white active:bg-white">
           <div class="space-y-1">
-            <h3 class="text-base font-semibold text-slate-900">${title}</h3>
-            <p class="text-sm text-slate-600">${message}</p>
+            <h3 class="text-base font-semibold text-slate-900 hover:text-slate-900 active:text-slate-900">${title}</h3>
+            <p class="text-sm text-slate-600 hover:text-slate-600 active:text-slate-600">${message}</p>
           </div>
           <div class="flex justify-end gap-2">
-            <button data-confirm-cancel class="px-3 py-2 text-sm font-medium text-slate-600 rounded-lg hover:bg-slate-100">${cancelLabel}</button>
-            <button data-confirm-ok class="px-3 py-2 text-sm font-semibold text-white bg-rose-600 rounded-lg hover:bg-rose-700">${confirmLabel}</button>
+            <button data-confirm-cancel class="px-3 py-2 text-sm font-medium text-slate-600 rounded-lg hover:bg-slate-100 hover:text-slate-600 active:text-slate-600">${cancelLabel}</button>
+            <button data-confirm-ok class="px-3 py-2 text-sm font-semibold text-white bg-rose-600 rounded-lg hover:bg-rose-700 hover:text-white active:text-white hover:bg-rose-600 active:bg-rose-600">${confirmLabel}</button>
           </div>
         </div>
       `;
@@ -4669,7 +4667,7 @@ export class JobDetailView {
                   <path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4 12.5-12.5z"></path>
                 </svg>
               </button>
-              <button type="button" class="delete-btn text-rose-600 hover:text-rose-700" title="Delete">
+              <button type="button" class="delete-btn text-rose-600 hover:text-rose-700 hover:text-rose-600 active:text-rose-600" title="Delete">
                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="3 6 5 6 21 6"></polyline>
                   <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"></path>

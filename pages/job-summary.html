@@ -5,30 +5,30 @@
     <title>Jobs List Summary Popup</title>
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body class="bg-gray-100">
+  <body class="bg-gray-100 hover:bg-gray-100 active:bg-gray-100">
     <!-- Popup Overlay -->
     <div
       id="jobsPopup"
-      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hover:bg-black active:bg-black hover:bg-opacity-50 active:bg-opacity-50"
     >
       <div
-        class="bg-white w-[95%] max-w-7xl rounded-lg shadow-lg overflow-hidden flex flex-col"
+        class="bg-white w-[95%] max-w-7xl rounded-lg shadow-lg overflow-hidden flex flex-col hover:bg-white active:bg-white"
       >
         <!-- Header -->
         <div class="px-6 py-4">
-          <h2 class="text-lg font-semibold text-gray-800">Jobs List Summary</h2>
+          <h2 class="text-lg font-semibold text-gray-800 hover:text-gray-800 active:text-gray-800">Jobs List Summary</h2>
         </div>
 
         <!-- Table Section -->
         <div
-          class="flex flex-col gap-2 rounded-xl bg-white m-4 shadow-md border border-slate-200"
+          class="flex flex-col gap-2 rounded-xl bg-white m-4 shadow-md border border-slate-200 hover:bg-white active:bg-white hover:border-slate-200 active:border-slate-200"
         >
           <div class="overflow-x-auto overflow-y-auto flex-1">
             <table
-              class="min-w-full text-sm text-left text-gray-700 border-collapse"
+              class="min-w-full text-sm text-left text-gray-700 border-collapse hover:text-gray-700 active:text-gray-700"
             >
               <thead
-                class="bg-gray-100 border-b text-xs font-semibold uppercase text-normal-900"
+                class="bg-gray-100 border-b text-xs font-semibold uppercase text-normal-900 hover:bg-gray-100 active:bg-gray-100"
               >
                 <tr>
                   <th class="px-4 py-3">Date</th>
@@ -51,7 +51,7 @@
 
           <!-- Footer -->
           <div
-            class="flex items-center justify-between px-6 py-4 border-t text-sm text-gray-600 bg-gray-50"
+            class="flex items-center justify-between px-6 py-4 border-t text-sm text-gray-600 bg-gray-50 hover:text-gray-600 active:text-gray-600 hover:bg-gray-50 active:bg-gray-50"
           >
             <p>Page 1 of 5</p>
             <p>Friday, 9 May 2025</p>
@@ -59,16 +59,16 @@
         </div>
 
         <!-- Buttons -->
-        <div class="flex justify-end space-x-3 px-6 py-4 bg-gray-50">
+        <div class="flex justify-end space-x-3 px-6 py-4 bg-gray-50 hover:bg-gray-50 active:bg-gray-50">
           <button
             onclick="closePopup()"
-            class="px-4 py-2 border border-sky-900 rounded-lg text-sky-900 hover:bg-gray-100"
+            class="px-4 py-2 border border-sky-900 rounded-lg text-sky-900 hover:bg-gray-100 hover:border-sky-900 active:border-sky-900 hover:text-sky-900 active:text-sky-900"
           >
             Close
           </button>
           <button
             onclick="window.print()"
-            class="px-4 py-2 bg-sky-900 text-white rounded-lg hover:bg-blue-700"
+            class="px-4 py-2 bg-sky-900 text-white rounded-lg hover:bg-blue-700 hover:bg-sky-900 active:bg-sky-900 hover:text-white active:text-white"
           >
             Print
           </button>

@@ -202,7 +202,7 @@ export class NotificationView {
 
   rowTemplate(item, active) {
     const unreadDot = !item.read
-      ? `<span class="ml-2 p-1 w-2.5 h-2.5 rounded-full bg-red-600"></span>`
+      ? `<span class="ml-2 p-1 w-2.5 h-2.5 rounded-full bg-red-600 hover:bg-red-600 active:bg-red-600"></span>`
       : "";
     const baseBg = !item.read ? "bg-slate-200" : "bg-white";
     return `
@@ -210,12 +210,12 @@ export class NotificationView {
         <div class="flex items-start">
           <div class="flex-1">
             <div class="flex items-center justify-between">
-              <div class="text-sm font-medium text-slate-800">${item.id}
-                <span class="font-normal text-slate-600"> - ${item.text}</span>
+              <div class="text-sm font-medium text-slate-800 hover:text-slate-800 active:text-slate-800">${item.id}
+                <span class="font-normal text-slate-600 hover:text-slate-600 active:text-slate-600"> - ${item.text}</span>
               </div>
               ${unreadDot}
             </div>
-            <div class="mt-1 text-xs text-slate-500">${item.when}</div>
+            <div class="mt-1 text-xs text-slate-500 hover:text-slate-500 active:text-slate-500">${item.when}</div>
           </div>
         </div>
       </div>`;
@@ -228,43 +228,43 @@ export class NotificationView {
     wrap.className =
       "hidden absolute top-16 right-6 z-50 w-[420px] max-w-sm bg-white rounded-lg shadow-xl border border-slate-200";
     wrap.innerHTML = `
-      <div class="flex items-center justify-between px-4 py-3 border-b rounded-t-lg bg-white">
+      <div class="flex items-center justify-between px-4 py-3 border-b rounded-t-lg bg-white hover:bg-white active:bg-white">
         <div class="flex items-center gap-2">
-          <span class="text-[15px] font-semibold text-gray-800">Notification</span>
+          <span class="text-[15px] font-semibold text-gray-800 hover:text-[15px] active:text-[15px] hover:text-gray-800 active:text-gray-800">Notification</span>
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
-            xmlns="http://www.w3.org/2000/svg" class="text-gray-500">
+            xmlns="http://www.w3.org/2000/svg" class="text-gray-500 hover:text-gray-500 active:text-gray-500">
             <path d="M13.3965 17.6921C13.3965 17.8622 13.329 18.0252 13.2087 18.1454C13.0885 18.2656 12.9255 18.3332 12.7555 18.3332H7.62727C7.45726 18.3332 7.29421 18.2656 7.174 18.1454C7.05378 18.0252 6.98624 17.8622 6.98624 17.6921C6.98624 17.5221 7.05378 17.3591 7.174 17.2389C7.29421 17.1187 7.45726 17.0511 7.62727 17.0511H12.7555C12.9255 17.0511 13.0885 17.1187 13.2087 17.2389C13.329 17.3591 13.3965 17.5221 13.3965 17.6921ZM17.7082 13.8412C17.2627 13.0752 16.6016 10.9077 16.6016 8.07676C16.6016 6.37665 15.9263 4.74618 14.7241 3.54402C13.5219 2.34187 11.8915 1.6665 10.1914 1.6665C8.49127 1.6665 6.86079 2.34187 5.65864 3.54402C4.45648 4.74618 3.78111 6.37665 3.78111 8.07676C3.78111 10.9085 3.11926 13.0752 2.67454 13.8412C2.56098 14.0359 2.50077 14.2572 2.5 14.4826C2.49923 14.7081 2.55791 14.9297 2.67014 15.1252C2.78236 15.3208 2.94416 15.4832 3.13921 15.5963C3.33426 15.7093 3.55568 15.7689 3.78111 15.7691H16.6016C16.827 15.7688 17.0483 15.7091 17.2432 15.596C17.4382 15.4829 17.5999 15.3204 17.712 15.1249C17.8241 14.9294 17.8827 14.7078 17.8819 14.4824C17.8811 14.257 17.8209 14.0359 17.7074 13.8412H17.7082Z" fill="currentColor"/>
           </svg>
         </div>
-        <div class="flex items-center gap-2 text-xs text-gray-600 select-none">
+        <div class="flex items-center gap-2 text-xs text-gray-600 select-none hover:text-gray-600 active:text-gray-600">
           <span>Only show unread</span>
           <button id="notifUnreadToggle" type="button" aria-pressed="false"
-            class="w-10 h-5 inline-flex items-center rounded-full bg-gray-300 relative">
-            <span class="knob absolute w-4 h-4 bg-white rounded-full left-0.5 transition-transform duration-200 ease-out translate-x-0"></span>
+            class="w-10 h-5 inline-flex items-center rounded-full bg-gray-300 relative hover:bg-gray-300 active:bg-gray-300">
+            <span class="knob absolute w-4 h-4 bg-white rounded-full left-0.5 transition-transform duration-200 ease-out translate-x-0 hover:bg-white active:bg-white"></span>
           </button>
         </div>
       </div>
       <div class="px-4 pt-3">
-        <span class="hidden bg-blue-600 bg-gray-300 text-gray-700 text-white shadow-sm translate-x-0 translate-x-5"></span>
+        <span class="hidden bg-blue-600 bg-gray-300 text-gray-700 text-white shadow-sm translate-x-0 translate-x-5 hover:bg-blue-600 active:bg-blue-600 hover:bg-gray-300 active:bg-gray-300 hover:text-gray-700 active:text-gray-700 hover:text-white active:text-white"></span>
         <div class="flex items-center gap-3">
-          <button id="notifTabAction" class="px-3 py-1.5 rounded-full text-sm font-medium bg-blue-600 text-white shadow-sm">
+          <button id="notifTabAction" class="px-3 py-1.5 rounded-full text-sm font-medium bg-blue-600 text-white shadow-sm hover:bg-blue-600 active:bg-blue-600 hover:text-white active:text-white">
             <span class="inline-flex items-center gap-1">
-              <span class="w-2.5 h-2.5 rounded-full bg-red-600"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-red-600 hover:bg-red-600 active:bg-red-600"></span>
               Action Required
             </span>
           </button>
-          <button id="notifTabGeneral" class="px-3 py-1.5 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-100">
+          <button id="notifTabGeneral" class="px-3 py-1.5 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 active:text-gray-700">
             General Updates
           </button>
         </div>
-        <label for="notifMarkAll" class="mt-3 mb-2 inline-flex items-center gap-2 text-sm text-gray-700 hover:text-blue-700 cursor-pointer select-none">
-          <input id="notifMarkAll" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+        <label for="notifMarkAll" class="mt-3 mb-2 inline-flex items-center gap-2 text-sm text-gray-700 hover:text-blue-700 cursor-pointer select-none hover:text-gray-700 active:text-gray-700">
+          <input id="notifMarkAll" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 hover:border-gray-300 active:border-gray-300 hover:text-blue-600 active:text-blue-600" />
           <h5>Mark all as read</h5>
         </label>
       </div>
       <div class="max-h-[380px] overflow-auto transition-all duration-200" id="notifList"></div>
       <div class="px-4 py-3 border-t rounded-b-lg text-center">
-        <button type="button" id="notifViewMore" class="text-sm font-medium text-blue-700 hover:underline">
+        <button type="button" id="notifViewMore" class="text-sm font-medium text-blue-700 hover:underline hover:text-blue-700 active:text-blue-700">
           View All
         </button>
       </div>
