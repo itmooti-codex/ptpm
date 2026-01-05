@@ -1420,6 +1420,38 @@ export class DashboardView {
     const next = document.getElementById("next-page-btn");
     const lt = document.getElementById("lt-btn");
     const gt = document.getElementById("gt-btn");
+    const PAGINATION_BASE_CLASSES =
+      "px-3 py-1.5 text-sm font-semibold rounded transition";
+    const PAGINATION_INACTIVE_CLASSES = [
+      "text-slate-500",
+      "bg-transparent",
+      "hover:!bg-transparent",
+      "active:!bg-transparent",
+      "focus:!bg-transparent",
+      "focus-visible:!bg-transparent",
+      "hover:!text-slate-500",
+      "active:!text-slate-500",
+      "focus:!text-slate-500",
+      "focus-visible:!text-slate-500",
+    ];
+    const PAGINATION_ACTIVE_CLASSES = [
+      "bg-[#003882]",
+      "text-white",
+      "hover:!bg-[#003882]",
+      "active:!bg-[#003882]",
+      "focus:!bg-[#003882]",
+      "focus-visible:!bg-[#003882]",
+      "hover:!text-white",
+      "active:!text-white",
+      "focus:!text-white",
+      "focus-visible:!text-white",
+    ];
+    const paginationInactiveClassName = `${PAGINATION_BASE_CLASSES} ${PAGINATION_INACTIVE_CLASSES.join(
+      " "
+    )}`;
+    const paginationActiveClassName = `${PAGINATION_BASE_CLASSES} ${PAGINATION_ACTIVE_CLASSES.join(
+      " "
+    )}`;
 
     const updateModelRange = (shouldNotify = false) => {
       if (!this.model) return;
@@ -1496,7 +1528,7 @@ export class DashboardView {
       if (start > 1) {
         const leftEllipsis = document.createElement("button");
         leftEllipsis.textContent = "…";
-        leftEllipsis.className = "px-3 py-1.5 text-sm font-semibold text-slate-500";
+        leftEllipsis.className = paginationInactiveClassName;
         leftEllipsis.addEventListener("click", () => {
           const newStart = Math.max(1, start - PAGES_PER_GROUP);
           start = newStart;
@@ -1511,7 +1543,7 @@ export class DashboardView {
         const btn = document.createElement("button");
         btn.textContent = i;
         btn.dataset.idx = i;
-        btn.className = "px-3 py-1.5 text-sm font-semibold text-slate-500";
+        btn.className = paginationInactiveClassName;
 
         btn.addEventListener("click", () => {
           currentIdx = i;
@@ -1524,7 +1556,7 @@ export class DashboardView {
       if (end < total) {
         const rightEllipsis = document.createElement("button");
         rightEllipsis.textContent = "…";
-        rightEllipsis.className = "px-3 py-1.5 text-sm font-semibold text-slate-500";
+        rightEllipsis.className = paginationInactiveClassName;
         rightEllipsis.addEventListener("click", () => {
           const newStart = start + PAGES_PER_GROUP;
           start = newStart;
@@ -1541,14 +1573,9 @@ export class DashboardView {
       embedDiv.querySelectorAll("button").forEach((btn) => {
         const isActive = Number(btn.dataset.idx) === idx;
 
-        btn.classList.toggle("bg-[#003882]", isActive);
-        btn.classList.toggle("text-white", isActive);
-
-        if (!isActive) {
-          btn.classList.add("text-slate-500");
-        } else {
-          btn.classList.remove("text-slate-500");
-        }
+        btn.className = isActive
+          ? paginationActiveClassName
+          : paginationInactiveClassName;
       });
     }
 
