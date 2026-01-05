@@ -146,13 +146,13 @@ export class DashboardView {
       overrides.iconButtonGroup ??
       `
       <div class="mt-2 flex items-center gap-2">
-        <a data-action="call" class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-brand-500 shadow-sm transition hover:border-brand-300 hover:text-brand-600 hover:border-slate-200 active:border-slate-200 hover:bg-white active:bg-white hover:text-brand-500 active:text-brand-500" aria-label="Call" title="Call">
+        <a data-action="call" class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-brand-500 shadow-sm transition hover:!border-brand-300 hover:!text-brand-600 hover:!border-slate-200 active:!border-slate-200 hover:!bg-white active:!bg-white hover:!text-brand-500 active:!text-brand-500" aria-label="Call" title="Call">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="#003882"><path d="M2.003 5.884l3.245-.62a1 1 0 011.066.553l1.284 2.568a1 1 0 01-.23 1.149l-1.516 1.513a11.037 11.037 0 005.004 5.004l1.513-1.516a1 1 0 011.149-.23l2.568 1.284a1 1 0 01.553 1.066l-.62 3.245a1 1 0 01-.979.815A14.978 14.978 0 012 5.863a1 1 0 01.003.021z"/></svg>
         </a>
-        <a data-action="email" class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-brand-500 shadow-sm transition hover:border-brand-300 hover:text-brand-600 hover:border-slate-200 active:border-slate-200 hover:bg-white active:bg-white hover:text-brand-500 active:text-brand-500" aria-label="Email" title="Email">
+        <a data-action="email" class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-brand-500 shadow-sm transition hover:!border-brand-300 hover:!text-brand-600 hover:!border-slate-200 active:!border-slate-200 hover:!bg-white active:!bg-white hover:!text-brand-500 active:!text-brand-500" aria-label="Email" title="Email">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="#003882"><path d="M2.94 6.342A2 2 0 014.564 5h10.872a2 2 0 011.624.842l-7.06 5.297-7.06-5.297z"/><path d="M18 8.118l-6.76 5.07a1.5 1.5 0 01-1.76 0L2.72 8.118A1.994 1.994 0 002 9.874V14a2 2 0 002 2h12a2 2 0 002-2V9.874c0-.603-.272-1.175-.74-1.756z"/></svg>
         </a>
-        <a data-action="address" class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-brand-500 shadow-sm transition hover:border-brand-300 hover:text-brand-600 hover:border-slate-200 active:border-slate-200 hover:bg-white active:bg-white hover:text-brand-500 active:text-brand-500" aria-label="Location" title="Address">
+        <a data-action="address" class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-brand-500 shadow-sm transition hover:!border-brand-300 hover:!text-brand-600 hover:!border-slate-200 active:!border-slate-200 hover:!bg-white active:!bg-white hover:!text-brand-500 active:!text-brand-500" aria-label="Location" title="Address">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="#003882"><path fill-rule="evenodd" d="M10 18a.75.75 0 01-.53-.22c-.862-.864-2.392-2.56-3.55-4.383C4.746 11.425 4 9.666 4 8a6 6 0 1112 0c0 1.666-.746 3.425-1.92 5.397-1.158 1.822-2.688 3.519-3.55 4.383A.75.75 0 0110 18zm0-8.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" clip-rule="evenodd"/></svg>
         </a>
       </div>
@@ -280,7 +280,7 @@ export class DashboardView {
   buildClientCell(row) {
     const meta = row?.meta ?? {};
     return `
-      <div class="font-normal text-slate-700 hover:text-slate-700 active:text-slate-700">${row.client ?? ""}</div>
+      <div class="font-normal text-slate-700 hover:!text-slate-700 active:!text-slate-700">${row.client ?? ""}</div>
       ${this.buildClientContactIcons(meta)}
     `;
   }
@@ -354,7 +354,7 @@ export class DashboardView {
       t.id = "dashboardToast";
       t.className =
         "hidden fixed top-6 right-6 z-50 max-w-sm w-[360px] bg-white border border-slate-200 shadow-xl rounded-lg";
-      t.innerHTML = `<div class="px-4 py-3 text-sm text-slate-800 flex items-start gap-2 hover:text-slate-800 active:text-slate-800"><svg class="w-5 h-5 text-red-500 mt-0.5 hover:text-red-500 active:text-red-500" viewBox="0 0 24 24" fill="currentColor"><path d="M11 7h2v6h-2zm0 8h2v2h-2z"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg><div id="dashboardToastMsg" class="flex-1"></div></div>`;
+      t.innerHTML = `<div class="px-4 py-3 text-sm text-slate-800 flex items-start gap-2 hover:!text-slate-800 active:!text-slate-800"><svg class="w-5 h-5 text-red-500 mt-0.5 hover:!text-red-500 active:!text-red-500" viewBox="0 0 24 24" fill="currentColor"><path d="M11 7h2v6h-2zm0 8h2v2h-2z"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg><div id="dashboardToastMsg" class="flex-1"></div></div>`;
       document.body.appendChild(t);
     }
   }
@@ -423,15 +423,15 @@ export class DashboardView {
           .join("");
 
         return `
-            <div class="w-full bg-white rounded-lg border border-gray-300 inline-flex flex-col overflow-hidden hover:bg-white active:bg-white hover:border-gray-300 active:border-gray-300">
+            <div class="w-full bg-white rounded-lg border border-gray-300 inline-flex flex-col overflow-hidden hover:!bg-white active:!bg-white hover:!border-gray-300 active:!border-gray-300">
               <div class="flex w-full">
                 ${dayCols}
-                <div class="flex flex-1 min-w-0 bg-neutral-100 inline-flex flex-col hover:bg-neutral-100 active:bg-neutral-100">
-                  <div class="px-2 sm:px-3 py-2 sm:py-3 bg-[#003882] border-r border-b border-gray-300 flex justify-center items-center hover:bg-[#003882] active:bg-[#003882] hover:border-gray-300 active:border-gray-300">
-                    <div class="text-white text-xs sm:text-sm font-semibold whitespace-nowrap hover:text-white active:text-white">Total</div>
+                <div class="flex flex-1 min-w-0 bg-neutral-100 inline-flex flex-col hover:!bg-neutral-100 active:!bg-neutral-100">
+                  <div class="px-2 sm:px-3 py-2 sm:py-3 bg-[#003882] border-r border-b border-gray-300 flex justify-center items-center hover:!bg-[#003882] active:!bg-[#003882] hover:!border-gray-300 active:!border-gray-300">
+                    <div class="text-white text-xs sm:text-sm font-semibold whitespace-nowrap hover:!text-white active:!text-white">Total</div>
                   </div>
-                  <div class="flex-1 px-2 sm:px-3 py-2 sm:py-3 bg-sky-100 border-r border-b border-gray-300 flex justify-center items-center hover:bg-sky-100 active:bg-sky-100 hover:border-gray-300 active:border-gray-300">
-                    <div class="text-sky-900 text-xs sm:text-sm font-semibold whitespace-nowrap hover:text-sky-900 active:text-sky-900">
+                  <div class="flex-1 px-2 sm:px-3 py-2 sm:py-3 bg-sky-100 border-r border-b border-gray-300 flex justify-center items-center hover:!bg-sky-100 active:!bg-sky-100 hover:!border-gray-300 active:!border-gray-300">
+                    <div class="text-sky-900 text-xs sm:text-sm font-semibold whitespace-nowrap hover:!text-sky-900 active:!text-sky-900">
                       ${rowTotal.toString().padStart(2, "0")}
                     </div>
                   </div>
@@ -453,7 +453,7 @@ export class DashboardView {
         headerClass: "px-6 py-4 text-left",
         cellClass: "px-6 py-4",
         render: (row) =>
-          `<a href="#" class="font-normal text-[#0052CC] hover:underline hover:text-[#0052CC] active:text-[#0052CC]">${
+          `<a href="#" class="font-normal text-[#0052CC] hover:!underline hover:!text-[#0052CC] active:!text-[#0052CC]">${
             row.id ?? ""
           }</a>`,
       },
@@ -471,7 +471,7 @@ export class DashboardView {
         html: `
           <span class="inline-flex items-center gap-1">
             Created Date
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-brand-400 hover:text-brand-400 active:text-brand-400" viewBox="0 0 20 20" fill="none">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-brand-400 hover:!text-brand-400 active:!text-brand-400" viewBox="0 0 20 20" fill="none">
               <path d="M7 8l3-3 3 3M7 12l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
           </span>
@@ -490,7 +490,7 @@ export class DashboardView {
         html: `
           <span class="inline-flex items-center gap-1">
             Follow Up Date
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-brand-400 hover:text-brand-400 active:text-brand-400" viewBox="0 0 20 20" fill="none">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-brand-400 hover:!text-brand-400 active:!text-brand-400" viewBox="0 0 20 20" fill="none">
               <path d="M7 8l3-3 3 3M7 12l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
           </span>
@@ -968,20 +968,20 @@ export class DashboardView {
 
       wrap.innerHTML = `
       <!-- Header -->
-      <div class="flex items-center justify-between px-4 py-3 border-b rounded-t-lg bg-white hover:bg-white active:bg-white">
+      <div class="flex items-center justify-between px-4 py-3 border-b rounded-t-lg bg-white hover:!bg-white active:!bg-white">
           <!-- Title -->
             <div class="flex items-center gap-2">
-              <span class="text-[15px] font-semibold text-gray-800 hover:text-[15px] active:text-[15px] hover:text-gray-800 active:text-gray-800">Notification</span>
+              <span class="text-[15px] font-semibold text-gray-800 hover:!text-[15px] active:!text-[15px] hover:!text-gray-800 active:!text-gray-800">Notification</span>
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
-                xmlns="http://www.w3.org/2000/svg" class="text-gray-500 hover:text-gray-500 active:text-gray-500">
+                xmlns="http://www.w3.org/2000/svg" class="text-gray-500 hover:!text-gray-500 active:!text-gray-500">
                 <path d="M13.3965 17.6921C13.3965 17.8622 13.329 18.0252 13.2087 18.1454C13.0885 18.2656 12.9255 18.3332 12.7555 18.3332H7.62727C7.45726 18.3332 7.29421 18.2656 7.174 18.1454C7.05378 18.0252 6.98624 17.8622 6.98624 17.6921C6.98624 17.5221 7.05378 17.3591 7.174 17.2389C7.29421 17.1187 7.45726 17.0511 7.62727 17.0511H12.7555C12.9255 17.0511 13.0885 17.1187 13.2087 17.2389C13.329 17.3591 13.3965 17.5221 13.3965 17.6921ZM17.7082 13.8412C17.2627 13.0752 16.6016 10.9077 16.6016 8.07676C16.6016 6.37665 15.9263 4.74618 14.7241 3.54402C13.5219 2.34187 11.8915 1.6665 10.1914 1.6665C8.49127 1.6665 6.86079 2.34187 5.65864 3.54402C4.45648 4.74618 3.78111 6.37665 3.78111 8.07676C3.78111 10.9085 3.11926 13.0752 2.67454 13.8412C2.56098 14.0359 2.50077 14.2572 2.5 14.4826C2.49923 14.7081 2.55791 14.9297 2.67014 15.1252C2.78236 15.3208 2.94416 15.4832 3.13921 15.5963C3.33426 15.7093 3.55568 15.7689 3.78111 15.7691H16.6016C16.827 15.7688 17.0483 15.7091 17.2432 15.596C17.4382 15.4829 17.5999 15.3204 17.712 15.1249C17.8241 14.9294 17.8827 14.7078 17.8819 14.4824C17.8811 14.257 17.8209 14.0359 17.7074 13.8412H17.7082Z" fill="currentColor"/>
               </svg>
             </div>
-          <div class="flex items-center gap-2 text-xs text-gray-600 select-none hover:text-gray-600 active:text-gray-600">
+          <div class="flex items-center gap-2 text-xs text-gray-600 select-none hover:!text-gray-600 active:!text-gray-600">
             <span>Only show unread</span>
             <button id="notifUnreadToggle" type="button" aria-pressed="false"
-              class="w-10 h-5 inline-flex items-center rounded-full bg-gray-300 relative hover:bg-gray-300 active:bg-gray-300">
-              <span class="knob absolute w-4 h-4 bg-white rounded-full left-0.5 transition-transform duration-200 ease-out translate-x-0 hover:bg-white active:bg-white"></span>
+              class="w-10 h-5 inline-flex items-center rounded-full bg-gray-300 relative hover:!bg-gray-300 active:!bg-gray-300">
+              <span class="knob absolute w-4 h-4 bg-white rounded-full left-0.5 transition-transform duration-200 ease-out translate-x-0 hover:!bg-white active:!bg-white"></span>
             </button>
           </div>
       </div>
@@ -989,22 +989,22 @@ export class DashboardView {
       <!-- Tabs -->
       <div class="px-4 pt-3">
         <!-- Tailwind safelist anchor for dynamic classes used at runtime on Ontraport builds -->
-        <span class="hidden bg-blue-600 bg-gray-300 text-gray-700 text-white shadow-sm translate-x-0 translate-x-5 hover:bg-blue-600 active:bg-blue-600 hover:bg-gray-300 active:bg-gray-300 hover:text-gray-700 active:text-gray-700 hover:text-white active:text-white"></span>
+        <span class="hidden bg-blue-600 bg-gray-300 text-gray-700 text-white shadow-sm translate-x-0 translate-x-5 hover:!bg-blue-600 active:!bg-blue-600 hover:!bg-gray-300 active:!bg-gray-300 hover:!text-gray-700 active:!text-gray-700 hover:!text-white active:!text-white"></span>
         <div class="flex items-center gap-3">
-          <button id="notifTabAction" class="px-3 py-1.5 rounded-full text-sm font-medium bg-blue-600 text-white shadow-sm hover:bg-blue-600 active:bg-blue-600 hover:text-white active:text-white">
+          <button id="notifTabAction" class="px-3 py-1.5 rounded-full text-sm font-medium bg-blue-600 text-white shadow-sm hover:!bg-blue-600 active:!bg-blue-600 hover:!text-white active:!text-white">
             <span class="inline-flex items-center gap-1">
-              <span class="w-2.5 h-2.5 rounded-full bg-red-600 hover:bg-red-600 active:bg-red-600"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-red-600 hover:!bg-red-600 active:!bg-red-600"></span>
               Action Required
             </span>
           </button>
-          <button id="notifTabGeneral" class="px-3 py-1.5 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 active:text-gray-700">
+          <button id="notifTabGeneral" class="px-3 py-1.5 rounded-full text-sm font-medium text-gray-700 hover:!bg-gray-100 hover:!text-gray-700 active:!text-gray-700">
             General Updates
           </button>
         </div>
   
         <!-- Mark all as read -->
-        <label for="notifMarkAll" class="mt-3 mb-2 inline-flex items-center gap-2 text-sm text-gray-700 hover:text-blue-700 cursor-pointer select-none hover:text-gray-700 active:text-gray-700">
-          <input id="notifMarkAll" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 hover:border-gray-300 active:border-gray-300 hover:text-blue-600 active:text-blue-600" />
+        <label for="notifMarkAll" class="mt-3 mb-2 inline-flex items-center gap-2 text-sm text-gray-700 hover:!text-blue-700 cursor-pointer select-none hover:!text-gray-700 active:!text-gray-700">
+          <input id="notifMarkAll" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 hover:!border-gray-300 active:!border-gray-300 hover:!text-blue-600 active:!text-blue-600" />
           <h5>Mark all as read</h5>
         </label>
       </div>
@@ -1014,7 +1014,7 @@ export class DashboardView {
   
       <!-- Footer -->
       <div class="px-4 py-3 border-t rounded-b-lg text-center">
-        <a href="#" class="text-sm font-medium text-blue-700 hover:underline hover:text-blue-700 active:text-blue-700">View All</a>
+        <a href="#" class="text-sm font-medium text-blue-700 hover:!underline hover:!text-blue-700 active:!text-blue-700">View All</a>
       </div>
     `;
 
@@ -1032,7 +1032,7 @@ export class DashboardView {
       const listEl = document.getElementById("notifList");
       function rowTemplate(item, active) {
         const unreadDot = !item.read
-          ? `<span class="ml-2 p-1 w-2.5 h-2.5 rounded-full bg-red-600 hover:bg-red-600 active:bg-red-600"></span>`
+          ? `<span class="ml-2 p-1 w-2.5 h-2.5 rounded-full bg-red-600 hover:!bg-red-600 active:!bg-red-600"></span>`
           : "";
         const baseBg = !item.read ? "bg-slate-200" : "bg-white";
         return `
@@ -1040,12 +1040,12 @@ export class DashboardView {
           <div class="flex items-start">
             <div class="flex-1">
               <div class="flex items-center justify-between">
-                <div class="w-[250px] text-sm font-semibold text-slate-800 hover:text-slate-800 active:text-slate-800">${item.id}
-                  <span class="font-normal text-slate-600 hover:text-slate-600 active:text-slate-600"> - ${item.text}</span>
+                <div class="w-[250px] text-sm font-semibold text-slate-800 hover:!text-slate-800 active:!text-slate-800">${item.id}
+                  <span class="font-normal text-slate-600 hover:!text-slate-600 active:!text-slate-600"> - ${item.text}</span>
                 </div>
                 ${unreadDot}
               </div>
-              <div class="mt-1 text-xs text-slate-500 hover:text-slate-500 active:text-slate-500">${item.when}</div>
+              <div class="mt-1 text-xs text-slate-500 hover:!text-slate-500 active:!text-slate-500">${item.when}</div>
             </div>
           </div>
         </div>`;
@@ -1328,20 +1328,20 @@ export class DashboardView {
     };
 
     modalBox.innerHTML = `
-      <div class="flex flex-col text-sm text-slate-700 hover:text-slate-700 active:text-slate-700">
-        <button id="new-inquiry" class="flex gap-2 px-4 py-2 text-left hover:bg-slate-100 w-full">
+      <div class="flex flex-col text-sm text-slate-700 hover:!text-slate-700 active:!text-slate-700">
+        <button id="new-inquiry" class="flex gap-2 px-4 py-2 text-left hover:!bg-slate-100 w-full">
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M8.33333 8.88889C8.66667 8.88889 8.88889 9.11111 8.88889 9.44444C8.88889 9.77778 8.66667 10 8.33333 10C8 10 7.77778 9.77778 7.77778 9.44444C7.77778 9.11111 8 8.88889 8.33333 8.88889ZM3.94444 9.83333L3.77778 9.44444L3.94444 9.05556C4.66667 7.27778 6.38889 6.11111 8.33333 6.11111C9.38889 6.11111 10.3333 6.44444 11.1111 7V3.33333C11.1111 2.72222 10.6111 2.22222 10 2.22222H7.77778V1.11111C7.77778 0.5 7.27778 0 6.66667 0H4.44444C3.83333 0 3.33333 0.5 3.33333 1.11111V2.22222H1.11111C0.5 2.22222 0 2.72222 0 3.33333V9.44444C0 10.0556 0.5 10.5556 1.11111 10.5556H4.33333C4.16667 10.3333 4.05556 10.1111 3.94444 9.83333ZM4.44444 1.11111H6.66667V2.22222H4.44444V1.11111ZM8.33333 7.22222C6.83333 7.22222 5.5 8.16667 5 9.44444C5.5 10.7222 6.83333 11.6667 8.33333 11.6667C9.83333 11.6667 11.1667 10.7222 11.6667 9.44444C11.1667 8.16667 9.83333 7.22222 8.33333 7.22222ZM8.33333 10.8333C7.55556 10.8333 6.94445 10.2222 6.94445 9.44444C6.94445 8.66667 7.55556 8.05556 8.33333 8.05556C9.11111 8.05556 9.72222 8.66667 9.72222 9.44444C9.72222 10.2222 9.11111 10.8333 8.33333 10.8333Z" fill="#636D88"/>
         </svg>
           <span>New Inquiry</span>
         </button>
-        <button id="new-quote" class="flex gap-2 px-4 py-2 text-left hover:bg-slate-100 w-full">
+        <button id="new-quote" class="flex gap-2 px-4 py-2 text-left hover:!bg-slate-100 w-full">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M4.311 12.7337C4.52262 12.7337 4.67101 12.628 4.91967 12.3949L6.83581 10.6482L10.4088 10.6534C11.9864 10.6588 12.8333 9.77998 12.8333 8.22905V4.17431C12.8333 2.62337 11.9864 1.75 10.409 1.75H3.59098C2.01904 1.75 1.16667 2.61795 1.16667 4.17431V8.22905C1.16667 9.78517 2.01882 10.6534 3.59098 10.6482H3.83987V12.1885C3.83987 12.5166 4.01445 12.7337 4.311 12.7337ZM4.44335 5.8734C4.44335 5.23311 4.93571 4.7884 5.576 4.7884C6.27479 4.7884 6.74592 5.344 6.74592 6.06944C6.74592 7.42975 5.6607 8.07547 5.11549 8.07547C4.96191 8.07547 4.85079 7.96435 4.85079 7.8268C4.85079 7.69965 4.90906 7.61495 5.11029 7.55691C5.45969 7.4616 5.86713 7.18628 6.06317 6.747H6.02071C5.87774 6.92158 5.6607 6.95862 5.43326 6.95862C4.82978 6.95862 4.44335 6.48207 4.44335 5.8734ZM7.33359 5.8734C7.33359 5.23311 7.82595 4.7884 8.46624 4.7884C9.16503 4.7884 9.63616 5.344 9.63616 6.06944C9.63616 7.42975 8.55094 8.07547 8.00573 8.07547C7.85215 8.07547 7.74103 7.96435 7.74103 7.8268C7.74103 7.69965 7.7993 7.61495 8.00053 7.55691C8.34993 7.4616 8.75737 7.18628 8.95318 6.747H8.91095C8.76798 6.92158 8.55094 6.95862 8.32328 6.95862C7.72003 6.95862 7.33359 6.48207 7.33359 5.8734Z" fill="#636D88"/>
           </svg>
           <span>New Quote</span>
         </button>
-        <button id="new-job" class="flex gap-2 px-4 py-2 text-left hover:bg-slate-100 w-full">
+        <button id="new-job" class="flex gap-2 px-4 py-2 text-left hover:!bg-slate-100 w-full">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M5.90626 2.3335C5.61617 2.3335 5.33798 2.44873 5.13286 2.65385C4.92774 2.85897 4.81251 3.13717 4.81251 3.42725V3.79183H2.26042C1.97034 3.79183 1.69214 3.90706 1.48702 4.11218C1.28191 4.3173 1.16667 4.5955 1.16667 4.88558L1.16667 5.89475L6.71855 7.37495C6.90297 7.42407 7.09704 7.42407 7.28146 7.37495L12.8333 5.89475V4.88558C12.8333 4.5955 12.7181 4.3173 12.513 4.11218C12.3079 3.90706 12.0297 3.79183 11.7396 3.79183H9.18751V3.42725C9.18751 3.13717 9.07227 2.85897 8.86715 2.65385C8.66204 2.44873 8.38384 2.3335 8.09376 2.3335H5.90626ZM5.90626 3.06266H8.09376C8.19045 3.06266 8.28318 3.10107 8.35155 3.16945C8.41993 3.23782 8.45834 3.33055 8.45834 3.42725V3.79183H5.54167V3.42725C5.54167 3.33055 5.58008 3.23782 5.64846 3.16945C5.71683 3.10107 5.80956 3.06266 5.90626 3.06266Z" fill="#636D88"/>
           <path d="M1.16667 10.7189C1.16667 11.009 1.28191 11.2872 1.48702 11.4923C1.69214 11.6974 1.97034 11.8127 2.26042 11.8127H11.7396C12.0297 11.8127 12.3079 11.6974 12.513 11.4923C12.7181 11.2872 12.8333 11.009 12.8333 10.7189V6.59912L7.09407 8.12818C7.03244 8.14464 6.96757 8.14464 6.90594 8.12818L1.16667 6.59912V10.7189Z" fill="#636D88"/>

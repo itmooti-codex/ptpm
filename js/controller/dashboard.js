@@ -964,8 +964,8 @@ export class DashboardController {
       }
       if (!text) return;
       chips.push(`
-        <div data-chip-key="${key}" data-add-btn="true" data-filter="true" data-icon="true" data-tab="false" data-type="primary" class="px-3 py-2 bg-sky-100 rounded-[20px] outline outline-1 outline-offset-[-1px] outline-blue-700 flex justify-center items-center gap-1 mr-2 hover:bg-sky-100 active:bg-sky-100">
-          <div class="justify-end text-blue-700 text-xs font-normal font-['Inter'] leading-3 hover:text-blue-700 active:text-blue-700">${label}: ${text} </div>
+        <div data-chip-key="${key}" data-add-btn="true" data-filter="true" data-icon="true" data-tab="false" data-type="primary" class="px-3 py-2 bg-sky-100 rounded-[20px] outline outline-1 outline-offset-[-1px] outline-blue-700 flex justify-center items-center gap-1 mr-2 hover:!bg-sky-100 active:!bg-sky-100">
+          <div class="justify-end text-blue-700 text-xs font-normal font-['Inter'] leading-3 hover:!text-blue-700 active:!text-blue-700">${label}: ${text} </div>
           <button type="button" class="w-3 h-3 relative overflow-hidden remove-chip" aria-label="Remove ${label}">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 3 24 24" class="w-4 h-4 fill-[#003882]">
               <path d="M6.225 4.811a1 1 0 0 0-1.414 1.414L10.586 12l-5.775 5.775a1 1 0 1 0 1.414 1.414L12 13.414l5.775 5.775a1 1 0 0 0 1.414-1.414L13.414 12l5.775-5.775a1 1 0 0 0-1.414-1.414L12 10.586 6.225 4.811z"></path>
@@ -1032,7 +1032,7 @@ export class DashboardController {
 
     const hasChips = chips.length > 0;
     const clearAllBtn = hasChips
-      ? `<button id="clear-all-filters" type="button" class="px-1 text-slate-500 text-sm font-medium whitespace-nowrap font-['Inter'] leading-4 hover:text-slate-500 active:text-slate-500">Clear All</button>`
+      ? `<button id="clear-all-filters" type="button" class="px-1 text-slate-500 text-sm font-medium whitespace-nowrap font-['Inter'] leading-4 hover:!text-slate-500 active:!text-slate-500">Clear All</button>`
       : "";
 
     root.innerHTML = chips.join("") + clearAllBtn;

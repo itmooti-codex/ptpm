@@ -23,7 +23,13 @@ function applyBrowserDefault() {
     ...document.querySelectorAll("*"),
   ].filter(Boolean);
 
-  all.forEach((el) => el.classList.add("browser-default"));
+  all.forEach((el) => {
+    if (el.tagName === "BUTTON") {
+      el.classList.remove("browser-default");
+      return;
+    }
+    el.classList.add("browser-default");
+  });
 }
 
 // Central app bootstrap: instantiate classes once based on page
