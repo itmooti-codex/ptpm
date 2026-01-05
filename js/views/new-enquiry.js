@@ -737,11 +737,7 @@ export class NewInquiryView {
     if (this.related?.tabButtons?.length) {
       this.related.tabButtons.forEach((button) => {
         const isActive = button.dataset.relatedTab === target;
-        button.classList.toggle("border-sky-600", isActive);
-        button.classList.toggle("bg-slate-50", isActive);
-        button.classList.toggle("text-sky-900", isActive);
-        button.classList.toggle("border-transparent", !isActive);
-        button.classList.toggle("text-slate-500", !isActive);
+        button.dataset.active = isActive ? "true" : "false";
       });
     }
 
@@ -869,7 +865,7 @@ export class NewInquiryView {
     return `
       <article id=${
         item.id
-      } class="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm hover:!bg-white active:!bg-white hover:!border-slate-200 active:!border-slate-200">
+      } class="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
         <div class="flex items-center gap-3">
           <span class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-blue-600">
             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
@@ -926,7 +922,7 @@ export class NewInquiryView {
     );
 
     return `
-      <article class="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm hover:!bg-white active:!bg-white hover:!border-slate-200 active:!border-slate-200">
+      <article class="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
         <div class="flex items-start justify-between gap-3">
           <div class="space-y-1">
             <a href="#" class="text-sm font-semibold text-sky-900 hover:text-sky-600">#${unique}</a>
@@ -957,7 +953,7 @@ export class NewInquiryView {
     const posted = this.#formatDateTime(item.created_at || item.createdAt);
 
     return `
-      <article class="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm hover:!bg-white active:!bg-white hover:!border-slate-200 active:!border-slate-200">
+      <article class="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
         <div class="space-y-1">
           <div class="flex items-center justify-between">
             <span class="text-sm font-semibold text-sky-900">#${unique}</span>
