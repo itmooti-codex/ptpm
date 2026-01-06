@@ -277,8 +277,8 @@ export class DashboardModel {
           });
         })
         .orderBy("created_at", "desc")
-        .limit(this.paginationLimit)
-        .offset(this.offset)
+        // .limit(this.paginationLimit)
+        // .offset(this.offset)
         .noDestroy()
     );
   }

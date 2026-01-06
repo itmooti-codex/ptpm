@@ -66,6 +66,7 @@ export function renderDynamicTable({
     const th = document.createElement("th");
     th.scope = "col";
     th.className = header.headerClass ?? defaultHeaderClass;
+    const colLabel = header.label ?? header.key ?? "";
     if (header.colSpan != null) th.colSpan = header.colSpan;
     if (header.rowSpan != null) th.rowSpan = header.rowSpan;
     if (header.html != null) {
@@ -73,6 +74,7 @@ export function renderDynamicTable({
     } else {
       th.textContent = header.label ?? "";
     }
+    th.setAttribute("data-col", colLabel);
     headRow.appendChild(th);
   });
 
@@ -112,7 +114,7 @@ export function renderDynamicTable({
       normalisedHeaders.forEach((header, columnIndex) => {
         const td = document.createElement("td");
         td.className = header.cellClass ?? defaultCellClass;
-
+        td.setAttribute("data-col", header.label ?? header.key ?? "");
         let cellValue;
         if (typeof header.render === "function") {
           cellValue = header.render(row, {
@@ -242,6 +244,13 @@ export class DashboardView {
       "urgent-calls": ["job-filters", "task-filters"],
     };
     this.handleActionButtonClick();
+    this.tabsDisabled = false;
+    this.isEditColumnsMode = false;
+    this._editColumnsBound = false;
+    this.editColumnsContainer = null;
+    this.editModeActions = null;
+    this.editColumnsButton = null;
+    this.bindEditColumns();
   }
 
   buildClientContactIcons(meta = {}) {
@@ -280,7 +289,9 @@ export class DashboardView {
   buildClientCell(row) {
     const meta = row?.meta ?? {};
     return `
-      <div class="font-normal text-slate-700 hover:!text-slate-700 active:!text-slate-700 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700">${row.client ?? ""}</div>
+      <div class="font-normal text-slate-700 hover:!text-slate-700 active:!text-slate-700 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700">${
+        row.client ?? ""
+      }</div>
       ${this.buildClientContactIcons(meta)}
     `;
   }
@@ -1029,7 +1040,8 @@ export class DashboardView {
         "px-3 py-1.5 rounded-full text-sm font-semibold text-gray-700 hover:!bg-gray-100 active:!bg-gray-100 focus:!bg-gray-100 focus-visible:!bg-gray-100 hover:!text-gray-700 active:!text-gray-700 focus:!text-gray-700 focus-visible:!text-gray-700";
       const UNREAD_TOGGLE_BASE =
         "w-10 h-5 inline-flex items-center rounded-full relative transition-colors duration-150 ease-out hover:!bg-gray-300 active:!bg-gray-300 focus:!bg-gray-300 focus-visible:!bg-gray-300";
-      const UNREAD_TOGGLE_ON = "bg-blue-600 hover:!bg-blue-600 active:!bg-blue-600 focus:!bg-blue-600 focus-visible:!bg-blue-600";
+      const UNREAD_TOGGLE_ON =
+        "bg-blue-600 hover:!bg-blue-600 active:!bg-blue-600 focus:!bg-blue-600 focus-visible:!bg-blue-600";
       const UNREAD_TOGGLE_OFF = "bg-gray-300";
       const UNREAD_KNOB_BASE =
         "knob absolute w-4 h-4 bg-white rounded-full left-0.5 transition-transform duration-200 ease-out hover:!bg-white active:!bg-white focus:!bg-white focus-visible:!bg-white";
@@ -1299,6 +1311,10 @@ export class DashboardView {
     nav.addEventListener("click", (e) => {
       const a = e.target.closest("[data-tab]");
       if (!a) return;
+      if (this.tabsDisabled) {
+        e.preventDefault();
+        return;
+      }
       e.preventDefault();
       const tab = a.getAttribute("data-tab");
       setActive(tab, context, links, panels);
@@ -1606,5 +1622,274 @@ export class DashboardView {
 
     renderPages();
     bindEvents();
+  }
+
+  // Build the Edit Columns cards from the current table snapshot.
+  createEditColumnsSection() {
+    const container = this.ensureEditColumnsContainer();
+    if (!container) return;
+    container.textContent = "";
+
+    const columnsMap = new Map();
+    const fragment = document.createDocumentFragment();
+    const tableScope = document.getElementById("inquiry-table-container");
+    const cells = tableScope
+      ? tableScope.querySelectorAll("td[data-col]")
+      : document.querySelectorAll("td[data-col]");
+
+    const resolveLabel = (td) => {
+      const data = td.dataset.col?.trim();
+      if (data) return data;
+      const th = td
+        .closest("table")
+        ?.querySelector(`thead th:nth-child(${td.cellIndex + 1})`);
+      const text = th?.textContent?.trim();
+      return text || `Column ${td.cellIndex + 1}`;
+    };
+
+    const createEyeIcon = () => {
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("data-icon", "eye");
+      svg.setAttribute("width", "16");
+      svg.setAttribute("height", "16");
+      svg.setAttribute("viewBox", "0 0 16 16");
+      svg.setAttribute("fill", "none");
+      svg.innerHTML = `<path d="M14.6283 7.59803C14.6089 7.55414 14.1383 6.51025 13.0922 5.46414C11.6983 4.07025 9.93773 3.33359 7.99995 3.33359C6.06216 3.33359 4.30161 4.07025 2.90772 5.46414C1.86161 6.51025 1.38883 7.55581 1.37161 7.59803C1.34633 7.65486 1.33328 7.71639 1.33328 7.77859C1.33328 7.84078 1.34633 7.90231 1.37161 7.95914C1.39106 8.00303 1.86161 9.04636 2.90772 10.0925C4.30161 11.4858 6.06216 12.2225 7.99995 12.2225C9.93773 12.2225 11.6983 11.4858 13.0922 10.0925C14.1383 9.04636 14.6089 8.00303 14.6283 7.95914C14.6536 7.90231 14.6666 7.84078 14.6666 7.77859C14.6666 7.71639 14.6536 7.65486 14.6283 7.59803ZM7.99995 10.0003C7.56044 10.0003 7.13079 9.86993 6.76535 9.62574C6.39991 9.38156 6.11507 9.0345 5.94688 8.62844C5.77868 8.22238 5.73467 7.77557 5.82042 7.3445C5.90616 6.91343 6.11781 6.51747 6.42859 6.20668C6.73938 5.8959 7.13534 5.68425 7.56641 5.59851C7.99748 5.51276 8.44429 5.55678 8.85035 5.72497C9.25642 5.89317 9.60347 6.178 9.84766 6.54344C10.0918 6.90888 10.2222 7.33853 10.2222 7.77803C10.2222 8.3674 9.98805 8.93263 9.5713 9.34938C9.15455 9.76613 8.58932 10.0003 7.99995 10.0003Z" fill="#636D88"/>`;
+      return svg;
+    };
+
+    // Single DOM scan
+    cells.forEach((td) => {
+      const key = resolveLabel(td);
+      const isAction = key.trim().toLowerCase() === "action";
+      if (!columnsMap.has(key)) columnsMap.set(key, []);
+      columnsMap.get(key).push({
+        html: isAction ? td.innerHTML.trim() : null,
+        text: isAction ? "" : td.textContent.trim(),
+        isAction,
+      });
+    });
+
+    columnsMap.forEach((values, key) => {
+      const card = document.createElement("div");
+      card.className =
+        "flex flex-col rounded-lg border border-gray-300 bg-white";
+
+      const header = document.createElement("div");
+      header.className =
+        "px-4 py-3 font-medium text-gray-800 border-b border-gray-200 rounded-t-lg bg-neutral-100";
+      const headerWrap = document.createElement("div");
+      headerWrap.className = "flex items-center gap-4";
+      const title = document.createElement("span");
+      title.textContent = key;
+      const eye = createEyeIcon();
+      headerWrap.append(title, eye);
+      header.appendChild(headerWrap);
+
+      const body = document.createElement("div");
+      body.className =
+        "px-4 py-3 flex flex-col gap-3 max-h-60 overflow-y-auto text-sm text-slate-700 w-full min-w-0 overflow-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden";
+
+      values.forEach((valueObj) => {
+        const el = document.createElement("div");
+        // Truncate long values so they don't overflow the card
+        el.className = "text-slate-800  w-full min-w-0";
+        if (valueObj.isAction && valueObj.html) {
+          el.innerHTML = valueObj.html;
+        } else {
+          const text = valueObj.text || "—";
+          el.textContent = text;
+          el.title = text;
+        }
+        body.appendChild(el);
+      });
+
+      card.append(header, body);
+      fragment.appendChild(card);
+    });
+
+    container.appendChild(fragment);
+  }
+
+  // Wire up the Edit Columns entry point and supporting containers/actions.
+  bindEditColumns() {
+    if (this._editColumnsBound) return;
+    this._editColumnsBound = true;
+    this.editColumnsButton = this.findEditColumnsButton();
+    this.ensureEditColumnsContainer();
+    this.ensureEditModeActions();
+    if (this.editColumnsButton) {
+      this.editColumnsButton.addEventListener("click", () =>
+        this.enterEditColumnsMode()
+      );
+    }
+  }
+
+  // Locate the Edit Columns trigger button by id or label text.
+  findEditColumnsButton() {
+    const direct = document.getElementById("edit-columns-btn");
+    if (direct) return direct;
+    return [...document.querySelectorAll("button")].find(
+      (btn) =>
+        btn.textContent &&
+        btn.textContent.trim().toLowerCase() === "edit columns"
+    );
+  }
+
+  // Ensure the Edit Columns container exists directly under the table area.
+  ensureEditColumnsContainer() {
+    if (
+      this.editColumnsContainer &&
+      document.body.contains(this.editColumnsContainer)
+    ) {
+      return this.editColumnsContainer;
+    }
+    const tableContainer = document.getElementById("inquiry-table-container");
+    if (!tableContainer) return null;
+    const tableSection =
+      tableContainer.closest("div.self-stretch") || tableContainer;
+    const container = document.createElement("div");
+    container.id = "edit-columns-section";
+    container.className =
+      "hidden w-full px-4 py-4 flex flex-wrap gap-4 bg-white border-t border-slate-300";
+    if (tableSection?.parentElement) {
+      tableSection.parentElement.insertBefore(
+        container,
+        tableSection.nextElementSibling
+      );
+    } else {
+      tableContainer.insertAdjacentElement("afterend", container);
+    }
+    this.editColumnsContainer = container;
+    return container;
+  }
+
+  // Build and cache the Cancel/Save/Save As action group for edit mode.
+  ensureEditModeActions() {
+    if (this.editModeActions && document.body.contains(this.editModeActions))
+      return this.editModeActions;
+    const actionsWrap = this.getActionsWrap();
+    if (!actionsWrap) return null;
+    const group = document.createElement("div");
+    group.className = "flex items-center gap-3 hidden";
+    group.innerHTML = `
+      <button data-edit-action="cancel" type="button" class="px-4 py-2 rounded text-sm font-medium text-neutral-700 transition hover:!bg-neutral-100 active:!bg-neutral-100 focus:!bg-neutral-100 focus-visible:!bg-neutral-100 hover:!text-neutral-700 active:!text-neutral-700 focus:!text-neutral-700 focus-visible:!text-neutral-700">
+        Cancel
+      </button>
+      <button data-edit-action="save" type="button" class="px-4 py-2 rounded border border-slate-300 text-sm font-medium text-sky-900 bg-white transition hover:!bg-white active:!bg-white focus:!bg-white focus-visible:!bg-white hover:!text-sky-900 active:!text-sky-900 focus:!text-sky-900 focus-visible:!text-sky-900 hover:!border-slate-300 active:!border-slate-300 focus:!border-slate-300 focus-visible:!border-slate-300">
+        Save
+      </button>
+      <button data-edit-action="save-as" type="button" class="px-4 py-2 rounded bg-[#003882] text-sm font-medium text-white transition outline outline-1 outline-offset-[-1px] outline-[#003882] hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882]">
+        Save As
+      </button>
+    `;
+    actionsWrap.appendChild(group);
+    this.editModeActions = group;
+
+    const cancelBtn = group.querySelector('[data-edit-action="cancel"]');
+    const saveBtn = group.querySelector('[data-edit-action="save"]');
+    const saveAsBtn = group.querySelector('[data-edit-action="save-as"]');
+
+    cancelBtn?.addEventListener("click", () => this.exitEditColumnsMode());
+    saveBtn?.addEventListener("click", () => this.exitEditColumnsMode());
+    saveAsBtn?.addEventListener("click", () => this.exitEditColumnsMode());
+    return group;
+  }
+
+  // Find the actions wrap beside the top tabs to host edit-mode buttons.
+  getActionsWrap() {
+    const cached =
+      this.actionsWrap && document.body.contains(this.actionsWrap)
+        ? this.actionsWrap
+        : null;
+    if (cached) return cached;
+    const tabs = document.getElementById("top-tabs");
+    const wrap =
+      tabs?.parentElement?.querySelector(
+        ".flex.flex-wrap.items-center.gap-3"
+      ) || null;
+    this.actionsWrap = wrap;
+    return wrap;
+  }
+
+  // Show/hide default header actions vs edit-mode actions.
+  toggleEditActions(show = false) {
+    const actionsWrap = this.getActionsWrap();
+    if (!actionsWrap) return;
+    const editGroup = this.ensureEditModeActions();
+    const defaultChildren = [...actionsWrap.children].filter(
+      (child) => child !== editGroup
+    );
+    defaultChildren.forEach((el) => el.classList.toggle("hidden", show));
+    if (editGroup) {
+      editGroup.classList.toggle("hidden", !show);
+    }
+  }
+
+  // Disable/enable tab navigation while in edit mode.
+  toggleTabsDisabled(disable = false) {
+    this.tabsDisabled = !!disable;
+    const nav = document.getElementById("top-tabs");
+    if (!nav) return;
+    nav.classList.toggle("pointer-events-none", disable);
+    nav.classList.toggle("opacity-60", disable);
+    nav.querySelectorAll("[data-tab]").forEach((link) => {
+      link.setAttribute("aria-disabled", disable ? "true" : "false");
+      link.tabIndex = disable ? -1 : 0;
+    });
+  }
+
+  // Return table + pagination containers to hide/show in edit mode.
+  getTableSections() {
+    const tableContainer = document.getElementById("inquiry-table-container");
+    const tableSection =
+      tableContainer?.closest("div.self-stretch") || tableContainer;
+    const pagination = document
+      .getElementById("pagination-pages")
+      ?.closest("div.self-stretch");
+    return { tableContainer, tableSection, pagination };
+  }
+
+  // Toggle between table view and Edit Columns container.
+  toggleEditColumnsView(show = false) {
+    const container = this.ensureEditColumnsContainer();
+    const { tableSection, pagination } = this.getTableSections();
+    if (!container) return;
+    container.classList.toggle("hidden", !show);
+    if (tableSection) tableSection.classList.toggle("hidden", show);
+    pagination?.classList.toggle("hidden", show);
+  }
+
+  // Enter Edit Columns: populate cards, show edit UI, lock tabs.
+  enterEditColumnsMode() {
+    if (this.isEditColumnsMode) return;
+    this.isEditColumnsMode = true;
+    this.createEditColumnsSection();
+    this.toggleEditColumnsView(true);
+    this.toggleTabsDisabled(true);
+    this.toggleEditActions(true);
+  }
+
+  // Exit Edit Columns: restore table and default controls.
+  exitEditColumnsMode() {
+    if (!this.isEditColumnsMode) return;
+    this.isEditColumnsMode = false;
+    this.toggleEditColumnsView(false);
+    this.toggleTabsDisabled(false);
+    this.toggleEditActions(false);
+  }
+
+  handleEyeIconClicks() {
+    let icons = document.querySelector("[data-icon='eye']");
+    if (!icons) return;
+    icons.forEach((icon) => {
+      if (icon._eyeClickBound) return;
+      icon._eyeClickBound = true;
+      icon.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        alert("Eye icon clicked for column visibility toggle.");
+      });
+    });
   }
 }

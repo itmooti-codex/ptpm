@@ -32,6 +32,7 @@ body,
 [modal-name],
 .modal,
 .hide-scrollbar {
+  overflow: auto;
   -ms-overflow-style: none; /* IE/Edge */
   scrollbar-width: none; /* Firefox */
 }
@@ -43,6 +44,7 @@ body::-webkit-scrollbar,
 .modal::-webkit-scrollbar,
 .hide-scrollbar::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Edge */
+  scrollbar-width: none;
 }
 
 /* Keep Google Places suggestions above modal overlays */
@@ -55,4 +57,8 @@ body::-webkit-scrollbar,
   height: 1rem;
   appearance: auto; /* or none if you’re custom-styling */
   transform: none;
+}
+
+body {
+  scrollbar-width: none;
 }

@@ -104,12 +104,12 @@ export class DashboardController {
   }
 
   async updateTotalCountForTab(tab) {
-    if (!this.model || typeof this.model.fetchTabCount !== "function") return;
-    const total = await this.model.fetchTabCount(tab);
-    this.model.totalCount = total;
-    this.view.renderPagination(async () => {
-      await this.handleTabChange(this.currentTab, { skipCount: true });
-    });
+    // if (!this.model || typeof this.model.fetchTabCount !== "function") return;
+    // const total = await this.model.fetchTabCount(tab);
+    // this.model.totalCount = total;
+    // this.view.renderPagination(async () => {
+    //   await this.handleTabChange(this.currentTab, { skipCount: true });
+    // });
   }
 
   initServiceProviderDropdown() {
