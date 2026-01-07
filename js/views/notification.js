@@ -210,7 +210,7 @@ export class NotificationView {
         <div class="flex items-start">
           <div class="flex-1">
             <div class="flex items-center justify-between">
-              <div class="text-sm font-medium text-slate-800 hover:!text-slate-800 active:!text-slate-800 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-800 active:text-slate-800 focus:text-slate-800 focus-visible:text-slate-800">${item.id}
+              <div class="text-sm font-medium text-slate-800 hover:!text-slate-800 active:!text-slate-800  hover:text-slate-800 active:text-slate-800 focus:text-slate-800 focus-visible:text-slate-800">${item.id}
                 <span class="font-normal text-slate-600 hover:!text-slate-600 active:!text-slate-600 hover:text-slate-600 active:text-slate-600 focus:text-slate-600 focus-visible:text-slate-600"> - ${item.text}</span>
               </div>
               ${unreadDot}
@@ -257,7 +257,7 @@ export class NotificationView {
             General Updates
           </button>
         </div>
-        <label for="notifMarkAll" class="mt-3 mb-2 inline-flex items-center gap-2 text-sm text-gray-700 hover:!text-blue-700 cursor-pointer select-none hover:!text-gray-700 active:!text-gray-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-gray-700 active:text-gray-700 focus:text-gray-700 focus-visible:text-gray-700">
+        <label for="notifMarkAll" class="mt-3 mb-2 inline-flex items-center gap-2 text-sm text-gray-700 hover:!text-blue-700 cursor-pointer select-none hover:!text-gray-700 active:!text-gray-700  hover:text-gray-700 active:text-gray-700 focus:text-gray-700 focus-visible:text-gray-700">
           <input id="notifMarkAll" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 hover:!border-gray-300 active:!border-gray-300 hover:!text-blue-600 active:!text-blue-600 hover:border-gray-300 active:border-gray-300 focus:border-gray-300 focus-visible:border-gray-300 hover:text-blue-600 active:text-blue-600 focus:text-blue-600 focus-visible:text-blue-600" />
           <h5>Mark all as read</h5>
         </label>

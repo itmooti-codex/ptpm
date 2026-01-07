@@ -5,7 +5,9 @@
     <title>Jobs List Summary Popup</title>
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body class="bg-gray-100 hover:!bg-gray-100 active:!bg-gray-100 hover:bg-gray-100 active:bg-gray-100 focus:bg-gray-100 focus-visible:bg-gray-100">
+  <body
+    class="bg-gray-100 hover:!bg-gray-100 active:!bg-gray-100 hover:bg-gray-100 active:bg-gray-100 focus:bg-gray-100 focus-visible:bg-gray-100"
+  >
     <!-- Popup Overlay -->
     <div
       id="jobsPopup"
@@ -16,7 +18,11 @@
       >
         <!-- Header -->
         <div class="px-6 py-4">
-          <h2 class="text-lg font-semibold text-gray-800 hover:!text-gray-800 active:!text-gray-800 hover:text-lg active:text-lg focus:text-lg focus-visible:text-lg hover:text-gray-800 active:text-gray-800 focus:text-gray-800 focus-visible:text-gray-800">Jobs List Summary</h2>
+          <h2
+            class="text-lg font-semibold text-gray-800 hover:!text-gray-800 active:!text-gray-800 hover:text-lg active:text-lg focus:text-lg focus-visible:text-lg hover:text-gray-800 active:text-gray-800 focus:text-gray-800 focus-visible:text-gray-800"
+          >
+            Jobs List Summary
+          </h2>
         </div>
 
         <!-- Table Section -->
@@ -25,7 +31,7 @@
         >
           <div class="overflow-x-auto overflow-y-auto flex-1">
             <table
-              class="min-w-full text-sm text-left text-gray-700 border-collapse hover:!text-gray-700 active:!text-gray-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-left active:text-left focus:text-left focus-visible:text-left hover:text-gray-700 active:text-gray-700 focus:text-gray-700 focus-visible:text-gray-700 hover:border-collapse active:border-collapse focus:border-collapse focus-visible:border-collapse"
+              class="min-w-full text-sm text-left text-gray-700 border-collapse hover:!text-gray-700 active:!text-gray-700 hover:text-left active:text-left focus:text-left focus-visible:text-left hover:text-gray-700 active:text-gray-700 focus:text-gray-700 focus-visible:text-gray-700 hover:border-collapse active:border-collapse focus:border-collapse focus-visible:border-collapse"
             >
               <thead
                 class="bg-gray-100 border-b text-xs font-semibold uppercase text-normal-900 hover:!bg-gray-100 active:!bg-gray-100 hover:bg-gray-100 active:bg-gray-100 focus:bg-gray-100 focus-visible:bg-gray-100 hover:border-b active:border-b focus:border-b focus-visible:border-b hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-normal-900 active:text-normal-900 focus:text-normal-900 focus-visible:text-normal-900"
@@ -51,7 +57,7 @@
 
           <!-- Footer -->
           <div
-            class="flex items-center justify-between px-6 py-4 border-t text-sm text-gray-600 bg-gray-50 hover:!text-gray-600 active:!text-gray-600 hover:!bg-gray-50 active:!bg-gray-50 hover:border-t active:border-t focus:border-t focus-visible:border-t hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-gray-600 active:text-gray-600 focus:text-gray-600 focus-visible:text-gray-600 hover:bg-gray-50 active:bg-gray-50 focus:bg-gray-50 focus-visible:bg-gray-50"
+            class="flex items-center justify-between px-6 py-4 border-t text-sm text-gray-600 bg-gray-50 hover:!text-gray-600 active:!text-gray-600 hover:!bg-gray-50 active:!bg-gray-50 hover:border-t active:border-t focus:border-t focus-visible:border-t hover:text-gray-600 active:text-gray-600 focus:text-gray-600 focus-visible:text-gray-600 hover:bg-gray-50 active:bg-gray-50 focus:bg-gray-50 focus-visible:bg-gray-50"
           >
             <p>Page 1 of 5</p>
             <p>Friday, 9 May 2025</p>
@@ -59,7 +65,9 @@
         </div>
 
         <!-- Buttons -->
-        <div class="flex justify-end space-x-3 px-6 py-4 bg-gray-50 hover:!bg-gray-50 active:!bg-gray-50 hover:bg-gray-50 active:bg-gray-50 focus:bg-gray-50 focus-visible:bg-gray-50">
+        <div
+          class="flex justify-end space-x-3 px-6 py-4 bg-gray-50 hover:!bg-gray-50 active:!bg-gray-50 hover:bg-gray-50 active:bg-gray-50 focus:bg-gray-50 focus-visible:bg-gray-50"
+        >
           <button
             onclick="closePopup()"
             class="px-4 py-2 border border-sky-900 rounded-lg text-sky-900 focus:border focus-visible:border focus:border-sky-900 focus-visible:border-sky-900 focus:text-sky-900 focus-visible:text-sky-900"
@@ -138,7 +146,7 @@
       </td>
       <td class="px-4 py-3">${job.invDate}</td>
       <td class="px-4 py-3">${job.invoice}</td>
-      <td class="px-4 py-3 text-sm w-[280px] hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm">${job.recommend}</td>
+      <td class="px-4 py-3 text-sm w-[280px] ">${job.recommend}</td>
     `;
         tbody.appendChild(tr);
       });

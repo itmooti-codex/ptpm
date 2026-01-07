@@ -1053,7 +1053,7 @@ export class NewInquiryView {
             </clipPath>
             </defs>
             </svg>
-            <p class="text-sm font-medium text-slate-600 hover:!text-slate-600 active:!text-slate-600 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-600 active:text-slate-600 focus:text-slate-600 focus-visible:text-slate-600">No Related Jobs.</p>
+            <p class="text-sm font-medium text-slate-600 hover:!text-slate-600 active:!text-slate-600  hover:text-slate-600 active:text-slate-600 focus:text-slate-600 focus-visible:text-slate-600">No Related Jobs.</p>
       </div>
     `;
     }
@@ -1118,7 +1118,7 @@ export class NewInquiryView {
             </defs>
             </svg>
 
-          <p class="text-sm font-medium text-slate-600 hover:!text-slate-600 active:!text-slate-600 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-600 active:text-slate-600 focus:text-slate-600 focus-visible:text-slate-600">No Related Jobs.</p>
+          <p class="text-sm font-medium text-slate-600 hover:!text-slate-600 active:!text-slate-600  hover:text-slate-600 active:text-slate-600 focus:text-slate-600 focus-visible:text-slate-600">No Related Jobs.</p>
         </div>
       `;
     }
@@ -1192,13 +1192,13 @@ export class NewInquiryView {
             </clipPath>
             </defs>
             </svg>
-    <p class="text-sm font-medium text-slate-600 hover:!text-slate-600 active:!text-slate-600 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-600 active:text-slate-600 focus:text-slate-600 focus-visible:text-slate-600">No Previous Inquiries.</p>
+    <p class="text-sm font-medium text-slate-600 hover:!text-slate-600 active:!text-slate-600  hover:text-slate-600 active:text-slate-600 focus:text-slate-600 focus-visible:text-slate-600">No Previous Inquiries.</p>
         </div>
       `;
     }
 
     const message = this.#emptyMessageFor(tab);
-    return `<p class="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-500 text-center hover:!border-slate-200 active:!border-slate-200 hover:!bg-slate-50 active:!bg-slate-50 hover:!text-slate-500 active:!text-slate-500 hover:border active:border focus:border focus-visible:border hover:border-dashed active:border-dashed focus:border-dashed focus-visible:border-dashed hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:bg-slate-50 active:bg-slate-50 focus:bg-slate-50 focus-visible:bg-slate-50 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500 hover:text-center active:text-center focus:text-center focus-visible:text-center">${this.#escapeHtml(
+    return `<p class="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-500 text-center hover:!border-slate-200 active:!border-slate-200 hover:!bg-slate-50 active:!bg-slate-50 hover:!text-slate-500 active:!text-slate-500 hover:border active:border focus:border focus-visible:border hover:border-dashed active:border-dashed focus:border-dashed focus-visible:border-dashed hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:bg-slate-50 active:bg-slate-50 focus:bg-slate-50 focus-visible:bg-slate-50  hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500 hover:text-center active:text-center focus:text-center focus-visible:text-center">${this.#escapeHtml(
       message
     )}</p>`;
   }

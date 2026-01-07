@@ -190,7 +190,7 @@ export function initOperationLoader() {
   loader.innerHTML = `
       <div class="flex flex-col items-center gap-3 rounded-2xl bg-white/95 px-6 py-5 shadow-lg ring-1 ring-slate-200 hover:!bg-white/95 active:!bg-white/95 hover:bg-white/95 active:bg-white/95 focus:bg-white/95 focus-visible:bg-white/95 hover:shadow-lg active:shadow-lg focus:shadow-lg focus-visible:shadow-lg hover:ring-1 active:ring-1 focus:ring-1 focus-visible:ring-1 hover:ring-slate-200 active:ring-slate-200 focus:ring-slate-200 focus-visible:ring-slate-200">
         <div class="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-[#003882] hover:!border-slate-200 active:!border-slate-200 hover:border-4 active:border-4 focus:border-4 focus-visible:border-4 hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:border-t-[#003882] active:border-t-[#003882] focus:border-t-[#003882] focus-visible:border-t-[#003882]"></div>
-        <p class="text-sm font-semibold text-slate-800 hover:!text-slate-800 active:!text-slate-800 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-800 active:text-slate-800 focus:text-slate-800 focus-visible:text-slate-800" data-loader-message>Working...</p>
+        <p class="text-sm font-semibold text-slate-800 hover:!text-slate-800 active:!text-slate-800  hover:text-slate-800 active:text-slate-800 focus:text-slate-800 focus-visible:text-slate-800" data-loader-message>Working...</p>
       </div>
     `;
   document.body.appendChild(loader);
@@ -231,10 +231,10 @@ export function initCustomModal({ id = "statusModal" } = {}) {
     modal.className =
       "fixed inset-0 z-[9999] hidden items-center justify-center bg-black/40 transition-opacity duration-200";
     modal.innerHTML = `
-      <div class="bg-white rounded-lg shadow-xl w-[350px] text-center p-6 flex flex-col items-center space-y-4 hover:!bg-white active:!bg-white hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-xl active:shadow-xl focus:shadow-xl focus-visible:shadow-xl hover:text-center active:text-center focus:text-center focus-visible:text-center">
+      <div class="bg-white rounded-lg shadow-xl w-[350px] text-center p-6 flex flex-col items-center space-y-4 font-['Inter'] hover:!bg-white active:!bg-white hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-xl active:shadow-xl focus:shadow-xl focus-visible:shadow-xl hover:text-center active:text-center focus:text-center focus-visible:text-center">
         <div id="statusIcon" class="w-12 h-12 rounded-full flex items-center justify-center text-white text-2xl hover:!text-white active:!text-white hover:text-white active:text-white focus:text-white focus-visible:text-white hover:text-2xl active:text-2xl focus:text-2xl focus-visible:text-2xl"></div>
         <h3 id="statusTitle" class="text-lg font-semibold text-gray-800 hover:!text-gray-800 active:!text-gray-800 hover:text-lg active:text-lg focus:text-lg focus-visible:text-lg hover:text-gray-800 active:text-gray-800 focus:text-gray-800 focus-visible:text-gray-800">Success</h3>
-        <p id="statusMessage" class="text-sm text-gray-600 hover:!text-gray-600 active:!text-gray-600 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-gray-600 active:text-gray-600 focus:text-gray-600 focus-visible:text-gray-600">Your action was successful.</p>
+        <p id="statusMessage" class="text-sm text-gray-600 hover:!text-gray-600 active:!text-gray-600  hover:text-gray-600 active:text-gray-600 focus:text-gray-600 focus-visible:text-gray-600">Your action was successful.</p>
         <button id="statusCloseBtn" class="mt-3 px-4 py-2 bg-[#003882] text-white rounded focus:bg-[#003882] focus-visible:bg-[#003882] focus:text-white focus-visible:text-white">
           OK
         </button>
@@ -300,7 +300,7 @@ export function ensureFilePreviewModal(id = "ptpm-file-preview-modal") {
     modal.className =
       "flex fixed inset-0 z-[9999] hidden items-center justify-center bg-black/50";
     modal.innerHTML = `
-      <div class="bg-white rounded-lg shadow-lg max-w-4xl w-[95vw] max-h-[90vh] overflow-hidden relative hover:!bg-white active:!bg-white hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-lg active:shadow-lg focus:shadow-lg focus-visible:shadow-lg">
+      <div class="bg-white rounded-lg shadow-lg max-w-4xl w-[95vw] max-h-[90vh] overflow-hidden relative font-['Inter'] hover:!bg-white active:!bg-white hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-lg active:shadow-lg focus:shadow-lg focus-visible:shadow-lg">
         <button type="button" data-file-preview-close class="absolute top-3 right-3 text-slate-500 focus:text-slate-500 focus-visible:text-slate-500">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -369,7 +369,7 @@ function buildUnsavedChangesModal() {
   modal.className =
     "fixed inset-0 z-[9998] hidden items-center justify-center bg-black/40";
   modal.innerHTML = `
-    <div class="bg-white rounded-lg inline-flex flex-col justify-start items-start overflow-hidden hover:!bg-white active:!bg-white hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white">
+    <div class="bg-white rounded-lg inline-flex flex-col justify-start items-start overflow-hidden font-['Inter'] hover:!bg-white active:!bg-white hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white">
       <div class="self-stretch px-6 py-4 border-b border-gray-300 inline-flex justify-end items-center gap-4 hover:!border-gray-300 active:!border-gray-300 hover:border-b active:border-b focus:border-b focus-visible:border-b">
         <div class="flex-1 justify-start text-neutral-700 text-lg font-semibold leading-5 hover:!text-neutral-700 active:!text-neutral-700 focus:!text-neutral-700 focus-visible:!text-neutral-700">Unsaved Changes</div>
         <button type="button" data-unsaved-close class="!bg-transparent w-6 h-6 relative overflow-hidden  hover:!bg-transparent active:!bg-transparent focus:!bg-transparent focus-visible:!bg-transparent">
@@ -456,7 +456,7 @@ function buildResetConfirmModal() {
   modal.className =
     "fixed inset-0 z-[9998] hidden items-center justify-center bg-black/40";
   modal.innerHTML = `
-    <div class="bg-white rounded-lg inline-flex flex-col justify-start items-start overflow-hidden hover:!bg-white active:!bg-white hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white">
+    <div class="bg-white rounded-lg inline-flex flex-col justify-start items-start overflow-hidden font-['Inter'] hover:!bg-white active:!bg-white hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white">
       <div class="self-stretch px-6 py-4 border-b border-gray-300 inline-flex justify-end items-center gap-4 hover:!border-gray-300 active:!border-gray-300 hover:border-b active:border-b focus:border-b focus-visible:border-b">
         <div class="flex-1 justify-start text-neutral-700 text-lg font-semibold leading-5 hover:!text-neutral-700 active:!text-neutral-700 focus:!text-neutral-700 focus-visible:!text-neutral-700">Reset Form</div>
         <button type="button" data-reset-close class="w-6 h-6 relative overflow-hidden text-zinc-800 hover:!text-zinc-800 active:!text-zinc-800 focus:!text-zinc-800 focus-visible:!text-zinc-800 hover:!bg-transparent active:!bg-transparent focus:!bg-transparent focus-visible:!bg-transparent">
@@ -534,7 +534,7 @@ function buildSaveViewAsModal() {
   modal.className =
     "fixed inset-0 z-[9998] hidden items-center justify-center bg-black/40";
   modal.innerHTML = `
-    <div class="bg-white rounded-lg shadow-xl w-full max-w-[560px] mx-4 overflow-hidden hover:!bg-white active:!bg-white hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-xl active:shadow-xl focus:shadow-xl focus-visible:shadow-xl">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-[560px] mx-4 overflow-hidden font-['Inter'] hover:!bg-white active:!bg-white hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-xl active:shadow-xl focus:shadow-xl focus-visible:shadow-xl">
       <div class="flex items-center justify-between px-4 py-3 border-b border-slate-200 hover:!border-slate-200 active:!border-slate-200 hover:border-b active:border-b focus:border-b focus-visible:border-b hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200">
         <h3 class="text-lg font-semibold text-slate-900 hover:!text-slate-900 active:!text-slate-900 hover:text-lg active:text-lg focus:text-lg focus-visible:text-lg hover:text-slate-900 active:text-slate-900 focus:text-slate-900 focus-visible:text-slate-900">Save View As</h3>
         <button type="button" data-save-view-close class="text-slate-500 focus:text-slate-500 focus-visible:text-slate-500">
@@ -544,15 +544,15 @@ function buildSaveViewAsModal() {
         </button>
       </div>
       <div class="px-4 py-5 space-y-2 text-left hover:text-left active:text-left focus:text-left focus-visible:text-left">
-        <label for="ptpm-save-view-input" class="block text-sm text-slate-700 hover:!text-slate-700 active:!text-slate-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700">Name</label>
+        <label for="ptpm-save-view-input" class="block text-sm text-slate-700 hover:!text-slate-700 active:!text-slate-700  hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700">Name</label>
         <input id="ptpm-save-view-input" type="text" class="w-full rounded-md px-3 py-2 text-sm text-slate-800
         !outline !outline-1 browser-default !outline-slate-300
         focus:!outline focus:!outline-1 focus:!outline-slate-300
         ">
       </div>
       <div class="flex justify-end gap-3 px-4 py-3 border-t border-slate-200 hover:!border-slate-200 active:!border-slate-200 hover:border-t active:border-t focus:border-t focus-visible:border-t hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200">
-        <button type="button" data-save-view-cancel class="px-4 py-2 rounded text-slate-600 text-sm font-medium hover:!text-slate-600 active:!text-slate-600 focus:!text-slate-600 focus-visible:!text-slate-600 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm">Cancel</button>
-        <button type="button" data-save-view-save class="px-4 py-2 rounded bg-[#003882] text-white text-sm font-semibold hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882] hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm">Save</button>
+        <button type="button" data-save-view-cancel class="px-4 py-2 rounded text-slate-600 text-sm font-medium hover:!text-slate-600 active:!text-slate-600 focus:!text-slate-600 focus-visible:!text-slate-600 ">Cancel</button>
+        <button type="button" data-save-view-save class="px-4 py-2 rounded bg-[#003882] text-white text-sm font-semibold hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882] hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white ">Save</button>
       </div>
     </div>
   `;
@@ -846,7 +846,7 @@ export function buildUploadCard(
     <div class="flex flex-row justify-between items-center">
       <div class="flex flex-row items-center gap-3">
         ${icon}
-        <p class="text-gray-800 text-sm break-all hover:!text-gray-800 active:!text-gray-800 hover:text-gray-800 active:text-gray-800 focus:text-gray-800 focus-visible:text-gray-800 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm">${name}</p>
+        <p class="text-gray-800 text-sm break-all hover:!text-gray-800 active:!text-gray-800 hover:text-gray-800 active:text-gray-800 focus:text-gray-800 focus-visible:text-gray-800 ">${name}</p>
       </div>
       <div class="flex items-center gap-3">
         <button type="button" data-upload-action="view" class="text-sky-700 focus:text-sky-700 focus-visible:text-sky-700" title="Preview">
@@ -893,7 +893,7 @@ export function showAlertModal({
     modal.className =
       "fixed inset-0 z-[9998] hidden items-center justify-center bg-black/40";
     modal.innerHTML = `
-      <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 overflow-hidden hover:!bg-white active:!bg-white hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-xl active:shadow-xl focus:shadow-xl focus-visible:shadow-xl">
+      <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 overflow-hidden font-['Inter'] hover:!bg-white active:!bg-white hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-xl active:shadow-xl focus:shadow-xl focus-visible:shadow-xl">
         <div class="flex items-start justify-between px-4 py-3 border-b border-slate-200 hover:!border-slate-200 active:!border-slate-200 hover:border-b active:border-b focus:border-b focus-visible:border-b hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200">
           <h3 class="text-lg font-semibold text-slate-900 hover:!text-slate-900 active:!text-slate-900 hover:text-lg active:text-lg focus:text-lg focus-visible:text-lg hover:text-slate-900 active:text-slate-900 focus:text-slate-900 focus-visible:text-slate-900" data-alert-title>Notice</h3>
           <button type="button" data-alert-close class="text-slate-500 focus:text-slate-500 focus-visible:text-slate-500">
@@ -903,7 +903,7 @@ export function showAlertModal({
           </button>
         </div>
         <div class="px-4 py-5 space-y-4 text-left hover:text-left active:text-left focus:text-left focus-visible:text-left">
-          <p class="text-sm text-slate-700 hover:!text-slate-700 active:!text-slate-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700" data-alert-message></p>
+          <p class="text-sm text-slate-700 hover:!text-slate-700 active:!text-slate-700  hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700" data-alert-message></p>
           <div class="flex justify-end gap-3">
             <button type="button" data-alert-confirm class="px-4 py-2 rounded bg-[#003882] text-white text-sm font-semibold focus:bg-[#003882] focus-visible:bg-[#003882] focus:text-white focus-visible:text-white focus:text-sm focus-visible:text-sm">OK</button>
           </div>

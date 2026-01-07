@@ -410,7 +410,7 @@ export class DashboardView {
       t.id = "dashboardToast";
       t.className =
         "hidden fixed top-6 right-6 z-50 max-w-sm w-[360px] bg-white border border-slate-200 shadow-xl rounded-lg";
-      t.innerHTML = `<div class="px-4 py-3 text-sm text-slate-800 flex items-start gap-2 hover:!text-slate-800 active:!text-slate-800 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-800 active:text-slate-800 focus:text-slate-800 focus-visible:text-slate-800"><svg class="w-5 h-5 text-red-500 mt-0.5 hover:!text-red-500 active:!text-red-500 hover:text-red-500 active:text-red-500 focus:text-red-500 focus-visible:text-red-500" viewBox="0 0 24 24" fill="currentColor"><path d="M11 7h2v6h-2zm0 8h2v2h-2z"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg><div id="dashboardToastMsg" class="flex-1"></div></div>`;
+      t.innerHTML = `<div class="px-4 py-3 text-sm text-slate-800 flex items-start gap-2 hover:!text-slate-800 active:!text-slate-800  hover:text-slate-800 active:text-slate-800 focus:text-slate-800 focus-visible:text-slate-800"><svg class="w-5 h-5 text-red-500 mt-0.5 hover:!text-red-500 active:!text-red-500 hover:text-red-500 active:text-red-500 focus:text-red-500 focus-visible:text-red-500" viewBox="0 0 24 24" fill="currentColor"><path d="M11 7h2v6h-2zm0 8h2v2h-2z"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg><div id="dashboardToastMsg" class="flex-1"></div></div>`;
       document.body.appendChild(t);
     }
   }
@@ -1061,7 +1061,7 @@ export class DashboardView {
         </div>
   
         <!-- Mark all as read -->
-        <label for="notifMarkAll" class="mt-3 mb-2 inline-flex items-center gap-2 text-sm text-gray-700 hover:!text-blue-700 cursor-pointer select-none hover:!text-gray-700 active:!text-gray-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-gray-700 active:text-gray-700 focus:text-gray-700 focus-visible:text-gray-700">
+        <label for="notifMarkAll" class="mt-3 mb-2 inline-flex items-center gap-2 text-sm text-gray-700 hover:!text-blue-700 cursor-pointer select-none hover:!text-gray-700 active:!text-gray-700  hover:text-gray-700 active:text-gray-700 focus:text-gray-700 focus-visible:text-gray-700">
           <input id="notifMarkAll" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 hover:!border-gray-300 active:!border-gray-300 hover:!text-blue-600 active:!text-blue-600 hover:border-gray-300 active:border-gray-300 focus:border-gray-300 focus-visible:border-gray-300 hover:text-blue-600 active:text-blue-600 focus:text-blue-600 focus-visible:text-blue-600" />
           <h5>Mark all as read</h5>
         </label>
@@ -1072,7 +1072,7 @@ export class DashboardView {
   
       <!-- Footer -->
       <div class="px-4 py-3 border-t rounded-b-lg text-center hover:border-t active:border-t focus:border-t focus-visible:border-t hover:text-center active:text-center focus:text-center focus-visible:text-center">
-        <a href="#" class="text-sm font-medium text-blue-700 hover:!underline hover:!text-blue-700 active:!text-blue-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-blue-700 active:text-blue-700 focus:text-blue-700 focus-visible:text-blue-700">View All</a>
+        <a href="#" class="text-sm font-medium text-blue-700 hover:!underline hover:!text-blue-700 active:!text-blue-700  hover:text-blue-700 active:text-blue-700 focus:text-blue-700 focus-visible:text-blue-700">View All</a>
       </div>
     `;
 
@@ -1093,7 +1093,7 @@ export class DashboardView {
       const UNREAD_KNOB_BASE =
         "knob absolute w-4 h-4 bg-white rounded-full left-0.5 transition-transform duration-200 ease-out hover:!bg-white active:!bg-white focus:!bg-white focus-visible:!bg-white";
       const MARK_ALL_LABEL_CLASSES =
-        "mt-3 mb-2 inline-flex items-center gap-2 text-sm text-gray-700 hover:!text-gray-700 active:!text-gray-700 focus:!text-gray-700 focus-visible:!text-gray-700 cursor-pointer select-none hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm";
+        "mt-3 mb-2 inline-flex items-center gap-2 text-sm text-gray-700 hover:!text-gray-700 active:!text-gray-700 focus:!text-gray-700 focus-visible:!text-gray-700 cursor-pointer select-none ";
       const MARK_ALL_INPUT_CLASSES =
         "h-4 w-4 rounded border-gray-300 text-blue-600 hover:!border-gray-300 active:!border-gray-300 focus:!border-gray-300 focus-visible:!border-gray-300 hover:!text-blue-600 active:!text-blue-600 focus:!text-blue-600 focus-visible:!text-blue-600 focus:ring-0";
       let currentTab = "Action Required";
@@ -1113,7 +1113,7 @@ export class DashboardView {
           <div class="flex items-start">
             <div class="flex-1">
               <div class="flex items-center justify-between">
-                <div class="w-[250px] text-sm font-semibold text-slate-800 hover:!text-slate-800 active:!text-slate-800 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-800 active:text-slate-800 focus:text-slate-800 focus-visible:text-slate-800">${item.id}
+                <div class="w-[250px] text-sm font-semibold text-slate-800 hover:!text-slate-800 active:!text-slate-800  hover:text-slate-800 active:text-slate-800 focus:text-slate-800 focus-visible:text-slate-800">${item.id}
                   <span class="font-normal text-slate-600 hover:!text-slate-600 active:!text-slate-600 hover:text-slate-600 active:text-slate-600 focus:text-slate-600 focus-visible:text-slate-600"> - ${item.text}</span>
                 </div>
                 ${unreadDot}
@@ -1416,7 +1416,7 @@ export class DashboardView {
     };
 
     modalBox.innerHTML = `
-      <div class="flex flex-col text-sm text-slate-700 hover:!text-slate-700 active:!text-slate-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700">
+      <div class="flex flex-col text-sm text-slate-700 hover:!text-slate-700 active:!text-slate-700  hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700">
         <button id="new-inquiry" class="flex gap-2 px-4 py-2 text-left w-full focus:text-left focus-visible:text-left">
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M8.33333 8.88889C8.66667 8.88889 8.88889 9.11111 8.88889 9.44444C8.88889 9.77778 8.66667 10 8.33333 10C8 10 7.77778 9.77778 7.77778 9.44444C7.77778 9.11111 8 8.88889 8.33333 8.88889ZM3.94444 9.83333L3.77778 9.44444L3.94444 9.05556C4.66667 7.27778 6.38889 6.11111 8.33333 6.11111C9.38889 6.11111 10.3333 6.44444 11.1111 7V3.33333C11.1111 2.72222 10.6111 2.22222 10 2.22222H7.77778V1.11111C7.77778 0.5 7.27778 0 6.66667 0H4.44444C3.83333 0 3.33333 0.5 3.33333 1.11111V2.22222H1.11111C0.5 2.22222 0 2.72222 0 3.33333V9.44444C0 10.0556 0.5 10.5556 1.11111 10.5556H4.33333C4.16667 10.3333 4.05556 10.1111 3.94444 9.83333ZM4.44444 1.11111H6.66667V2.22222H4.44444V1.11111ZM8.33333 7.22222C6.83333 7.22222 5.5 8.16667 5 9.44444C5.5 10.7222 6.83333 11.6667 8.33333 11.6667C9.83333 11.6667 11.1667 10.7222 11.6667 9.44444C11.1667 8.16667 9.83333 7.22222 8.33333 7.22222ZM8.33333 10.8333C7.55556 10.8333 6.94445 10.2222 6.94445 9.44444C6.94445 8.66667 7.55556 8.05556 8.33333 8.05556C9.11111 8.05556 9.72222 8.66667 9.72222 9.44444C9.72222 10.2222 9.11111 10.8333 8.33333 10.8333Z" fill="#636D88"/>
