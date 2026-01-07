@@ -369,21 +369,27 @@ function buildUnsavedChangesModal() {
   modal.className =
     "fixed inset-0 z-[9998] hidden items-center justify-center bg-black/40";
   modal.innerHTML = `
-    <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 overflow-hidden hover:!bg-white active:!bg-white hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-xl active:shadow-xl focus:shadow-xl focus-visible:shadow-xl">
-      <div class="flex items-start justify-between px-4 py-3 border-b border-slate-200 hover:!border-slate-200 active:!border-slate-200 hover:border-b active:border-b focus:border-b focus-visible:border-b hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200">
-        <h3 class="text-lg font-semibold text-slate-900 hover:!text-slate-900 active:!text-slate-900 hover:text-lg active:text-lg focus:text-lg focus-visible:text-lg hover:text-slate-900 active:text-slate-900 focus:text-slate-900 focus-visible:text-slate-900">Unsaved Changes</h3>
-        <button type="button" data-unsaved-close class="text-slate-500 focus:text-slate-500 focus-visible:text-slate-500">
-          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <div class="bg-white rounded-lg inline-flex flex-col justify-start items-start overflow-hidden hover:!bg-white active:!bg-white hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white">
+      <div class="self-stretch px-6 py-4 border-b border-gray-300 inline-flex justify-end items-center gap-4 hover:!border-gray-300 active:!border-gray-300 hover:border-b active:border-b focus:border-b focus-visible:border-b">
+        <div class="flex-1 justify-start text-neutral-700 text-lg font-semibold leading-5 hover:!text-neutral-700 active:!text-neutral-700 focus:!text-neutral-700 focus-visible:!text-neutral-700">Unsaved Changes</div>
+        <button type="button" data-unsaved-close class="w-6 h-6 relative overflow-hidden hover:!text-zinc-800 active:!text-zinc-800 focus:!text-zinc-800 focus-visible:!text-zinc-800 text-zinc-800">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </button>
       </div>
-      <div class="px-4 py-5 space-y-4 text-left hover:text-left active:text-left focus:text-left focus-visible:text-left">
-        <p class="text-sm text-slate-700 hover:!text-slate-700 active:!text-slate-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700">You have unsaved changes. Do you want to discard them or save and exit?</p>
+      <div class="self-stretch p-6 inline-flex justify-start items-start gap-8">
+        <div class="w-96 rounded inline-flex flex-col justify-start items-end gap-8">
+          <div class="self-stretch justify-start text-neutral-700 text-base font-normal leading-5 hover:!text-neutral-700 active:!text-neutral-700 focus:!text-neutral-700 focus-visible:!text-neutral-700">You have unsaved changes. Do you want to discard them or save and exit?</div>
+        </div>
       </div>
-      <div class="flex justify-end gap-3 m-2 border-t pt-3">
-          <button type="button" data-unsaved-discard class="px-4 py-2 rounded border border-red-500 text-red-600 text-sm font-semibold focus:border focus-visible:border focus:border-red-500 focus-visible:border-red-500 focus:text-red-600 focus-visible:text-red-600 focus:text-sm focus-visible:text-sm">Discard Changes</button>
-          <button type="button" data-unsaved-save class="px-4 py-2 rounded bg-[#003882] text-white text-sm font-semibold focus:bg-[#003882] focus-visible:bg-[#003882] focus:text-white focus-visible:text-white focus:text-sm focus-visible:text-sm">Save & Exit</button>
+      <div class="self-stretch px-6 py-4 bg-white border-t border-gray-300 inline-flex justify-end items-center gap-4 hover:!border-gray-300 active:!border-gray-300 hover:border-t active:border-t focus:border-t focus-visible:border-t">
+        <button type="button" data-unsaved-discard class="px-4 py-3 rounded outline outline-1 outline-offset-[-1px] outline-red-600 flex justify-center items-center gap-2 overflow-hidden hover:!outline-red-600 active:!outline-red-600 focus:!outline-red-600 focus-visible:!outline-red-600">
+          <div class="justify-start text-red-600 text-sm font-medium leading-4 hover:!text-red-600 active:!text-red-600 focus:!text-red-600 focus-visible:!text-red-600">Discard Changes</div>
+        </button>
+        <button type="button" data-unsaved-save class="px-4 py-3 bg-sky-900 rounded outline outline-1 outline-offset-[-1px] outline-white flex justify-center items-center gap-2 overflow-hidden hover:!bg-sky-900 active:!bg-sky-900 focus:!bg-sky-900 focus-visible:!bg-sky-900 hover:!outline-white active:!outline-white focus:!outline-white focus-visible:!outline-white">
+          <div class="justify-start text-white text-sm font-medium leading-4 hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white">Save & Exit</div>
+        </button>
       </div>
     </div>
   `;
@@ -450,22 +456,30 @@ function buildResetConfirmModal() {
   modal.className =
     "fixed inset-0 z-[9998] hidden items-center justify-center bg-black/40";
   modal.innerHTML = `
-    <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 overflow-hidden hover:!bg-white active:!bg-white hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-xl active:shadow-xl focus:shadow-xl focus-visible:shadow-xl">
-      <div class="flex items-start justify-between px-4 py-3 border-b border-slate-200 hover:!border-slate-200 active:!border-slate-200 hover:border-b active:border-b focus:border-b focus-visible:border-b hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200">
-        <h3 class="text-lg font-semibold text-slate-900 hover:!text-slate-900 active:!text-slate-900 hover:text-lg active:text-lg focus:text-lg focus-visible:text-lg hover:text-slate-900 active:text-slate-900 focus:text-slate-900 focus-visible:text-slate-900">Reset Form</h3>
-        <button type="button" data-reset-close class="text-slate-500 focus:text-slate-500 focus-visible:text-slate-500">
-          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <div class="bg-white rounded-lg inline-flex flex-col justify-start items-start overflow-hidden hover:!bg-white active:!bg-white hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white">
+      <div class="self-stretch px-6 py-4 border-b border-gray-300 inline-flex justify-end items-center gap-4 hover:!border-gray-300 active:!border-gray-300 hover:border-b active:border-b focus:border-b focus-visible:border-b">
+        <div class="flex-1 justify-start text-neutral-700 text-lg font-semibold leading-5 hover:!text-neutral-700 active:!text-neutral-700 focus:!text-neutral-700 focus-visible:!text-neutral-700">Reset Form</div>
+        <button type="button" data-reset-close class="w-6 h-6 relative overflow-hidden hover:!text-zinc-800 active:!text-zinc-800 focus:!text-zinc-800 focus-visible:!text-zinc-800 text-zinc-800">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </button>
       </div>
-      <div class="px-4 py-5 space-y-4 text-left hover:text-left active:text-left focus:text-left focus-visible:text-left">
-        <p class="text-sm text-slate-700 hover:!text-slate-700 active:!text-slate-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700">This will clear all entered information. This action cannot be undone.</p>
-      </div>
-      <div class="flex justify-end gap-3 px-4 py-3 border-t border-slate-200 hover:!border-slate-200 active:!border-slate-200 hover:border-t active:border-t focus:border-t focus-visible:border-t hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200">
-          <button type="button" data-reset-cancel class="px-4 py-2 rounded text-slate-700 text-sm font-semibold focus:text-slate-700 focus-visible:text-slate-700 focus:text-sm focus-visible:text-sm">Cancel</button>
-          <button type="button" data-reset-confirm class="px-4 py-2 rounded bg-red-600 text-white text-sm font-semibold focus:bg-red-600 focus-visible:bg-red-600 focus:text-white focus-visible:text-white focus:text-sm focus-visible:text-sm">Reset</button>
+      <div class="self-stretch p-6 inline-flex justify-start items-start gap-8">
+        <div class="w-96 rounded inline-flex flex-col justify-start items-end gap-8">
+          <div class="self-stretch justify-start text-neutral-700 text-base font-normal leading-5 hover:!text-neutral-700 active:!text-neutral-700 focus:!text-neutral-700 focus-visible:!text-neutral-700">This will clear all entered information. This action cannot be undone.</div>
         </div>
+      </div>
+      <div class="self-stretch px-6 py-4 bg-white border-t border-gray-300 inline-flex justify-end items-center gap-4 hover:!border-gray-300 active:!border-gray-300 hover:border-t active:border-t focus:border-t focus-visible:border-t">
+        <div class="flex justify-start items-center gap-4">
+          <button type="button" data-reset-cancel class="rounded flex justify-center items-center gap-2 overflow-hidden hover:!text-slate-500 active:!text-slate-500 focus:!text-slate-500 focus-visible:!text-slate-500 text-slate-500">
+            <div class="justify-start text-slate-500 text-sm font-medium leading-4 hover:!text-slate-500 active:!text-slate-500 focus:!text-slate-500 focus-visible:!text-slate-500">Cancel</div>
+          </button>
+          <button type="button" data-reset-confirm class="px-4 py-3 bg-red-600 rounded outline outline-1 outline-offset-[-1px] outline-white flex justify-center items-center gap-2 overflow-hidden hover:!bg-red-600 active:!bg-red-600 focus:!bg-red-600 focus-visible:!bg-red-600 hover:!outline-white active:!outline-white focus:!outline-white focus-visible:!outline-white">
+            <div class="justify-start text-white text-sm font-medium leading-4 hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white">Reset</div>
+          </button>
+        </div>
+      </div>
     </div>
   `;
 
