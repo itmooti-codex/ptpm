@@ -1,3 +1,5 @@
+import { showSaveViewAsModal, showAlertModal } from "../helper.js";
+
 export function renderDynamicTable({
   container,
   headers = [],
@@ -251,6 +253,49 @@ export class DashboardView {
     this.editModeActions = null;
     this.editColumnsButton = null;
     this.bindEditColumns();
+    this.bindSaveViewAsButton();
+  }
+
+  openSaveViewAsModal({ onSave } = {}) {
+    showSaveViewAsModal({
+      onSave: (name) => {
+        if (!name) {
+          showAlertModal({
+            title: "Save View As",
+            message: "Please enter a view name.",
+            buttonLabel: "OK",
+          });
+          return false;
+        }
+        if (typeof onSave === "function") onSave(name);
+        return true;
+      },
+    });
+  }
+
+  bindSaveViewAsButton() {
+    if (this._saveViewBound) return;
+    this._saveViewBound = true;
+    const btn = document.getElementById("save-view-btn");
+    if (!btn) return;
+    btn.addEventListener("click", () => {
+      this.openSaveViewAsModal({
+        onSave: (name) => {
+          let button = this.createCustomEditButton(name);
+          document.getElementById("top-tabs")?.appendChild(button);
+        },
+      });
+    });
+  }
+
+  createCustomEditButton(value) {
+    let button = document.createElement("button");
+    if (button._isCreated) return;
+    button._isCreated = true;
+    button.classList =
+      "pl-2 ml-9 px-4 border-l-slate-100 text-[#003882] bg-white border-b border-[#003882] hover:text-[#003882] active:text-[#003882] focus:ttext-[#003882] focus-visible:text-[#003882]";
+    button.textContent = value;
+    return button;
   }
 
   buildClientContactIcons(meta = {}) {
@@ -1648,14 +1693,35 @@ export class DashboardView {
     };
 
     const createEyeIcon = () => {
-      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-      svg.setAttribute("data-icon", "eye");
-      svg.setAttribute("width", "16");
-      svg.setAttribute("height", "16");
-      svg.setAttribute("viewBox", "0 0 16 16");
-      svg.setAttribute("fill", "none");
-      svg.innerHTML = `<path d="M14.6283 7.59803C14.6089 7.55414 14.1383 6.51025 13.0922 5.46414C11.6983 4.07025 9.93773 3.33359 7.99995 3.33359C6.06216 3.33359 4.30161 4.07025 2.90772 5.46414C1.86161 6.51025 1.38883 7.55581 1.37161 7.59803C1.34633 7.65486 1.33328 7.71639 1.33328 7.77859C1.33328 7.84078 1.34633 7.90231 1.37161 7.95914C1.39106 8.00303 1.86161 9.04636 2.90772 10.0925C4.30161 11.4858 6.06216 12.2225 7.99995 12.2225C9.93773 12.2225 11.6983 11.4858 13.0922 10.0925C14.1383 9.04636 14.6089 8.00303 14.6283 7.95914C14.6536 7.90231 14.6666 7.84078 14.6666 7.77859C14.6666 7.71639 14.6536 7.65486 14.6283 7.59803ZM7.99995 10.0003C7.56044 10.0003 7.13079 9.86993 6.76535 9.62574C6.39991 9.38156 6.11507 9.0345 5.94688 8.62844C5.77868 8.22238 5.73467 7.77557 5.82042 7.3445C5.90616 6.91343 6.11781 6.51747 6.42859 6.20668C6.73938 5.8959 7.13534 5.68425 7.56641 5.59851C7.99748 5.51276 8.44429 5.55678 8.85035 5.72497C9.25642 5.89317 9.60347 6.178 9.84766 6.54344C10.0918 6.90888 10.2222 7.33853 10.2222 7.77803C10.2222 8.3674 9.98805 8.93263 9.5713 9.34938C9.15455 9.76613 8.58932 10.0003 7.99995 10.0003Z" fill="#636D88"/>`;
-      return svg;
+      let svgDiv = document.createElement("div");
+      svgDiv.setAttribute("data-icon", "eye");
+      svgDiv.className =
+        "inline-flex items-center gap-2 text-neutral-700 hover:!text-neutral-700 active:!text-neutral-700 focus:!text-neutral-700 focus-visible:!text-neutral-700";
+      const svgOpen = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "svg"
+      );
+      svgOpen.classList = "open block";
+      svgOpen.setAttribute("width", "16");
+      svgOpen.setAttribute("height", "16");
+      svgOpen.setAttribute("viewBox", "0 0 22 16");
+      svgOpen.setAttribute("fill", "none");
+      svgOpen.innerHTML = `<path d="M13.542 8C13.542 8.79565 13.2259 9.55871 12.6633 10.1213C12.1007 10.6839 11.3376 11 10.542 11C9.74634 11 8.98328 10.6839 8.42067 10.1213C7.85806 9.55871 7.54199 8.79565 7.54199 8C7.54199 7.20435 7.85806 6.44129 8.42067 5.87868C8.98328 5.31607 9.74634 5 10.542 5C11.3376 5 12.1007 5.31607 12.6633 5.87868C13.2259 6.44129 13.542 7.20435 13.542 8Z" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M1 8C2.274 3.943 6.065 1 10.542 1C15.02 1 18.81 3.943 20.084 8C18.81 12.057 15.02 15 10.542 15C6.064 15 2.274 12.057 1 8Z" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`;
+      svgDiv.appendChild(svgOpen);
+
+      const svgClose = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "svg"
+      );
+      svgClose.classList = "closed hidden";
+      svgClose.setAttribute("width", "16");
+      svgClose.setAttribute("height", "15");
+      svgClose.setAttribute("viewBox", "0 0 24 24");
+      svgClose.setAttribute("fill", "none");
+      svgClose.innerHTML = `<path d="M10.9399 6.08C11.2907 6.02651 11.6451 5.99976 11.9999 6C15.1799 6 18.1699 8.29 19.9099 12C19.6444 12.5649 19.3438 13.1126 19.0099 13.64C18.9041 13.8038 18.8485 13.995 18.8499 14.19C18.8522 14.4082 18.9257 14.6198 19.0594 14.7923C19.1931 14.9648 19.3795 15.0889 19.5903 15.1455C19.8011 15.2022 20.0246 15.1883 20.2267 15.1061C20.4289 15.0238 20.5986 14.8777 20.7099 14.69C21.175 13.9574 21.5796 13.1882 21.9199 12.39C21.9736 12.2652 22.0013 12.1308 22.0013 11.995C22.0013 11.8592 21.9736 11.7248 21.9199 11.6C19.8999 6.91 16.0999 4 11.9999 4C11.5307 3.99886 11.0622 4.03902 10.5999 4.12C10.4686 4.14233 10.343 4.1903 10.2302 4.26118C10.1174 4.33206 10.0197 4.42446 9.94263 4.5331C9.86555 4.64175 9.81063 4.76451 9.78101 4.89438C9.75138 5.02425 9.74762 5.15868 9.76994 5.29C9.79227 5.42132 9.84024 5.54696 9.91112 5.65975C9.982 5.77253 10.0744 5.87024 10.183 5.94732C10.2917 6.02439 10.4144 6.07931 10.5443 6.10894C10.6742 6.13857 10.8086 6.14233 10.9399 6.12V6.08ZM3.70994 2.29C3.6167 2.19676 3.50601 2.1228 3.38419 2.07234C3.26237 2.02188 3.1318 1.99591 2.99994 1.99591C2.86808 1.99591 2.73751 2.02188 2.61569 2.07234C2.49387 2.1228 2.38318 2.19676 2.28994 2.29C2.10164 2.47831 1.99585 2.7337 1.99585 3C1.99585 3.2663 2.10164 3.5217 2.28994 3.71L5.38994 6.8C3.9751 8.16117 2.84932 9.79372 2.07994 11.6C2.02488 11.7262 1.99646 11.8623 1.99646 12C1.99646 12.1377 2.02488 12.2738 2.07994 12.4C4.09994 17.09 7.89994 20 11.9999 20C13.797 19.9876 15.5517 19.4525 17.0499 18.46L20.2899 21.71C20.3829 21.8037 20.4935 21.8781 20.6154 21.9289C20.7372 21.9797 20.8679 22.0058 20.9999 22.0058C21.132 22.0058 21.2627 21.9797 21.3845 21.9289C21.5064 21.8781 21.617 21.8037 21.7099 21.71C21.8037 21.617 21.8781 21.5064 21.9288 21.3846C21.9796 21.2627 22.0057 21.132 22.0057 21C22.0057 20.868 21.9796 20.7373 21.9288 20.6154C21.8781 20.4936 21.8037 20.383 21.7099 20.29L3.70994 2.29ZM10.0699 11.48L12.5199 13.93C12.351 13.9786 12.1758 14.0022 11.9999 14C11.4695 14 10.9608 13.7893 10.5857 13.4142C10.2107 13.0391 9.99994 12.5304 9.99994 12C9.99775 11.8242 10.0213 11.649 10.0699 11.48ZM11.9999 18C8.81994 18 5.82994 15.71 4.09994 12C4.74625 10.5739 5.66321 9.28675 6.79994 8.21L8.56994 10C8.15419 10.7588 7.99568 11.6319 8.1182 12.4885C8.24072 13.345 8.63766 14.1387 9.24947 14.7505C9.86128 15.3623 10.655 15.7592 11.5115 15.8817C12.368 16.0043 13.2411 15.8458 13.9999 15.43L15.5899 17C14.501 17.6409 13.2634 17.9856 11.9999 18Z" fill="black"/>`;
+
+      svgDiv.appendChild(svgClose);
+      return svgDiv;
     };
 
     // Single DOM scan
@@ -1672,15 +1738,16 @@ export class DashboardView {
 
     columnsMap.forEach((values, key) => {
       const card = document.createElement("div");
-      card.className =
-        "flex flex-col rounded-lg border border-gray-300 bg-white";
+      card.className = "inline-flex flex-col justify-start items-start";
 
       const header = document.createElement("div");
       header.className =
-        "px-4 py-3 font-medium text-gray-800 border-b border-gray-200 rounded-t-lg bg-neutral-100";
+        "w-full px-4 py-3 bg-neutral-100 rounded-tl-lg rounded-tr-lg outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2";
       const headerWrap = document.createElement("div");
-      headerWrap.className = "flex items-center gap-4";
+      headerWrap.className = "inline-flex justify-start items-center gap-2";
       const title = document.createElement("span");
+      title.className =
+        "justify-center text-neutral-700 text-sm font-medium leading-4";
       title.textContent = key;
       const eye = createEyeIcon();
       headerWrap.append(title, eye);
@@ -1688,17 +1755,22 @@ export class DashboardView {
 
       const body = document.createElement("div");
       body.className =
-        "px-4 py-3 flex flex-col gap-3 max-h-60 overflow-y-auto text-sm text-slate-700 w-full min-w-0 overflow-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden";
+        "self-stretch bg-white flex flex-col max-h-60 overflow-y-auto text-sm text-slate-700 w-full min-w-0 overflow-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden";
 
       values.forEach((valueObj) => {
         const el = document.createElement("div");
         // Truncate long values so they don't overflow the card
-        el.className = "text-slate-800  w-full min-w-0";
+        el.className =
+          "self-stretch px-4 py-3 bg-white border-l border-r border-b border-gray-300 inline-flex justify-start items-center gap-3";
         if (valueObj.isAction && valueObj.html) {
           el.innerHTML = valueObj.html;
         } else {
           const text = valueObj.text || "—";
-          el.textContent = text;
+          const textEl = document.createElement("div");
+          textEl.className =
+            "flex-1 justify-end text-neutral-700 text-sm font-normal leading-5 line-clamp-1";
+          textEl.textContent = text;
+          el.appendChild(textEl);
           el.title = text;
         }
         body.appendChild(el);
@@ -1709,6 +1781,7 @@ export class DashboardView {
     });
 
     container.appendChild(fragment);
+    this.handleEyeIconClicks();
   }
 
   // Wire up the Edit Columns entry point and supporting containers/actions.
@@ -1751,7 +1824,7 @@ export class DashboardView {
     const container = document.createElement("div");
     container.id = "edit-columns-section";
     container.className =
-      "hidden w-full px-4 py-4 flex flex-wrap gap-4 bg-white border-t border-slate-300";
+      "hidden self-stretch p-2 bg-neutral-100 inline-flex flex-wrap justify-start items-start gap-2 border-t border-slate-300";
     if (tableSection?.parentElement) {
       tableSection.parentElement.insertBefore(
         container,
@@ -1792,7 +1865,14 @@ export class DashboardView {
 
     cancelBtn?.addEventListener("click", () => this.exitEditColumnsMode());
     saveBtn?.addEventListener("click", () => this.exitEditColumnsMode());
-    saveAsBtn?.addEventListener("click", () => this.exitEditColumnsMode());
+    saveAsBtn?.addEventListener("click", () => {
+      this.openSaveViewAsModal({
+        onSave: (name) => {
+          this.showToast(`Saved view "${name}".`);
+          this.exitEditColumnsMode();
+        },
+      });
+    });
     return group;
   }
 
@@ -1880,16 +1960,14 @@ export class DashboardView {
   }
 
   handleEyeIconClicks() {
-    let icons = document.querySelector("[data-icon='eye']");
-    if (!icons) return;
-    icons.forEach((icon) => {
-      if (icon._eyeClickBound) return;
-      icon._eyeClickBound = true;
-      icon.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        alert("Eye icon clicked for column visibility toggle.");
-      });
+    let container = document.getElementById("edit-columns-section");
+    if (container._clickListenerAdded) return;
+    container.addEventListener("click", (e) => {
+      container._clickListenerAdded = true;
+      let svg = e.target.closest("[data-icon='eye']");
+      if (!svg) return;
+      svg.querySelector(".open").classList.toggle("hidden");
+      svg.querySelector(".closed").classList.toggle("hidden");
     });
   }
 }

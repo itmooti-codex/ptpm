@@ -440,6 +440,7 @@ export function showUnsavedChangesModal({ onDiscard, onSave } = {}) {
 }
 
 let resetModalCache = null;
+let saveViewAsModalCache = null;
 
 function buildResetConfirmModal() {
   if (resetModalCache) return resetModalCache;
@@ -508,6 +509,90 @@ function buildResetConfirmModal() {
 export function showResetConfirmModal({ onConfirm } = {}) {
   const inst = buildResetConfirmModal();
   inst.show({ onConfirm });
+  return inst;
+}
+
+function buildSaveViewAsModal() {
+  if (saveViewAsModalCache) return saveViewAsModalCache;
+
+  const modal = document.createElement("div");
+  modal.id = "ptpm-save-view-modal";
+  modal.className =
+    "fixed inset-0 z-[9998] hidden items-center justify-center bg-black/40";
+  modal.innerHTML = `
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-[560px] mx-4 overflow-hidden hover:!bg-white active:!bg-white hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-xl active:shadow-xl focus:shadow-xl focus-visible:shadow-xl">
+      <div class="flex items-center justify-between px-4 py-3 border-b border-slate-200 hover:!border-slate-200 active:!border-slate-200 hover:border-b active:border-b focus:border-b focus-visible:border-b hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200">
+        <h3 class="text-lg font-semibold text-slate-900 hover:!text-slate-900 active:!text-slate-900 hover:text-lg active:text-lg focus:text-lg focus-visible:text-lg hover:text-slate-900 active:text-slate-900 focus:text-slate-900 focus-visible:text-slate-900">Save View As</h3>
+        <button type="button" data-save-view-close class="text-slate-500 focus:text-slate-500 focus-visible:text-slate-500">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+      <div class="px-4 py-5 space-y-2 text-left hover:text-left active:text-left focus:text-left focus-visible:text-left">
+        <label for="ptpm-save-view-input" class="block text-sm text-slate-700 hover:!text-slate-700 active:!text-slate-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700">Name</label>
+        <input id="ptpm-save-view-input" type="text" class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#003882]/20" />
+      </div>
+      <div class="flex justify-end gap-3 px-4 py-3 border-t border-slate-200 hover:!border-slate-200 active:!border-slate-200 hover:border-t active:border-t focus:border-t focus-visible:border-t hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200">
+        <button type="button" data-save-view-cancel class="px-4 py-2 rounded text-slate-600 text-sm font-medium hover:!text-slate-600 active:!text-slate-600 focus:!text-slate-600 focus-visible:!text-slate-600 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm">Cancel</button>
+        <button type="button" data-save-view-save class="px-4 py-2 rounded bg-[#003882] text-white text-sm font-semibold hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882] hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm">Save</button>
+      </div>
+    </div>
+  `;
+
+  const closeBtn = modal.querySelector("[data-save-view-close]");
+  const cancelBtn = modal.querySelector("[data-save-view-cancel]");
+  const saveBtn = modal.querySelector("[data-save-view-save]");
+  const input = modal.querySelector("#ptpm-save-view-input");
+
+  const hide = () => {
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+    document.body.style.overflow = "";
+  };
+
+  const show = ({ onSave, onCancel, defaultName = "" } = {}) => {
+    modal._onSave = typeof onSave === "function" ? onSave : null;
+    modal._onCancel = typeof onCancel === "function" ? onCancel : null;
+    if (input) {
+      input.value = defaultName || "";
+      input.focus();
+    }
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+    document.body.style.overflow = "hidden";
+  };
+
+  const handleCancel = () => {
+    hide();
+    modal._onCancel?.();
+  };
+
+  const handleSave = () => {
+    const value = (input?.value || "").trim();
+    const shouldClose = modal._onSave ? modal._onSave(value) !== false : true;
+    if (shouldClose) hide();
+  };
+
+  closeBtn?.addEventListener("click", handleCancel);
+  cancelBtn?.addEventListener("click", handleCancel);
+  saveBtn?.addEventListener("click", handleSave);
+  input?.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") handleSave();
+  });
+
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) handleCancel();
+  });
+
+  document.body.appendChild(modal);
+  saveViewAsModalCache = { modal, show, hide, input };
+  return saveViewAsModalCache;
+}
+
+export function showSaveViewAsModal({ onSave, onCancel, defaultName } = {}) {
+  const inst = buildSaveViewAsModal();
+  inst.show({ onSave, onCancel, defaultName });
   return inst;
 }
 
