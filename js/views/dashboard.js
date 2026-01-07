@@ -522,6 +522,7 @@ export class DashboardView {
       },
       {
         key: "created",
+        label: "Created Date",
         headerClass: "px-6 py-4 text-left",
         cellClass: "px-6 py-4 text-slate-600",
         html: `
@@ -541,11 +542,12 @@ export class DashboardView {
       },
       {
         key: "followUp",
+        label: "Follow Up",
         headerClass: "px-6 py-4 text-left",
         cellClass: "px-6 py-4 text-slate-600",
         html: `
           <span class="inline-flex items-center gap-1">
-            Follow Up Date
+            Follow Up
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-brand-400 hover:!text-brand-400 active:!text-brand-400 hover:text-brand-400 active:text-brand-400 focus:text-brand-400 focus-visible:text-brand-400" viewBox="0 0 20 20" fill="none">
               <path d="M7 8l3-3 3 3M7 12l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
             </svg>

@@ -531,7 +531,10 @@ function buildSaveViewAsModal() {
       </div>
       <div class="px-4 py-5 space-y-2 text-left hover:text-left active:text-left focus:text-left focus-visible:text-left">
         <label for="ptpm-save-view-input" class="block text-sm text-slate-700 hover:!text-slate-700 active:!text-slate-700 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700">Name</label>
-        <input id="ptpm-save-view-input" type="text" class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#003882]/20" />
+        <input id="ptpm-save-view-input" type="text" class="w-full rounded-md px-3 py-2 text-sm text-slate-800
+        !outline !outline-1 browser-default !outline-slate-300
+        focus:!outline focus:!outline-1 focus:!outline-slate-300
+        ">
       </div>
       <div class="flex justify-end gap-3 px-4 py-3 border-t border-slate-200 hover:!border-slate-200 active:!border-slate-200 hover:border-t active:border-t focus:border-t focus-visible:border-t hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200">
         <button type="button" data-save-view-cancel class="px-4 py-2 rounded text-slate-600 text-sm font-medium hover:!text-slate-600 active:!text-slate-600 focus:!text-slate-600 focus-visible:!text-slate-600 hover:text-sm active:text-sm focus:text-sm focus-visible:text-sm">Cancel</button>
