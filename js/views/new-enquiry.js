@@ -588,13 +588,14 @@ export class NewInquiryView {
         "flex w-full flex-col gap-1 px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50";
 
       const label = document.createElement("span");
-      label.className = "font-medium text-slate-700";
+      label.className =
+        "font-normal text-xs font-['Inter'] justify-start text-neutral-700";
       label.textContent = item.label || "Unnamed Contact";
       button.appendChild(label);
 
       if (item.meta) {
         const meta = document.createElement("span");
-        meta.className = "text-xs text-slate-500";
+        meta.className = "text-xs text-neutral-700";
         meta.textContent = item.meta;
         button.appendChild(meta);
       }
@@ -649,6 +650,12 @@ export class NewInquiryView {
       span.classList.remove("hidden");
 
       const active = key === targetKey;
+      // Set active-tab attribute
+      if (active) {
+        button.setAttribute("data-active-tab", "true");
+      } else {
+        button.removeAttribute("data-active-tab");
+      }
 
       /* Background */
       button.classList.toggle("bg-blue-700", active);
@@ -676,6 +683,9 @@ export class NewInquiryView {
 
     if (document?.body) {
       document.body.dataset.activeContactTab = targetKey;
+      document
+        .getElementById(targetKey)
+        .setAttribute("data-active-tab", "true");
     }
 
     // Clear the opposite tab's selected contact/entity id when switching
@@ -863,10 +873,8 @@ export class NewInquiryView {
     const hasStatus = Boolean(status);
 
     return `
-      <article id=${
-        item.id
-      } class="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-        <div class="flex items-center gap-3">
+      <article id=${item.id} class="flex gap-1 items-stretched justify-between">
+        <div class="flex rounded justify-center items-center gap-3 bg-white p-3">
           <span class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-blue-600">
             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
               <path d="M3 10.5 12 4l9 6.5v8.5a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1Z" />
@@ -882,7 +890,7 @@ export class NewInquiryView {
             }
           </div>
         </div>
-        <div class="flex flex-col items-end">
+        <div class="flex items-center rounded justify-center flex-col bg-white p-3">
           <a 
             class="items-center gap-1 text-xs hover:text-sky-900 mb-[-10px]"
             href="${this.#escapeHtml(mapUrl)}"
@@ -1198,7 +1206,7 @@ export class NewInquiryView {
     }
 
     const message = this.#emptyMessageFor(tab);
-    return `<p class="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-500 text-center hover:!border-slate-200 active:!border-slate-200 hover:!bg-slate-50 active:!bg-slate-50 hover:!text-slate-500 active:!text-slate-500 hover:border active:border focus:border focus-visible:border hover:border-dashed active:border-dashed focus:border-dashed focus-visible:border-dashed hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:bg-slate-50 active:bg-slate-50 focus:bg-slate-50 focus-visible:bg-slate-50  hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500 hover:text-center active:text-center focus:text-center focus-visible:text-center">${this.#escapeHtml(
+    return `<p class="rounded-lg border border-dashed border-slate-200 bg-[#DEE7F6] px-4 py-3 text-sm text-neutral-700 text-center hover:!border-slate-200 active:!border-slate-200 hover:!bg-[#DEE7F6] active:!bg-[#DEE7F6] font-medium font-['Inter'] hover:!text-neutral-700 active:!text-neutral-700 hover:border active:border focus:border focus-visible:border hover:border-dashed active:border-dashed focus:border-dashed focus-visible:border-dashed hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:bg-[#DEE7F6] active:bg-[#DEE7F6] focus:bg-[#DEE7F6] focus-visible:bg-[#DEE7F6]  hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 hover:text-center active:text-center focus:text-center focus-visible:text-center">${this.#escapeHtml(
       message
     )}</p>`;
   }
@@ -2744,8 +2752,10 @@ export class NewInquiryView {
       .hasAttribute("data-active-tab");
     if (individual) {
       return "individual";
-    } else {
+    } else if (entity) {
       return "entity";
+    } else {
+      console.error("No active tab found");
     }
   }
 
