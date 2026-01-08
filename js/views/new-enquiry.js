@@ -1715,16 +1715,23 @@ export class NewInquiryView {
         <div class="px-5 py-5 space-y-6">
         <div class="hidden" id="account-type-section">
                 <label class="block text-sm font-medium text-slate-600">Entity Type</label>
-                <select id="account-type" data-contact-id="account-type" data-contact-field="account_type" class="!block w-full appearance-none rounded-lg border border-slate-200 bg-white my-2 px-4 py-3 text-sm text-slate-600 focus:border-brand-200 focus:outline-none focus:ring-2 focus:ring-brand-100">
-                  <option clas="font-medium text-slate-600" value="Body Corp">Body Corp</option>
-                  <option clas="font-medium text-slate-600" value="Body Corp Company">Body Corp Company</option>
-                  <option clas="font-medium text-slate-600" value="Business &amp; Gov">Business &amp; Gov</option>
-                  <option clas="font-medium text-slate-600" value="Closed Real Estate">Closed Real Estate</option>
-                  <option clas="font-medium text-slate-600" value="School/Childcare">School/Childcare</option>
-                  <option clas="font-medium text-slate-600" value="Real Estate Agent">Real Estate Agent</option>
-                  <option clas="font-medium text-slate-600" value="Tenant to Pay">Tenant to Pay</option>
-                  <option clas="font-medium text-slate-600" value="Wildlife Rescue">Wildlife Rescue</option>
-                </select>
+                <div class="relative mt-2 browser-default">
+                  <select id="account-type" data-contact-id="account-type" data-contact-field="account_type" class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 focus:ring-2 focus:ring-slate-200 !block appearance-none hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default">
+                    <option clas="font-medium text-slate-600" value="Body Corp">Body Corp</option>
+                    <option clas="font-medium text-slate-600" value="Body Corp Company">Body Corp Company</option>
+                    <option clas="font-medium text-slate-600" value="Business &amp; Gov">Business &amp; Gov</option>
+                    <option clas="font-medium text-slate-600" value="Closed Real Estate">Closed Real Estate</option>
+                    <option clas="font-medium text-slate-600" value="School/Childcare">School/Childcare</option>
+                    <option clas="font-medium text-slate-600" value="Real Estate Agent">Real Estate Agent</option>
+                    <option clas="font-medium text-slate-600" value="Tenant to Pay">Tenant to Pay</option>
+                    <option clas="font-medium text-slate-600" value="Wildlife Rescue">Wildlife Rescue</option>
+                  </select>
+                  <span class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400 browser-default">
+                    <svg class="h-4 w-4 browser-default" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M6 9l6 6 6-6" class="browser-default"></path>
+                    </svg>
+                  </span>
+                </div>
               </div>
               <div id="company-name-section" class="hidden">
                 <label class="text-sm font-medium text-slate-600">Company Name</label>
@@ -1798,8 +1805,15 @@ export class NewInquiryView {
               </div>
               <div class="flex-1">
                 <label class="block text-sm font-medium text-gray-700 mb-1">State*</label>
-                 <select id="adTopState" data-contact-id="state" data-contact-field="top_state" class="!block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                </select>
+                 <div class="relative mt-2 browser-default">
+                  <select id="adTopState" data-contact-id="state" data-contact-field="top_state" class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 focus:ring-2 focus:ring-slate-200 !block appearance-none hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default">
+                  </select>
+                  <span class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400 browser-default">
+                    <svg class="h-4 w-4 browser-default" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M6 9l6 6 6-6" class="browser-default"></path>
+                    </svg>
+                  </span>
+                </div>
               </div>
             </div>
             <div class="flex gap-3">
@@ -1809,9 +1823,16 @@ export class NewInquiryView {
               </div>
               <div class="flex-1">
                 <label class="block text-sm font-medium text-gray-700 mb-1">Country</label>
-                <select id="adTopCountry" data-contact-id="country" data-contact-field="top_country" class="!block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                   <option value="AU" selected>Australia</option>
-                </select>
+                <div class="relative mt-2 browser-default">
+                  <select id="adTopCountry" data-contact-id="country" data-contact-field="top_country" class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 focus:ring-2 focus:ring-slate-200 !block appearance-none hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default">
+                     <option value="AU" selected>Australia</option>
+                  </select>
+                  <span class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400 browser-default">
+                    <svg class="h-4 w-4 browser-default" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M6 9l6 6 6-6" class="browser-default"></path>
+                    </svg>
+                  </span>
+                </div>
               </div>
             </div>
             </div>
@@ -1856,9 +1877,16 @@ export class NewInquiryView {
                 </div>
                 <div class="flex-1">
                   <label class="block text-sm font-medium text-gray-700 mb-1">State*</label>
-                  <select id="adBotState" data-contact-id="postal_state" data-contact-field="bot_state" class="!block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    
-                  </select>
+                  <div class="relative mt-2 browser-default">
+                    <select id="adBotState" data-contact-id="postal_state" data-contact-field="bot_state" class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 focus:ring-2 focus:ring-slate-200 !block appearance-none hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default">
+                      
+                    </select>
+                    <span class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400 browser-default">
+                      <svg class="h-4 w-4 browser-default" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 9l6 6 6-6" class="browser-default"></path>
+                      </svg>
+                    </span>
+                  </div>
                 </div>
               </div>
               <div class="flex gap-3">
@@ -1868,9 +1896,16 @@ export class NewInquiryView {
                 </div>
                 <div class="flex-1">
                   <label class="block text-sm font-medium text-gray-700 mb-1">Country</label>
-                  <select id="adBotCountry" data-contact-id="postal_country" data-contact-field="bot_country" class="!block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    <option value="AU" selected >Australia</option>
-                  </select>
+                  <div class="relative mt-2 browser-default">
+                    <select id="adBotCountry" data-contact-id="postal_country" data-contact-field="bot_country" class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 focus:ring-2 focus:ring-slate-200 !block appearance-none hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default">
+                      <option value="AU" selected>Australia</option>
+                    </select>
+                    <span class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400 browser-default">
+                      <svg class="h-4 w-4 browser-default" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 9l6 6 6-6" class="browser-default"></path>
+                      </svg>
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
