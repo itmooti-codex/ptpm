@@ -881,14 +881,14 @@ export class NewInquiryView {
 
     return `
       <article id=${item.id} class="flex gap-1 items-stretched justify-between">
-        <div class="flex rounded justify-center items-center gap-3 bg-white p-3">
-          <span class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-blue-600">
-            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 10.5 12 4l9 6.5v8.5a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1Z" />
-            </svg>
+        <div class="flex rounded justify-center items-center gap-3 bg-white p-3 !w-[280px]">
+          <span class="flex h-12 w-12 items-center justify-center rounded bg-blue-50 text-blue-600">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M21.2007 11.5996V21.2C21.2007 21.4122 21.1164 21.6156 20.9664 21.7657C20.8164 21.9157 20.6129 22 20.4007 22H14.8005C14.5883 22 14.3848 21.9157 14.2348 21.7657C14.0847 21.6156 14.0004 21.4122 14.0004 21.2V15.9998C14.0004 15.8937 13.9583 15.7919 13.8833 15.7169C13.8083 15.6419 13.7065 15.5998 13.6004 15.5998H9.60028C9.49419 15.5998 9.39245 15.6419 9.31743 15.7169C9.24241 15.7919 9.20027 15.8937 9.20027 15.9998V21.2C9.20027 21.4122 9.11598 21.6156 8.96594 21.7657C8.81591 21.9157 8.61242 22 8.40024 22H2.80003C2.58785 22 2.38436 21.9157 2.23432 21.7657C2.08429 21.6156 2 21.4122 2 21.2V11.5996C2.0002 11.1753 2.1689 10.7685 2.46902 10.4686L10.4693 2.46828C10.7694 2.16843 11.1762 2 11.6004 2C12.0245 2 12.4314 2.16843 12.7314 2.46828L20.7317 10.4686C21.0318 10.7685 21.2005 11.1753 21.2007 11.5996Z" fill="#003882"/>
+          </svg>
           </span>
           <div class="space-y-1">
-            <p class="text-sm font-semibold text-slate-800">${title}</p>
+            <p class="elf-stretch justify-start text-neutral-700 text-sm font-medium font-['Inter'] ">${title}</p>
             <p class="text-xs text-slate-500">${address}</p>
             ${
               owner
@@ -897,19 +897,16 @@ export class NewInquiryView {
             }
           </div>
         </div>
-        <div class="flex items-center rounded justify-center flex-col bg-white p-3">
+        <div class="flex flex-col gap-3 items-center rounded justify-center flex-col bg-white p-3">
           <a 
-            class="items-center gap-1 text-xs hover:text-sky-900 mb-[-10px]"
+            class="items-center gap-1 text-xs hover:text-sky-900"
             href="${this.#escapeHtml(mapUrl)}"
             target="_blank"
             rel="noopener noreferrer"
             
           >
-            <svg width="74" height="31" viewBox="0 0 74 31" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path fill-rule="evenodd" clip-rule="evenodd"
-                d="M32.9165 2.33341C32.7618 2.33341 32.6134 2.39487 32.504 2.50427C32.3946 2.61367 32.3332 2.76204 32.3332 2.91675V11.0834C32.3332 11.2381 32.3946 11.3865 32.504 11.4959C32.6134 11.6053 32.7618 11.6667 32.9165 11.6667H41.0832C41.2379 11.6667 41.3863 11.6053 41.4956 11.4959C41.605 11.3865 41.6665 11.2381 41.6665 11.0834V8.16675C41.6665 7.84458 41.9277 7.58341 42.2498 7.58341C42.572 7.58341 42.8332 7.84458 42.8332 8.16675V11.0834C42.8332 11.5475 42.6488 11.9927 42.3206 12.3209C41.9924 12.649 41.5473 12.8334 41.0832 12.8334H32.9165C32.4524 12.8334 32.0073 12.649 31.6791 12.3209C31.3509 11.9927 31.1665 11.5475 31.1665 11.0834V2.91675C31.1665 2.45262 31.3509 2.0075 31.6791 1.67931C32.0073 1.35112 32.4524 1.16675 32.9165 1.16675H35.8332C36.1553 1.16675 36.4165 1.42792 36.4165 1.75008C36.4165 2.07225 36.1553 2.33341 35.8332 2.33341H32.9165ZM39.3332 2.33341C39.011 2.33341 38.7498 2.07225 38.7498 1.75008C38.7498 1.42792 39.011 1.16675 39.3332 1.16675H42.2498C42.572 1.16675 42.8332 1.42792 42.8332 1.75008V4.66675C42.8332 4.98891 42.572 5.25008 42.2498 5.25008C41.9277 5.25008 41.6665 4.98891 41.6665 4.66675V3.15837L38.2873 6.53756C38.0595 6.76537 37.6902 6.76537 37.4624 6.53756C37.2346 6.30975 37.2346 5.94041 37.4624 5.7126L40.8415 2.33341H39.3332Z"
-                fill="#0052CC"
-              />
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M2.91663 2.33341C2.76192 2.33341 2.61354 2.39487 2.50415 2.50427C2.39475 2.61367 2.33329 2.76204 2.33329 2.91675V11.0834C2.33329 11.2381 2.39475 11.3865 2.50415 11.4959C2.61354 11.6053 2.76192 11.6667 2.91663 11.6667H11.0833C11.238 11.6667 11.3864 11.6053 11.4958 11.4959C11.6052 11.3865 11.6666 11.2381 11.6666 11.0834V8.16675C11.6666 7.84458 11.9278 7.58341 12.25 7.58341C12.5721 7.58341 12.8333 7.84458 12.8333 8.16675V11.0834C12.8333 11.5475 12.6489 11.9927 12.3207 12.3209C11.9925 12.649 11.5474 12.8334 11.0833 12.8334H2.91663C2.4525 12.8334 2.00738 12.649 1.67919 12.3209C1.351 11.9927 1.16663 11.5475 1.16663 11.0834V2.91675C1.16663 2.45262 1.351 2.0075 1.67919 1.67931C2.00738 1.35112 2.4525 1.16675 2.91663 1.16675H5.83329C6.15546 1.16675 6.41663 1.42792 6.41663 1.75008C6.41663 2.07225 6.15546 2.33341 5.83329 2.33341H2.91663ZM9.33329 2.33341C9.01113 2.33341 8.74996 2.07225 8.74996 1.75008C8.74996 1.42792 9.01113 1.16675 9.33329 1.16675H12.25C12.5721 1.16675 12.8333 1.42792 12.8333 1.75008V4.66675C12.8333 4.98891 12.5721 5.25008 12.25 5.25008C11.9278 5.25008 11.6666 4.98891 11.6666 4.66675V3.15837L8.28744 6.53756C8.05963 6.76537 7.69029 6.76537 7.46248 6.53756C7.23467 6.30975 7.23467 5.94041 7.46248 5.7126L10.8417 2.33341H9.33329Z" fill="#0052CC"/>
             </svg>
           </a>
           <div class="justify-start text-blue-700 text-xs font-normal leading-3">View on Map</div>
@@ -1374,7 +1371,6 @@ export class NewInquiryView {
     if (sourceCard && normalized) {
       this.selectedPropertyCard = sourceCard;
       sourceCard.classList.add("bg-blue-50");
-      sourceCard.classList.remove("bg-white");
     } else if (!normalized) {
       this.#clearSelectedPropertyHighlight();
     } else if (!sourceCard) {
@@ -1504,10 +1500,10 @@ export class NewInquiryView {
     thead.innerHTML = `
       <tr>
         <th class="w-7 px-4 py-2">&nbsp;</th>
-        <th class="px-4 py-2 text-left">Role</th>
-        <th class="px-4 py-2 text-left">Contact</th>
-        <th class="px-4 py-2 text-left">SMS Number</th>
-        <th class="px-4 py-2 text-left">Company</th>
+        <th class="p-4 text-left text-neutral-700 text-sm font-medium font-['Inter']">Role</th>
+        <th class="p-4 text-left text-neutral-700 text-sm font-medium font-['Inter']">Contact</th>
+        <th class="p-4 text-left text-neutral-700 text-sm font-medium font-['Inter']">SMS Number</th>
+        <th class="p-4 text-left text-neutral-700 text-sm font-medium font-['Inter']">Company</th>
         <th class="w-20 px-4 py-2 text-right">Action</th>
       </tr>
     `;
