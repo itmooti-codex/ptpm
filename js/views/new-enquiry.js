@@ -2957,7 +2957,7 @@ export class NewInquiryView {
       <div class="bg-white w-full max-w-md rounded-lg shadow-lg">
         <div class=" flex w-full justify-between px-6 py-4 border-b border-gray-300 items-center">
           <div class="flex-1 justify-start text-neutral-700 text-lg font-semibold  leading-5">Switch Account Type</div>
-          <div id="switchAccountTypeCloseBtn" class="w-6 h-6 relative overflow-hidden">
+          <div id="switchAccountTypeCloseBtn" class="!bg-transparent w-6 h-6 relative overflow-hidden">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M18.75 6.81984L17.1802 5.25L12 10.4302L6.81984 5.25L5.25 6.81984L10.4302 12L5.25 17.1802L6.81984 18.75L12 13.5698L17.1802 18.75L18.75 17.1802L13.5698 12L18.75 6.81984Z" fill="#21272A"/>
               </svg>
@@ -2973,7 +2973,7 @@ export class NewInquiryView {
         <div class="flex justify-end gap-3 px-5 py-4 border-t">
           <button
             id="switchAccountTypeCancelBtn"
-            class="!text-gray-600 hover:!text-gray-600 active:!text-gray-600 focus:!text-gray-600 focus-visible:!text-gray-600"
+            class="!bg-transparent !text-gray-600 hover:!text-gray-600 active:!text-gray-600 focus:!text-gray-600 focus-visible:!text-gray-600"
           >
             Cancel
           </button>
