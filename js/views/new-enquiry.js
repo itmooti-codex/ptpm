@@ -354,8 +354,8 @@ export class NewInquiryView {
     if (!this.saveButton) return;
     const active = Boolean(isSaving);
     this.saveButton.disabled = active;
-    this.saveButton.classList.toggle("opacity-70", active);
-    this.saveButton.classList.toggle("pointer-events-none", active);
+    this.saveButton.classList.toggle("!opacity-70", active);
+    this.saveButton.classList.toggle("!pointer-events-none", active);
     if (this.saveLabel) {
       this.saveLabel.textContent = active
         ? this.loadingSaveLabel
@@ -585,7 +585,7 @@ export class NewInquiryView {
       button.type = "button";
       button.dataset.optionIndex = String(index);
       button.className =
-        "flex w-full flex-col gap-1 px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50";
+        "!flex !w-full !flex-col !gap-1 !px-4 !py-2 !text-left !text-sm !text-slate-700 !bg-transparent hover:!bg-transparent active:!bg-transparent focus:!bg-transparent focus-visible:!bg-transparent hover:!text-slate-700 active:!text-slate-700 focus:!text-slate-700 focus-visible:!text-slate-700";
 
       const label = document.createElement("span");
       label.className =
@@ -650,7 +650,6 @@ export class NewInquiryView {
       span.classList.remove("hidden");
 
       const active = key === targetKey;
-      // Set active-tab attribute
       if (active) {
         button.setAttribute("data-active-tab", "true");
       } else {
@@ -658,27 +657,35 @@ export class NewInquiryView {
       }
 
       /* Background */
-      button.classList.toggle("bg-blue-700", active);
-      button.classList.toggle("bg-white", !active);
-      button.classList.toggle("focus:bg-blue-700", active);
-      button.classList.toggle("focus-visible:bg-blue-700", active);
-      button.classList.toggle("focus:bg-white", !active);
-      button.classList.toggle("focus-visible:bg-white", !active);
+      button.classList.toggle("!bg-blue-700", active);
+      button.classList.toggle("!bg-white", !active);
+      button.classList.toggle("hover:!bg-blue-700", active);
+      button.classList.toggle("active:!bg-blue-700", active);
+      button.classList.toggle("focus:!bg-blue-700", active);
+      button.classList.toggle("focus-visible:!bg-blue-700", active);
+      button.classList.toggle("hover:!bg-white", !active);
+      button.classList.toggle("active:!bg-white", !active);
+      button.classList.toggle("focus:!bg-white", !active);
+      button.classList.toggle("focus-visible:!bg-white", !active);
 
       /* Outline */
-      button.classList.toggle("outline", !active);
-      button.classList.toggle("outline-1", !active);
-      button.classList.toggle("outline-slate-500", !active);
+      button.classList.toggle("!outline", !active);
+      button.classList.toggle("!outline-1", !active);
+      button.classList.toggle("!outline-slate-500", !active);
       /* Shadow */
-      button.classList.toggle("shadow-sm", active);
+      button.classList.toggle("!shadow-sm", active);
 
       /* Text */
-      span.classList.toggle("text-white", active);
-      span.classList.toggle("text-slate-500", !active);
-      span.classList.toggle("focus:text-white", active);
-      span.classList.toggle("focus-visible:text-white", active);
-      span.classList.toggle("focus:text-slate-500", !active);
-      span.classList.toggle("focus-visible:text-slate-500", !active);
+      span.classList.toggle("!text-white", active);
+      span.classList.toggle("!text-slate-500", !active);
+      span.classList.toggle("hover:!text-white", active);
+      span.classList.toggle("active:!text-white", active);
+      span.classList.toggle("focus:!text-white", active);
+      span.classList.toggle("focus-visible:!text-white", active);
+      span.classList.toggle("hover:!text-slate-500", !active);
+      span.classList.toggle("active:!text-slate-500", !active);
+      span.classList.toggle("focus:!text-slate-500", !active);
+      span.classList.toggle("focus-visible:!text-slate-500", !active);
     });
 
     if (document?.body) {
@@ -1523,13 +1530,13 @@ export class NewInquiryView {
 
     const actionCell = () => `
       <div class="flex items-center justify-end gap-3 text-slate-500">
-        <button type="button" class="edit-btn hover:text-sky-700" title="Edit">
+        <button type="button" class="edit-btn !text-slate-500 hover:!text-slate-500 active:!text-slate-500 focus:!text-slate-500 focus-visible:!text-slate-500" title="Edit">
           <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 20h9"/>
             <path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/>
           </svg>
         </button>
-        <button type="button" class="delete-btn text-rose-600 hover:text-rose-700" title="Delete">
+        <button type="button" class="delete-btn !text-rose-600 hover:!text-rose-600 active:!text-rose-600 focus:!text-rose-600 focus-visible:!text-rose-600" title="Delete">
           <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="3 6 5 6 21 6"/>
             <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
@@ -1694,7 +1701,7 @@ export class NewInquiryView {
       <div modal-name="contact-detail-modal" id="addressDetailsModalBox" class="bg-white rounded-lg shadow-xl w-[40vw] max-w-3xl max-h-[90vh] overflow-auto">
         <div class="flex items-center justify-between px-5 py-3 bg-[#003882] text-white rounded-t-lg">
           <h3 class="text-base font-semibold">Contact Details</h3>
-          <button id="closeAddressDetailsBtn" class="p-1 rounded hover:bg-white/10" aria-label="Close">
+          <button id="closeAddressDetailsBtn" class="!p-1 !rounded !bg-transparent hover:!bg-transparent active:!bg-transparent focus:!bg-transparent focus-visible:!bg-transparent" aria-label="Close">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
               <path d="M18.75 6.82 17.18 5.25 12 10.43 6.82 5.25 5.25 6.82 10.43 12 5.25 17.18 6.82 18.75 12 13.57 17.18 18.75 18.75 17.18 13.57 12 18.75 6.82Z" fill="white"/>
             </svg>
@@ -1871,8 +1878,8 @@ export class NewInquiryView {
         </div>
   
         <div class="flex justify-end gap-3 px-5 py-4 border-t rounded-b-lg">
-          <button id="cancelAddressDetailsBtn" class="text-sm text-slate-600 font-medium hover:text-gray-800">Cancel</button>
-          <button id="updateAddressDetailsBtn" class="px-4 py-2 bg-[#003882] text-white text-sm font-medium rounded hover:bg-blue-700">Save</button>
+          <button id="cancelAddressDetailsBtn" class="!text-sm !text-slate-600 !font-medium hover:!text-slate-600 active:!text-slate-600 focus:!text-slate-600 focus-visible:!text-slate-600">Cancel</button>
+          <button id="updateAddressDetailsBtn" class="!px-4 !py-2 !bg-[#003882] !text-white !text-sm !font-medium !rounded hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882] hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white">Save</button>
         </div>
       </div>
     `;
@@ -2000,7 +2007,7 @@ export class NewInquiryView {
         <!-- Header -->
         <div class="flex items-center justify-between px-5 py-3 bg-[#003882] text-white rounded-t-lg">
           <h3 class="text-base font-semibold">Add Property Contact</h3>
-          <button id="pcCloseBtn" class="p-1 rounded hover:bg-white/10" aria-label="Close">
+          <button id="pcCloseBtn" class="!p-1 !rounded !bg-transparent hover:!bg-transparent active:!bg-transparent focus:!bg-transparent focus-visible:!bg-transparent" aria-label="Close">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
               <path d="M18.75 6.82 17.18 5.25 12 10.43 6.82 5.25 5.25 6.82 10.43 12 5.25 17.18 6.82 18.75 12 13.57 17.18 18.75 18.75 17.18 13.57 12 18.75 6.82Z" fill="white"/>
             </svg>
@@ -2066,8 +2073,8 @@ export class NewInquiryView {
   
         <!-- Footer -->
         <div class="flex justify-end gap-3 px-5 py-4 border-t rounded-b-lg">
-          <button id="pcCancelBtn" class="text-sm text-slate-600 font-medium hover:text-gray-800">Cancel</button>
-          <button id="pcSaveBtn" class="px-4 py-2 text-white text-sm bg-[#003882] font-medium rounded"></button>
+          <button id="pcCancelBtn" class="!text-sm !text-slate-600 !font-medium hover:!text-slate-600 active:!text-slate-600 focus:!text-slate-600 focus-visible:!text-slate-600">Cancel</button>
+          <button id="pcSaveBtn" class="!px-4 !py-2 !text-white !text-sm !bg-[#003882] !font-medium !rounded hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882] hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white"></button>
         </div>
       </div>
     `;
@@ -2284,7 +2291,7 @@ export class NewInquiryView {
       const addBtn = document.createElement("button");
       addBtn.type = "button";
       addBtn.className =
-        "w-full flex items-center gap-2 px-4 py-3 text-[15px] font-medium text-sky-800 hover:bg-sky-50";
+        "!w-full !flex !items-center !gap-2 !px-4 !py-3 !text-[15px] !font-medium !text-sky-800 !bg-transparent hover:!bg-transparent active:!bg-transparent focus:!bg-transparent focus-visible:!bg-transparent hover:!text-sky-800 active:!text-sky-800 focus:!text-sky-800 focus-visible:!text-sky-800";
       addBtn.innerHTML = `
         <span class="inline-flex items-center justify-center h-5 w-5 rounded-full border border-sky-800 text-sky-800">+</span>
         <span>Add New Contact</span>
@@ -2966,14 +2973,14 @@ export class NewInquiryView {
         <div class="flex justify-end gap-3 px-5 py-4 border-t">
           <button
             id="switchAccountTypeCancelBtn"
-            class="text-gray-600 hover:text-gray-800"
+            class="!text-gray-600 hover:!text-gray-600 active:!text-gray-600 focus:!text-gray-600 focus-visible:!text-gray-600"
           >
             Cancel
           </button>
   
           <button
             id="switchAccountTypeContinueBtn"
-            class="bg-[#003882] text-white px-4 py-2 rounded-md hover:bg-[#003882]"
+            class="!bg-[#003882] !text-white !px-4 !py-2 !rounded-md hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882] hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white"
           >
             Continue
           </button>
@@ -3058,7 +3065,7 @@ export class NewInquiryView {
           btn.dataset.optionIndex = String(idx);
 
           btn.className =
-            "w-full px-4 py-3 text-left hover:bg-slate-50 focus:bg-slate-50 focus:outline-none";
+            "!w-full !px-4 !py-3 !text-left !bg-transparent hover:!bg-transparent active:!bg-transparent focus:!bg-transparent focus-visible:!bg-transparent !focus:outline-none hover:!text-current active:!text-current focus:!text-current focus-visible:!text-current";
           btn.innerHTML = `
             <div data-company-id= ${p.ID} data-contact-id= ${
             p.Primary_Person_Contact_ID
