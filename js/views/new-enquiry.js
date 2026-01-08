@@ -1728,7 +1728,7 @@ export class NewInquiryView {
               </div>
               <div id="company-name-section" class="hidden">
                 <label class="text-sm font-medium text-slate-600">Company Name</label>
-                <input type="tel" data-contact-field="company_name" data-contact-id="company_name" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100">
+                <input type="tel" data-contact-field="company_name" data-contact-id="company_name" class="mt-1 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 focus:ring-2 focus:ring-slate-200 browser-default">
               </div>
         <div class="hidden" id="affiliations-role-section">
                 <label class="block text-sm font-medium text-slate-600"
@@ -1757,11 +1757,11 @@ export class NewInquiryView {
               <div class="flex gap-4">
                 <div class="flex-1 min-w-[150px]">
                   <label class="text-sm font-medium text-slate-600">Email <span class="text-rose-500">*</span></label>
-                  <input type="email" data-contact-field="email" data-contact-id="email" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100">
+                  <input type="email" data-contact-field="email" data-contact-id="email" class="mt-1 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 focus:ring-2 focus:ring-slate-200 browser-default">
                 </div>
                 <div class="flex-1 min-w-[150px]">
                   <label class="text-sm font-medium text-slate-600">SMS Number</label>
-                  <input type="tel" data-contact-field="sms_number" data-contact-id="sms_number" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100">
+                  <input type="tel" data-contact-field="sms_number" data-contact-id="sms_number" class="mt-1 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 focus:ring-2 focus:ring-slate-200 browser-default">
                 </div>
               </div>
               <div  class="hidden">
@@ -1771,12 +1771,12 @@ export class NewInquiryView {
 
               <div>
                 <label class="text-sm font-medium text-slate-600">Office Number</label>
-                <input type="tel" data-contact-field="office_phone" data-contact-id="office_phone" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 focus:border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-100">
+                <input type="tel" data-contact-field="office_phone" data-contact-id="office_phone" class="mt-1 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 focus:ring-2 focus:ring-slate-200 browser-default">
               </div>
             <div>
               <label class="block text-sm  font-medium text-gray-700 mb-1">Address</label>
             <div class="relative hidden">
-              <input id="adTopSearch" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 pr-9 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+              <input id="adTopSearch" type="text" class="mt-1 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 focus:ring-2 focus:ring-slate-200 browser-default" />
                 <svg class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" viewBox="0 0 24 24" fill="currentColor"><path d="M21 20l-5.6-5.6a7.5 7.5 0 10-1.4 1.4L20 21l1-1Zm-13.5-5A5.5 5.5 0 1113 9.5 5.51 5.51 0 017.5 15Z"/></svg>
               </div>
             </div>
@@ -1784,17 +1784,17 @@ export class NewInquiryView {
             <div class="flex gap-3">
               <div class="flex-1">
                 <label class="block font-medium text-sm text-gray-700 mb-1">Address line 1</label>
-                <input id="adTopLine1" data-contact-id="address" data-contact-field="top_address_line1" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                <input id="adTopLine1" data-contact-id="address" data-contact-field="top_address_line1" type="text" class="mt-1 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 focus:ring-2 focus:ring-slate-200 browser-default" />
               </div>
               <div class="flex-1">
                 <label class="block font-medium text-sm text-gray-700 mb-1">Address line 2</label>
-                <input id="adTopLine2" data-contact-id="address_2" data-contact-field="top_address_line2" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                <input id="adTopLine2" data-contact-id="address_2" data-contact-field="top_address_line2" type="text" class="mt-1 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 focus:ring-2 focus:ring-slate-200 browser-default" />
               </div>
             </div>
             <div class="flex gap-3">
               <div class="flex-1">
                 <label class="block text-sm font-medium text-gray-700 mb-1">City</label>
-                <input id="adTopCity" data-contact-id="city" data-contact-field="top_city" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                <input id="adTopCity" data-contact-id="city" data-contact-field="top_city" type="text" class="mt-1 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 focus:ring-2 focus:ring-slate-200 browser-default" />
               </div>
               <div class="flex-1">
                 <label class="block text-sm font-medium text-gray-700 mb-1">State*</label>
@@ -1805,12 +1805,12 @@ export class NewInquiryView {
             <div class="flex gap-3">
               <div class="flex-1">
                 <label class="block text-sm font-medium text-gray-700 mb-1">Postal Code*</label>
-                <input id="adTopPostal" data-contact-id="zip_code" data-contact-field="top_postal" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                <input id="adTopPostal" data-contact-id="zip_code" data-contact-field="top_postal" type="text" class="mt-1 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 focus:ring-2 focus:ring-slate-200 browser-default" />
               </div>
               <div class="flex-1">
                 <label class="block text-sm font-medium text-gray-700 mb-1">Country</label>
                 <select id="adTopCountry" data-contact-id="country" data-contact-field="top_country" class="!block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                   <option value="AU">Australia</option>
+                   <option value="AU" selected>Australia</option>
                 </select>
               </div>
             </div>
@@ -1837,22 +1837,22 @@ export class NewInquiryView {
             <div class="space-y-3" data-section="postal-address">
               <div class="hidden">
                 <label class="block font-medium text-sm text-gray-700 mb-1">Address</label>
-              <input id="adBotSearch" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+              <input id="adBotSearch" type="text" class="mt-1 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 focus:ring-2 focus:ring-slate-200 browser-default" />
               </div>
               <div class="flex gap-3">
                 <div class="flex-1">
                   <label class="block font-medium text-sm text-gray-700 mb-1">Address line 1</label>
-                  <input id="adBotLine1" data-contact-id="postal_address"  data-contact-field="bot_address_line1" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                  <input id="adBotLine1" data-contact-id="postal_address"  data-contact-field="bot_address_line1" type="text" class="mt-1 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 focus:ring-2 focus:ring-slate-200 browser-default" />
                 </div>
                 <div class="flex-1">
                   <label class="block text-sm font-medium text-gray-700 mb-1">Address line 2</label>
-                  <input id="adBotLine2" data-contact-id="postal_address_2"  data-contact-field="bot_address_line2" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                  <input id="adBotLine2" data-contact-id="postal_address_2"  data-contact-field="bot_address_line2" type="text" class="mt-1 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 focus:ring-2 focus:ring-slate-200 browser-default" />
                 </div>
               </div>
               <div class="flex gap-3">
                 <div class="flex-1">
                   <label class="block text-sm font-medium text-gray-700 mb-1">City</label>
-                  <input id="adBotCity" data-contact-id="postal_city" data-contact-field="bot_city" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                  <input id="adBotCity" data-contact-id="postal_city" data-contact-field="bot_city" type="text" class="mt-1 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 focus:ring-2 focus:ring-slate-200 browser-default" />
                 </div>
                 <div class="flex-1">
                   <label class="block text-sm font-medium text-gray-700 mb-1">State*</label>
@@ -1864,12 +1864,12 @@ export class NewInquiryView {
               <div class="flex gap-3">
                 <div class="flex-1">
                   <label class="block text-sm font-medium text-gray-700 mb-1">Postal Code*</label>
-                  <input id="adBotPostal" data-contact-id="postal_code" data-contact-field="bot_postal" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                  <input id="adBotPostal" data-contact-id="postal_code" data-contact-field="bot_postal" type="text" class="mt-1 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 focus:ring-2 focus:ring-slate-200 browser-default" />
                 </div>
                 <div class="flex-1">
                   <label class="block text-sm font-medium text-gray-700 mb-1">Country</label>
                   <select id="adBotCountry" data-contact-id="postal_country" data-contact-field="bot_country" class="!block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                    <option value="AU">Australia</option>
+                    <option value="AU" selected >Australia</option>
                   </select>
                 </div>
               </div>
