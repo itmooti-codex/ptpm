@@ -1,8 +1,14 @@
-import { DashboardHelper } from "../helper.js";
+import { DashboardHelper, hideLoader } from "../helper.js";
 export class DashboardController {
-  constructor(model, view) {
+  constructor(model, view, loaderRefs = {}) {
     this.model = model;
     this.view = view;
+    this.loaderElement = loaderRefs.loaderElement || null;
+    this.loaderMessageEl = loaderRefs.loaderMessageEl || null;
+    this.loaderCounter = loaderRefs.loaderCounter || null;
+    if (this.view) {
+      this.view.onPageChange = () => this.handleTabChange(this.currentTab);
+    }
     this.initAccountTypeDropdown();
     this.initServiceProviderDropdown();
     this.initSourceDropdown();
@@ -92,7 +98,18 @@ export class DashboardController {
       dateFrom: null,
       dateTo: null,
     };
+    this.latestNotifications = [];
+    this.notificationListeners = new Set();
     this.renderSourceOptionsForTab(this.sources || []);
+  }
+
+  async updateTotalCountForTab(tab) {
+    // if (!this.model || typeof this.model.fetchTabCount !== "function") return;
+    // const total = await this.model.fetchTabCount(tab);
+    // this.model.totalCount = total;
+    // this.view.renderPagination(async () => {
+    //   await this.handleTabChange(this.currentTab, { skipCount: true });
+    // });
   }
 
   initServiceProviderDropdown() {
@@ -279,6 +296,7 @@ export class DashboardController {
         defaultTab,
         onTabChange: (tab) => this.handleTabChange(tab),
       });
+      this.hidePageLoader(true);
       return;
     }
 
@@ -294,8 +312,10 @@ export class DashboardController {
     }
     this.calendarEl.addEventListener("click", this.onCalendarClick);
     this.onNotificationIconClick();
+    this.loadNotifications();
     this.initGlobalSearch();
     this.bindApplyFilters();
+    this.initFlatpickr();
     this.view.initTopTabs({
       navId,
       panelsId,
@@ -307,6 +327,30 @@ export class DashboardController {
     if (resetBtn) {
       resetBtn.addEventListener("click", () => this.clearAllFilters());
     }
+
+    const createButton = document.getElementById("create-btn");
+    if (createButton) {
+      createButton.addEventListener("click", () => {
+        const wrapper = document.getElementById("create-button-wrapper");
+        const popup = document.getElementById("create-button-popup");
+        if (!wrapper || !popup) return;
+
+        const isHidden = wrapper.classList.contains("hidden");
+        if (isHidden) {
+          const rect = createButton.getBoundingClientRect();
+          const gap = 8;
+          popup.style.top = `${rect.bottom + window.scrollY + gap}px`;
+          popup.style.left = `${rect.left + window.scrollX}px`;
+          wrapper.classList.remove("hidden");
+        } else {
+          wrapper.classList.add("hidden");
+        }
+      });
+    }
+
+    ["new-inquiry", "new-quote", "new-job"].forEach((item) => {
+      this.attchCreateButtonListners(item);
+    });
   }
 
   destroy() {
@@ -345,31 +389,39 @@ export class DashboardController {
     );
   }
 
-  async handleTabChange(tab) {
+  async handleTabChange(tab, options = {}) {
+    const { skipCount = false } = options;
     this.currentTab = tab;
-    switch (tab) {
-      case "quote":
-        await this.fetchQuotesAndRenderTable();
-        break;
-      case "payment":
-        await this.fetchPaymentsAndRenderTable();
-        break;
-      case "active-jobs":
-        await this.fetchActiveJobsAndRenderTable();
-        break;
-      case "jobs":
-        await this.fetchJobsAndRenderTable();
-        break;
-      case "urgent-calls":
-        await this.fetchUrgentCallsAndRenderTable();
-        break;
-      case "inquiry":
-        await this.fetchDealsAndRenderTable();
-        break;
-      default:
-        this.deals = [];
-        this.clearTable(tab);
-        break;
+    try {
+      if (!skipCount) {
+        await this.updateTotalCountForTab(tab);
+      }
+      switch (tab) {
+        case "quote":
+          await this.fetchQuotesAndRenderTable();
+          break;
+        case "payment":
+          await this.fetchPaymentsAndRenderTable();
+          break;
+        case "active-jobs":
+          await this.fetchActiveJobsAndRenderTable();
+          break;
+        case "jobs":
+          await this.fetchJobsAndRenderTable();
+          break;
+        case "urgent-calls":
+          await this.fetchUrgentCallsAndRenderTable();
+          break;
+        case "inquiry":
+          await this.fetchDealsAndRenderTable();
+          break;
+        default:
+          this.deals = [];
+          this.clearTable(tab);
+          break;
+      }
+    } finally {
+      this.hidePageLoader();
     }
   }
 
@@ -521,40 +573,46 @@ export class DashboardController {
       const baseRows = Array.isArray(this.deals) ? this.deals : [];
       this.renderTable(selected, baseRows);
       this.renderStatusOptionsForTab(this.inquiryStatues);
+      this.hidePageLoader();
       return;
     }
     if (this.currentTab === "quote") {
       const rows = Array.isArray(this.deals) ? this.deals : [];
       this.renderTable(null, rows);
       this.renderStatusOptionsForTab(this.quoteStatuses);
+      this.hidePageLoader();
       return;
     }
     if (this.currentTab === "jobs") {
       const rows = Array.isArray(this.deals) ? this.deals : [];
       this.renderTable(null, rows);
       this.renderStatusOptionsForTab(this.jobStatuses);
+      this.hidePageLoader();
       return;
     }
     if (this.currentTab === "active-jobs") {
       const rows = Array.isArray(this.deals) ? this.deals : [];
       this.renderTable(null, rows);
       this.renderStatusOptionsForTab(this.activeJobStatuses);
+      this.hidePageLoader();
       return;
     }
     if (this.currentTab === "payment") {
       const rows = Array.isArray(this.deals) ? this.deals : [];
       this.renderTable(null, rows);
       this.renderStatusOptionsForTab(this.paymentStatuses);
+      this.hidePageLoader();
       return;
     }
     this.clearTable(this.currentTab);
+    this.hidePageLoader();
   }
 
-  onNotificationIconClick() {
+  async onNotificationIconClick() {
     const btn = document.getElementById("notification-btn");
     if (!btn) return;
     if (!document.getElementById("notificationPopover")) {
-      this.view.createNotificationModal();
+      await this.view.createNotificationModal();
     }
     const pop = document.getElementById("notificationPopover");
     const toggle = () => {
@@ -572,6 +630,96 @@ export class DashboardController {
       if (pop.contains(target) || btn.contains(target)) return;
       this.view.toggleNotificationPopover(false);
     });
+  }
+
+  mapNotificationsForView(list = []) {
+    if (list.length == 0) return;
+    if (!Array.isArray(list)) list = [list];
+    return list
+      .map((n) => {
+        const tab = this.normalizeNotificationType(n?.type);
+        const label = n?.Unique_ID
+          ? `#${n.Unique_ID}`
+          : n?.Title || "Notification";
+        return {
+          id: label,
+          text: n?.Title || "Notification",
+          when: this.formatNotificationDate(
+            n?.Publish_Date_Time || n?.publish_date_time
+          ),
+          tab,
+          read: n.Is_Read,
+          uniqueId: n?.Unique_ID ?? n?.unique_id ?? n?.id,
+          origin_url: n.Origin_Url,
+          notified_contact_id: n.Notified_Contact_ID,
+        };
+      })
+      .filter((n) => n.text || n.when || n.id);
+  }
+
+  formatNotificationDate(value) {
+    const d = window.dayjs ? window.dayjs(value) : null;
+    if (d?.isValid?.()) {
+      return d.format("DD MMM · h:mma");
+    }
+    return value || "";
+  }
+
+  normalizeNotificationType(type) {
+    const t = (type || "").toLowerCase();
+    if (t.includes("action")) return "Action Required";
+    return "General Updates";
+  }
+
+  async loadNotifications() {
+    if (typeof this.model.fetchNotification !== "function") return;
+    const mergeReadState = (incoming = []) => {
+      const previous = new Map(
+        (this.latestNotifications || []).map((n) => [n.id, n.read])
+      );
+      return (incoming || []).map((n) => ({
+        ...n,
+        read: previous.has(n.id) ? previous.get(n.id) : n.read ?? false,
+      }));
+    };
+    const handleUpdate = (records = []) => {
+      const mapped = this.mapNotificationsForView(records) || [];
+      this.latestNotifications = mergeReadState(mapped);
+      this.updateNotificationBadge();
+      if (document.getElementById("notificationPopover")) {
+        this.view.updateNotificationPopover?.(this.latestNotifications);
+      } else {
+        this.view.createNotificationModal?.(this.latestNotifications);
+      }
+      this.notifyNotificationListeners();
+    };
+
+    try {
+      const initial = await this.model.fetchNotification(handleUpdate);
+      handleUpdate(initial || []);
+    } catch (error) {
+      console.error("[Dashboard] Failed to load notifications", error);
+    }
+  }
+
+  notifyNotificationListeners() {
+    this.notificationListeners.forEach((fn) => {
+      try {
+        fn(this.latestNotifications);
+      } catch (e) {
+        console.warn("Notification listener failed", e);
+      }
+    });
+  }
+
+  updateNotificationBadge() {
+    const badge = document.getElementById("notification-count");
+    if (!badge) return;
+    const unread = (this.latestNotifications || []).filter(
+      (n) => !n.read
+    ).length;
+    badge.textContent = String(unread);
+    badge.classList.toggle("hidden", unread <= 0);
   }
 
   async fetchDealsAndRenderTable() {
@@ -683,6 +831,17 @@ export class DashboardController {
       this.clearTable("urgent-calls");
       return [];
     }
+  }
+
+  hidePageLoader(force = false) {
+    hideLoader(this.loaderElement, this.loaderCounter, force);
+  }
+
+  initFlatpickr() {
+    flatpickr(".date-picker", {
+      dateFormat: "d/m/Y",
+      allowInput: true,
+    });
   }
 
   bindApplyFilters() {
@@ -805,10 +964,10 @@ export class DashboardController {
       }
       if (!text) return;
       chips.push(`
-        <div data-chip-key="${key}" data-add-btn="true" data-filter="true" data-icon="true" data-tab="false" data-type="primary" class="px-3 py-2 bg-sky-100 rounded-[20px] outline outline-1 outline-offset-[-1px] outline-blue-700 flex justify-center items-center gap-1 mr-2 mb-2">
-          <div class="justify-end text-blue-700 text-xs font-normal font-['Inter'] leading-3">${label}: ${text} </div>
+        <div data-chip-key="${key}" data-add-btn="true" data-filter="true" data-icon="true" data-tab="false" data-type="primary" class="px-3 py-2 bg-sky-100 rounded-[20px] outline outline-1 outline-offset-[-1px] outline-blue-700 flex justify-center items-center gap-1 mr-2 hover:!bg-sky-100 active:!bg-sky-100 hover:bg-sky-100 active:bg-sky-100 focus:bg-sky-100 focus-visible:bg-sky-100 hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-blue-700 active:outline-blue-700 focus:outline-blue-700 focus-visible:outline-blue-700">
+          <div class="justify-end text-blue-700 text-xs font-normal font-['Inter'] leading-3 hover:!text-blue-700 active:!text-blue-700 hover:text-blue-700 active:text-blue-700 focus:text-blue-700 focus-visible:text-blue-700 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs">${label}: ${text} </div>
           <button type="button" class="w-3 h-3 relative overflow-hidden remove-chip" aria-label="Remove ${label}">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 3 24 24" class="w-4 h-4 fill-[#003882]">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 3 24 24" class="w-4 h-4 fill-[#003882] focus:fill-[#003882] focus-visible:fill-[#003882]">
               <path d="M6.225 4.811a1 1 0 0 0-1.414 1.414L10.586 12l-5.775 5.775a1 1 0 1 0 1.414 1.414L12 13.414l5.775 5.775a1 1 0 0 0 1.414-1.414L13.414 12l5.775-5.775a1 1 0 0 0-1.414-1.414L12 10.586 6.225 4.811z"></path>
             </svg>
           </button>
@@ -871,7 +1030,12 @@ export class DashboardController {
     if (filters.taskAssignedToMe)
       addChip("taskAssignedToMe", "Assigned To Me", "Yes");
 
-    root.innerHTML = chips.join("") || "";
+    const hasChips = chips.length > 0;
+    const clearAllBtn = hasChips
+      ? `<button id="clear-all-filters" type="button" class="px-1 text-slate-500 text-sm font-medium whitespace-nowrap font-['Inter'] leading-4 focus:text-slate-500 focus-visible:text-slate-500 focus:text-sm focus-visible:text-sm">Clear All</button>`
+      : "";
+
+    root.innerHTML = chips.join("") + clearAllBtn;
 
     // Attach remove handlers
     root.querySelectorAll(".remove-chip").forEach((btn) => {
@@ -882,6 +1046,11 @@ export class DashboardController {
         this.removeFilterChip(key);
       });
     });
+
+    const clearAll = root.querySelector("#clear-all-filters");
+    if (clearAll) {
+      clearAll.addEventListener("click", () => this.clearAllFilters());
+    }
   }
 
   removeFilterChip(key) {
@@ -1290,5 +1459,27 @@ export class DashboardController {
     }
 
     syncAllCheckbox();
+  }
+
+  attchCreateButtonListners(buttonId) {
+    let element = document.getElementById(buttonId);
+    if (element) {
+      element.addEventListener("click", async () => {
+        if (buttonId == "new-job") {
+          let result = await this.model.createEmptyJob();
+          if (!result.isCancelling) {
+            let jobId = Object.keys(result.mutations.PeterpmJob.managedData)[0];
+            if (jobId) {
+              const result = await this.model.fetchJobUniqueID(jobId);
+              let uniqueURL = result.resp[0].field;
+              if (uniqueURL) {
+                window.location.replace(uniqueURL);
+              }
+            }
+          }
+          return result;
+        }
+      });
+    }
   }
 }

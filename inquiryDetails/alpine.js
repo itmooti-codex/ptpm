@@ -3106,6 +3106,8 @@ document.addEventListener("alpine:init", () => {
     defaultTargetType: DEFAULT_POPUP_COMMENT_TARGET,
     isSubmitting: false,
     boundShowListener: null,
+    autoOpened: false,
+    autoOpenObserver: null,
     init() {
       this.boundShowListener = (event) => {
         const detail = event?.detail || {};
@@ -3119,6 +3121,7 @@ document.addEventListener("alpine:init", () => {
         }
       };
       window.addEventListener("popup-comment:show", this.boundShowListener);
+      this.$nextTick(() => this.tryAutoOpen());
     },
     destroy() {
       if (this.boundShowListener) {
@@ -3128,6 +3131,62 @@ document.addEventListener("alpine:init", () => {
         );
         this.boundShowListener = null;
       }
+      this.cleanupAutoOpenObserver();
+    },
+    tryAutoOpen() {
+      if (this.autoOpened || this.open) return;
+      const existing = this.getExistingComment();
+      if (existing) {
+        this.comment = existing.comment;
+        this.targetType = existing.target;
+        this.open = true;
+        this.autoOpened = true;
+        this.cleanupAutoOpenObserver();
+        return;
+      }
+      if (this.autoOpenObserver) return;
+      const root =
+        document.querySelector("[data-popup-comment-card]") || document.body;
+      if (!root) return;
+      this.autoOpenObserver = new MutationObserver(() => {
+        const found = this.getExistingComment();
+        if (!found) return;
+        this.comment = found.comment;
+        this.targetType = found.target;
+        this.open = true;
+        this.autoOpened = true;
+        this.cleanupAutoOpenObserver();
+      });
+      this.autoOpenObserver.observe(root, {
+        characterData: true,
+        childList: true,
+        subtree: true,
+      });
+    },
+    cleanupAutoOpenObserver() {
+      if (!this.autoOpenObserver) return;
+      this.autoOpenObserver.disconnect();
+      this.autoOpenObserver = null;
+    },
+    getExistingComment() {
+      const target = this.defaultTargetType;
+      const active = this.readComment(target);
+      if (active) {
+        return { comment: active, target };
+      }
+      return null;
+    },
+    readComment(target) {
+      if (!target) return "";
+      const text =
+        document.querySelector(`[data-popup-comment="${target}"]`)
+          ?.textContent || "";
+      return this.sanitizeComment(text);
+    },
+    sanitizeComment(text = "") {
+      const value = (text || "").trim();
+      if (!value) return "";
+      return /^\[[^\]]+\]$/.test(value) ? "" : value;
     },
     handleClose() {
       if (this.isSubmitting) return;

@@ -1,4 +1,4 @@
-export class NewEnquiryModel {
+export class NewInquiryModel {
   constructor(plugin, { maxRecords = 200 } = {}) {
     window.plugin = plugin;
     this.affiliationModel = plugin.switchTo("PeterpmAffiliation");
@@ -6,11 +6,13 @@ export class NewEnquiryModel {
     this.dealModel = plugin.switchTo("PeterpmDeal");
     this.companyModel = plugin.switchTo("PeterpmCompany");
     this.jobModel = plugin.switchTo("PeterpmJob");
+    this.serviceModel = plugin.switchTo("PeterpmService");
+    this.uploadModel = plugin.switchTo("PeterpmUpload");
+
     this.plugin = plugin;
     this.maxRecords = maxRecords;
     this.contactModel = null;
     this.contactModelName = null;
-    // Start with no default contacts; will be populated from SDK or user input
     this.contacts = [];
     this.relatedCache = new Map();
     this.relatedModelNames = {
@@ -32,6 +34,10 @@ export class NewEnquiryModel {
     this.placesDetailsService = null;
   }
 
+  #logError(context, error) {
+    console.error(`[NewInquiryModel] ${context}`, error);
+  }
+
   async loadContacts() {
     if (!this.plugin) return this.getContacts();
 
@@ -41,9 +47,17 @@ export class NewEnquiryModel {
     try {
       await this.#primeContacts(model);
     } catch (error) {
-      console.warn("[NewEnquiry] Failed to prime contacts", error);
+      console.warn("[NewInquiry] Failed to prime contacts", error);
     }
     return this.getContacts();
+  }
+
+  async createNewUpload(uploadObj) {
+    if (!this.uploadModel) return null;
+    const query = this.uploadModel.mutation();
+    query.createOne(uploadObj);
+    const result = await query.execute(true).toPromise();
+    return result;
   }
 
   getContacts() {
@@ -95,7 +109,7 @@ export class NewEnquiryModel {
       return contact;
     } catch (error) {
       console.warn(
-        "[NewEnquiry] Falling back to local contact creation",
+        "[NewInquiry] Falling back to local contact creation",
         error
       );
       return this.#createLocalContact(payload);
@@ -140,7 +154,7 @@ export class NewEnquiryModel {
           return model;
         }
       } catch (_) {
-        // ignore missing model
+        this.#logError("#resolveContactModel switchTo failed", _);
       }
     }
 
@@ -152,6 +166,7 @@ export class NewEnquiryModel {
     try {
       query = model.query();
     } catch (_) {
+      this.#logError("#primeContacts model.query failed", _);
       query = null;
     }
 
@@ -159,12 +174,16 @@ export class NewEnquiryModel {
       if (typeof query.limit === "function") {
         try {
           query = query.limit(this.maxRecords);
-        } catch (_) {}
+        } catch (_) {
+          this.#logError("#primeContacts query.limit failed", _);
+        }
       }
       if (typeof query.noDestroy === "function") {
         try {
           query = query.noDestroy();
-        } catch (_) {}
+        } catch (_) {
+          this.#logError("#primeContacts query.noDestroy failed", _);
+        }
       }
     }
 
@@ -245,6 +264,7 @@ export class NewEnquiryModel {
       try {
         return await execution;
       } catch (_) {
+        this.#logError("#awaitResult promise execution failed", _);
         return null;
       }
     }
@@ -252,6 +272,7 @@ export class NewEnquiryModel {
       try {
         return await execution;
       } catch (_) {
+        this.#logError("#awaitResult thenable execution failed", _);
         return null;
       }
     }
@@ -294,7 +315,9 @@ export class NewEnquiryModel {
         if (state && typeof state === "object") {
           return { ...record, ...state };
         }
-      } catch (_) {}
+      } catch (_) {
+        this.#logError("#unwrap getState failed", _);
+      }
     }
     if (record.state && typeof record.state === "object") {
       return { ...record, ...record.state };
@@ -390,7 +413,7 @@ export class NewEnquiryModel {
         related = await this.#fetchRelatedFromSdk(normalized);
       } catch (error) {
         console.warn(
-          "[NewEnquiry] Related fetch failed, using mock data",
+          "[NewInquiry] Related fetch failed, using mock data",
           error
         );
         related = this.#mockRelated(normalized);
@@ -455,7 +478,9 @@ export class NewEnquiryModel {
       fields.forEach(([name, alias]) => {
         try {
           query = query.field(name, alias);
-        } catch (_) {}
+        } catch (_) {
+          this.#logError(`#fetchProperties query.field failed for ${name}`, _);
+        }
       });
     } else if (typeof query.select === "function") {
       try {
@@ -485,7 +510,9 @@ export class NewEnquiryModel {
           "building_age",
           "manhole",
         ]);
-      } catch (_) {}
+      } catch (_) {
+        this.#logError("#fetchProperties query.select failed", _);
+      }
     }
     if (typeof query.where === "function") {
       try {
@@ -495,12 +522,16 @@ export class NewEnquiryModel {
           }
           return owner;
         });
-      } catch (_) {}
+      } catch (_) {
+        this.#logError("#fetchProperties query.where failed", _);
+      }
     }
     if (typeof query.limit === "function") {
       try {
         query = query.limit(":limit");
-      } catch (_) {}
+      } catch (_) {
+        this.#logError("#fetchProperties query.limit failed", _);
+      }
     }
     query.getOrInitQueryCalc?.();
 
@@ -544,7 +575,9 @@ export class NewEnquiryModel {
       fields.forEach(([name, alias]) => {
         try {
           query = query.field(name, alias);
-        } catch (_) {}
+        } catch (_) {
+          this.#logError(`#queryJobs query.field failed for ${name}`, _);
+        }
       });
     } else if (typeof query.select === "function") {
       try {
@@ -568,7 +601,9 @@ export class NewEnquiryModel {
           "state",
           "postal_code",
         ]);
-      } catch (_) {}
+      } catch (_) {
+        this.#logError("#queryJobs query.select failed", _);
+      }
     }
     if (typeof query.where === "function") {
       try {
@@ -578,12 +613,16 @@ export class NewEnquiryModel {
           }
           return client;
         });
-      } catch (_) {}
+      } catch (_) {
+        this.#logError("#queryJobs query.where failed", _);
+      }
     }
     if (typeof query.limit === "function") {
       try {
         query = query.limit(":limit");
-      } catch (_) {}
+      } catch (_) {
+        this.#logError("#queryJobs query.limit failed", _);
+      }
     }
     query.getOrInitQueryCalc?.();
 
@@ -625,7 +664,9 @@ export class NewEnquiryModel {
       fields.forEach(([name, alias]) => {
         try {
           query = query.field(name, alias);
-        } catch (_) {}
+        } catch (_) {
+          this.#logError(`#queryDeals query.field failed for ${name}`, _);
+        }
       });
     } else if (typeof query.select === "function") {
       try {
@@ -647,7 +688,9 @@ export class NewEnquiryModel {
           "state",
           "postal_code",
         ]);
-      } catch (_) {}
+      } catch (_) {
+        this.#logError("#queryDeals query.select failed", _);
+      }
     }
     if (typeof query.where === "function") {
       try {
@@ -657,12 +700,16 @@ export class NewEnquiryModel {
           }
           return contact;
         });
-      } catch (_) {}
+      } catch (_) {
+        this.#logError("#queryDeals query.where failed", _);
+      }
     }
     if (typeof query.limit === "function") {
       try {
         query = query.limit(":limit");
-      } catch (_) {}
+      } catch (_) {
+        this.#logError("#queryDeals query.limit failed", _);
+      }
     }
     query.getOrInitQueryCalc?.();
 
@@ -687,12 +734,14 @@ export class NewEnquiryModel {
       }
       return await this.#awaitResult(execution);
     } catch (error) {
-      console.warn("[NewEnquiry] calc query execution failed", error);
+      console.warn("[NewInquiry] calc query execution failed", error);
       return null;
     } finally {
       try {
         query.destroy?.();
-      } catch (_) {}
+      } catch (_) {
+        this.#logError("#executeCalcQuery query.destroy failed", _);
+      }
     }
   }
 
@@ -1050,7 +1099,9 @@ export class NewEnquiryModel {
     if (stored) {
       try {
         return this.plugin.switchTo(stored);
-      } catch (_) {}
+      } catch (_) {
+        this.#logError(`#resolveRelatedModel switchTo stored ${type} failed`, _);
+      }
     }
 
     const hintsMap = {
@@ -1107,7 +1158,9 @@ export class NewEnquiryModel {
         this.relatedModelNames[type] = name;
         try {
           return this.plugin.switchTo(name);
-        } catch (_) {}
+        } catch (_) {
+          this.#logError(`#resolveRelatedModel switchTo hinted ${type} failed`, _);
+        }
       }
     }
 
@@ -1118,7 +1171,9 @@ export class NewEnquiryModel {
           this.relatedModelNames[type] = candidate;
           return model;
         }
-      } catch (_) {}
+      } catch (_) {
+        this.#logError(`#resolveRelatedModel switchTo fallback ${type} failed`, _);
+      }
     }
 
     return null;
@@ -1218,7 +1273,7 @@ export class NewEnquiryModel {
         this.affiliationCallback(payload.resp);
       }
     } catch (error) {
-      console.warn("[NewEnquiry] fetchAffiliationByPropertyId failed", error);
+      console.warn("[NewInquiry] fetchAffiliationByPropertyId failed", error);
       return [];
     }
   }
@@ -1228,14 +1283,18 @@ export class NewEnquiryModel {
     try {
       if (typeof this.affiliationQuery.subscribe === "function")
         liveObs = this.affiliationQuery.subscribe();
-    } catch (_) {}
+    } catch (_) {
+      this.#logError("subscribeToAffiliationChanges subscribe failed", _);
+    }
     if (
       !liveObs &&
       typeof this.affiliationQuery.localSubscribe === "function"
     ) {
       try {
         liveObs = this.affiliationQuery.localSubscribe();
-      } catch (_) {}
+      } catch (_) {
+        this.#logError("subscribeToAffiliationChanges localSubscribe failed", _);
+      }
     }
 
     if (liveObs) {
@@ -1301,7 +1360,7 @@ export class NewEnquiryModel {
       const payload = await query.fetchDirect().toPromise();
       return payload.resp;
     } catch (error) {
-      console.warn("[NewEnquiry] fetchAffiliationByPropertyId failed", error);
+      console.warn("[NewInquiry] fetchAffiliationByPropertyId failed", error);
       return [];
     }
   }
@@ -1312,6 +1371,12 @@ export class NewEnquiryModel {
       propertyDetails["individual_owner_id"] = contactId;
     } else if (propertyId) {
       propertyDetails["owner_company_id"] = propertyId;
+    }
+
+    if (propertyDetails.manhole.length == 0) {
+      propertyDetails.manhole = false;
+    } else if (propertyDetails.manhole == "on") {
+      propertyDetails.manhole = "true";
     }
     query.createOne(propertyDetails);
     let result = await query.execute(true).toPromise();
@@ -1325,6 +1390,13 @@ export class NewEnquiryModel {
     };
     query.createOne(inquiryObj);
     let result = await query.execute(true).toPromise();
+    return result;
+  }
+
+  async updateExistingInquiry(id, inquiryObj) {
+    const query = await this.dealModel.mutation();
+    query.update((q) => q.where("id", id).set(inquiryObj));
+    const result = await query.execute(true).toPromise();
     return result;
   }
 
@@ -1496,14 +1568,14 @@ export class NewEnquiryModel {
     return query.fetchDirect().toPromise();
   }
 
-  async fetchRelatedInquiries(entityId, enquiryId) {
+  async fetchRelatedInquiries(entityId, inquiryId) {
     let query = this.dealModel.query();
     if (entityId) {
       query = query.where("company_id", entityId);
     }
 
-    if (enquiryId) {
-      query = query.where("id", enquiryId);
+    if (inquiryId) {
+      query = query.where("id", inquiryId);
     }
 
     query
@@ -1527,6 +1599,9 @@ export class NewEnquiryModel {
         "property_id",
         "primary_contact_id",
       ])
+      .include("Service_Inquiry", (q) => {
+        q.deSelectAll().select(["service_name"]);
+      })
       .noDestroy();
     query.getOrInitQueryCalc?.();
     return query.fetchDirect().toPromise();
@@ -1652,7 +1727,7 @@ export class NewEnquiryModel {
     if (!query) return [];
     const service = this.#getAutocompleteService();
     if (!service) {
-      console.warn("[NewEnquiry] Google Places library not ready");
+      console.warn("[NewInquiry] Google Places library not ready");
       return [];
     }
 
@@ -1669,7 +1744,7 @@ export class NewEnquiryModel {
     return new Promise((resolve) => {
       service.getPlacePredictions(request, (predictions = [], status) => {
         if (!this.#isPlacesStatusOk(status)) {
-          console.warn("[NewEnquiry] fetchProperties returned", status);
+          console.warn("[NewInquiry] fetchProperties returned", status);
           if (status === this.#getPlacesStatusConstants().INVALID_REQUEST) {
             this.#ensureGooglePlacesSessionToken(true);
           }
@@ -1686,7 +1761,7 @@ export class NewEnquiryModel {
     if (!id) return null;
     const service = this.#getPlacesDetailsService();
     if (!service) {
-      console.warn("[NewEnquiry] Google Places library not ready");
+      console.warn("[NewInquiry] Google Places library not ready");
       return null;
     }
 
@@ -1704,12 +1779,43 @@ export class NewEnquiryModel {
     return new Promise((resolve) => {
       service.getDetails(request, (result, status) => {
         if (status !== statuses.OK) {
-          console.warn("[NewEnquiry] fetchPropertyDetails returned", status);
+          console.warn("[NewInquiry] fetchPropertyDetails returned", status);
           resolve(null);
           return;
         }
         resolve(result || null);
       });
     });
+  }
+
+  async filterEnquiries(id, type) {
+    let query = this.dealModel.query();
+    if (type === "Contact" && id) {
+      query = query.where("id", id).andWhere("account_type", "contact");
+    } else if (type === "Company" && id) {
+      query = query.where("id", id).andWhere("account_type", "company");
+    } else {
+      return [];
+    }
+
+    query.deSelectAll().select(["id"]);
+    let result = await query.fetchDirect().toPromise();
+    return result;
+  }
+
+  async fetchServices() {
+    let query = this.serviceModel.query();
+    query
+      .where("service_type", "Primary")
+      .deSelectAll()
+      .select([
+        "id",
+        "service_name",
+        "description",
+        "price",
+        "duration_minutes",
+      ]);
+    let result = await query.fetchDirect().toPromise();
+    return result;
   }
 }
