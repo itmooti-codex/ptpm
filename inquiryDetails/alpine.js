@@ -2489,7 +2489,19 @@ document.addEventListener("alpine:init", () => {
       });
       this.syncBillApproval();
     },
+    setBillApprovalValue(value) {
+      const target = this.$root || document;
+      const node = target.querySelector("[data-bill-approved-value]");
+      if (node) {
+        node.textContent = value ? "true" : "false";
+      }
+      const card = this.$refs?.billingSummaryCard;
+      if (card) {
+        card.dataset.billApproved = value ? "true" : "false";
+      }
+    },
     syncBillApproval() {
+      if (this.confirmBusy) return;
       const container = this.$root || document;
       const raw =
         container.querySelector("[data-bill-approved-value]")?.textContent ||
@@ -2508,6 +2520,8 @@ document.addEventListener("alpine:init", () => {
       }
       if (this.confirmBusy) return;
       this.confirmBusy = true;
+      this.confirm = checked;
+      this.setBillApprovalValue(checked);
       try {
         await graphqlRequest(UPDATE_JOB_MUTATION, {
           id: JOB_ID,
@@ -2524,6 +2538,7 @@ document.addEventListener("alpine:init", () => {
           "error"
         );
         this.confirm = !checked;
+        this.setBillApprovalValue(!checked);
       } finally {
         this.confirmBusy = false;
       }
