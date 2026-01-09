@@ -6037,7 +6037,7 @@
             class="relative w-full max-w-4xl rounded-2xl bg-white shadow-2xl hover:!bg-white active:!bg-white hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-2xl active:shadow-2xl focus:shadow-2xl focus-visible:shadow-2xl"
           >
             <button
-              class="absolute right-4 top-4 rounded-full p-1 text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200 focus:text-slate-500 focus-visible:text-slate-500"
+              class="absolute right-4 top-4 rounded-full p-1 text-slate-500 focus:outline-none focus:text-slate-500 focus-visible:text-slate-500"
               @click="close()"
             >
               <span class="sr-only">Close modal</span>
@@ -7734,275 +7734,275 @@
               </div>
 
               <div x-show="contactType === 'contact'" x-cloak>
-              <!-- Contact search -->
-              <label class="block">
-                <span
-                  class="text-xs font-semibold uppercase text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
-                  >Contact</span
-                >
-                <div
-                  class="relative mt-1"
-                  @keydown.escape.stop.prevent="closeSearchDropdown"
-                >
-                  <button
-                    type="button"
-                    class="flex w-full items-center justify-between rounded-lg border border-slate-300 bg-white px-3 py-2 text-left text-sm text-slate-800 shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500 focus:border focus-visible:border focus:border-slate-300 focus-visible:border-slate-300 focus:bg-white focus-visible:bg-white focus:text-left focus-visible:text-left focus:text-sm focus-visible:text-sm focus:text-slate-800 focus-visible:text-slate-800 focus:shadow-sm focus-visible:shadow-sm"
-                    @click="toggleSearchDropdown"
-                    :aria-expanded="searchDropdownOpen"
+                <!-- Contact search -->
+                <label class="block">
+                  <span
+                    class="text-xs font-semibold uppercase text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
+                    >Contact</span
                   >
-                    <span
-                      class="truncate"
-                      x-text="form.search || 'Search existing contacts or add a new one'"
-                    ></span>
-                    <span class="flex items-center gap-2">
+                  <div
+                    class="relative mt-1"
+                    @keydown.escape.stop.prevent="closeSearchDropdown"
+                  >
+                    <button
+                      type="button"
+                      class="flex w-full items-center justify-between rounded-lg border border-slate-300 bg-white px-3 py-2 text-left text-sm text-slate-800 shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500 focus:border focus-visible:border focus:border-slate-300 focus-visible:border-slate-300 focus:bg-white focus-visible:bg-white focus:text-left focus-visible:text-left focus:text-sm focus-visible:text-sm focus:text-slate-800 focus-visible:text-slate-800 focus:shadow-sm focus-visible:shadow-sm"
+                      @click="toggleSearchDropdown"
+                      :aria-expanded="searchDropdownOpen"
+                    >
                       <span
-                        x-show="form.contactId"
-                        class="text-slate-400 focus:text-slate-400 focus-visible:text-slate-400"
-                        role="button"
-                        tabindex="0"
-                        @click.stop="clearSelectedContact"
-                        @keydown.enter.prevent.stop="clearSelectedContact"
-                      >
+                        class="truncate"
+                        x-text="form.search || 'Search existing contacts or add a new one'"
+                      ></span>
+                      <span class="flex items-center gap-2">
+                        <span
+                          x-show="form.contactId"
+                          class="text-slate-400 focus:text-slate-400 focus-visible:text-slate-400"
+                          role="button"
+                          tabindex="0"
+                          @click.stop="clearSelectedContact"
+                          @keydown.enter.prevent.stop="clearSelectedContact"
+                        >
+                          <svg
+                            class="h-4 w-4"
+                            viewBox="0 0 14 14"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M3.5 3.5L10.5 10.5M10.5 3.5L3.5 10.5"
+                              stroke="currentColor"
+                              stroke-width="1.4"
+                              stroke-linecap="round"
+                            />
+                          </svg>
+                        </span>
                         <svg
-                          class="h-4 w-4"
+                          class="h-4 w-4 text-slate-500 transition focus:text-slate-500 focus-visible:text-slate-500"
+                          :class="searchDropdownOpen ? 'rotate-180' : ''"
                           viewBox="0 0 14 14"
                           fill="none"
                           xmlns="http://www.w3.org/2000/svg"
                         >
                           <path
-                            d="M3.5 3.5L10.5 10.5M10.5 3.5L3.5 10.5"
+                            d="M3.5 5.25L7 8.75L10.5 5.25"
                             stroke="currentColor"
-                            stroke-width="1.4"
+                            stroke-width="1.2"
                             stroke-linecap="round"
+                            stroke-linejoin="round"
                           />
                         </svg>
                       </span>
-                      <svg
-                        class="h-4 w-4 text-slate-500 transition focus:text-slate-500 focus-visible:text-slate-500"
-                        :class="searchDropdownOpen ? 'rotate-180' : ''"
-                        viewBox="0 0 14 14"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M3.5 5.25L7 8.75L10.5 5.25"
-                          stroke="currentColor"
-                          stroke-width="1.2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        />
-                      </svg>
-                    </span>
-                  </button>
-
-                  <div
-                    x-show="searchDropdownOpen"
-                    x-transition
-                    x-cloak
-                    @click.outside="closeSearchDropdown"
-                    class="absolute z-20 mt-1 w-full rounded-xl border border-slate-200 bg-white shadow-2xl hover:!border-slate-200 active:!border-slate-200 hover:!bg-white active:!bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-2xl active:shadow-2xl focus:shadow-2xl focus-visible:shadow-2xl"
-                  >
-                    <div
-                      class="border-b border-slate-100 px-3 py-2 hover:!border-slate-100 active:!border-slate-100 hover:border-b active:border-b focus:border-b focus-visible:border-b hover:border-slate-100 active:border-slate-100 focus:border-slate-100 focus-visible:border-slate-100"
-                    >
-                      <input
-                        x-ref="contactSearchInput"
-                        type="text"
-                        autocomplete="off"
-                        placeholder="Type a name, email, or phone number"
-                        class="w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500 hover:!border-slate-200 active:!border-slate-200 hover:border active:border focus:border focus-visible:border hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200"
-                        x-model="searchTerm"
-                        @input.debounce.250ms="onSearchChange"
-                      />
-                    </div>
-                    <div
-                      class="max-h-60 overflow-y-auto divide-y divide-slate-100"
-                    >
-                      <template x-if="searchLoading">
-                        <div
-                          class="px-3 py-4 text-sm text-slate-500 flex items-center gap-2 hover:!text-slate-500 active:!text-slate-500 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
-                        >
-                          <svg
-                            class="h-4 w-4 animate-spin text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                          >
-                            <circle
-                              class="opacity-25"
-                              cx="12"
-                              cy="12"
-                              r="10"
-                              stroke-width="4"
-                            ></circle>
-                            <path
-                              class="opacity-75"
-                              stroke-width="4"
-                              d="M4 12a8 8 0 0 1 8-8"
-                            ></path>
-                          </svg>
-                          <span>Searching contacts...</span>
-                        </div>
-                      </template>
-                      <template x-if="!searchLoading && suggestions.length">
-                        <div>
-                          <template
-                            x-for="contact in suggestions"
-                            :key="contact.id || contact.email"
-                          >
-                            <button
-                              type="button"
-                              class="w-full px-3 py-3 text-left focus:text-left focus-visible:text-left"
-                              @click="pickSuggestion(contact)"
-                            >
-                              <div class="flex flex-col gap-0.5">
-                                <span
-                                  class="text-sm font-semibold text-slate-900 focus:text-sm focus-visible:text-sm focus:text-slate-900 focus-visible:text-slate-900"
-                                  x-text="contact.displayLabel"
-                                ></span>
-                                <span
-                                  class="text-xs text-slate-500 focus:text-xs focus-visible:text-xs focus:text-slate-500 focus-visible:text-slate-500"
-                                  x-text="contact.email"
-                                ></span>
-                                <span
-                                  class="text-xs text-slate-500 focus:text-xs focus-visible:text-xs focus:text-slate-500 focus-visible:text-slate-500"
-                                  x-show="contact.sms"
-                                  x-text="contact.sms"
-                                ></span>
-                              </div>
-                            </button>
-                          </template>
-                        </div>
-                      </template>
-                      <template
-                        x-if="!searchLoading && hasSearched && !suggestions.length && !searchError"
-                      >
-                        <p
-                          class="px-3 py-4 text-sm text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
-                        >
-                          No contacts found.
-                        </p>
-                      </template>
-                      <template
-                        x-if="!searchLoading && !hasSearched && !searchError"
-                      >
-                        <p
-                          class="px-3 py-4 text-sm text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
-                        >
-                          Start typing to search existing contacts.
-                        </p>
-                      </template>
-                      <template x-if="searchError">
-                        <p
-                          class="px-3 py-4 text-sm text-rose-600 hover:!text-rose-600 active:!text-rose-600 hover:text-rose-600 active:text-rose-600 focus:text-rose-600 focus-visible:text-rose-600"
-                          x-text="searchError"
-                        ></p>
-                      </template>
-                    </div>
-                    <button
-                      type="button"
-                      class="w-full border-t border-slate-100 px-3 py-2 text-left text-sm font-medium text-sky-700 focus:border-t focus-visible:border-t focus:border-slate-100 focus-visible:border-slate-100 focus:text-left focus-visible:text-left focus:text-sm focus-visible:text-sm focus:text-sky-700 focus-visible:text-sky-700"
-                      @click="clearSelectedContact"
-                    >
-                      Clear selection
                     </button>
+
+                    <div
+                      x-show="searchDropdownOpen"
+                      x-transition
+                      x-cloak
+                      @click.outside="closeSearchDropdown"
+                      class="absolute z-20 mt-1 w-full rounded-xl border border-slate-200 bg-white shadow-2xl hover:!border-slate-200 active:!border-slate-200 hover:!bg-white active:!bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-2xl active:shadow-2xl focus:shadow-2xl focus-visible:shadow-2xl"
+                    >
+                      <div
+                        class="border-b border-slate-100 px-3 py-2 hover:!border-slate-100 active:!border-slate-100 hover:border-b active:border-b focus:border-b focus-visible:border-b hover:border-slate-100 active:border-slate-100 focus:border-slate-100 focus-visible:border-slate-100"
+                      >
+                        <input
+                          x-ref="contactSearchInput"
+                          type="text"
+                          autocomplete="off"
+                          placeholder="Type a name, email, or phone number"
+                          class="w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500 hover:!border-slate-200 active:!border-slate-200 hover:border active:border focus:border focus-visible:border hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200"
+                          x-model="searchTerm"
+                          @input.debounce.250ms="onSearchChange"
+                        />
+                      </div>
+                      <div
+                        class="max-h-60 overflow-y-auto divide-y divide-slate-100"
+                      >
+                        <template x-if="searchLoading">
+                          <div
+                            class="px-3 py-4 text-sm text-slate-500 flex items-center gap-2 hover:!text-slate-500 active:!text-slate-500 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
+                          >
+                            <svg
+                              class="h-4 w-4 animate-spin text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                            >
+                              <circle
+                                class="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke-width="4"
+                              ></circle>
+                              <path
+                                class="opacity-75"
+                                stroke-width="4"
+                                d="M4 12a8 8 0 0 1 8-8"
+                              ></path>
+                            </svg>
+                            <span>Searching contacts...</span>
+                          </div>
+                        </template>
+                        <template x-if="!searchLoading && suggestions.length">
+                          <div>
+                            <template
+                              x-for="contact in suggestions"
+                              :key="contact.id || contact.email"
+                            >
+                              <button
+                                type="button"
+                                class="w-full px-3 py-3 text-left focus:text-left focus-visible:text-left"
+                                @click="pickSuggestion(contact)"
+                              >
+                                <div class="flex flex-col gap-0.5">
+                                  <span
+                                    class="text-sm font-semibold text-slate-900 focus:text-sm focus-visible:text-sm focus:text-slate-900 focus-visible:text-slate-900"
+                                    x-text="contact.displayLabel"
+                                  ></span>
+                                  <span
+                                    class="text-xs text-slate-500 focus:text-xs focus-visible:text-xs focus:text-slate-500 focus-visible:text-slate-500"
+                                    x-text="contact.email"
+                                  ></span>
+                                  <span
+                                    class="text-xs text-slate-500 focus:text-xs focus-visible:text-xs focus:text-slate-500 focus-visible:text-slate-500"
+                                    x-show="contact.sms"
+                                    x-text="contact.sms"
+                                  ></span>
+                                </div>
+                              </button>
+                            </template>
+                          </div>
+                        </template>
+                        <template
+                          x-if="!searchLoading && hasSearched && !suggestions.length && !searchError"
+                        >
+                          <p
+                            class="px-3 py-4 text-sm text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
+                          >
+                            No contacts found.
+                          </p>
+                        </template>
+                        <template
+                          x-if="!searchLoading && !hasSearched && !searchError"
+                        >
+                          <p
+                            class="px-3 py-4 text-sm text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
+                          >
+                            Start typing to search existing contacts.
+                          </p>
+                        </template>
+                        <template x-if="searchError">
+                          <p
+                            class="px-3 py-4 text-sm text-rose-600 hover:!text-rose-600 active:!text-rose-600 hover:text-rose-600 active:text-rose-600 focus:text-rose-600 focus-visible:text-rose-600"
+                            x-text="searchError"
+                          ></p>
+                        </template>
+                      </div>
+                      <button
+                        type="button"
+                        class="w-full border-t border-slate-100 px-3 py-2 text-left text-sm font-medium text-sky-700 focus:border-t focus-visible:border-t focus:border-slate-100 focus-visible:border-slate-100 focus:text-left focus-visible:text-left focus:text-sm focus-visible:text-sm focus:text-sky-700 focus-visible:text-sky-700"
+                        @click="clearSelectedContact"
+                      >
+                        Clear selection
+                      </button>
+                    </div>
                   </div>
+                </label>
+
+                <!-- Role -->
+                <label class="block" x-show="showRoleField" x-cloak>
+                  <span
+                    class="text-xs font-semibold uppercase text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
+                    >Role
+                    <span
+                      class="text-red-500 hover:!text-red-500 active:!text-red-500 hover:text-red-500 active:text-red-500 focus:text-red-500 focus-visible:text-red-500"
+                      >*</span
+                    ></span
+                  >
+                  <input
+                    type="text"
+                    x-model="form.role"
+                    class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500 hover:!border-slate-300 active:!border-slate-300 hover:!bg-white active:!bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm"
+                  />
+                </label>
+
+                <!-- Names -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <label class="block">
+                    <span
+                      class="text-xs font-semibold uppercase text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
+                      >First Name
+                      <span
+                        class="text-red-500 hover:!text-red-500 active:!text-red-500 hover:text-red-500 active:text-red-500 focus:text-red-500 focus-visible:text-red-500"
+                        >*</span
+                      ></span
+                    >
+                    <input
+                      type="text"
+                      x-model="form.firstName"
+                      class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500 hover:!border-slate-300 active:!border-slate-300 hover:!bg-white active:!bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm"
+                    />
+                  </label>
+                  <label class="block">
+                    <span
+                      class="text-xs font-semibold uppercase text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
+                      >Last Name</span
+                    >
+                    <input
+                      type="text"
+                      x-model="form.lastName"
+                      class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500 hover:!border-slate-300 active:!border-slate-300 hover:!bg-white active:!bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm"
+                    />
+                  </label>
                 </div>
-              </label>
 
-              <!-- Role -->
-              <label class="block" x-show="showRoleField" x-cloak>
-                <span
-                  class="text-xs font-semibold uppercase text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
-                  >Role
-                  <span
-                    class="text-red-500 hover:!text-red-500 active:!text-red-500 hover:text-red-500 active:text-red-500 focus:text-red-500 focus-visible:text-red-500"
-                    >*</span
-                  ></span
-                >
-                <input
-                  type="text"
-                  x-model="form.role"
-                  class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500 hover:!border-slate-300 active:!border-slate-300 hover:!bg-white active:!bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm"
-                />
-              </label>
-
-              <!-- Names -->
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <label class="block">
-                  <span
-                    class="text-xs font-semibold uppercase text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
-                    >First Name
+                <!-- Email / SMS -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <label class="block">
                     <span
-                      class="text-red-500 hover:!text-red-500 active:!text-red-500 hover:text-red-500 active:text-red-500 focus:text-red-500 focus-visible:text-red-500"
-                      >*</span
-                    ></span
-                  >
-                  <input
-                    type="text"
-                    x-model="form.firstName"
-                    class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500 hover:!border-slate-300 active:!border-slate-300 hover:!bg-white active:!bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm"
-                  />
-                </label>
-                <label class="block">
-                  <span
-                    class="text-xs font-semibold uppercase text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
-                    >Last Name</span
-                  >
-                  <input
-                    type="text"
-                    x-model="form.lastName"
-                    class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500 hover:!border-slate-300 active:!border-slate-300 hover:!bg-white active:!bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm"
-                  />
-                </label>
-              </div>
-
-              <!-- Email / SMS -->
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <label class="block">
-                  <span
-                    class="text-xs font-semibold uppercase text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
-                    >Email
+                      class="text-xs font-semibold uppercase text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
+                      >Email
+                      <span
+                        class="text-red-500 hover:!text-red-500 active:!text-red-500 hover:text-red-500 active:text-red-500 focus:text-red-500 focus-visible:text-red-500"
+                        >*</span
+                      ></span
+                    >
+                    <input
+                      type="email"
+                      x-model="form.email"
+                      class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500 hover:!border-slate-300 active:!border-slate-300 hover:!bg-white active:!bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm"
+                    />
+                  </label>
+                  <label class="block">
                     <span
-                      class="text-red-500 hover:!text-red-500 active:!text-red-500 hover:text-red-500 active:text-red-500 focus:text-red-500 focus-visible:text-red-500"
-                      >*</span
-                    ></span
-                  >
-                  <input
-                    type="email"
-                    x-model="form.email"
-                    class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500 hover:!border-slate-300 active:!border-slate-300 hover:!bg-white active:!bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm"
-                  />
-                </label>
-                <label class="block">
-                  <span
-                    class="text-xs font-semibold uppercase text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
-                    >SMS Number</span
-                  >
-                  <input
-                    type="tel"
-                    x-model="form.sms"
-                    class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500 hover:!border-slate-300 active:!border-slate-300 hover:!bg-white active:!bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm"
-                  />
-                </label>
-              </div>
+                      class="text-xs font-semibold uppercase text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
+                      >SMS Number</span
+                    >
+                    <input
+                      type="tel"
+                      x-model="form.sms"
+                      class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500 hover:!border-slate-300 active:!border-slate-300 hover:!bg-white active:!bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm"
+                    />
+                  </label>
+                </div>
 
-              <!-- Primary -->
-              <label
-                class="inline-flex items-center gap-2"
-                x-show="showPrimaryToggle"
-                x-cloak
-              >
-                <input
-                  type="checkbox"
-                  x-model="form.isPrimary"
-                  class="h-4 w-4 rounded border-slate-300 text-sky-700 focus:ring-sky-500 hover:!border-slate-300 active:!border-slate-300 hover:!text-sky-700 active:!text-sky-700 hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:text-sky-700 active:text-sky-700 focus:text-sky-700 focus-visible:text-sky-700"
-                />
-                <span
-                  class="text-sm text-slate-700 hover:!text-slate-700 active:!text-slate-700 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700"
-                  >Is Primary Contact</span
+                <!-- Primary -->
+                <label
+                  class="inline-flex items-center gap-2"
+                  x-show="showPrimaryToggle"
+                  x-cloak
                 >
-              </label>
+                  <input
+                    type="checkbox"
+                    x-model="form.isPrimary"
+                    class="h-4 w-4 rounded border-slate-300 text-sky-700 focus:ring-sky-500 hover:!border-slate-300 active:!border-slate-300 hover:!text-sky-700 active:!text-sky-700 hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:text-sky-700 active:text-sky-700 focus:text-sky-700 focus-visible:text-sky-700"
+                  />
+                  <span
+                    class="text-sm text-slate-700 hover:!text-slate-700 active:!text-slate-700 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700"
+                    >Is Primary Contact</span
+                  >
+                </label>
               </div>
 
               <div x-show="contactType === 'company'" x-cloak>

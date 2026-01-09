@@ -1870,7 +1870,8 @@ export class DashboardView {
     saveAsBtn?.addEventListener("click", () => {
       this.openSaveViewAsModal({
         onSave: (name) => {
-          this.showToast(`Saved view "${name}".`);
+          let button = this.createCustomEditButton(name);
+          document.getElementById("top-tabs")?.appendChild(button);
           this.exitEditColumnsMode();
         },
       });
