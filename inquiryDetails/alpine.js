@@ -2390,6 +2390,7 @@ document.addEventListener("alpine:init", () => {
   Alpine.data("billingSummaryModal", () => ({
     open: false,
     confirm: false,
+    confirmBusy: false,
     billObserver: null,
     summary: {
       businessName: "The Business Pty Ltd",
@@ -2471,20 +2472,26 @@ document.addEventListener("alpine:init", () => {
       );
     },
     setupBillApprovalObserver() {
-      const target = this.$refs?.billApprovedField;
+      const target = this.$refs?.billingSummaryCard;
       if (!target || this.billObserver) return;
       this.billObserver = new MutationObserver(() => this.syncBillApproval());
       this.billObserver.observe(target, {
         childList: true,
         subtree: true,
+        attributes: true,
         characterData: true,
       });
       this.syncBillApproval();
     },
     syncBillApproval() {
-      const target = this.$refs?.billApprovedField;
-      if (!target) return;
-      const raw = target.textContent || "";
+      const container = this.$refs?.billingSummaryCard;
+      if (!container) return;
+      const raw =
+        container.querySelector("[data-bill-approved-value]")?.textContent ||
+        container.dataset?.billApproved ||
+        container.querySelector("[data-bill-approved]")?.dataset
+          ?.billApproved ||
+        "";
       const normalized = this.normalizeBoolean(raw);
       this.confirm = normalized ?? false;
     },
@@ -2495,6 +2502,8 @@ document.addEventListener("alpine:init", () => {
         this.confirm = !checked;
         return;
       }
+      if (this.confirmBusy) return;
+      this.confirmBusy = true;
       try {
         await graphqlRequest(UPDATE_JOB_MUTATION, {
           id: JOB_ID,
@@ -2511,6 +2520,8 @@ document.addEventListener("alpine:init", () => {
           "error"
         );
         this.confirm = !checked;
+      } finally {
+        this.confirmBusy = false;
       }
     },
     handleEdit() {

@@ -4960,6 +4960,7 @@
             data-entity="peterpm"
             data-entity-key="1rBR-jpR3yE3HE1VhFD0j"
             x-ref="billingSummaryCard"
+            data-bill-approved="[Bill_Approved_Admin]"
           >
             <div
               class="flex items-center justify-between px-6 py-4 border-b hover:border-b active:border-b focus:border-b focus-visible:border-b"
@@ -5271,7 +5272,7 @@
                 class="flex items-start gap-2 text-sm text-slate-700 hover:!text-slate-700 active:!text-slate-700 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700"
                 data-print-exclude
               >
-                <span class="hidden" x-ref="billApprovedField"
+                <span class="hidden" data-bill-approved-value
                   >[Bill_Approved_Admin]</span
                 >
                 <input
@@ -5279,8 +5280,15 @@
                   class="mt-1 h-4 w-4 rounded border-slate-300 text-sky-700 focus:ring-sky-500 hover:!border-slate-300 active:!border-slate-300 hover:!text-sky-700 active:!text-sky-700 hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:text-sky-700 active:text-sky-700 focus:text-sky-700 focus-visible:text-sky-700"
                   x-model="confirm"
                   @change="handleConfirmChange($event)"
+                  :disabled="confirmBusy"
                 />
                 <span>I confirm and accept the details of this bill.</span>
+                <span
+                  class="text-xs text-slate-400"
+                  x-show="confirmBusy"
+                  x-cloak
+                  >Saving…</span
+                >
               </label>
             </div>
 
