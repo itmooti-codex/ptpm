@@ -2464,6 +2464,25 @@ document.addEventListener("alpine:init", () => {
         new CustomEvent("toast:show", { detail: { message, variant } })
       );
     },
+    async handleConfirmChange(event) {
+      const checked = Boolean(event?.target?.checked);
+      if (!checked) return;
+      if (!JOB_ID) {
+        this.notify("Missing job ID.", "error");
+        return;
+      }
+      try {
+        await graphqlRequest(UPDATE_JOB_MUTATION, {
+          id: JOB_ID,
+          payload: { bill_approved_admin: true },
+        });
+        this.notify("Billing approval saved.", "success");
+      } catch (error) {
+        console.error(error);
+        this.notify(error?.message || "Failed to save billing approval.", "error");
+        this.confirm = false;
+      }
+    },
     handleEdit() {
       this.notify("Edit billing flow coming soon.");
     },
@@ -2471,16 +2490,52 @@ document.addEventListener("alpine:init", () => {
       this.notify("Preparing download…");
     },
     handlePrint() {
-      if (!this.confirm) {
-        this.notify(
-          "Please confirm the bill details before printing.",
-          "error"
-        );
+      const source = this.$refs?.billingSummaryCard;
+      if (!source) {
+        this.notify("Unable to open the billing summary.", "error");
         return;
       }
-      if (typeof window?.print === "function") {
-        window.print();
+      const clone = source.cloneNode(true);
+      clone.querySelectorAll("[data-print-exclude]").forEach((node) => {
+        node.remove();
+      });
+      const styles = Array.from(
+        document.querySelectorAll("style, link[rel='stylesheet']")
+      )
+        .map((node) => node.outerHTML)
+        .join("\n");
+      const printWindow = window.open("", "_blank");
+      if (!printWindow) {
+        this.notify("Popup blocked. Please allow popups.", "error");
+        return;
       }
+      printWindow.document.open();
+      printWindow.document.write(`<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Billing Summary</title>
+    ${styles}
+    <style>
+      body {
+        margin: 24px;
+        background: #ffffff;
+        color: #0f172a;
+      }
+      .print-wrapper {
+        max-width: 960px;
+        margin: 0 auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="print-wrapper">
+      ${clone.outerHTML}
+    </div>
+  </body>
+</html>`);
+      printWindow.document.close();
+      printWindow.focus();
     },
     close() {
       this.open = false;

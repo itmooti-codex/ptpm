@@ -4959,88 +4959,8 @@
             data-var-jobid="375"
             data-entity="peterpm"
             data-entity-key="1rBR-jpR3yE3HE1VhFD0j"
+            x-ref="billingSummaryCard"
           >
-            <div
-              class="absolute right-6 top-4 flex items-center gap-2"
-              aria-label="Billing actions"
-            >
-              <button
-                type="button"
-                class="rounded-full border border-slate-200 bg-white p-2 text-slate-500 shadow-sm transition focus:border focus-visible:border focus:border-slate-200 focus-visible:border-slate-200 focus:bg-white focus-visible:bg-white focus:text-slate-500 focus-visible:text-slate-500 focus:shadow-sm focus-visible:shadow-sm"
-                title="Edit Bill"
-                @click="handleEdit"
-              >
-                <svg
-                  class="h-4 w-4"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M2.5 13.75V17.5H6.25L16.5125 7.2375L12.7625 3.4875L2.5 13.75ZM18.5375 5.2125C18.9125 4.8375 18.9125 4.2375 18.5375 3.8625L16.1375 1.4625C15.7625 1.0875 15.1625 1.0875 14.7875 1.4625L13.0125 3.2375L16.7625 6.9875L18.5375 5.2125Z"
-                    fill="currentColor"
-                  />
-                </svg>
-              </button>
-              <button
-                type="button"
-                class="rounded-full border border-slate-200 bg-white p-2 text-slate-500 shadow-sm transition focus:border focus-visible:border focus:border-slate-200 focus-visible:border-slate-200 focus:bg-white focus-visible:bg-white focus:text-slate-500 focus-visible:text-slate-500 focus:shadow-sm focus-visible:shadow-sm"
-                title="Download PDF"
-                @click="handleDownload"
-              >
-                <svg
-                  class="h-4 w-4"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M10 12.9166L6.45837 9.37498L7.58337 8.24998L9.16671 9.83331V3.33331H10.8334V9.83331L12.4167 8.24998L13.5417 9.37498L10 12.9166ZM4.16671 15.8333V12.5H5.83337V14.1666H14.1667V12.5H15.8334V15.8333C15.8334 16.2916 15.625 16.7291 15.2542 17.05C14.8834 17.3708 14.3792 17.5 13.875 17.5H6.12504C5.66671 17.5 5.20837 17.3291 4.83754 17.05C4.46671 16.7708 4.16671 16.2916 4.16671 15.8333Z"
-                    fill="currentColor"
-                  />
-                </svg>
-              </button>
-              <button
-                type="button"
-                class="rounded-full border border-slate-200 bg-white p-2 text-slate-500 shadow-sm transition focus:border focus-visible:border focus:border-slate-200 focus-visible:border-slate-200 focus:bg-white focus-visible:bg-white focus:text-slate-500 focus-visible:text-slate-500 focus:shadow-sm focus-visible:shadow-sm"
-                title="Print"
-                @click="handlePrint"
-              >
-                <svg
-                  class="h-4 w-4"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M15.8334 7.49998H4.16671C3.70837 7.49998 3.33337 7.87498 3.33337 8.33331V13.3333H5.00004V16.6666H15V13.3333H16.6667V8.33331C16.6667 7.87498 16.2917 7.49998 15.8334 7.49998ZM13.3334 15H6.66671V11.6666H13.3334V15ZM15.8334 3.33331H4.16671V6.66665H15.8334V3.33331Z"
-                    fill="currentColor"
-                  />
-                </svg>
-              </button>
-              <button
-                type="button"
-                class="rounded-full border border-slate-200 bg-white p-2 text-slate-500 shadow-sm transition focus:border focus-visible:border focus:border-slate-200 focus-visible:border-slate-200 focus:bg-white focus-visible:bg-white focus:text-slate-500 focus-visible:text-slate-500 focus:shadow-sm focus-visible:shadow-sm"
-                title="Close"
-                @click="close"
-              >
-                <svg
-                  class="h-4 w-4"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M5.83337 5.83331L14.1667 14.1666M14.1667 5.83331L5.83337 14.1666"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </svg>
-              </button>
-            </div>
-
             <div
               class="flex items-center justify-between px-6 py-4 border-b hover:border-b active:border-b focus:border-b focus-visible:border-b"
             >
@@ -5055,26 +4975,6 @@
                   x-text="summary.businessName"
                 ></p>
               </div>
-              <button
-                class="text-slate-400 transition focus:text-slate-400 focus-visible:text-slate-400"
-                @click="close"
-              >
-                <span class="sr-only">Close</span>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="1.5"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
             </div>
 
             <div class="px-6 py-6 space-y-6">
@@ -5369,11 +5269,13 @@
 
               <label
                 class="flex items-start gap-2 text-sm text-slate-700 hover:!text-slate-700 active:!text-slate-700 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700"
+                data-print-exclude
               >
                 <input
                   type="checkbox"
                   class="mt-1 h-4 w-4 rounded border-slate-300 text-sky-700 focus:ring-sky-500 hover:!border-slate-300 active:!border-slate-300 hover:!text-sky-700 active:!text-sky-700 hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:text-sky-700 active:text-sky-700 focus:text-sky-700 focus-visible:text-sky-700"
                   x-model="confirm"
+                  @change="handleConfirmChange($event)"
                 />
                 <span>I confirm and accept the details of this bill.</span>
               </label>
@@ -5381,6 +5283,7 @@
 
             <div
               class="flex items-center justify-end gap-3 border-t border-slate-200 px-6 py-4 hover:!border-slate-200 active:!border-slate-200 hover:border-t active:border-t focus:border-t focus-visible:border-t hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200"
+              data-print-exclude
             >
               <button
                 class="rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 focus:border focus-visible:border focus:border-slate-300 focus-visible:border-slate-300 focus:text-sm focus-visible:text-sm focus:text-slate-700 focus-visible:text-slate-700"
@@ -5391,7 +5294,6 @@
               <button
                 type="button"
                 class="rounded-md bg-[#003882] px-4 py-2 text-sm font-semibold text-white disabled:opacity-60 focus:bg-[#003882] focus-visible:bg-[#003882] focus:text-sm focus-visible:text-sm focus:text-white focus-visible:text-white"
-                :disabled="!confirm"
                 @click="handlePrint"
               >
                 Print
