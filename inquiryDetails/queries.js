@@ -220,6 +220,36 @@ const CREATE_PROPERTY_CONTACT_MUTATION = `
     }
   `;
 
+const CALC_COMPANIES_QUERY = `
+  query calcCompanies(
+    $limit: IntScalar
+    $offset: IntScalar
+    $searchExpression: String!
+  ) {
+    calcCompanies(
+      query: [
+        {
+          where: {
+            name: null
+            _OPERATOR_: like
+            _VALUE_EXPRESSION_: $searchExpression
+          }
+        }
+      ]
+      limit: $limit
+      offset: $offset
+    ) {
+      ID: field(arg: ["id"])
+      Name: field(arg: ["name"])
+      Phone: field(arg: ["phone"])
+      Address: field(arg: ["address"])
+      City: field(arg: ["city"])
+      State: field(arg: ["state"])
+      Postal_Code: field(arg: ["postal_code"])
+    }
+  }
+`;
+
 const CALC_CONTACTS_QUERY = `
   query calcContacts(
     $limit: IntScalar
@@ -289,6 +319,22 @@ const CREATE_CONTACT_MUTAION = `
   }
 `;
 
+const CREATE_COMPANY_MUTATION = `
+  mutation createCompany(
+    $payload: CompanyCreateInput = null
+  ) {
+    createCompany(payload: $payload) {
+      id
+      name
+      phone
+      address
+      city
+      state
+      postal_code
+    }
+  }
+`;
+
 const CREATE_AFFILIATION_MUTATION = `mutation createAffiliation(
   $payload: AffiliationCreateInput = null
 ) {
@@ -296,6 +342,9 @@ const CREATE_AFFILIATION_MUTATION = `mutation createAffiliation(
     contact_id
     role
     property_id
+    primary_owner_contact
+    primary_resident_contact
+    primary_property_manager_contact
   }
 }
 `;
@@ -309,6 +358,9 @@ const UPDATE_AFFILIATION_MUTATION = `mutation updateAffiliation(
     role
     contact_id
     property_id
+    primary_owner_contact
+    primary_resident_contact
+    primary_property_manager_contact
   }
 }
 `;
