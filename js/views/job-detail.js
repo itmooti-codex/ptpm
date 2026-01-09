@@ -55,18 +55,18 @@ export class JobDetailView {
     return this.jobId;
   }
 
-  init() {
+  async init() {
     this.createDealInformationModal();
     this.CreateQuoteOnBehalfOfServicemanModal();
     this.EditNotes();
     this.createViewJobDocumentsModal();
     this.createActivityListModal();
     this.createWildlifeReportModal();
-    this.createTasksModal();
-    this.createAddActivitiesSection();
-    this.createAddMaterialsSection();
+    await this.createTasksModal();
+    await this.createAddActivitiesSection();
+    await this.createAddMaterialsSection();
     this.createUploadsSection();
-    this.createInvoiceSection();
+    await this.createInvoiceSection();
     this.setupContactTypeToggle();
     this.model.fetchContacts((list) => this.setupClientSearch(list || []));
     this.model
@@ -80,7 +80,7 @@ export class JobDetailView {
     this.#createContactDetailsModalUI();
   }
 
-  createAddActivitiesSection() {
+  async createAddActivitiesSection() {
     // This section stays hidden until the Add Activities tab is shown; rows will be rendered dynamically.
     const wrapper = document.createElement("div");
     wrapper.setAttribute("data-section", "add-activities");
@@ -274,7 +274,7 @@ export class JobDetailView {
     addOptions(selectMap.task, jobs, "Select");
     addOptions(selectMap.option, options, "Select");
     addOptions(selectMap.status, activityStatuses, "Select");
-    this.renderActivitiesTable();
+    await this.renderActivitiesTable();
   }
 
   renderAddActivitiesServices(data) {
@@ -379,7 +379,7 @@ export class JobDetailView {
     });
   }
 
-  createAddMaterialsSection() {
+  async createAddMaterialsSection() {
     // Hidden container for Materials tab content; table rows to be injected dynamically.
     const wrapper = document.createElement("div");
     wrapper.setAttribute("data-section", "add-materials");
@@ -682,7 +682,7 @@ export class JobDetailView {
         this.resetMaterialForm();
       });
     }
-    this.renderMaterialsTable();
+    await this.renderMaterialsTable();
   }
 
   createUploadsSection() {
@@ -2066,7 +2066,7 @@ export class JobDetailView {
     };
   }
 
-  createTasksModal(tasks) {
+  async createTasksModal(tasks) {
     const demo = [
       {
         title: "Field Inspection and building inspection",
@@ -2374,7 +2374,7 @@ export class JobDetailView {
       btn.classList.toggle("border-slate-300", !isActive);
     };
 
-    const setState = (type) => {
+    const setState = async (type) => {
       this.activeContactType = type;
       if (contactTypeField) contactTypeField.value = type;
 
@@ -2398,12 +2398,14 @@ export class JobDetailView {
       this.toggleEntityModalFields(!isIndividual);
 
       if (!isIndividual) {
-        this.ensureCompaniesLoaded();
+        await this.ensureCompaniesLoaded();
       }
     };
 
-    individualBtn?.addEventListener("click", () => setState("individual"));
-    entityBtn?.addEventListener("click", () => setState("entity"));
+    individualBtn?.addEventListener("click", async () =>
+      setState("individual")
+    );
+    entityBtn?.addEventListener("click", async () => setState("entity"));
 
     setState("individual");
   }
