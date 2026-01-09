@@ -1580,17 +1580,14 @@ export class NewInquiryView {
     const actionCell = () => `
       <div class="flex items-center justify-end gap-3 text-slate-500">
         <button type="button" class="edit-btn !text-slate-500 hover:!text-slate-500 active:!text-slate-500 focus:!text-slate-500 focus-visible:!text-slate-500" title="Edit">
-          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 20h9"/>
-            <path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14.3537 4.62521L11.3751 1.64599C11.2761 1.54692 11.1585 1.46833 11.029 1.41471C10.8996 1.36109 10.7609 1.3335 10.6208 1.3335C10.4807 1.3335 10.342 1.36109 10.2126 1.41471C10.0831 1.46833 9.96556 1.54692 9.86651 1.64599L1.64616 9.86701C1.54668 9.96569 1.46781 10.0832 1.41414 10.2126C1.36046 10.342 1.33305 10.4809 1.3335 10.621V13.6002C1.3335 13.8831 1.44588 14.1544 1.64591 14.3544C1.84594 14.5544 2.11724 14.6668 2.40013 14.6668H5.37935C5.51947 14.6673 5.65828 14.6399 5.78772 14.5862C5.91716 14.5325 6.03463 14.4536 6.13332 14.3542L14.3537 6.13382C14.4527 6.03477 14.5313 5.91717 14.5849 5.78775C14.6386 5.65832 14.6662 5.51961 14.6662 5.37951C14.6662 5.23942 14.6386 5.1007 14.5849 4.97128C14.5313 4.84185 14.4527 4.72426 14.3537 4.62521ZM5.37935 13.6002H2.40013V10.621L8.26657 4.75454L11.2458 7.73376L5.37935 13.6002ZM11.9998 6.97912L9.02054 4.00057L10.6205 2.40063L13.5997 5.37918L11.9998 6.97912Z" fill="#003882"/>
           </svg>
+
         </button>
         <button type="button" class="delete-btn !text-rose-600 hover:!text-rose-600 active:!text-rose-600 focus:!text-rose-600 focus-visible:!text-rose-600" title="Delete">
-          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="3 6 5 6 21 6"/>
-            <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
-            <path d="M10 11v6M14 11v6"/>
-            <path d="M9 6V4a2 2 0 012-2h2a2 2 0 012 2v2"/>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M13.7949 3.38478H11.2308V2.87196C11.2308 2.46393 11.0687 2.07262 10.7802 1.7841C10.4916 1.49558 10.1003 1.3335 9.69231 1.3335H6.61538C6.20736 1.3335 5.81605 1.49558 5.52753 1.7841C5.23901 2.07262 5.07692 2.46393 5.07692 2.87196V3.38478H2.51282C2.37681 3.38478 2.24637 3.43881 2.1502 3.53498C2.05403 3.63115 2 3.76159 2 3.8976C2 4.03361 2.05403 4.16404 2.1502 4.26022C2.24637 4.35639 2.37681 4.41042 2.51282 4.41042H3.02564V13.6412C3.02564 13.9132 3.1337 14.1741 3.32604 14.3664C3.51839 14.5588 3.77927 14.6668 4.05128 14.6668H12.2564C12.5284 14.6668 12.7893 14.5588 12.9816 14.3664C13.174 14.1741 13.2821 13.9132 13.2821 13.6412V4.41042H13.7949C13.9309 4.41042 14.0613 4.35639 14.1575 4.26022C14.2537 4.16404 14.3077 4.03361 14.3077 3.8976C14.3077 3.76159 14.2537 3.63115 14.1575 3.53498C14.0613 3.43881 13.9309 3.38478 13.7949 3.38478ZM6.10256 2.87196C6.10256 2.73595 6.15659 2.60551 6.25277 2.50934C6.34894 2.41317 6.47938 2.35914 6.61538 2.35914H9.69231C9.82832 2.35914 9.95875 2.41317 10.0549 2.50934C10.1511 2.60551 10.2051 2.73595 10.2051 2.87196V3.38478H6.10256V2.87196ZM12.2564 13.6412H4.05128V4.41042H12.2564V13.6412ZM7.12821 6.97452V11.0771C7.12821 11.2131 7.07418 11.3435 6.978 11.4397C6.88183 11.5359 6.75139 11.5899 6.61538 11.5899C6.47938 11.5899 6.34894 11.5359 6.25277 11.4397C6.15659 11.3435 6.10256 11.2131 6.10256 11.0771V6.97452C6.10256 6.83851 6.15659 6.70808 6.25277 6.6119C6.34894 6.51573 6.47938 6.4617 6.61538 6.4617C6.75139 6.4617 6.88183 6.51573 6.978 6.6119C7.07418 6.70808 7.12821 6.83851 7.12821 6.97452ZM10.2051 6.97452V11.0771C10.2051 11.2131 10.1511 11.3435 10.0549 11.4397C9.95875 11.5359 9.82832 11.5899 9.69231 11.5899C9.5563 11.5899 9.42586 11.5359 9.32969 11.4397C9.23352 11.3435 9.17949 11.2131 9.17949 11.0771V6.97452C9.17949 6.83851 9.23352 6.70808 9.32969 6.6119C9.42586 6.51573 9.5563 6.4617 9.69231 6.4617C9.82832 6.4617 9.95875 6.51573 10.0549 6.6119C10.1511 6.70808 10.2051 6.83851 10.2051 6.97452Z" fill="#D80F0F"/>
           </svg>
         </button>
       </div>
@@ -1632,19 +1629,23 @@ export class NewInquiryView {
           : company || "";
 
       tr.innerHTML = `
-        <td class="px-4 py-2">${
+        <td class="px-4 py-2 font-normal text-neutral-700">${
           row.Role !== "Owner"
             ? `<span class="invisible">${starIcon(primary)}</span>`
             : starIcon(primary)
         }</td>
-        <td class="px-4 py-2">${role}</td>
-        <td class="px-4 py-2">
-          <div class="font-medium">${toName(contact)}</div>
-          <div class="text-xs text-slate-500">(${toEmail(contact)})</div>
+        <td class="px-4 py-2 font-normal text-neutral-700">${role}</td>
+        <td class="px-4 py-2 font-normal text-neutral-700">
+          <div class="">${toName(contact)}</div>
+          <div class="text-xs">(${toEmail(contact)})</div>
         </td>
-        <td class="px-4 py-2">${toPhone(contact)}</td>
-        <td class="px-4 py-2">${toCompany(company)}</td>
-        <td class="px-4 py-2 text-right">${actionCell()}</td>
+        <td class="px-4 py-2 font-normal text-neutral-700">${toPhone(
+          contact
+        )}</td>
+        <td class="px-4 py-2 font-normal text-neutral-700">${toCompany(
+          company
+        )}</td>
+        <td class="px-4 py-2 font-normal text-neutral-700 text-right">${actionCell()}</td>
       `;
 
       tbody.appendChild(tr);
@@ -1851,7 +1852,9 @@ export class NewInquiryView {
                 <input id="adTopCity" data-contact-id="city" data-contact-field="top_city" type="text" class="mt-1 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 focus:ring-2 focus:ring-slate-200 browser-default" />
               </div>
               <div class="flex-1">
-                <label class="block text-sm font-medium text-gray-700 mb-1">State*</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1">State
+                   <span class="text-rose-500">*</span>
+                </label>
                  <div class="relative mt-2 browser-default">
                   <select id="adTopState" data-contact-id="state" data-contact-field="top_state" class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 focus:ring-2 focus:ring-slate-200 !block appearance-none hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default">
                   </select>
@@ -1925,7 +1928,9 @@ export class NewInquiryView {
                   <input id="adBotCity" data-contact-id="postal_city" data-contact-field="bot_city" type="text" class="mt-1 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 focus:ring-2 focus:ring-slate-200 browser-default" />
                 </div>
                 <div class="flex-1">
-                  <label class="block text-sm font-medium text-gray-700 mb-1">State*</label>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">State
+                     <span class="text-rose-500">*</span>
+                  </label>
                   <div class="relative mt-2 browser-default">
                     <select id="adBotState" data-contact-id="postal_state" data-contact-field="bot_state" class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 focus:ring-2 focus:ring-slate-200 !block appearance-none hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default">
                       
