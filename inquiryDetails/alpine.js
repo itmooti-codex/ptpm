@@ -2390,6 +2390,8 @@ document.addEventListener("alpine:init", () => {
   Alpine.data("billingSummaryModal", () => ({
     open: false,
     confirm: false,
+    confirmBusy: false,
+    billObserver: null,
     summary: {
       businessName: "The Business Pty Ltd",
       jobId: "#1231543",
@@ -2429,15 +2431,26 @@ document.addEventListener("alpine:init", () => {
     init() {
       this.boundListener = (event) => {
         this.mergeSummary(event?.detail || {});
-        this.confirm = false;
         this.open = true;
+        this.$nextTick(() => this.syncBillApproval());
       };
       window.addEventListener("billingSummary:open", this.boundListener);
+      this.$nextTick(() => this.setupBillApprovalObserver());
+      this.$watch("open", (value) => {
+        if (value) {
+          this.$nextTick(() => this.syncBillApproval());
+          setTimeout(() => this.syncBillApproval(), 50);
+        }
+      });
     },
     destroy() {
       if (this.boundListener) {
         window.removeEventListener("billingSummary:open", this.boundListener);
         this.boundListener = null;
+      }
+      if (this.billObserver) {
+        this.billObserver.disconnect();
+        this.billObserver = null;
       }
     },
     mergeSummary(detail = {}) {
@@ -2464,23 +2477,70 @@ document.addEventListener("alpine:init", () => {
         new CustomEvent("toast:show", { detail: { message, variant } })
       );
     },
+    setupBillApprovalObserver() {
+      const target = this.$root;
+      if (!target || this.billObserver) return;
+      this.billObserver = new MutationObserver(() => this.syncBillApproval());
+      this.billObserver.observe(target, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        characterData: true,
+      });
+      this.syncBillApproval();
+    },
+    setBillApprovalValue(value) {
+      const target = this.$root || document;
+      const node = target.querySelector("[data-bill-approved-value]");
+      if (node) {
+        node.textContent = value ? "true" : "false";
+      }
+      const card = this.$refs?.billingSummaryCard;
+      if (card) {
+        card.dataset.billApproved = value ? "true" : "false";
+      }
+    },
+    syncBillApproval() {
+      if (this.confirmBusy) return;
+      const container = this.$root || document;
+      const raw =
+        container.querySelector("[data-bill-approved-value]")?.textContent ||
+        container.querySelector("[data-bill-approved]")?.dataset
+          ?.billApproved ||
+        "";
+      const normalized = this.normalizeBoolean(raw);
+      this.confirm = normalized ?? false;
+    },
     async handleConfirmChange(event) {
       const checked = Boolean(event?.target?.checked);
-      if (!checked) return;
       if (!JOB_ID) {
         this.notify("Missing job ID.", "error");
+        this.confirm = !checked;
         return;
       }
+      if (this.confirmBusy) return;
+      this.confirmBusy = true;
+      this.confirm = checked;
+      this.setBillApprovalValue(checked);
       try {
         await graphqlRequest(UPDATE_JOB_MUTATION, {
           id: JOB_ID,
-          payload: { bill_approved_admin: true },
+          payload: { bill_approved_admin: checked },
         });
-        this.notify("Billing approval saved.", "success");
+        this.notify(
+          checked ? "Billing approval saved." : "Billing approval removed.",
+          "success"
+        );
       } catch (error) {
         console.error(error);
-        this.notify(error?.message || "Failed to save billing approval.", "error");
-        this.confirm = false;
+        this.notify(
+          error?.message || "Failed to save billing approval.",
+          "error"
+        );
+        this.confirm = !checked;
+        this.setBillApprovalValue(!checked);
+      } finally {
+        this.confirmBusy = false;
       }
     },
     handleEdit() {
