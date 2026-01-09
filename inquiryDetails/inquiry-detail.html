@@ -5275,6 +5275,7 @@
                   type="checkbox"
                   class="mt-1 h-4 w-4 rounded border-slate-300 text-sky-700 focus:ring-sky-500 hover:!border-slate-300 active:!border-slate-300 hover:!text-sky-700 active:!text-sky-700 hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:text-sky-700 active:text-sky-700 focus:text-sky-700 focus-visible:text-sky-700"
                   x-model="confirm"
+                  @change="handleConfirmChange($event)"
                 />
                 <span>I confirm and accept the details of this bill.</span>
               </label>

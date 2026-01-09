@@ -2464,6 +2464,25 @@ document.addEventListener("alpine:init", () => {
         new CustomEvent("toast:show", { detail: { message, variant } })
       );
     },
+    async handleConfirmChange(event) {
+      const checked = Boolean(event?.target?.checked);
+      if (!checked) return;
+      if (!JOB_ID) {
+        this.notify("Missing job ID.", "error");
+        return;
+      }
+      try {
+        await graphqlRequest(UPDATE_JOB_MUTATION, {
+          id: JOB_ID,
+          payload: { bill_approved_admin: true },
+        });
+        this.notify("Billing approval saved.", "success");
+      } catch (error) {
+        console.error(error);
+        this.notify(error?.message || "Failed to save billing approval.", "error");
+        this.confirm = false;
+      }
+    },
     handleEdit() {
       this.notify("Edit billing flow coming soon.");
     },
