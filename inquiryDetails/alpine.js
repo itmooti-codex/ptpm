@@ -4700,6 +4700,7 @@ document.addEventListener("alpine:init", () => {
     error: "",
     propertyId: null,
     isEdit: false,
+    contactType: "contact",
     showRoleField: true,
     showPrimaryToggle: true,
 
@@ -4713,6 +4714,14 @@ document.addEventListener("alpine:init", () => {
     hasSearched: false,
     searchLimit: 10,
     latestSearchTerm: "",
+    companySuggestions: [],
+    companySearchOpen: false,
+    companySearchLoading: false,
+    companySearchError: "",
+    companySearchDebounceId: null,
+    companyHasSearched: false,
+    companySearchLimit: 10,
+    companyLatestSearchTerm: "",
 
     form: {
       search: "",
@@ -4726,6 +4735,18 @@ document.addEventListener("alpine:init", () => {
       existingContactId: null,
       contactId: null,
       affiliationId: null,
+    },
+    companyForm: {
+      search: "",
+      companyId: null,
+      name: "",
+      phone: "",
+      address: "",
+      city: "",
+      state: "",
+      postalCode: "",
+      role: "",
+      isPrimary: false,
     },
 
     init() {
@@ -4754,7 +4775,23 @@ document.addEventListener("alpine:init", () => {
         this.isEdit =
           mode === "edit" ||
           Boolean(prefill.contactId || prefill.affiliationId);
+        const companyPrefill = { ...(d.companyPrefill || {}) };
+        const hintedType =
+          typeof d.contactType === "string" && d.contactType.trim()
+            ? d.contactType.trim().toLowerCase()
+            : "";
+        if (hintedType) {
+          this.contactType = hintedType;
+        } else if (prefill.contactId || prefill.existingContactId) {
+          this.contactType = "contact";
+        } else if (companyPrefill.companyId) {
+          this.contactType = "company";
+        } else {
+          this.contactType = "contact";
+        }
         if (Object.keys(prefill).length) Object.assign(this.form, prefill);
+        if (Object.keys(companyPrefill).length)
+          Object.assign(this.companyForm, companyPrefill);
         if (!this.showRoleField) this.form.role = "";
         if (!this.showPrimaryToggle) this.form.isPrimary = false;
         if (!this.form.search) {
@@ -4764,6 +4801,9 @@ document.addEventListener("alpine:init", () => {
             .trim();
           this.form.search = derivedName || this.form.email || "";
         }
+        if (!this.companyForm.search) {
+          this.companyForm.search = this.companyForm.name || "";
+        }
         this.open = true;
       });
     },
@@ -4771,6 +4811,7 @@ document.addEventListener("alpine:init", () => {
     reset() {
       this.error = "";
       this.isSubmitting = false;
+      this.contactType = "contact";
       this.showRoleField = true;
       this.showPrimaryToggle = true;
       this.suggestions = [];
@@ -4784,6 +4825,16 @@ document.addEventListener("alpine:init", () => {
         clearTimeout(this.searchDebounceId);
         this.searchDebounceId = null;
       }
+      this.companySuggestions = [];
+      this.companySearchOpen = false;
+      this.companySearchLoading = false;
+      this.companySearchError = "";
+      this.companyHasSearched = false;
+      this.companyLatestSearchTerm = "";
+      if (this.companySearchDebounceId) {
+        clearTimeout(this.companySearchDebounceId);
+        this.companySearchDebounceId = null;
+      }
       this.isEdit = false;
       this.form = {
         search: "",
@@ -4796,6 +4847,18 @@ document.addEventListener("alpine:init", () => {
         existingContactId: null,
         contactId: null,
         affiliationId: null,
+      };
+      this.companyForm = {
+        search: "",
+        companyId: null,
+        name: "",
+        phone: "",
+        address: "",
+        city: "",
+        state: "",
+        postalCode: "",
+        role: "",
+        isPrimary: false,
       };
     },
 
@@ -4929,6 +4992,126 @@ document.addEventListener("alpine:init", () => {
       this.searchError = "";
     },
 
+    openCompanySearch() {
+      this.companySearchOpen = true;
+      this.companyHasSearched = false;
+      this.companySearchError = "";
+      this.companySuggestions = [];
+    },
+
+    closeCompanySearch() {
+      this.companySearchOpen = false;
+      this.companySuggestions = [];
+      this.companySearchLoading = false;
+      this.companySearchError = "";
+      this.companyHasSearched = false;
+      this.companyLatestSearchTerm = "";
+      if (this.companySearchDebounceId) {
+        clearTimeout(this.companySearchDebounceId);
+        this.companySearchDebounceId = null;
+      }
+    },
+
+    onCompanySearchChange() {
+      const q = (this.companyForm.search || "").trim();
+      this.companyForm.companyId = null;
+      this.companySearchError = "";
+      this.companyHasSearched = false;
+      if (this.companySearchDebounceId) {
+        clearTimeout(this.companySearchDebounceId);
+        this.companySearchDebounceId = null;
+      }
+      if (q.length < 2) {
+        this.companySuggestions = [];
+        return;
+      }
+      this.companySearchOpen = true;
+      this.companySearchDebounceId = setTimeout(() => {
+        this.fetchCompanySuggestions(q);
+      }, 200);
+    },
+
+    async fetchCompanySuggestions(term) {
+      const normalized = (term || "").trim();
+      if (!normalized) {
+        this.companySuggestions = [];
+        return;
+      }
+      this.companySearchLoading = true;
+      this.companyLatestSearchTerm = normalized;
+      try {
+        const data = await graphqlRequest(CALC_COMPANIES_QUERY, {
+          limit: this.companySearchLimit,
+          offset: 0,
+          searchExpression: this.buildSearchExpression(normalized),
+        });
+        if (this.companyLatestSearchTerm !== normalized) return;
+        const rows = Array.isArray(data?.calcCompanies)
+          ? data.calcCompanies
+          : [];
+        this.companySuggestions = rows.map((row) =>
+          this.normalizeCompany(row)
+        );
+        this.companyHasSearched = true;
+        this.companySearchError = "";
+      } catch (error) {
+        console.error(error);
+        if (this.companyLatestSearchTerm === normalized) {
+          this.companySuggestions = [];
+          this.companySearchError =
+            error?.message || "Failed to search companies.";
+          this.companyHasSearched = false;
+        }
+      } finally {
+        if (this.companyLatestSearchTerm === normalized) {
+          this.companySearchLoading = false;
+        }
+      }
+    },
+
+    normalizeCompany(row) {
+      const name = (row?.Name || "").trim();
+      const phone = (row?.Phone || "").trim();
+      const address = (row?.Address || "").trim();
+      const city = (row?.City || "").trim();
+      const state = (row?.State || "").trim();
+      const postalCode = (row?.Postal_Code || "").trim();
+      const location = [city, state].filter(Boolean).join(", ");
+      const labelBase = name || "Unnamed Company";
+      const label = location ? `${labelBase} · ${location}` : labelBase;
+      return {
+        id: row?.ID || null,
+        name,
+        phone,
+        address,
+        city,
+        state,
+        postalCode,
+        displayLabel: label,
+      };
+    },
+
+    pickCompanySuggestion(company) {
+      if (!company) return;
+      this.companyForm.companyId = company.id || null;
+      this.companyForm.search = company.displayLabel || "";
+      this.companyForm.name = company.name || "";
+      this.companyForm.phone = company.phone || "";
+      this.companyForm.address = company.address || "";
+      this.companyForm.city = company.city || "";
+      this.companyForm.state = company.state || "";
+      this.companyForm.postalCode = company.postalCode || "";
+      this.closeCompanySearch();
+    },
+
+    clearSelectedCompany() {
+      this.companyForm.search = "";
+      this.companyForm.companyId = null;
+      this.companySuggestions = [];
+      this.companySearchError = "";
+      this.companyHasSearched = false;
+    },
+
     getPrimaryRoleConfig(roleValue = "") {
       const normalized = String(roleValue || "").toLowerCase();
       if (!normalized) return null;
@@ -4959,9 +5142,15 @@ document.addEventListener("alpine:init", () => {
       return "";
     },
 
+    validateCompany() {
+      if (!this.companyForm.name.trim()) return "Company name is required.";
+      return "";
+    },
+
     async handleSave() {
       if (this.isSubmitting) return;
-      const v = this.validate();
+      const isCompany = this.contactType === "company";
+      const v = isCompany ? this.validateCompany() : this.validate();
       if (v) {
         this.error = v;
         this.toast("error", v);
@@ -4972,64 +5161,129 @@ document.addEventListener("alpine:init", () => {
         this.toast("error", this.error);
         return;
       }
-      const wasNewContact = !this.form.contactId;
+      const wasNewContact = !isCompany && !this.form.contactId;
+      let createdContactId = null;
+      let createdContactPayload = null;
 
       this.isSubmitting = true;
       this.error = "";
 
       try {
-        const payload = {
-          first_name: this.form.firstName.trim(),
-          last_name: this.form.lastName.trim() || null,
-          email: this.form.email.trim(),
-          sms_number: this.form.sms.trim() || null,
-        };
-
-        let contactId = this.form.contactId || null;
-
-        if (contactId) {
-          await graphqlRequest(UPDATE_CONTACT_MUTATION, {
-            id: contactId,
-            payload,
-          });
-        } else {
-          const contactRes = await graphqlRequest(CREATE_CONTACT_MUTAION, {
-            payload,
-          });
-          contactId = contactRes?.createContact?.id;
-          if (!contactId) {
-            throw new Error("Failed to create contact (no id returned)");
-          }
-        }
-
-        const normalizedRole = (this.form.role || "").trim() || null;
-        const primaryConfig = this.getPrimaryRoleConfig(normalizedRole || "");
-        const isPrimary = Boolean(this.form.isPrimary);
-        const applyPrimary = Boolean(primaryConfig && isPrimary);
-
-        if (this.form.affiliationId) {
-          const affiliationPayload = {
-            role: normalizedRole,
+        if (isCompany) {
+          const companyPayload = {
+            name: this.companyForm.name.trim(),
+            phone: this.companyForm.phone.trim() || null,
+            address: this.companyForm.address.trim() || null,
+            city: this.companyForm.city.trim() || null,
+            state: this.companyForm.state.trim() || null,
+            postal_code: this.companyForm.postalCode.trim() || null,
           };
-          if (applyPrimary) {
-            affiliationPayload[primaryConfig.flagField] = true;
+
+          let companyId = this.companyForm.companyId || null;
+
+          if (companyId) {
+            await graphqlRequest(UPDATE_COMPANY_MUTATION, {
+              id: companyId,
+              payload: companyPayload,
+            });
+          } else {
+            const companyRes = await graphqlRequest(CREATE_COMPANY_MUTATION, {
+              payload: companyPayload,
+            });
+            companyId = companyRes?.createCompany?.id;
+            if (!companyId) {
+              throw new Error("Failed to create company (no id returned)");
+            }
           }
-          await graphqlRequest(UPDATE_AFFILIATION_MUTATION, {
-            id: this.form.affiliationId,
-            payload: affiliationPayload,
-          });
+
+          const normalizedRole = (this.companyForm.role || "").trim() || null;
+          const primaryConfig = this.getPrimaryRoleConfig(normalizedRole || "");
+          const isPrimary = Boolean(this.companyForm.isPrimary);
+          const applyPrimary = Boolean(primaryConfig && isPrimary);
+
+          if (this.form.affiliationId) {
+            const affiliationPayload = {
+              role: normalizedRole,
+              company_id: companyId,
+            };
+            if (applyPrimary) {
+              affiliationPayload[primaryConfig.flagField] = true;
+            }
+            await graphqlRequest(UPDATE_AFFILIATION_MUTATION, {
+              id: this.form.affiliationId,
+              payload: affiliationPayload,
+            });
+          } else {
+            const affiliationPayload = {
+              company_id: companyId,
+              property_id: this.propertyId,
+              role: normalizedRole,
+            };
+            if (applyPrimary) {
+              affiliationPayload[primaryConfig.flagField] = true;
+            }
+            await graphqlRequest(CREATE_AFFILIATION_MUTATION, {
+              payload: affiliationPayload,
+            });
+          }
         } else {
-          const affiliationPayload = {
-            contact_id: contactId,
-            property_id: this.propertyId,
-            role: normalizedRole,
+          const payload = {
+            first_name: this.form.firstName.trim(),
+            last_name: this.form.lastName.trim() || null,
+            email: this.form.email.trim(),
+            sms_number: this.form.sms.trim() || null,
           };
-          if (applyPrimary) {
-            affiliationPayload[primaryConfig.flagField] = true;
+
+          let contactId = this.form.contactId || null;
+
+          if (contactId) {
+            await graphqlRequest(UPDATE_CONTACT_MUTATION, {
+              id: contactId,
+              payload,
+            });
+          } else {
+            const contactRes = await graphqlRequest(CREATE_CONTACT_MUTAION, {
+              payload,
+            });
+            contactId = contactRes?.createContact?.id;
+            if (!contactId) {
+              throw new Error("Failed to create contact (no id returned)");
+            }
+            if (wasNewContact) {
+              createdContactId = contactId;
+              createdContactPayload = payload;
+            }
           }
-          await graphqlRequest(CREATE_AFFILIATION_MUTATION, {
-            payload: affiliationPayload,
-          });
+
+          const normalizedRole = (this.form.role || "").trim() || null;
+          const primaryConfig = this.getPrimaryRoleConfig(normalizedRole || "");
+          const isPrimary = Boolean(this.form.isPrimary);
+          const applyPrimary = Boolean(primaryConfig && isPrimary);
+
+          if (this.form.affiliationId) {
+            const affiliationPayload = {
+              role: normalizedRole,
+            };
+            if (applyPrimary) {
+              affiliationPayload[primaryConfig.flagField] = true;
+            }
+            await graphqlRequest(UPDATE_AFFILIATION_MUTATION, {
+              id: this.form.affiliationId,
+              payload: affiliationPayload,
+            });
+          } else {
+            const affiliationPayload = {
+              contact_id: contactId,
+              property_id: this.propertyId,
+              role: normalizedRole,
+            };
+            if (applyPrimary) {
+              affiliationPayload[primaryConfig.flagField] = true;
+            }
+            await graphqlRequest(CREATE_AFFILIATION_MUTATION, {
+              payload: affiliationPayload,
+            });
+          }
         }
 
         const successMessage =
@@ -5044,22 +5298,26 @@ document.addEventListener("alpine:init", () => {
             detail: { propertyId: this.propertyId },
           })
         );
-        if (wasNewContact && contactId) {
-          const displayName = [payload.first_name, payload.last_name]
+        if (wasNewContact && createdContactId) {
+          const displayName = [
+            createdContactPayload?.first_name,
+            createdContactPayload?.last_name,
+          ]
             .filter(Boolean)
             .join(" ")
             .trim();
           const displayLabel =
-            (displayName && payload.email
-              ? `${displayName} · ${payload.email}`
-              : displayName || payload.email) || `Contact #${contactId}`;
+            (displayName && createdContactPayload?.email
+              ? `${displayName} · ${createdContactPayload.email}`
+              : displayName || createdContactPayload?.email) ||
+            `Contact #${createdContactId}`;
           window.dispatchEvent(
             new CustomEvent("contact:created", {
               detail: {
-                contactId,
-                firstName: payload.first_name,
-                lastName: payload.last_name || "",
-                email: payload.email || "",
+                contactId: createdContactId,
+                firstName: createdContactPayload?.first_name || "",
+                lastName: createdContactPayload?.last_name || "",
+                email: createdContactPayload?.email || "",
                 displayLabel,
               },
             })

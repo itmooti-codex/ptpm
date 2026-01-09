@@ -1708,17 +1708,39 @@
                           data-primary-owner="[Primary_Owner_Contact]"
                           data-primary-resident="[Primary_Resident_Contact]"
                           data-primary-manager="[Primary_Property_Manager_Contact]"
+                          data-company-id="[Company_ID]"
+                          data-company-name="[Company_Name]"
+                          data-company-phone="[Company_Phone]"
+                          data-company-address="[Company_Address]"
+                          data-company-city="[Company_City]"
+                          data-company-state="[Company_State]"
+                          data-company-postal-code="[Company_Postal_Code]"
                           @click="
                             const data = $event.currentTarget.dataset;
                             const isPrimary = ['primaryOwner', 'primaryResident', 'primaryManager'].some((key) => {
                               const raw = (data[key] || '').toString().trim().toLowerCase();
                               return ['true', '1', 'yes', 'y', 't'].includes(raw);
                             });
+                            const hasContact = Boolean((data.contactId || '').toString().trim());
+                            const contactType = hasContact ? 'contact' : 'company';
+                            const companyPrefill = {
+                              companyId: data.companyId || null,
+                              name: data.companyName || '',
+                              phone: data.companyPhone || '',
+                              address: data.companyAddress || '',
+                              city: data.companyCity || '',
+                              state: data.companyState || '',
+                              postalCode: data.companyPostalCode || '',
+                              role: data.role || '',
+                              isPrimary,
+                              search: data.companyName || '',
+                            };
                             window.dispatchEvent(
                               new CustomEvent('propertyContact:add:open', {
                                 detail: {
                                   propertyId: data.propertyId || PROPERTY_ID,
                                   mode: 'edit',
+                                  contactType,
                                   contactId: data.contactId || null,
                                   affiliationId: data.affiliationId || null,
                                   prefill: {
@@ -1731,6 +1753,7 @@
                                     contactId: data.contactId || null,
                                     affiliationId: data.affiliationId || null,
                                   },
+                                  companyPrefill,
                                 },
                               })
                             );
@@ -7786,6 +7809,26 @@
                 ></p>
               </template>
 
+              <div class="flex items-center gap-2">
+                <button
+                  type="button"
+                  class="rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide transition"
+                  :class="contactType === 'contact' ? 'border-sky-600 text-sky-700 bg-sky-50' : 'border-slate-200 text-slate-500'"
+                  @click="contactType = 'contact'"
+                >
+                  Contact
+                </button>
+                <button
+                  type="button"
+                  class="rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide transition"
+                  :class="contactType === 'company' ? 'border-sky-600 text-sky-700 bg-sky-50' : 'border-slate-200 text-slate-500'"
+                  @click="contactType = 'company'"
+                >
+                  Company
+                </button>
+              </div>
+
+              <div x-show="contactType === 'contact'" x-cloak>
               <!-- Contact search -->
               <label class="block">
                 <span
@@ -8055,6 +8098,232 @@
                   >Is Primary Contact</span
                 >
               </label>
+              </div>
+
+              <div x-show="contactType === 'company'" x-cloak>
+                <!-- Company search -->
+                <label class="block">
+                  <span
+                    class="text-xs font-semibold uppercase text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
+                    >Company Search</span
+                  >
+                  <div
+                    class="relative mt-1"
+                    @keydown.escape.stop.prevent="closeCompanySearch"
+                  >
+                    <input
+                      type="text"
+                      x-model="companyForm.search"
+                      placeholder="Search company by name"
+                      class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500 hover:!border-slate-300 active:!border-slate-300 hover:!bg-white active:!bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm"
+                      @focus="openCompanySearch"
+                      @input.debounce.250ms="onCompanySearchChange"
+                    />
+                    <div
+                      x-show="companySearchOpen"
+                      x-transition
+                      x-cloak
+                      @click.outside="closeCompanySearch"
+                      class="absolute z-20 mt-1 w-full rounded-xl border border-slate-200 bg-white shadow-2xl"
+                    >
+                      <div
+                        class="max-h-60 overflow-y-auto divide-y divide-slate-100"
+                      >
+                        <template x-if="companySearchLoading">
+                          <div
+                            class="px-3 py-4 text-sm text-slate-500 flex items-center gap-2"
+                          >
+                            <svg
+                              class="h-4 w-4 animate-spin text-slate-400"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                            >
+                              <circle
+                                class="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke-width="4"
+                              ></circle>
+                              <path
+                                class="opacity-75"
+                                stroke-width="4"
+                                d="M4 12a8 8 0 0 1 8-8"
+                              ></path>
+                            </svg>
+                            <span>Searching companies...</span>
+                          </div>
+                        </template>
+                        <template
+                          x-if="!companySearchLoading && companySuggestions.length"
+                        >
+                          <div>
+                            <template
+                              x-for="company in companySuggestions"
+                              :key="company.id || company.displayLabel"
+                            >
+                              <button
+                                type="button"
+                                class="w-full px-3 py-3 text-left"
+                                @click="pickCompanySuggestion(company)"
+                              >
+                                <div class="flex flex-col gap-0.5">
+                                  <span
+                                    class="text-sm font-semibold text-slate-900"
+                                    x-text="company.displayLabel"
+                                  ></span>
+                                  <span
+                                    class="text-xs text-slate-500"
+                                    x-text="company.address"
+                                  ></span>
+                                  <span
+                                    class="text-xs text-slate-500"
+                                    x-text="company.phone"
+                                  ></span>
+                                </div>
+                              </button>
+                            </template>
+                          </div>
+                        </template>
+                        <template
+                          x-if="!companySearchLoading && companyHasSearched && !companySuggestions.length && !companySearchError"
+                        >
+                          <p class="px-3 py-4 text-sm text-slate-500">
+                            No companies found.
+                          </p>
+                        </template>
+                        <template
+                          x-if="!companySearchLoading && !companyHasSearched && !companySearchError"
+                        >
+                          <p class="px-3 py-4 text-sm text-slate-500">
+                            Start typing to search companies.
+                          </p>
+                        </template>
+                        <template x-if="companySearchError">
+                          <p class="px-3 py-4 text-sm text-rose-600">
+                            <span x-text="companySearchError"></span>
+                          </p>
+                        </template>
+                      </div>
+                      <button
+                        type="button"
+                        class="w-full border-t border-slate-100 px-3 py-2 text-left text-sm font-medium text-sky-700"
+                        @click="clearSelectedCompany"
+                      >
+                        Clear selection
+                      </button>
+                    </div>
+                  </div>
+                </label>
+
+                <!-- Company details -->
+                <label class="block">
+                  <span
+                    class="text-xs font-semibold uppercase text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
+                    >Name</span
+                  >
+                  <input
+                    type="text"
+                    x-model="companyForm.name"
+                    class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500 hover:!border-slate-300 active:!border-slate-300 hover:!bg-white active:!bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm"
+                  />
+                </label>
+
+                <label class="block">
+                  <span
+                    class="text-xs font-semibold uppercase text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
+                    >Phone</span
+                  >
+                  <input
+                    type="tel"
+                    x-model="companyForm.phone"
+                    class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500 hover:!border-slate-300 active:!border-slate-300 hover:!bg-white active:!bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm"
+                  />
+                </label>
+
+                <label class="block">
+                  <span
+                    class="text-xs font-semibold uppercase text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
+                    >Address</span
+                  >
+                  <input
+                    type="text"
+                    x-model="companyForm.address"
+                    class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500 hover:!border-slate-300 active:!border-slate-300 hover:!bg-white active:!bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm"
+                  />
+                </label>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <label class="block">
+                    <span
+                      class="text-xs font-semibold uppercase text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
+                      >City</span
+                    >
+                    <input
+                      type="text"
+                      x-model="companyForm.city"
+                      class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500 hover:!border-slate-300 active:!border-slate-300 hover:!bg-white active:!bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm"
+                    />
+                  </label>
+                  <label class="block">
+                    <span
+                      class="text-xs font-semibold uppercase text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
+                      >State</span
+                    >
+                    <input
+                      type="text"
+                      x-model="companyForm.state"
+                      class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500 hover:!border-slate-300 active:!border-slate-300 hover:!bg-white active:!bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm"
+                    />
+                  </label>
+                  <label class="block">
+                    <span
+                      class="text-xs font-semibold uppercase text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
+                      >Postal Code</span
+                    >
+                    <input
+                      type="text"
+                      x-model="companyForm.postalCode"
+                      class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500 hover:!border-slate-300 active:!border-slate-300 hover:!bg-white active:!bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm"
+                    />
+                  </label>
+                </div>
+
+                <!-- Role -->
+                <label class="block" x-show="showRoleField" x-cloak>
+                  <span
+                    class="text-xs font-semibold uppercase text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
+                    >Role
+                    <span
+                      class="text-red-500 hover:!text-red-500 active:!text-red-500 hover:text-red-500 active:text-red-500 focus:text-red-500 focus-visible:text-red-500"
+                      >*</span
+                    ></span
+                  >
+                  <input
+                    type="text"
+                    x-model="companyForm.role"
+                    class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500 hover:!border-slate-300 active:!border-slate-300 hover:!bg-white active:!bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm"
+                  />
+                </label>
+
+                <!-- Primary -->
+                <label
+                  class="inline-flex items-center gap-2"
+                  x-show="showPrimaryToggle"
+                  x-cloak
+                >
+                  <input
+                    type="checkbox"
+                    x-model="companyForm.isPrimary"
+                    class="h-4 w-4 rounded border-slate-300 text-sky-700 focus:ring-sky-500 hover:!border-slate-300 active:!border-slate-300 hover:!text-sky-700 active:!text-sky-700 hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:text-sky-700 active:text-sky-700 focus:text-sky-700 focus-visible:text-sky-700"
+                  />
+                  <span
+                    class="text-sm text-slate-700 hover:!text-slate-700 active:!text-slate-700 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700"
+                    >Is Primary Contact</span
+                  >
+                </label>
+              </div>
             </div>
 
             <!-- Footer -->

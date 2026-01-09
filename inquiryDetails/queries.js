@@ -220,6 +220,36 @@ const CREATE_PROPERTY_CONTACT_MUTATION = `
     }
   `;
 
+const CALC_COMPANIES_QUERY = `
+  query calcCompanies(
+    $limit: IntScalar
+    $offset: IntScalar
+    $searchExpression: String!
+  ) {
+    calcCompanies(
+      query: [
+        {
+          where: {
+            name: null
+            _OPERATOR_: like
+            _VALUE_EXPRESSION_: $searchExpression
+          }
+        }
+      ]
+      limit: $limit
+      offset: $offset
+    ) {
+      ID: field(arg: ["id"])
+      Name: field(arg: ["name"])
+      Phone: field(arg: ["phone"])
+      Address: field(arg: ["address"])
+      City: field(arg: ["city"])
+      State: field(arg: ["state"])
+      Postal_Code: field(arg: ["postal_code"])
+    }
+  }
+`;
+
 const CALC_CONTACTS_QUERY = `
   query calcContacts(
     $limit: IntScalar
@@ -285,6 +315,22 @@ const CREATE_CONTACT_MUTAION = `
       last_name
       email
       sms_number
+    }
+  }
+`;
+
+const CREATE_COMPANY_MUTATION = `
+  mutation createCompany(
+    $payload: CompanyCreateInput = null
+  ) {
+    createCompany(payload: $payload) {
+      id
+      name
+      phone
+      address
+      city
+      state
+      postal_code
     }
   }
 `;
