@@ -235,7 +235,7 @@ export function initCustomModal({ id = "statusModal" } = {}) {
         <div id="statusIcon" class="w-12 h-12 rounded-full flex items-center justify-center text-white text-2xl hover:!text-white active:!text-white hover:text-white active:text-white focus:text-white focus-visible:text-white hover:text-2xl active:text-2xl focus:text-2xl focus-visible:text-2xl"></div>
         <h3 id="statusTitle" class="text-lg font-semibold text-gray-800 hover:!text-gray-800 active:!text-gray-800 hover:text-lg active:text-lg focus:text-lg focus-visible:text-lg hover:text-gray-800 active:text-gray-800 focus:text-gray-800 focus-visible:text-gray-800">Success</h3>
         <p id="statusMessage" class="text-sm text-gray-600 hover:!text-gray-600 active:!text-gray-600  hover:text-gray-600 active:text-gray-600 focus:text-gray-600 focus-visible:text-gray-600">Your action was successful.</p>
-        <button id="statusCloseBtn" class="mt-3 px-4 py-2 bg-[#003882] text-white rounded focus:bg-[#003882] focus-visible:bg-[#003882] focus:text-white focus-visible:text-white">
+        <button id="statusCloseBtn" class="!mt-3 !px-4 !py-2 !bg-[#003882] !text-white !rounded hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882] hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white">
           OK
         </button>
       </div>
@@ -301,7 +301,7 @@ export function ensureFilePreviewModal(id = "ptpm-file-preview-modal") {
       "flex fixed inset-0 z-[9999] hidden items-center justify-center bg-black/50";
     modal.innerHTML = `
       <div class="bg-white rounded-lg shadow-lg max-w-4xl w-[95vw] max-h-[90vh] overflow-hidden relative font-['Inter'] hover:!bg-white active:!bg-white hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-lg active:shadow-lg focus:shadow-lg focus-visible:shadow-lg">
-        <button type="button" data-file-preview-close class="absolute top-3 right-3 text-slate-500 focus:text-slate-500 focus-visible:text-slate-500">
+        <button type="button" data-file-preview-close class="!absolute !top-3 !right-3 !text-slate-500 !bg-transparent hover:!bg-transparent active:!bg-transparent focus:!bg-transparent focus-visible:!bg-transparent hover:!text-slate-500 active:!text-slate-500 focus:!text-slate-500 focus-visible:!text-slate-500">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
@@ -313,7 +313,7 @@ export function ensureFilePreviewModal(id = "ptpm-file-preview-modal") {
             <iframe data-file-preview-frame class="w-full h-[70vh] hidden" frameborder="0"></iframe>
           </div>
           <div class="flex justify-end">
-            <button type="button" data-file-preview-close class="px-4 py-2 rounded border border-slate-300 text-slate-700 focus:border focus-visible:border focus:border-slate-300 focus-visible:border-slate-300 focus:text-slate-700 focus-visible:text-slate-700">Close</button>
+            <button type="button" data-file-preview-close class="!px-4 !py-2 !rounded !border !border-slate-300 !text-slate-700 hover:!border-slate-300 active:!border-slate-300 focus:!border-slate-300 focus-visible:!border-slate-300 hover:!text-slate-700 active:!text-slate-700 focus:!text-slate-700 focus-visible:!text-slate-700">Close</button>
           </div>
         </div>
       </div>
@@ -372,7 +372,7 @@ function buildUnsavedChangesModal() {
     <div class="bg-white rounded-lg inline-flex flex-col justify-start items-start overflow-hidden font-['Inter'] hover:!bg-white active:!bg-white hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white">
       <div class="self-stretch px-6 py-4 border-b border-gray-300 inline-flex justify-end items-center gap-4 hover:!border-gray-300 active:!border-gray-300 hover:border-b active:border-b focus:border-b focus-visible:border-b">
         <div class="flex-1 justify-start text-neutral-700 text-lg font-semibold leading-5 hover:!text-neutral-700 active:!text-neutral-700 focus:!text-neutral-700 focus-visible:!text-neutral-700">Unsaved Changes</div>
-        <button type="button" data-unsaved-close class="!bg-transparent w-6 h-6 relative overflow-hidden  hover:!bg-transparent active:!bg-transparent focus:!bg-transparent focus-visible:!bg-transparent">
+        <button type="button" data-unsaved-close class="!bg-transparent !w-6 !h-6 !relative !overflow-hidden hover:!bg-transparent active:!bg-transparent focus:!bg-transparent focus-visible:!bg-transparent">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
@@ -384,10 +384,10 @@ function buildUnsavedChangesModal() {
         </div>
       </div>
       <div class="self-stretch px-6 py-4 bg-white border-t border-gray-300 inline-flex justify-end items-center gap-4 hover:!border-gray-300 active:!border-gray-300 hover:border-t active:border-t focus:border-t focus-visible:border-t">
-        <button type="button" data-unsaved-discard class="!bg-transparent px-4 py-3 rounded !outline !outline-1 !outline-offset-[-1px] outline-red-600 flex justify-center items-center gap-2 overflow-hidden hover:!outline-red-600 active:!outline-red-600 focus:!outline-red-600 focus-visible:!outline-red-600 hover:!bg-transparent active:!bg-transparent focus:!bg-transparent focus-visible:!bg-transparent">
+        <button type="button" data-unsaved-discard class="!bg-transparent !px-4 !py-3 !rounded !outline !outline-1 !outline-offset-[-1px] !outline-red-600 !flex !justify-center !items-center !gap-2 !overflow-hidden hover:!outline-red-600 active:!outline-red-600 focus:!outline-red-600 focus-visible:!outline-red-600 hover:!bg-transparent active:!bg-transparent focus:!bg-transparent focus-visible:!bg-transparent">
           <div class="justify-start text-red-600 text-sm font-medium leading-4 hover:!text-red-600 active:!text-red-600 focus:!text-red-600 focus-visible:!text-red-600">Discard Changes</div>
         </button>
-        <button type="button" data-unsaved-save class="px-4 py-3 !bg-[#003882] rounded !outline !outline-1 !outline-offset-[-1px] outline-white flex justify-center items-center gap-2 overflow-hidden hover:!bg-sky-900 active:!bg-sky-900 focus:!bg-sky-900 focus-visible:!bg-sky-900 hover:!outline-white active:!outline-white focus:!outline-white focus-visible:!outline-white hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white">
+        <button type="button" data-unsaved-save class="!px-4 !py-3 !bg-[#003882] !rounded !outline !outline-1 !outline-offset-[-1px] !outline-white !flex !justify-center !items-center !gap-2 !overflow-hidden hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882] hover:!outline-white active:!outline-white focus:!outline-white focus-visible:!outline-white hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white">
           <div class="justify-start text-white text-sm font-medium leading-4 hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white">Save & Exit</div>
         </button>
       </div>
@@ -459,7 +459,7 @@ function buildResetConfirmModal() {
     <div class="bg-white rounded-lg inline-flex flex-col justify-start items-start overflow-hidden font-['Inter'] hover:!bg-white active:!bg-white hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white">
       <div class="self-stretch px-6 py-4 border-b border-gray-300 inline-flex justify-end items-center gap-4 hover:!border-gray-300 active:!border-gray-300 hover:border-b active:border-b focus:border-b focus-visible:border-b">
         <div class="flex-1 justify-start text-neutral-700 text-lg font-semibold leading-5 hover:!text-neutral-700 active:!text-neutral-700 focus:!text-neutral-700 focus-visible:!text-neutral-700">Reset Form</div>
-        <button type="button" data-reset-close class="w-6 h-6 relative overflow-hidden text-zinc-800 hover:!text-zinc-800 active:!text-zinc-800 focus:!text-zinc-800 focus-visible:!text-zinc-800 hover:!bg-transparent active:!bg-transparent focus:!bg-transparent focus-visible:!bg-transparent">
+        <button type="button" data-reset-close class="!w-6 !h-6 !relative !overflow-hidden !text-zinc-800 hover:!text-zinc-800 active:!text-zinc-800 focus:!text-zinc-800 focus-visible:!text-zinc-800 hover:!bg-transparent active:!bg-transparent focus:!bg-transparent focus-visible:!bg-transparent">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
@@ -472,10 +472,10 @@ function buildResetConfirmModal() {
       </div>
       <div class="self-stretch px-6 py-4 bg-white border-t border-gray-300 inline-flex justify-end items-center gap-4 hover:!border-gray-300 active:!border-gray-300 hover:border-t active:border-t focus:border-t focus-visible:border-t">
         <div class="flex justify-start items-center gap-4">
-          <button type="button" data-reset-cancel class="rounded flex justify-center items-center gap-2 overflow-hidden text-slate-500 hover:!text-slate-500 active:!text-slate-500 focus:!text-slate-500 focus-visible:!text-slate-500 hover:!bg-transparent active:!bg-transparent focus:!bg-transparent focus-visible:!bg-transparent">
+          <button type="button" data-reset-cancel class="!rounded !flex !justify-center !items-center !gap-2 !overflow-hidden !text-slate-500 hover:!text-slate-500 active:!text-slate-500 focus:!text-slate-500 focus-visible:!text-slate-500 hover:!bg-transparent active:!bg-transparent focus:!bg-transparent focus-visible:!bg-transparent">
             <div class="justify-start text-slate-500 text-sm font-medium leading-4 hover:!text-slate-500 active:!text-slate-500 focus:!text-slate-500 focus-visible:!text-slate-500">Cancel</div>
           </button>
-          <button type="button" data-reset-confirm class="px-4 py-3 bg-red-600 rounded outline outline-1 outline-offset-[-1px] outline-white flex justify-center items-center gap-2 overflow-hidden hover:!bg-red-600 active:!bg-red-600 focus:!bg-red-600 focus-visible:!bg-red-600 hover:!outline-white active:!outline-white focus:!outline-white focus-visible:!outline-white hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white">
+          <button type="button" data-reset-confirm class="!px-4 !py-3 !bg-red-600 !rounded !outline !outline-1 !outline-offset-[-1px] !outline-white !flex !justify-center !items-center !gap-2 !overflow-hidden hover:!bg-red-600 active:!bg-red-600 focus:!bg-red-600 focus-visible:!bg-red-600 hover:!outline-white active:!outline-white focus:!outline-white focus-visible:!outline-white hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white">
             <div class="justify-start text-white text-sm font-medium leading-4 hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white">Reset</div>
           </button>
         </div>
@@ -537,7 +537,7 @@ function buildSaveViewAsModal() {
     <div class="bg-white rounded-lg shadow-xl w-full max-w-[560px] mx-4 overflow-hidden font-['Inter'] hover:!bg-white active:!bg-white hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-xl active:shadow-xl focus:shadow-xl focus-visible:shadow-xl">
       <div class="flex items-center justify-between px-4 py-3 border-b border-slate-200 hover:!border-slate-200 active:!border-slate-200 hover:border-b active:border-b focus:border-b focus-visible:border-b hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200">
         <h3 class="text-lg font-semibold text-slate-900 hover:!text-slate-900 active:!text-slate-900 hover:text-lg active:text-lg focus:text-lg focus-visible:text-lg hover:text-slate-900 active:text-slate-900 focus:text-slate-900 focus-visible:text-slate-900">Save View As</h3>
-        <button type="button" data-save-view-close class="text-slate-500 focus:text-slate-500 focus-visible:text-slate-500">
+        <button type="button" data-save-view-close class="!text-slate-500 hover:!text-slate-500 active:!text-slate-500 focus:!text-slate-500 focus-visible:!text-slate-500">
           <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
@@ -551,8 +551,8 @@ function buildSaveViewAsModal() {
         ">
       </div>
       <div class="flex justify-end gap-3 px-4 py-3 border-t border-slate-200 hover:!border-slate-200 active:!border-slate-200 hover:border-t active:border-t focus:border-t focus-visible:border-t hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200">
-        <button type="button" data-save-view-cancel class="px-4 py-2 rounded text-slate-600 text-sm font-medium hover:!text-slate-600 active:!text-slate-600 focus:!text-slate-600 focus-visible:!text-slate-600 ">Cancel</button>
-        <button type="button" data-save-view-save class="px-4 py-2 rounded bg-[#003882] text-white text-sm font-semibold hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882] hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white ">Save</button>
+        <button type="button" data-save-view-cancel class="!px-4 !py-2 !rounded !text-slate-600 !text-sm !font-medium hover:!text-slate-600 active:!text-slate-600 focus:!text-slate-600 focus-visible:!text-slate-600 ">Cancel</button>
+        <button type="button" data-save-view-save class="!px-4 !py-2 !rounded !bg-[#003882] !text-white !text-sm !font-semibold hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882] hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white ">Save</button>
       </div>
     </div>
   `;
@@ -849,12 +849,12 @@ export function buildUploadCard(
         <p class="text-gray-800 text-sm break-all hover:!text-gray-800 active:!text-gray-800 hover:text-gray-800 active:text-gray-800 focus:text-gray-800 focus-visible:text-gray-800 ">${name}</p>
       </div>
       <div class="flex items-center gap-3">
-        <button type="button" data-upload-action="view" class="text-sky-700 focus:text-sky-700 focus-visible:text-sky-700" title="Preview">
+        <button type="button" data-upload-action="view" class="!text-sky-700 hover:!text-sky-700 active:!text-sky-700 focus:!text-sky-700 focus-visible:!text-sky-700" title="Preview">
           <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M18.2848 9.49731C18.2605 9.44245 17.6723 8.13758 16.3646 6.82994C14.6223 5.08758 12.4216 4.16675 9.99935 4.16675C7.57712 4.16675 5.37643 5.08758 3.63407 6.82994C2.32643 8.13758 1.73545 9.44453 1.71393 9.49731C1.68234 9.56836 1.66602 9.64525 1.66602 9.723C1.66602 9.80076 1.68234 9.87765 1.71393 9.9487C1.73823 10.0036 2.32643 11.3077 3.63407 12.6154C5.37643 14.357 7.57712 15.2779 9.99935 15.2779C12.4216 15.2779 14.6223 14.357 16.3646 12.6154C17.6723 11.3077 18.2605 10.0036 18.2848 9.9487C18.3164 9.87765 18.3327 9.80076 18.3327 9.723C18.3327 9.64525 18.3164 9.56836 18.2848 9.49731ZM9.99935 12.5001C9.44996 12.5001 8.9129 12.3372 8.4561 12.0319C7.99929 11.7267 7.64326 11.2929 7.43301 10.7853C7.22277 10.2777 7.16776 9.71923 7.27494 9.18039C7.38212 8.64155 7.64668 8.1466 8.03516 7.75812C8.42364 7.36964 8.91859 7.10508 9.45743 6.9979C9.99627 6.89072 10.5548 6.94573 11.0624 7.15597C11.5699 7.36622 12.0038 7.72225 12.309 8.17906C12.6142 8.63586 12.7771 9.17291 12.7771 9.72231C12.7771 10.459 12.4845 11.1656 11.9635 11.6865C11.4426 12.2074 10.7361 12.5001 9.99935 12.5001Z" fill="#0052CC"></path>
           </svg>
         </button>
-        <button type="button" data-upload-action="delete" class="text-rose-600 focus:text-rose-600 focus-visible:text-rose-600" title="Delete">
+        <button type="button" data-upload-action="delete" class="!text-rose-600 hover:!text-rose-600 active:!text-rose-600 focus:!text-rose-600 focus-visible:!text-rose-600" title="Delete">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M13.7949 3.38453H11.2308V2.87171C11.2308 2.46369 11.0687 2.07237 10.7802 1.78386C10.4916 1.49534 10.1003 1.33325 9.69231 1.33325H6.61539C6.20736 1.33325 5.81605 1.49534 5.52753 1.78386C5.23901 2.07237 5.07692 2.46369 5.07692 2.87171V3.38453H2.51282C2.37681 3.38453 2.24637 3.43856 2.1502 3.53474C2.05403 3.63091 2 3.76135 2 3.89735C2 4.03336 2.05403 4.1638 2.1502 4.25997C2.24637 4.35615 2.37681 4.41018 2.51282 4.41018H3.02564V13.6409C3.02564 13.913 3.1337 14.1738 3.32604 14.3662C3.51839 14.5585 3.77927 14.6666 4.05128 14.6666H12.2564C12.5284 14.6666 12.7893 14.5585 12.9816 14.3662C13.174 14.1738 13.2821 13.913 13.2821 13.6409V4.41018H13.7949C13.9309 4.41018 14.0613 4.35615 14.1575 4.25997C14.2537 4.1638 14.3077 4.03336 14.3077 3.89735C14.3077 3.76135 14.2537 3.63091 14.1575 3.53474C14.0613 3.43856 13.9309 3.38453 13.7949 3.38453Z" fill="#0052CC"></path>
           </svg>
@@ -896,7 +896,7 @@ export function showAlertModal({
       <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 overflow-hidden font-['Inter'] hover:!bg-white active:!bg-white hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-xl active:shadow-xl focus:shadow-xl focus-visible:shadow-xl">
         <div class="flex items-start justify-between px-4 py-3 border-b border-slate-200 hover:!border-slate-200 active:!border-slate-200 hover:border-b active:border-b focus:border-b focus-visible:border-b hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200">
           <h3 class="text-lg font-semibold text-slate-900 hover:!text-slate-900 active:!text-slate-900 hover:text-lg active:text-lg focus:text-lg focus-visible:text-lg hover:text-slate-900 active:text-slate-900 focus:text-slate-900 focus-visible:text-slate-900" data-alert-title>Notice</h3>
-          <button type="button" data-alert-close class="text-slate-500 focus:text-slate-500 focus-visible:text-slate-500">
+          <button type="button" data-alert-close class="!bg-transparent !text-slate-500 hover:!text-slate-500 active:!text-slate-500 focus:!text-slate-500 focus-visible:!text-slate-500">
             <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
@@ -905,7 +905,7 @@ export function showAlertModal({
         <div class="px-4 py-5 space-y-4 text-left hover:text-left active:text-left focus:text-left focus-visible:text-left">
           <p class="text-sm text-slate-700 hover:!text-slate-700 active:!text-slate-700  hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700" data-alert-message></p>
           <div class="flex justify-end gap-3">
-            <button type="button" data-alert-confirm class="px-4 py-2 rounded bg-[#003882] text-white text-sm font-semibold focus:bg-[#003882] focus-visible:bg-[#003882] focus:text-white focus-visible:text-white focus:text-sm focus-visible:text-sm">OK</button>
+            <button type="button" data-alert-confirm class="!px-4 !py-2 !rounded !bg-[#003882] !text-white !text-sm !font-semibold hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882] hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white">OK</button>
           </div>
         </div>
       </div>
