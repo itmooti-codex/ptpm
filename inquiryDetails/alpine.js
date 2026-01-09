@@ -2436,6 +2436,12 @@ document.addEventListener("alpine:init", () => {
       };
       window.addEventListener("billingSummary:open", this.boundListener);
       this.$nextTick(() => this.setupBillApprovalObserver());
+      this.$watch("open", (value) => {
+        if (value) {
+          this.$nextTick(() => this.syncBillApproval());
+          setTimeout(() => this.syncBillApproval(), 50);
+        }
+      });
     },
     destroy() {
       if (this.boundListener) {
@@ -2472,7 +2478,7 @@ document.addEventListener("alpine:init", () => {
       );
     },
     setupBillApprovalObserver() {
-      const target = this.$refs?.billingSummaryCard;
+      const target = this.$root;
       if (!target || this.billObserver) return;
       this.billObserver = new MutationObserver(() => this.syncBillApproval());
       this.billObserver.observe(target, {
@@ -2484,11 +2490,9 @@ document.addEventListener("alpine:init", () => {
       this.syncBillApproval();
     },
     syncBillApproval() {
-      const container = this.$refs?.billingSummaryCard;
-      if (!container) return;
+      const container = this.$root || document;
       const raw =
         container.querySelector("[data-bill-approved-value]")?.textContent ||
-        container.dataset?.billApproved ||
         container.querySelector("[data-bill-approved]")?.dataset
           ?.billApproved ||
         "";
