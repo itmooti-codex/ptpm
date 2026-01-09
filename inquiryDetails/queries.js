@@ -125,6 +125,7 @@ const CALC_JOBS_QUERY = `
                 @dateFormat(value: "DD/MM/YYYY")
               Date_Quoted_Accepted: field(arg: ["date_quoted_accepted"])
                 @dateFormat(value: "DD/MM/YYYY")
+                Bill_Approved_Admin: field(arg: ["bill_approved_admin"])
             }
           }
         `;
