@@ -2,30 +2,39 @@ const normalizePrimaryFlag = (value) => {
   if (value === null || value === undefined) return false;
   const normalized = String(value).trim().toLowerCase();
   if (!normalized) return false;
-  return ["true", "1", "yes", "y", "t"].includes(normalized);
+  if (/^\[[^\]]+\]$/.test(normalized)) return false;
+  if (["false", "0", "no", "n", "f", "off"].includes(normalized)) return false;
+  return ["true", "1", "yes", "y", "t", "on"].includes(normalized);
 };
 
-const updatePropertyContactStars = (root = document) => {
-  const stars = root.querySelectorAll(".property-contact-star");
+const hasPrimaryFlag = (dataset = {}) =>
+  normalizePrimaryFlag(dataset.primaryOwner) ||
+  normalizePrimaryFlag(dataset.primaryResident) ||
+  normalizePrimaryFlag(dataset.primaryManager);
+
+const updatePropertyContactStars = () => {
+  const stars = document.querySelectorAll(".property-contact-star");
   stars.forEach((star) => {
+    const container = star.closest(
+      "[data-primary-owner], [data-primary-resident], [data-primary-manager]"
+    );
     const isPrimary =
-      normalizePrimaryFlag(star.dataset.primaryOwner) ||
-      normalizePrimaryFlag(star.dataset.primaryResident) ||
-      normalizePrimaryFlag(star.dataset.primaryManager);
+      hasPrimaryFlag(star.dataset) ||
+      (container ? hasPrimaryFlag(container.dataset) : false);
     star.classList.toggle("is-primary", isPrimary);
   });
 };
 
 const initPropertyContactStars = () => {
   const list = document.querySelector("[data-property-contact-list]");
-  if (!list) return;
-  updatePropertyContactStars(list);
+  updatePropertyContactStars();
+  const target = list || document.body;
   const observer = new MutationObserver(() =>
-    updatePropertyContactStars(list)
+    updatePropertyContactStars()
   );
-  observer.observe(list, { childList: true, subtree: true });
+  observer.observe(target, { childList: true, subtree: true, attributes: true });
   window.addEventListener("propertyContacts:changed", () =>
-    updatePropertyContactStars(list)
+    updatePropertyContactStars()
   );
 };
 
