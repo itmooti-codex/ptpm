@@ -14,6 +14,7 @@ import {
 } from "../helper.js";
 
 export class NewInquiryView {
+  // Initialize view state, cache DOM refs, and bind handlers/modals.
   constructor(model) {
     this.model = model;
     this.sections = {
@@ -138,23 +139,28 @@ export class NewInquiryView {
     this.initResidentFeedbackUploads();
   }
 
+  // Report whether the view is on the new-inquiry page.
   isActive() {
     return document.body?.dataset?.page === "new-inquiry";
   }
 
+  // Store contacts and refresh the filtered dropdown list.
   setContacts(contacts = []) {
     this.contacts = Array.isArray(contacts) ? [...contacts] : [];
     this.#renderFiltered(this.searchInput?.value || "");
   }
 
+  // Register a callback for contact selection.
   onContactSelected(handler) {
     this.selectHandler = typeof handler === "function" ? handler : null;
   }
 
+  // Register a callback for manual contact entry.
   onManualAdd(handler) {
     this.manualHandler = typeof handler === "function" ? handler : null;
   }
 
+  // Wire the save button to submit current form values.
   onSave(handler) {
     if (!this.saveButton || this._saveListenerBound) return;
     this.saveButton.addEventListener("click", (event) => {
@@ -164,6 +170,7 @@ export class NewInquiryView {
     this._saveListenerBound = true;
   }
 
+  // Populate the form and related UI from a selected contact.
   populateContactDetails(contact) {
     if (contact.id) {
       document.getElementById("view-contact-detail").classList.remove("hidden");
@@ -196,6 +203,7 @@ export class NewInquiryView {
     this.#syncWorkRequested();
   }
 
+  // Display feedback message with tone styling.
   showFeedback(message, tone = "error") {
     if (!this.feedbackEl) return;
     this.feedbackEl.textContent = message;
@@ -214,6 +222,7 @@ export class NewInquiryView {
     this.feedbackEl.classList.add(toneClass);
   }
 
+  // Clear feedback message and reset styling.
   clearFeedback() {
     if (!this.feedbackEl) return;
     this.feedbackEl.textContent = "";
@@ -225,6 +234,7 @@ export class NewInquiryView {
     );
   }
 
+  // Switch UI into manual entry and reset inputs.
   enterManualMode() {
     this.clearFeedback();
     this.#closePanel();
@@ -257,18 +267,22 @@ export class NewInquiryView {
     this.manualInputs?.[0]?.focus?.();
   }
 
+  // Exit manual entry mode and hide the footer.
   exitManualMode() {
     this.hideFooter();
   }
 
+  // Show the manual-save footer.
   showFooter() {
     this.saveFooter?.classList.remove("hidden");
   }
 
+  // Hide the manual-save footer.
   hideFooter() {
     this.saveFooter?.classList.add("hidden");
   }
 
+  // Attach cancel confirmation prompt.
   bindCancelPrompt() {
     const cancelBtn = document.querySelector(
       '[data-nav-action="cancel"], #cancel-btn'
@@ -284,6 +298,7 @@ export class NewInquiryView {
     });
   }
 
+  // Attach reset confirmation prompt.
   bindResetPrompt() {
     const resetBtn = document.querySelector(
       '[data-nav-action="reset"], #reset-btn'
@@ -298,6 +313,7 @@ export class NewInquiryView {
     });
   }
 
+  // Return true when a contact or entity is selected.
   hasSelectedContact() {
     const contactId =
       document.querySelector("[data-contact-field='contact_id']")?.value || "";
@@ -306,6 +322,7 @@ export class NewInquiryView {
     return Boolean(contactId || entityId);
   }
 
+  // Warn the user that a contact is required.
   showContactRequiredModal() {
     showAlertModal({
       title: "Select a Contact",
@@ -314,6 +331,7 @@ export class NewInquiryView {
     });
   }
 
+  // Block guarded actions until a contact is selected.
   bindContactActionGuards() {
     const viewBtn = document.getElementById("view-contact-detail");
     const addPropertyBtn = document.getElementById("add-property-btn");
@@ -350,6 +368,7 @@ export class NewInquiryView {
     }
   }
 
+  // Toggle save button disabled/loading state.
   setSaving(isSaving) {
     if (!this.saveButton) return;
     const active = Boolean(isSaving);
@@ -364,6 +383,7 @@ export class NewInquiryView {
     this.saveIcon?.classList.toggle("animate-pulse", active);
   }
 
+  // Collect allowed manual input values into payload.
   getFormValues() {
     const payload = {};
     const allow = new Set([
@@ -382,6 +402,7 @@ export class NewInquiryView {
     return payload;
   }
 
+  // Reset related data state and UI.
   clearRelated() {
     this.relatedHasContact = false;
     this.relatedLoading = false;
@@ -390,6 +411,7 @@ export class NewInquiryView {
     this.#setActiveRelatedTab("properties");
   }
 
+  // Set related panels into loading state.
   showRelatedLoading() {
     this.relatedHasContact = true;
     this.relatedLoading = true;
@@ -398,6 +420,7 @@ export class NewInquiryView {
     this.#setActiveRelatedTab(this.activeRelatedTab);
   }
 
+  // Store related data and update panels.
   renderRelated(related = {}) {
     this.relatedHasContact = true;
     this.relatedLoading = false;
@@ -411,6 +434,7 @@ export class NewInquiryView {
     this.#setActiveRelatedTab(this.activeRelatedTab);
   }
 
+  // Fetch related data for an entity and render it.
   async #loadEntityRelated(entityId) {
     const normalized = entityId ? String(entityId).trim() : "";
     if (!normalized) {
@@ -432,6 +456,7 @@ export class NewInquiryView {
     }
   }
 
+  // Wire contact search input, results, and selection.
   #bindContactListDropdown() {
     if (!this.searchInput) return;
 
@@ -495,6 +520,7 @@ export class NewInquiryView {
     });
   }
 
+  // Sync work-requested-by with contact name when enabled.
   #bindSameAsContact() {
     if (!this.sameAsCheckbox) return;
 
@@ -514,6 +540,7 @@ export class NewInquiryView {
       });
   }
 
+  // Bind tab clicks and default to individual.
   #bindTabs() {
     const { individual, entity } = this.tabs;
     if (
@@ -537,6 +564,7 @@ export class NewInquiryView {
     this.#switchSection("individual");
   }
 
+  // Bind related panel tabs and counters.
   #bindRelatedTabs() {
     if (!this.related?.tabButtons?.length) return;
     this.related.tabButtons.forEach((button) => {
@@ -555,6 +583,7 @@ export class NewInquiryView {
     this.#setActiveRelatedTab(this.activeRelatedTab);
   }
 
+  // Filter contacts by query and render options list.
   #renderFiltered(query = "") {
     if (!this.resultsContainer) return;
 
@@ -605,14 +634,17 @@ export class NewInquiryView {
     });
   }
 
+  // Show the contact search panel.
   #openPanel() {
     this.panel?.classList.remove("hidden");
   }
 
+  // Hide the contact search panel.
   #closePanel() {
     this.panel?.classList.add("hidden");
   }
 
+  // Update work requested field from name inputs.
   #syncWorkRequested() {
     if (!this.workRequestedInput) return;
     if (!this.sameAsCheckbox?.checked) return;
@@ -629,6 +661,7 @@ export class NewInquiryView {
     );
   }
 
+  // Switch between individual/entity sections and refresh refs.
   #switchSection(type) {
     const targetKey = type === "entity" ? "entity" : "individual";
     const isIndividual = targetKey === "individual";
@@ -745,6 +778,7 @@ export class NewInquiryView {
     }
   }
 
+  // Activate a related tab and refresh UI.
   #setActiveRelatedTab(tab) {
     const target = ["properties", "jobs", "inquiries"].includes(tab)
       ? tab
@@ -767,6 +801,7 @@ export class NewInquiryView {
     this.#updateRelatedUI();
   }
 
+  // Update related tab labels, panels, and banner.
   #updateRelatedUI() {
     if (!this.related?.container) return;
 
@@ -842,6 +877,7 @@ export class NewInquiryView {
     }
   }
 
+  // Render a related card based on type.
   #renderRelatedCard(type, item = {}) {
     switch (type) {
       case "jobs":
@@ -854,6 +890,7 @@ export class NewInquiryView {
     }
   }
 
+  // Return HTML for a property related card.
   #renderPropertyCard(item = {}) {
     const title = this.#escapeHtml(
       item.property_name ||
@@ -915,6 +952,7 @@ export class NewInquiryView {
     `;
   }
 
+  // Return HTML for a job related card.
   #renderJobCard(item = {}) {
     const unique = this.#escapeHtml(item.unique_id || item.id || "—");
     const status = this.#escapeHtml(
@@ -951,6 +989,7 @@ export class NewInquiryView {
     `;
   }
 
+  // Return HTML for an inquiry related card.
   #renderInquiryCard(item = {}) {
     const unique = this.#escapeHtml(item.unique_id || item.id || "—");
     const service = this.#escapeHtml(
@@ -994,6 +1033,7 @@ export class NewInquiryView {
     `;
   }
 
+  // Return default empty-list message per tab.
   #emptyMessageFor(tab) {
     switch (tab) {
       case "jobs":
@@ -1005,6 +1045,7 @@ export class NewInquiryView {
         return "No related properties found.";
     }
   }
+  // Return empty-state markup for a tab.
   #emptyStateFor(tab) {
     if (tab === "properties") {
       return `
@@ -1215,6 +1256,7 @@ export class NewInquiryView {
     )}</p>`;
   }
 
+  // Return banner message for active tab with data.
   #activeMessageFor(tab) {
     switch (tab) {
       case "jobs":
@@ -1227,10 +1269,12 @@ export class NewInquiryView {
     }
   }
 
+  // Create a blank related-data structure.
   #emptyRelated() {
     return { properties: [], jobs: [], inquiries: [] };
   }
 
+  // Format a date value for display.
   #formatDate(value) {
     const date = this.#coerceDate(value);
     if (!date) return "—";
@@ -1241,6 +1285,7 @@ export class NewInquiryView {
     }).format(date);
   }
 
+  // Format a date/time value for display.
   #formatDateTime(value) {
     const date = this.#coerceDate(value);
     if (!date) return "—";
@@ -1253,6 +1298,7 @@ export class NewInquiryView {
     }).format(date);
   }
 
+  // Normalize input to a Date object or null.
   #coerceDate(value) {
     if (!value) return null;
     if (value instanceof Date) {
@@ -1280,6 +1326,7 @@ export class NewInquiryView {
     return null;
   }
 
+  // Escape text for safe HTML rendering.
   #escapeHtml(value) {
     if (value === null || value === undefined) return "";
     return String(value)
@@ -1290,6 +1337,7 @@ export class NewInquiryView {
       .replace(/'/g, "&#39;");
   }
 
+  // Handle property card clicks and populate property info.
   #handleRelatedPropertiesClick() {
     const element = document.querySelector('[data-related-panel="properties"]');
     if (element) {
@@ -1341,6 +1389,7 @@ export class NewInquiryView {
     }
   }
 
+  // Resolve the hidden selected-property input element.
   #getSelectedPropertyInput() {
     if (!this.selectedPropertyInput) {
       this.selectedPropertyInput = document.getElementById(
@@ -1350,13 +1399,14 @@ export class NewInquiryView {
     return this.selectedPropertyInput;
   }
 
+  // Remove the highlight from the selected property card.
   #clearSelectedPropertyHighlight() {
     if (!this.selectedPropertyCard) return;
     this.selectedPropertyCard.classList.remove("bg-blue-50");
-    this.selectedPropertyCard.classList.add("bg-white");
     this.selectedPropertyCard = null;
   }
 
+  // Update selected property state and card highlight.
   #setSelectedProperty(propertyId, sourceCard = null) {
     const normalized = propertyId ? String(propertyId) : "";
     this.propertyId = normalized || null;
@@ -1386,6 +1436,7 @@ export class NewInquiryView {
     this.#setSelectedProperty(propertyId);
   }
 
+  // Map property data into field id/value pairs.
   generatePropertyInformationKeys(fieldIds, data) {
     const mappedValues = {};
 
@@ -1448,6 +1499,7 @@ export class NewInquiryView {
     return mappedValues;
   }
 
+  // Set property form fields from mapped values.
   setPropertyInformationToFields(keys, values) {
     if (!keys || !keys.length || !values) return;
 
@@ -1472,6 +1524,7 @@ export class NewInquiryView {
     });
   }
 
+  // Render the property contact table and bind actions.
   createPropertyContactTable(rows = []) {
     const container = document.querySelector(
       '[data-property-contact-id="table"]'
@@ -1662,6 +1715,7 @@ export class NewInquiryView {
     );
   }
 
+  // Populate select elements with options and placeholders.
   createOptionsForSelectbox(configs) {
     configs.forEach(({ id, options, placeholder }) => {
       const element = document.getElementById(id);
@@ -1687,6 +1741,7 @@ export class NewInquiryView {
     });
   }
 
+  // Build and wire the contact details modal.
   #createContactDetailsModalUI() {
     // Wrapper
     const wrapper = document.createElement("div");
@@ -1703,11 +1758,7 @@ export class NewInquiryView {
             </svg>
           </button>
         </div>
-
         
-
-        
- 
         <div class="px-5 py-5 space-y-6">
         <div class="hidden" id="account-type-section">
                 <label class="block text-sm font-medium text-slate-600">Entity Type</label>
@@ -1814,7 +1865,9 @@ export class NewInquiryView {
             </div>
             <div class="flex gap-3">
               <div class="flex-1">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Postal Code*</label>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Postal Code
+                  <span class="text-rose-500">*</span>
+                </label>
                 <input id="adTopPostal" data-contact-id="zip_code" data-contact-field="top_postal" type="text" class="mt-1 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 focus:ring-2 focus:ring-slate-200 browser-default" />
               </div>
               <div class="flex-1">
@@ -1887,7 +1940,9 @@ export class NewInquiryView {
               </div>
               <div class="flex gap-3">
                 <div class="flex-1">
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Postal Code*</label>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Postal Code
+                     <span class="text-rose-500">*</span>
+                  </label>
                   <input id="adBotPostal" data-contact-id="postal_code" data-contact-field="bot_postal" type="text" class="mt-1 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 focus:ring-2 focus:ring-slate-200 browser-default" />
                 </div>
                 <div class="flex-1">
@@ -1979,6 +2034,7 @@ export class NewInquiryView {
     });
   }
 
+  // Toggle a modal's visibility and body scroll lock.
   toggleModal(id) {
     const el = document.getElementById(id);
     if (!el) return;
@@ -1987,6 +2043,7 @@ export class NewInquiryView {
     document.body.style.overflow = isHidden ? "" : "hidden";
   }
 
+  // Fill state dropdowns for address forms.
   renderDropdownOptionsForStates(states) {
     let elements = document.querySelectorAll("#adTopState, #adBotState");
     if (!elements) return;
@@ -2006,6 +2063,7 @@ export class NewInquiryView {
     });
   }
 
+  // Sync modal field changes into the main form.
   onContactFieldChanges(data) {
     if (!Array.isArray(data) || data.length === 0) return;
     data.forEach((item) => {
@@ -2027,6 +2085,7 @@ export class NewInquiryView {
     });
   }
 
+  // Build and wire the property contact modal.
   #createPropertyContactModalUI() {
     const wrapper = document.createElement("div");
     wrapper.id = "propertyContactModalWrapper";
@@ -2386,6 +2445,7 @@ export class NewInquiryView {
     });
   }
 
+  // Create a quick contact from the property contact modal.
   onAddNewContactButtonClick() {
     const button = document.getElementById("pcSearchFooter");
     if (!button) return;
@@ -2418,6 +2478,7 @@ export class NewInquiryView {
     });
   }
 
+  // Persist contact modal values with loader and feedback.
   async getValuesFromContactDetailModal(elements) {
     const formElements = Array.from(elements);
     const contactData = this.buildContactData(formElements);
@@ -2449,6 +2510,7 @@ export class NewInquiryView {
     }
   }
 
+  // Build a contact payload from modal fields.
   buildContactData(elements) {
     const data = {};
 
@@ -2459,12 +2521,14 @@ export class NewInquiryView {
     return data;
   }
 
+  // Read the current contact id from the form.
   getContactId() {
     return (
       document.querySelector("[data-contact-field='contact_id']")?.value || ""
     );
   }
 
+  // Create or update a contact via the model.
   async saveContact(contactId, contactData) {
     if (contactId) {
       return await this.model.updateContact(contactId, contactData);
@@ -2472,10 +2536,12 @@ export class NewInquiryView {
     return await this.model.createNewContact(contactData);
   }
 
+  // Clear values for a list of elements.
   clearForm(elements) {
     elements.forEach((item) => (item.value = ""));
   }
 
+  // Show success modal and close contact modal when needed.
   handleSuccess(isUpdate) {
     this.customModalHeader.innerText = "Successful";
     this.customModalBody.innerText = isUpdate
@@ -2491,6 +2557,7 @@ export class NewInquiryView {
     this.toggleModal("statusModal");
   }
 
+  // Show failure modal after contact save errors.
   handleFailure(isUpdate) {
     this.customModalHeader.innerText = "Failed";
     this.customModalBody.innerText = isUpdate
@@ -2500,6 +2567,7 @@ export class NewInquiryView {
     this.toggleModal("statusModal");
   }
 
+  // Persist entity contact/company details.
   async getEntityValuesFromContactDetailModal(elements) {
     const element = Array.from(elements);
     const entityDetailObj = {};
@@ -2781,6 +2849,7 @@ export class NewInquiryView {
     });
   }
 
+  // Return the active contact tab key.
   getActiveTabs() {
     let individual = document
       .getElementById("individual")
@@ -2797,6 +2866,7 @@ export class NewInquiryView {
     }
   }
 
+  // Collect field values from a section into an object.
   getValuesFromFields(section, attribute) {
     let fields = document.querySelectorAll(section);
     const obj = {};
@@ -2863,6 +2933,7 @@ export class NewInquiryView {
     return obj;
   }
 
+  // Load contact/company details and open modal.
   async onViewDetailLinkClicked(id, tab) {
     let modalOpened = false;
     try {
@@ -2891,6 +2962,7 @@ export class NewInquiryView {
     }
   }
 
+  // Flatten primary person fields into a single object.
   extractPrimaryPerson(apiData) {
     const result = {};
 
@@ -2906,6 +2978,7 @@ export class NewInquiryView {
     return result;
   }
 
+  // Populate address modal fields from data.
   populateAddressDetails(data) {
     this.clearPropertyFieldValues(
       "[modal-name='contact-detail-modal'] input, [modal-name='contact-detail-modal'] select"
@@ -2932,6 +3005,7 @@ export class NewInquiryView {
     }
   }
 
+  // Populate property fields from API data.
   populatePropertyFields(fields, data) {
     if (!fields || !data) return;
 
@@ -2955,6 +3029,7 @@ export class NewInquiryView {
     });
   }
 
+  // Copy contact address into property fields.
   onSameAsContactCheckboxClicked(address = {}) {
     // Build a full address object from provided data or fall back to the modal fields.
     const modalAddress = {
@@ -2978,6 +3053,7 @@ export class NewInquiryView {
     });
   }
 
+  // Build the switch-account-type modal and handlers.
   createSwithcAccountTypeModal() {
     let modalWrapper = document.createElement("div");
     modalWrapper.id = "switchAccountTypeModalWrapper";
@@ -3053,6 +3129,7 @@ export class NewInquiryView {
     return { show, hide };
   }
 
+  // Render entity search list and selection behavior.
   async createEntityList(entities) {
     // Root elements (reuse contact search structure conventions)
     const root = document.querySelector('[data-search-root="contact-entity"]');
@@ -3220,6 +3297,7 @@ export class NewInquiryView {
     });
   }
 
+  // Populate entity contact fields from selected company.
   populateEntityData(data) {
     data.forEach((item) => {
       const firstNameField = document.querySelector(
@@ -3255,6 +3333,7 @@ export class NewInquiryView {
     });
   }
 
+  // Apply search-derived address values to fields.
   setGoogleSearchAddress(data) {
     Object.keys(data).forEach((key) => {
       let field = document.querySelector(`[data-property-id=${key}]`);
@@ -3264,6 +3343,7 @@ export class NewInquiryView {
     });
   }
 
+  // Load inquiry data from URL and hydrate the form.
   async checkInquiryId() {
     try {
       const url = new URL(window.location.href);
@@ -3300,6 +3380,7 @@ export class NewInquiryView {
     }
   }
 
+  // Fetch a single inquiry record by id.
   async getInquiryData(inquiryID) {
     try {
       const inquiry = await this.model.fetchRelatedInquiries("", inquiryID);
@@ -3310,6 +3391,7 @@ export class NewInquiryView {
     }
   }
 
+  // Populate form for company-based inquiry.
   async handleCompanyAccount(inquiryData, propertyData) {
     try {
       this.#switchSection("entity");
@@ -3343,6 +3425,7 @@ export class NewInquiryView {
     }
   }
 
+  // Populate form for individual-based inquiry.
   async handleContactAccount(inquiryData, propertyData) {
     try {
       this.#switchSection("individual");
@@ -3377,6 +3460,7 @@ export class NewInquiryView {
     }
   }
 
+  // Load property details and affiliation contacts.
   async loadPropertyInfo(propertyData) {
     try {
       if (!propertyData?.resp?.[0]) return;
@@ -3408,6 +3492,7 @@ export class NewInquiryView {
     }
   }
 
+  // Highlight a related property card by id.
   highlightSelectedProperty(propertyId) {
     try {
       const article = document.querySelector(
@@ -3419,6 +3504,7 @@ export class NewInquiryView {
     }
   }
 
+  // Show UI controls for a loaded inquiry.
   setCommonUiState() {
     try {
       const addBtn = document.querySelector(
@@ -3433,6 +3519,7 @@ export class NewInquiryView {
     }
   }
 
+  // Safely invoke an async operation and swallow errors.
   async safeCall(fn) {
     try {
       return await fn();
@@ -3442,6 +3529,7 @@ export class NewInquiryView {
     }
   }
 
+  // Normalize field keys to snake_case.
   normalizeKey(key) {
     if (!key) return "";
     return key
@@ -3452,6 +3540,7 @@ export class NewInquiryView {
       .toLowerCase();
   }
 
+  // Normalize all keys in an object.
   normalizeObjectKeys(obj = {}) {
     const out = {};
     Object.keys(obj).forEach((k) => {
@@ -3460,6 +3549,7 @@ export class NewInquiryView {
     return out;
   }
 
+  // Set the search input based on active tab.
   setSearchContactNameOrCompanyName(activeTab, name) {
     if (activeTab == "individual") {
       document.querySelector(
@@ -3472,6 +3562,7 @@ export class NewInquiryView {
     }
   }
 
+  // Convert unix seconds to YYYY-MM-DD (AU).
   convertUnixToAU(unix) {
     try {
       if (!unix) return "";
@@ -3489,6 +3580,7 @@ export class NewInquiryView {
     }
   }
 
+  // Populate inquiry fields from normalized data.
   populateFields(fields, normalizedValues) {
     fields.forEach((item) => {
       const htmlKey =
@@ -3508,6 +3600,7 @@ export class NewInquiryView {
     });
   }
 
+  // Populate checkbox groups from delimited values.
   populateCheckboxGroups(groups, normalizedValues, delimiter = "*/*") {
     groups.forEach((ul) => {
       const htmlKey = ul.getAttribute("data-feedback-id");
@@ -3523,6 +3616,7 @@ export class NewInquiryView {
     });
   }
 
+  // Fill inquiry detail section values.
   setValuesToInquiryDetail(values) {
     try {
       if (!values) return;
@@ -3538,6 +3632,7 @@ export class NewInquiryView {
     }
   }
 
+  // Fill resident feedback section values.
   setValuesToResidentFeedbak(values) {
     try {
       if (!values) return;
@@ -3570,6 +3665,7 @@ export class NewInquiryView {
     }
   }
 
+  // Initialize upload widgets for resident feedback.
   initResidentFeedbackUploads() {
     const inputs = document.querySelectorAll("[data-feedback-upload]");
     inputs.forEach((input) => {
@@ -3620,8 +3716,10 @@ export class NewInquiryView {
     });
   }
 
+  // Placeholder for resident upload item actions.
   bindResidentUploadItemActions() {}
 
+  // Collect resident feedback image URLs.
   getResidentFeedbackImages() {
     const nodes = document.querySelectorAll(
       '[data-feedback-upload-list] [data-upload-url][file-type^="image/"]'
@@ -3631,6 +3729,7 @@ export class NewInquiryView {
       .filter(Boolean);
   }
 
+  // Build preview card HTML for an uploaded file.
   createPreviewImageHTML(file) {
     const wrapper = document.createElement("div");
     wrapper.className = "bg-[#F5F6F8] p-3 rounded-lg";
