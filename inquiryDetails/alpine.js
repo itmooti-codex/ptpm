@@ -4935,19 +4935,16 @@ document.addEventListener("alpine:init", () => {
       if (normalized.includes("owner")) {
         return {
           flagField: "primary_owner_contact",
-          propertyField: "property_as_primary_owner_contact_id",
         };
       }
       if (normalized.includes("resident")) {
         return {
           flagField: "primary_resident_contact",
-          propertyField: "property_as_primary_resident_contact_id",
         };
       }
       if (normalized.includes("manager")) {
         return {
           flagField: "primary_property_manager_contact",
-          propertyField: "property_as_primary_property_manager_id",
         };
       }
       return null;
@@ -5008,7 +5005,7 @@ document.addEventListener("alpine:init", () => {
         const normalizedRole = (this.form.role || "").trim() || null;
         const primaryConfig = this.getPrimaryRoleConfig(normalizedRole || "");
         const isPrimary = Boolean(this.form.isPrimary);
-        const applyPrimary = Boolean(primaryConfig && isPrimary && contactId);
+        const applyPrimary = Boolean(primaryConfig && isPrimary);
 
         if (this.form.affiliationId) {
           const affiliationPayload = {
@@ -5016,7 +5013,6 @@ document.addEventListener("alpine:init", () => {
           };
           if (applyPrimary) {
             affiliationPayload[primaryConfig.flagField] = true;
-            affiliationPayload[primaryConfig.propertyField] = contactId;
           }
           await graphqlRequest(UPDATE_AFFILIATION_MUTATION, {
             id: this.form.affiliationId,
@@ -5030,7 +5026,6 @@ document.addEventListener("alpine:init", () => {
           };
           if (applyPrimary) {
             affiliationPayload[primaryConfig.flagField] = true;
-            affiliationPayload[primaryConfig.propertyField] = contactId;
           }
           await graphqlRequest(CREATE_AFFILIATION_MUTATION, {
             payload: affiliationPayload,
