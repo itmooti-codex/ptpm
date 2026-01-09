@@ -296,6 +296,12 @@ const CREATE_AFFILIATION_MUTATION = `mutation createAffiliation(
     contact_id
     role
     property_id
+    primary_owner_contact
+    primary_resident_contact
+    primary_property_manager_contact
+    property_as_primary_owner_contact_id
+    property_as_primary_property_manager_id
+    property_as_primary_resident_contact_id
   }
 }
 `;
@@ -309,6 +315,12 @@ const UPDATE_AFFILIATION_MUTATION = `mutation updateAffiliation(
     role
     contact_id
     property_id
+    primary_owner_contact
+    primary_resident_contact
+    primary_property_manager_contact
+    property_as_primary_owner_contact_id
+    property_as_primary_property_manager_id
+    property_as_primary_resident_contact_id
   }
 }
 `;

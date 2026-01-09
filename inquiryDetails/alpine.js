@@ -4929,6 +4929,30 @@ document.addEventListener("alpine:init", () => {
       this.searchError = "";
     },
 
+    getPrimaryRoleConfig(roleValue = "") {
+      const normalized = String(roleValue || "").toLowerCase();
+      if (!normalized) return null;
+      if (normalized.includes("owner")) {
+        return {
+          flagField: "primary_owner_contact",
+          propertyField: "property_as_primary_owner_contact_id",
+        };
+      }
+      if (normalized.includes("resident")) {
+        return {
+          flagField: "primary_resident_contact",
+          propertyField: "property_as_primary_resident_contact_id",
+        };
+      }
+      if (normalized.includes("manager")) {
+        return {
+          flagField: "primary_property_manager_contact",
+          propertyField: "property_as_primary_property_manager_id",
+        };
+      }
+      return null;
+    },
+
     validate() {
       if (!this.form.firstName.trim()) return "First name is required.";
       if (!this.form.email.trim()) return "Email is required.";
@@ -4982,21 +5006,34 @@ document.addEventListener("alpine:init", () => {
         }
 
         const normalizedRole = (this.form.role || "").trim() || null;
+        const primaryConfig = this.getPrimaryRoleConfig(normalizedRole || "");
+        const isPrimary = Boolean(this.form.isPrimary);
+        const applyPrimary = Boolean(primaryConfig && isPrimary && contactId);
 
         if (this.form.affiliationId) {
+          const affiliationPayload = {
+            role: normalizedRole,
+          };
+          if (applyPrimary) {
+            affiliationPayload[primaryConfig.flagField] = true;
+            affiliationPayload[primaryConfig.propertyField] = contactId;
+          }
           await graphqlRequest(UPDATE_AFFILIATION_MUTATION, {
             id: this.form.affiliationId,
-            payload: {
-              role: normalizedRole,
-            },
+            payload: affiliationPayload,
           });
         } else {
+          const affiliationPayload = {
+            contact_id: contactId,
+            property_id: this.propertyId,
+            role: normalizedRole,
+          };
+          if (applyPrimary) {
+            affiliationPayload[primaryConfig.flagField] = true;
+            affiliationPayload[primaryConfig.propertyField] = contactId;
+          }
           await graphqlRequest(CREATE_AFFILIATION_MUTATION, {
-            payload: {
-              contact_id: contactId,
-              property_id: this.propertyId,
-              role: normalizedRole,
-            },
+            payload: affiliationPayload,
           });
         }
 

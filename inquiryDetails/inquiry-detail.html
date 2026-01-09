@@ -56,6 +56,14 @@
         background-color: #94a3b8;
         border-radius: 9999px;
       }
+
+      .property-contact-star {
+        color: #cbd5e1;
+      }
+
+      .property-contact-star.is-primary {
+        color: #f59e0b;
+      }
     </style>
   </head>
 
@@ -1595,6 +1603,7 @@
                     data-entity-key="1rBR-jpR3yE3HE1VhFD0j"
                     data-var-propertyid="174"
                     data-op="subscribe"
+                    data-property-contact-list
                     class="!flex gap-4 flex-wrap"
                   >
                     <!-- card -->
@@ -1604,6 +1613,10 @@
                       <div class="px-3 pt-3 pb-2 flex flex-col gap-2">
                         <div class="flex items-center gap-1.5">
                           <svg
+                            class="property-contact-star"
+                            data-primary-owner="[Primary_Owner_Contact]"
+                            data-primary-resident="[Primary_Resident_Contact]"
+                            data-primary-manager="[Primary_Property_Manager_Contact]"
                             width="20"
                             height="19"
                             viewBox="0 0 20 19"
@@ -1612,7 +1625,7 @@
                           >
                             <path
                               d="M6.86909 6.11666L1.55243 6.8875L1.45826 6.90666C1.31571 6.94451 1.18576 7.0195 1.08167 7.124C0.977585 7.22849 0.903097 7.35874 0.865812 7.50143C0.828528 7.64413 0.829783 7.79417 0.86945 7.93622C0.909117 8.07828 0.985774 8.20726 1.09159 8.31L4.94326 12.0592L4.03493 17.355L4.02409 17.4467C4.01537 17.5941 4.04598 17.7412 4.1128 17.8729C4.17962 18.0046 4.28025 18.1162 4.40437 18.1963C4.5285 18.2763 4.67167 18.3219 4.81922 18.3284C4.96677 18.3349 5.1134 18.3021 5.24409 18.2333L9.99909 15.7333L14.7433 18.2333L14.8266 18.2717C14.9641 18.3258 15.1136 18.3425 15.2597 18.3198C15.4058 18.2971 15.5432 18.236 15.6579 18.1427C15.7726 18.0494 15.8604 17.9273 15.9123 17.7889C15.9642 17.6504 15.9783 17.5007 15.9533 17.355L15.0441 12.0592L18.8974 8.30916L18.9624 8.23833C19.0553 8.12397 19.1162 7.98704 19.1389 7.84149C19.1616 7.69594 19.1453 7.54698 19.0917 7.40977C19.0381 7.27257 18.949 7.15202 18.8337 7.06042C18.7183 6.96883 18.5807 6.90944 18.4349 6.88833L13.1183 6.11666L10.7416 1.3C10.6728 1.16044 10.5664 1.04293 10.4343 0.96075C10.3021 0.878575 10.1497 0.835022 9.99409 0.835022C9.83852 0.835022 9.68604 0.878575 9.55394 0.96075C9.42183 1.04293 9.31536 1.16044 9.24659 1.3L6.86909 6.11666Z"
-                              fill="#FFD700"
+                              fill="currentColor"
                             />
                           </svg>
 
@@ -1700,8 +1713,15 @@
                           data-email="[ContactEmail]"
                           data-sms="[Contact_SMS_Number]"
                           data-role="[Role]"
+                          data-primary-owner="[Primary_Owner_Contact]"
+                          data-primary-resident="[Primary_Resident_Contact]"
+                          data-primary-manager="[Primary_Property_Manager_Contact]"
                           @click="
                             const data = $event.currentTarget.dataset;
+                            const isPrimary = ['primaryOwner', 'primaryResident', 'primaryManager'].some((key) => {
+                              const raw = (data[key] || '').toString().trim().toLowerCase();
+                              return ['true', '1', 'yes', 'y', 't'].includes(raw);
+                            });
                             window.dispatchEvent(
                               new CustomEvent('propertyContact:add:open', {
                                 detail: {
@@ -1715,6 +1735,7 @@
                                     lastName: data.lastName || '',
                                     email: data.email || '',
                                     sms: data.sms || '',
+                                    isPrimary,
                                     contactId: data.contactId || null,
                                     affiliationId: data.affiliationId || null,
                                   },
