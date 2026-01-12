@@ -55,6 +55,14 @@ export class JobDetailView {
     return this.jobId;
   }
 
+  initFlatpickrFor(root) {
+    if (!root || typeof window.flatpickr !== "function") return;
+    root.querySelectorAll(".date-picker").forEach((input) => {
+      if (input._flatpickr) return;
+      window.flatpickr(input, { dateFormat: "d/m/Y", allowInput: true });
+    });
+  }
+
   async init() {
     this.createDealInformationModal();
     this.CreateQuoteOnBehalfOfServicemanModal();
@@ -163,7 +171,7 @@ export class JobDetailView {
           <div class="flex flex-col">
             <label class="text-neutral-700 text-sm font-medium hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 ">Activity Text</label>
             <div class="relative">
-              <input data-field="activity_text" data-activity-select="text" class="${clientInputClass}"></input>
+              <input type="text" data-field="activity_text" data-activity-select="text" class="${clientInputClass}"></input>
             </div>
           </div>
 
@@ -229,6 +237,7 @@ export class JobDetailView {
     const replaceable = document.getElementById("replaceable-section");
     if (!replaceable) return;
     replaceable.appendChild(wrapper);
+    this.initFlatpickrFor(wrapper);
     const addbutton = document.getElementById("add-activities");
     if (addbutton) {
       addbutton.addEventListener("click", async () => {
@@ -573,6 +582,7 @@ export class JobDetailView {
   `;
 
     document.getElementById("replaceable-section").appendChild(wrapper);
+    this.initFlatpickrFor(wrapper);
 
     this.materialUploadHandler = initFileUploadArea({
       triggerEl: wrapper.querySelector("[data-material-receipt-trigger]"),
@@ -1379,11 +1389,11 @@ export class JobDetailView {
             <div class="grid grid-cols-2 gap-4">
               <label class="block">
                 <span class="block text-sm text-neutral-700 mb-2 hover:!text-neutral-700 active:!text-neutral-700  hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700">Expected Close Date</span>
-                <input class="w-full rounded border border-neutral-300 px-3 py-2 hover:!border-neutral-300 active:!border-neutral-300 hover:border active:border focus:border focus-visible:border hover:border-neutral-300 active:border-neutral-300 focus:border-neutral-300 focus-visible:border-neutral-300 mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default" placeholder="DD/MM/YYYY"/>
+                <input class="w-full rounded border border-neutral-300 px-3 py-2 hover:!border-neutral-300 active:!border-neutral-300 hover:border active:border focus:border focus-visible:border hover:border-neutral-300 active:border-neutral-300 focus:border-neutral-300 focus-visible:border-neutral-300 mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default" placeholder="dd/mm/yyyy"/>
               </label>
               <label class="block">
                 <span class="block text-sm text-neutral-700 mb-2 hover:!text-neutral-700 active:!text-neutral-700  hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700">Actual Close Date</span>
-                <input class="w-full rounded border border-neutral-300 px-3 py-2 hover:!border-neutral-300 active:!border-neutral-300 hover:border active:border focus:border focus-visible:border hover:border-neutral-300 active:border-neutral-300 focus:border-neutral-300 focus-visible:border-neutral-300 mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default" placeholder="DD/MM/YYYY"/>
+                <input class="w-full rounded border border-neutral-300 px-3 py-2 hover:!border-neutral-300 active:!border-neutral-300 hover:border active:border focus:border focus-visible:border hover:border-neutral-300 active:border-neutral-300 focus:border-neutral-300 focus-visible:border-neutral-300 mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default" placeholder="dd/mm/yyyy"/>
               </label>
             </div>
   
@@ -1625,7 +1635,7 @@ export class JobDetailView {
           </button>
         </div>
 
-        <div class="my-3 p-3 flex flex-col gap-2 border border-slate-200 rounded-xl hover:!border-slate-200 active:!border-slate-200 hover:border active:border focus:border focus-visible:border hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200">
+        <div class="my-3 p-3 flex flex-col gap-2 border border-slate-200 rounded hover:!border-slate-200 active:!border-slate-200 hover:border active:border focus:border focus-visible:border hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200">
         <!-- Upload Dropzone -->
         <div class="py-6">
           <div class="border-2 border-dashed border-gray-300 rounded-lg bg-slate-50 hover:!border-gray-300 active:!border-gray-300 hover:!bg-slate-50 active:!bg-slate-50 hover:border-2 active:border-2 focus:border-2 focus-visible:border-2 hover:border-dashed active:border-dashed focus:border-dashed focus-visible:border-dashed hover:border-gray-300 active:border-gray-300 focus:border-gray-300 focus-visible:border-gray-300 hover:bg-slate-50 active:bg-slate-50 focus:bg-slate-50 focus-visible:bg-slate-50">
@@ -2866,7 +2876,7 @@ export class JobDetailView {
             email ||
             phone ||
             "Unknown contact",
-          meta: [email, phone].filter(Boolean).join(" • "),
+          meta: [email].filter(Boolean).join(" "),
           raw: c,
         };
       });
@@ -4502,7 +4512,7 @@ export class JobDetailView {
       modal.className =
         "fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 backdrop-blur-sm";
       modal.innerHTML = `
-        <div class="bg-white rounded-xl shadow-lg w-full max-w-sm p-5 space-y-4 hover:!bg-white active:!bg-white hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-lg active:shadow-lg focus:shadow-lg focus-visible:shadow-lg">
+        <div class="bg-white rounded shadow-lg w-full max-w-sm p-5 space-y-4 hover:!bg-white active:!bg-white hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-lg active:shadow-lg focus:shadow-lg focus-visible:shadow-lg">
           <div class="space-y-1">
             <h3 class="text-base font-semibold text-slate-900 hover:!text-slate-900 active:!text-slate-900 hover:text-base active:text-base focus:text-base focus-visible:text-base hover:text-slate-900 active:text-slate-900 focus:text-slate-900 focus-visible:text-slate-900">${title}</h3>
             <p class="text-sm text-slate-600 hover:!text-slate-600 active:!text-slate-600  hover:text-slate-600 active:text-slate-600 focus:text-slate-600 focus-visible:text-slate-600">${message}</p>

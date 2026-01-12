@@ -429,8 +429,8 @@
           
 
         <div  data-section="job-information" class="flex flex-col gap-3">
-          <div class="pt-4 bg-white border-b border-gray-300 inline-flex justify-start items-center gap-4">
-            <div class="self-stretch inline-flex justify-start items-center">
+          <div class="pt-4 bg-white border-b border-gray-300 flex flex-wrap justify-start items-center gap-2 sm:gap-4">
+            <div class="self-stretch inline-flex justify-start items-center flex-wrap">
                 <div data-tab="overview" class="px-6 py-3 border-b-2 border-sky-900 flex justify-center items-center gap-2 overflow-hidden">
                     <div data-color="Green" class="w-3 h-3 relative">
                         <div class="w-3 h-3 left-0 top-0 absolute bg-teal-700 rounded-full"></div>
@@ -524,7 +524,7 @@
                   <div class="relative w-full">
                     <input
                       type="text"
-                      placeholder="Select date & time"
+                      placeholder="dd/mm/yyyy"
                       class="date-picker w-full pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-500 placeholder:text-slate-400 text-sm mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 browser-default"
                       data-field="start_time"
                     />
@@ -554,7 +554,7 @@
                   <div class="relative w-full">
                     <input
                       type="text"
-                      placeholder="Select date & time"
+                      placeholder="dd/mm/yyyy"
                       class="date-picker w-full pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-500 placeholder:text-slate-400 text-sm mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 browser-default"
                       data-field="end_time"
                     />
@@ -740,7 +740,7 @@
             <!-- LEFT: Job Details -->
             <div class="flex flex-col gap-3 w-[460px]">
               <div
-                class="bg-white rounded-lg outline outline-1 outline-offset-[-1px] outline-gray-300 flex-col justify-start items-start overflow-hidden"
+                class="bg-white rounded-lg outline outline-1 outline-offset-[-1px] outline-gray-300 flex-col justify-start items-start overflow-visible"
               >
                 <div class="px-4 pt-4 bg-white justify-start items-center gap-2">
                   <div
@@ -779,9 +779,9 @@
                     >
                       <div
                         class="justify-start text-neutral-700 text-sm leading-4"
-                    >
-                      Client
-                    </div>
+                      >
+                        Client
+                      </div>
                     <div
                       class="relative w-full"
                       data-search-root="contact-individual"
@@ -809,12 +809,12 @@
                         data-contact-id="search-trigger"
                       >
                         <svg width="12" height="12" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" class="browser-default">
-                          <path d="M16.3311 15.5156L12.7242 11.9095C13.7696 10.6544 14.2909 9.04453 14.1797 7.41486C14.0684 5.7852 13.3331 4.26116 12.1268 3.15979C10.9205 2.05843 9.33603 1.46453 7.70299 1.50164C6.06995 1.53875 4.51409 2.20402 3.35906 3.35906C2.20402 4.51409 1.53875 6.06995 1.50164 7.70299C1.46453 9.33603 2.05843 10.9205 3.15979 12.1268C4.26116 13.3331 5.7852 14.0684 7.41486 14.1797C9.04453 14.2909 10.6544 13.7696 11.9095 12.7242L15.5156 16.3311C15.5692 16.3847 15.6328 16.4271 15.7027 16.4561C15.7727 16.4851 15.8477 16.5 15.9234 16.5C15.9991 16.5 16.0741 16.4851 16.144 16.4561C16.214 16.4271 16.2776 16.3847 16.3311 16.3311C16.3847 16.2776 16.4271 16.214 16.4561 16.144C16.4851 16.0741 16.5 15.9991 16.5 15.9234C16.5 15.8477 16.4851 15.7727 16.4561 15.7027C16.4271 15.6328 16.3847 15.5692 16.3311 15.5156ZM2.66852 7.8552C2.66852 6.82937 2.97271 5.82658 3.54263 4.97364C4.11255 4.12069 4.9226 3.4559 5.87035 3.06333C6.81809 2.67076 7.86096 2.56805 8.86708 2.76818C9.87319 2.96831 10.7974 3.46229 11.5227 4.18766C12.2481 4.91303 12.7421 5.83721 12.9422 6.84333C13.1424 7.84945 13.0396 8.89232 12.6471 9.84006C12.2545 10.7878 11.5897 11.5979 10.7368 12.1678C9.88383 12.7377 8.88103 13.0419 7.8552 13.0419C6.48008 13.0404 5.16171 12.4934 4.18935 11.5211C3.21699 10.5487 2.67004 9.23033 2.66852 7.8552Z" fill="#78829D" class="browser-default"></path>
+                          <path d="M16.3311 15.5156L12.7242 11.9095C13.7696 10.6544 14.2909 9.04453 14.1797 7.41486C14.0684 5.7852 13.3331 4.26116 12.1268 3.15979C10.9205 2.05843 9.33603 1.46453 7.70299 1.50164C6.06995 1.53875 4.51409 2.20402 3.35906 3.35906C2.20402 4.51409 1.53875 6.06995 1.50164 7.70299C1.46453 9.33603 2.05843 10.9205 3.15979 12.1268C4.26116 13.3331 5.7852 14.0684 7.41486 14.1797C9.04453 14.2909 10.6544 13.7696 11.9095 12.7242L15.5156 16.3311C15.5692 16.3847 15.6328 16.4271 15.7027 16.4561C15.7727 16.4851 15.8477 16.5 15.9234 16.5C15.9991 16.5 16.0741 16.4851 16.144 16.4561C16.214 16.4271 16.2776 16.3847 16.3311 16.3311C16.3847 16.2776 16.4271 16.214 16.4561 16.144C16.4851 16.0741 16.5 15.9991 16.5 15.9234C16.5 15.8477 16.4851 15.7727 16.4561 15.7027C16.4271 15.6328 16.3847 15.5692 16.3311 15.5156ZM2.66852 7.8552C2.66852 6.82937 2.97271 5.82658 3.54263 4.97364C4.11255 4.12069 4.9226 3.4559 5.87035 3.06333C6.81809 2.67076 7.86096 2.56805 8.86708 2.76818C9.87319 2.96831 10.7974 3.46229 11.5227 4.18766C12.2481 4.91303 12.7421 5.83721 12.9422 6.84333C13.1424 7.84945 13.0396 8.89232 12.6471 9.84006C12.2545 10.7878 11.5897 11.5979 10.7368 12.1678C9.88383 12.7377 8.88103 13.0419 7.8552 13.0419C6.48008 13.0404 5.16171 12.4934 4.18935 11.5211C3.21699 10.5487 2.67004 9.23033 2.66852 7.8552Z" fill="#78829D"></path>
                         </svg>
                       </button>
 
                       <div
-                        class="absolute left-0 right-0 top-full z-[999] mt-2 hidden overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg hover:!border-slate-200 active:!border-slate-200 hover:!bg-white active:!bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-lg active:shadow-lg focus:shadow-lg focus-visible:shadow-lg browser-default"
+                        class="absolute left-0 right-0 top-full z-[999] mt-2 hidden overflow-hidden rounded border border-slate-200 bg-white shadow-lg hover:!border-slate-200 active:!border-slate-200 hover:!bg-white active:!bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-lg active:shadow-lg focus:shadow-lg focus-visible:shadow-lg browser-default"
                         data-search-panel
                       >
                         <ul
@@ -871,21 +871,21 @@
                           data-contact-id="search-trigger"
                         >
                           <svg width="12" height="12" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" class="browser-default">
-                            <path d="M16.3311 15.5156L12.7242 11.9095C13.7696 10.6544 14.2909 9.04453 14.1797 7.41486C14.0684 5.7852 13.3331 4.26116 12.1268 3.15979C10.9205 2.05843 9.33603 1.46453 7.70299 1.50164C6.06995 1.53875 4.51409 2.20402 3.35906 3.35906C2.20402 4.51409 1.53875 6.06995 1.50164 7.70299C1.46453 9.33603 2.05843 10.9205 3.15979 12.1268C4.26116 13.3331 5.7852 14.0684 7.41486 14.1797C9.04453 14.2909 10.6544 13.7696 11.9095 12.7242L15.5156 16.3311C15.5692 16.3847 15.6328 16.4271 15.7027 16.4561C15.7727 16.4851 15.8477 16.5 15.9234 16.5C15.9991 16.5 16.0741 16.4851 16.144 16.4561C16.214 16.4271 16.2776 16.3847 16.3311 16.3311C16.3847 16.2776 16.4271 16.214 16.4561 16.144C16.4851 16.0741 16.5 15.9991 16.5 15.9234C16.5 15.8477 16.4851 15.7727 16.4561 15.7027C16.4271 15.6328 16.3847 15.5692 16.3311 15.5156ZM2.66852 7.8552C2.66852 6.82937 2.97271 5.82658 3.54263 4.97364C4.11255 4.12069 4.9226 3.4559 5.87035 3.06333C6.81809 2.67076 7.86096 2.56805 8.86708 2.76818C9.87319 2.96831 10.7974 3.46229 11.5227 4.18766C12.2481 4.91303 12.7421 5.83721 12.9422 6.84333C13.1424 7.84945 13.0396 8.89232 12.6471 9.84006C12.2545 10.7878 11.5897 11.5979 10.7368 12.1678C9.88383 12.7377 8.88103 13.0419 7.8552 13.0419C6.48008 13.0404 5.16171 12.4934 4.18935 11.5211C3.21699 10.5487 2.67004 9.23033 2.66852 7.8552Z" fill="#78829D" class="browser-default"></path>
+                            <path d="M16.3311 15.5156L12.7242 11.9095C13.7696 10.6544 14.2909 9.04453 14.1797 7.41486C14.0684 5.7852 13.3331 4.26116 12.1268 3.15979C10.9205 2.05843 9.33603 1.46453 7.70299 1.50164C6.06995 1.53875 4.51409 2.20402 3.35906 3.35906C2.20402 4.51409 1.53875 6.06995 1.50164 7.70299C1.46453 9.33603 2.05843 10.9205 3.15979 12.1268C4.26116 13.3331 5.7852 14.0684 7.41486 14.1797C9.04453 14.2909 10.6544 13.7696 11.9095 12.7242L15.5156 16.3311C15.5692 16.3847 15.6328 16.4271 15.7027 16.4561C15.7727 16.4851 15.8477 16.5 15.9234 16.5C15.9991 16.5 16.0741 16.4851 16.144 16.4561C16.214 16.4271 16.2776 16.3847 16.3311 16.3311C16.3847 16.2776 16.4271 16.214 16.4561 16.144C16.4851 16.0741 16.5 15.9991 16.5 15.9234C16.5 15.8477 16.4851 15.7727 16.4561 15.7027C16.4271 15.6328 16.3847 15.5692 16.3311 15.5156ZM2.66852 7.8552C2.66852 6.82937 2.97271 5.82658 3.54263 4.97364C4.11255 4.12069 4.9226 3.4559 5.87035 3.06333C6.81809 2.67076 7.86096 2.56805 8.86708 2.76818C9.87319 2.96831 10.7974 3.46229 11.5227 4.18766C12.2481 4.91303 12.7421 5.83721 12.9422 6.84333C13.1424 7.84945 13.0396 8.89232 12.6471 9.84006C12.2545 10.7878 11.5897 11.5979 10.7368 12.1678C9.88383 12.7377 8.88103 13.0419 7.8552 13.0419C6.48008 13.0404 5.16171 12.4934 4.18935 11.5211C3.21699 10.5487 2.67004 9.23033 2.66852 7.8552Z" fill="#78829D"></path>
                           </svg>
                         </button>
 
                         <div
-                          class="absolute left-0 right-0 top-full z-[999] mt-2 hidden overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg hover:!border-slate-200 active:!border-slate-200 hover:!bg-white active:!bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-lg active:shadow-lg focus:shadow-lg focus-visible:shadow-lg browser-default"
+                          class="absolute left-0 right-0 top-full z-[999] mt-2 hidden overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg hover:!border-slate-200 active:!border-slate-200 hover:!bg-white active:!bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-lg active:shadow-lg focus:shadow-lg focus-visible:shadow-lg"
                           data-search-panel
                         >
                           <ul
-                            class="max-h-48 overflow-y-auto py-2 browser-default"
+                            class="max-h-48 overflow-y-auto py-2"
                             data-search-results
                             data-entity-id="search-results"
                           ></ul>
                           <p
-                            class="px-4 py-3 text-sm text-slate-500 hidden hover:!text-slate-500 active:!text-slate-500 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500 browser-default"
+                            class="px-4 py-3 text-sm text-slate-500 hidden hover:!text-slate-500 active:!text-slate-500 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
                             data-search-empty
                             data-entity-id="search-empty"
                           >
@@ -897,30 +897,24 @@
                             data-search-add
                             data-entity-id="add-new-entity"
                           >
-                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" class="browser-default">
-                              <path d="M6.76923 1.76923C6.76923 1.34375 6.42548 1 6 1C5.57452 1 5.23077 1.34375 5.23077 1.76923V5.23077H1.76923C1.34375 5.23077 1 5.57452 1 6C1 6.42548 1.34375 6.76923 1.76923 6.76923H5.23077V10.2308C5.23077 10.6562 5.57452 11 6 11C6.42548 11 6.76923 10.6562 6.76923 10.2308V6.76923H10.2308C10.6562 6.76923 11 6.42548 11 6C11 5.57452 10.6562 5.23077 10.2308 5.23077H6.76923V1.76923Z" fill="#003882" class="browser-default"></path>
+                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M6.76923 1.76923C6.76923 1.34375 6.42548 1 6 1C5.57452 1 5.23077 1.34375 5.23077 1.76923V5.23077H1.76923C1.34375 5.23077 1 5.57452 1 6C1 6.42548 1.34375 6.76923 1.76923 6.76923H5.23077V10.2308C5.23077 10.6562 5.57452 11 6 11C6.42548 11 6.76923 10.6562 6.76923 10.2308V6.76923H10.2308C10.6562 6.76923 11 6.42548 11 6C11 5.57452 10.6562 5.23077 10.2308 5.23077H6.76923V1.76923Z" fill="#003882"></path>
                             </svg>
-                            <span class="browser-default">Add New Entity</span>
+                            <span>Add New Entity</span>
                           </button>
                         </div>
                       </div>
                     </div>
                   </div>
   
-                  <div
-                    class="w-full h-14 flex flex-col justify-start items-start gap-2"
-                  >
-                    <div
-                      class="justify-start text-neutral-700 text-sm leading-4"
-                    >
-                      Property Search
-                    </div>
-                    <div class="relative browser-default w-full">
+                  <div class="w-full flex flex-col gap-3">
+                    <label class="block text-neutral-700 mt-3 mb-[-10px] text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700">Property Search</label>
+                    <div class="relative mt-2 w-full">
                       <input
                         type="text"
                         data-field="properties"
                         placeholder="Search properties"
-                        class="w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default"
+                        class="w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
                       />
                       <input
                         type="hidden"
@@ -1134,7 +1128,7 @@
                           <input
                             id="job-required-by"
                             type="text"
-                            placeholder="dd-mm-yyyy"
+                            placeholder="dd/mm/yyyy"
                             data-field="job_required_by"
                             class="date-picker w-full rounded border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 placeholder:text-slate-400 flatpickr-input mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 browser-default"
                           />
@@ -1162,7 +1156,7 @@
   
             <!-- RIGHT: Assign Serviceman -->
             <div class="flex flex-col gap-4 items-center">
-              <div class="h-fit w-[460px] p-2 bg-white rounded-lg outline outline-1 outline-gray-300 flex flex-col"
+              <div class="h-fit w-[460px] p-2 bg-white rounded outline outline-1 outline-gray-300 flex flex-col"
             >
             <div class="w-full flex flex-col justify-start items-start">
               <div class="justify-end text-neutral-700 text-base font-bold leading-4 p-3">Assign Serviceman</div>
@@ -1178,11 +1172,11 @@
                   <path d="M16.3311 15.5156L12.7242 11.9095C13.7696 10.6544 14.2909 9.04453 14.1797 7.41486C14.0684 5.7852 13.3331 4.26116 12.1268 3.15979C10.9205 2.05843 9.33603 1.46453 7.70299 1.50164C6.06995 1.53875 4.51409 2.20402 3.35906 3.35906C2.20402 4.51409 1.53875 6.06995 1.50164 7.70299C1.46453 9.33603 2.05843 10.9205 3.15979 12.1268C4.26116 13.3331 5.7852 14.0684 7.41486 14.1797C9.04453 14.2909 10.6544 13.7696 11.9095 12.7242L15.5156 16.3311C15.5692 16.3847 15.6328 16.4271 15.7027 16.4561C15.7727 16.4851 15.8477 16.5 15.9234 16.5C15.9991 16.5 16.0741 16.4851 16.144 16.4561C16.214 16.4271 16.2776 16.3847 16.3311 16.3311C16.3847 16.2776 16.4271 16.214 16.4561 16.144C16.4851 16.0741 16.5 15.9991 16.5 15.9234C16.5 15.8477 16.4851 15.7727 16.4561 15.7027C16.4271 15.6328 16.3847 15.5692 16.3311 15.5156ZM2.66852 7.8552C2.66852 6.82937 2.97271 5.82658 3.54263 4.97364C4.11255 4.12069 4.9226 3.4559 5.87035 3.06333C6.81809 2.67076 7.86096 2.56805 8.86708 2.76818C9.87319 2.96831 10.7974 3.46229 11.5227 4.18766C12.2481 4.91303 12.7421 5.83721 12.9422 6.84333C13.1424 7.84945 13.0396 8.89232 12.6471 9.84006C12.2545 10.7878 11.5897 11.5979 10.7368 12.1678C9.88383 12.7377 8.88103 13.0419 7.8552 13.0419C6.48008 13.0404 5.16171 12.4934 4.18935 11.5211C3.21699 10.5487 2.67004 9.23033 2.66852 7.8552Z" fill="#78829D" class="browser-default"></path>
                 </svg>
               </button>
-              <div data-serviceman-search="results" class="absolute left-0 right-0 top-full z-[999] mt-2 hidden overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg hover:!border-slate-200 active:!border-slate-200 hover:!bg-white active:!bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-lg active:shadow-lg focus:shadow-lg focus-visible:shadow-lg browser-default"></div>
+              <div data-serviceman-search="results" class="absolute left-0 right-0 top-full z-[999] mt-2 hidden overflow-hidden rounded border border-slate-200 bg-white shadow-lg hover:!border-slate-200 active:!border-slate-200 hover:!bg-white active:!bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-lg active:shadow-lg focus:shadow-lg focus-visible:shadow-lg browser-default"></div>
             </div>
             </div>
             </div>
-            <button id="submit-information-btn" class="w-full border border-2 rounded-xl border-gray-200 bg-[#003882] text-white font-medium p-3 focus:!border-gray-200 focus:!bg-[#003882] focus:!text-white">Submit information</button>
+            <button id="submit-information-btn" class="w-full rounded bg-[#003882] text-white font-medium p-3 focus:!bg-[#003882] focus:!text-white">Submit information</button>
             
             </div>
           </div>
@@ -1224,7 +1218,7 @@
             </div>
             <div id="company-name-section" class="hidden">
               <label class="text-sm font-medium text-slate-600">Company Name</label>
-              <input type="tel" data-contact-field="company_name" data-contact-id="company_name" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
+              <input type="tel" data-contact-field="company_name" data-contact-id="company_name" class="mt-1 w-full rounded border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
             </div>
       <div class="hidden" id="affiliations-role-section">
               <label class="block text-sm font-medium text-slate-600"
@@ -1242,22 +1236,22 @@
          <div class="flex gap-4">
               <div class="flex-1 min-w-[150px]">
                 <label class="text-sm font-medium text-slate-600">First Name <span class="text-rose-500">*</span></label>
-                <input type="text" data-contact-field="first_name" data-contact-id="first_name" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 browser-default">
+                <input type="text" data-contact-field="first_name" data-contact-id="first_name" class="mt-1 w-full rounded border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 browser-default">
               </div>
               <div class="flex-1 min-w-[150px]">
                 <label class="text-sm font-medium text-slate-600">Last Name</label>
-                <input type="text" data-contact-field="last_name" data-contact-id="last_name" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 browser-default">
+                <input type="text" data-contact-field="last_name" data-contact-id="last_name" class="mt-1 w-full rounded border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 browser-default">
               </div>
             </div>
 
             <div class="flex gap-4">
               <div class="flex-1 min-w-[150px]">
                 <label class="text-sm font-medium text-slate-600">Email <span class="text-rose-500">*</span></label>
-                <input type="email" data-contact-field="email" data-contact-id="email" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
+                <input type="email" data-contact-field="email" data-contact-id="email" class="mt-1 w-full rounded border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
               </div>
               <div class="flex-1 min-w-[150px]">
                 <label class="text-sm font-medium text-slate-600">SMS Number</label>
-                <input type="tel" data-contact-field="sms_number" data-contact-id="sms_number" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
+                <input type="tel" data-contact-field="sms_number" data-contact-id="sms_number" class="mt-1 w-full rounded border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
               </div>
             </div>
             <div  class="hidden">
@@ -1265,7 +1259,7 @@
             </div>
             <div>
               <label class="text-sm font-medium text-slate-600">Office Number</label>
-              <input type="tel" data-contact-field="office_phone" data-contact-id="office_phone" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
+              <input type="tel" data-contact-field="office_phone" data-contact-id="office_phone" class="mt-1 w-full rounded border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
             </div>
 
           <div data-section="address">
@@ -1448,7 +1442,7 @@
                   autocomplete="off"
                 />
                 <input type="hidden" id="selected-property-id" data-selected-property-id="selected-property-id" />
-                <div class="absolute left-0 right-0 top-full z-[999] mt-2 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg hidden" data-search-panel>
+                <div class="absolute left-0 right-0 top-full z-[999] mt-2 overflow-hidden rounded border border-slate-200 bg-white shadow-lg hidden" data-search-panel>
                   <ul class="max-h-72 overflow-auto py-2" data-search-results></ul>
                   <div data-search-footer></div>
                 </div>
@@ -1457,27 +1451,27 @@
               <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                   <label class="block text-sm font-medium text-slate-600">Lot Number</label>
-                  <input type="text" data-property-id="lot_number" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 browser-default" />
+                  <input type="text" data-property-id="lot_number" class="mt-1 w-full rounded border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 browser-default" />
                 </div>
                 <div>
                   <label class="block text-sm font-medium text-slate-600">Unit Number</label>
-                  <input type="text" data-property-id="unit-number" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 browser-default" />
+                  <input type="text" data-property-id="unit-number" class="mt-1 w-full rounded border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 browser-default" />
                 </div>
                 <div>
                   <label class="flex items-center gap-1 text-sm font-medium text-slate-600">Address <span class="text-rose-500">*</span></label>
-                  <input type="text" data-property-id="address_1" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 browser-default" />
+                  <input type="text" data-property-id="address_1" class="mt-1 w-full rounded border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 browser-default" />
                 </div>
                 <div>
                   <label class="block text-sm font-medium text-slate-600">Address 2</label>
-                  <input type="text" data-property-id="address_2" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 browser-default" />
+                  <input type="text" data-property-id="address_2" class="mt-1 w-full rounded border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 browser-default" />
                 </div>
                 <div>
                   <label class="flex items-center gap-1 text-sm font-medium text-slate-600">Suburb/ Town <span class="text-rose-500">*</span></label>
-                  <input type="text" data-property-id="suburb_town" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 browser-default" />
+                  <input type="text" data-property-id="suburb_town" class="mt-1 w-full rounded border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 browser-default" />
                 </div>
                 <div>
                   <label class="flex items-center gap-1 text-sm font-medium text-slate-600">Postal Code <span class="text-rose-500">*</span></label>
-                  <input type="text" data-property-id="postal_code" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 browser-default" />
+                  <input type="text" data-property-id="postal_code" class="mt-1 w-full rounded border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 browser-default" />
                 </div>
               </div>
 
@@ -1590,15 +1584,15 @@
                 </div>
                 <div>
                   <label class="block text-sm font-medium text-slate-600">Storeys</label>
-                  <input type="number" value="1" data-property-id="stories" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700" />
+                  <input type="number" value="1" data-property-id="stories" class="mt-1 w-full rounded border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700" />
                 </div>
                 <div>
                   <label class="block text-sm font-medium text-slate-600">Bedrooms</label>
-                  <input type="number" value="1" data-property-id="bedrooms" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700" />
+                  <input type="number" value="1" data-property-id="bedrooms" class="mt-1 w-full rounded border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700" />
                 </div>
                 <div>
                   <label class="block text-sm font-medium text-slate-600">Building Age</label>
-                  <input type="number" value="1" data-property-id="building_age" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700" />
+                  <input type="number" value="1" data-property-id="building_age" class="mt-1 w-full rounded border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700" />
                 </div>
                 <label class="inline-flex items-center gap-2 text-sm text-slate-600">
                   <input type="checkbox" checked data-property-id="manhole" class="accent-[#003882] h-4 w-4 rounded border-slate-300 text-brand-600" />
