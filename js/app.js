@@ -39,7 +39,7 @@ function applyBrowserDefault() {
     loaderElement?.querySelector("[data-loader-message]") || null;
   const loaderCounter = { count: 0 };
 
-  showLoader(loaderElement, loaderMessageEl, loaderCounter, "Loading app...");
+  // showLoader(loaderElement, loaderMessageEl, loaderCounter, "Loading app...");
   const App = {
     services: {},
     controllers: {},
