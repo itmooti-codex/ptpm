@@ -2498,20 +2498,15 @@ export class JobDetailView {
         btn.type = "button";
         btn.dataset.optionIndex = String(idx);
         btn.className =
-          "!w-full !px-4 !py-3 !text-left !bg-transparent hover:!bg-transparent active:!bg-transparent focus:!bg-transparent focus-visible:!bg-transparent !focus:outline-none hover:!text-current active:!text-current focus:!text-current focus-visible:!text-current";
+          "!flex !w-full !flex-col !gap-1 !px-4 !py-2 !text-left !text-sm !text-slate-700 !bg-transparent hover:!bg-transparent active:!bg-transparent focus:!bg-transparent focus-visible:!bg-transparent hover:!text-slate-700 active:!text-slate-700 focus:!text-slate-700 focus-visible:!text-slate-700";
         btn.innerHTML = `
           <div class="flex items-start justify-between gap-3">
             <div>
-              <p class="text-sm font-medium text-slate-700 hover:!text-slate-700 active:!text-slate-700  hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700">${
+              <p class="font-normal text-xs font-['Inter'] justify-start text-neutral-700">${
                 item.name
               }</p>
-              <p class="text-xs text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500">${
-                item.account_type || ""
-              }</p>
+              <p class="text-xs text-neutral-700">${item.account_type || ""}</p>
             </div>
-            <span class="text-xs text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400">#${
-              item.id
-            }</span>
           </div>
         `;
 
@@ -2916,13 +2911,14 @@ export class JobDetailView {
           "!flex !w-full !flex-col !gap-1 !px-4 !py-2 !text-left !text-sm !text-slate-700 !bg-transparent hover:!bg-transparent active:!bg-transparent focus:!bg-transparent focus-visible:!bg-transparent hover:!text-slate-700 active:!text-slate-700 focus:!text-slate-700 focus-visible:!text-slate-700";
 
         const label = document.createElement("span");
-        label.className = "font-medium text-slate-700";
+        label.className =
+          "font-normal text-xs font-['Inter'] justify-start text-neutral-700";
         label.textContent = item.label;
         btn.appendChild(label);
 
         if (item.meta) {
           const meta = document.createElement("span");
-          meta.className = "text-xs text-slate-500";
+          meta.className = "text-xs text-neutral-700";
           meta.textContent = item.meta;
           btn.appendChild(meta);
         }
@@ -3045,50 +3041,56 @@ export class JobDetailView {
         );
       });
 
+      const statusMap = {
+        Active: { text: "text-green-600", dot: "bg-green-600" },
+        Offline: { text: "text-slate-500", dot: "bg-slate-500" },
+        "On-Site": { text: "text-orange-600", dot: "bg-orange-600" },
+        Archived: { text: "text-purple-600", dot: "bg-purple-600" },
+        Looking: { text: "text-teal-700", dot: "bg-teal-700" },
+      };
+
       const html = filtered
         .map((item, idx) => {
+          const statusLabel = item.Status || "Looking";
+          const statusStyle = statusMap[statusLabel] || statusMap.Looking;
           return `
-            <div data-option-index="${idx}" class="flex items-center gap-3 p-3 hover:!bg-gray-50 cursor-pointer" 
-                 data-id="${item.ID}">
-                
-              <img 
-                src="${
-                  item.Contact_Information_Profile_Image ||
-                  "https://via.placeholder.com/40"
-                }" 
-                alt="" 
-                class="h-10 w-10 rounded-full object-cover"
-              >
-  
-              <div class="flex flex-col flex-1">
-                <div class="text-gray-900 font-semibold text-sm hover:!text-gray-900 active:!text-gray-900 hover:text-gray-900 active:text-gray-900 focus:text-gray-900 focus-visible:text-gray-900 ">
-                  ${item.Contact_Information_First_Name} ${
+            <div
+              data-option-index="${idx}"
+              data-id="${item.ID}"
+              class="w-72 px-4 py-2 bg-white inline-flex justify-between items-center cursor-pointer"
+            >
+              <div class="flex justify-start items-center gap-2">
+                <img
+                  class="w-10 h-10 relative rounded-[32px] object-cover"
+                  src="${
+                    item.Contact_Information_Profile_Image ||
+                    "https://via.placeholder.com/40"
+                  }"
+                  alt=""
+                />
+                <div class="inline-flex flex-col justify-center items-start gap-1.5">
+                  <div data-provider-name class="justify-start text-neutral-700 text-sm font-medium font-['Inter'] leading-4">
+                    ${item.Contact_Information_First_Name} ${
             item.Contact_Information_Last_Name
           }
-                </div>
-                <div class="text-gray-500 text-xs hover:!text-gray-500 active:!text-gray-500 hover:text-gray-500 active:text-gray-500 focus:text-gray-500 focus-visible:text-gray-500 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs">
-                  ${item.Contact_Information_SMS_Number}
+                  </div>
+                  <div data-provider-phone class="justify-start text-slate-500 text-xs font-normal font-['Inter'] leading-3">
+                    ${item.Contact_Information_SMS_Number}
+                  </div>
                 </div>
               </div>
-  
-              <div class="flex items-center gap-2">
-                <div class="h-2.5 w-2.5 rounded-full ${
-                  item.Status === "Active" ? "bg-green-200" : ""
-                }
-                  ${item.Status === "Offline" ? "bg-gray-200" : ""}
-                  ${item.Status === "On-Site" ? "bg-orange-200" : ""}
-                  ${item.Status === "Archived" ? "bg-purple-200" : ""}
-                  ">
+              <div data-property-1="${statusLabel}" class="py-0.5 flex justify-center items-center gap-1">
+                <div class="w-3 h-3 relative">
+                  <div class="w-3 h-3 left-0 top-0 absolute bg-neutral-200 rounded-full"></div>
+                  <div class="w-1.5 h-1.5 left-[3px] top-[3px] absolute ${
+                    statusStyle.dot
+                  } rounded-full"></div>
                 </div>
-  
-                <span class="text-xs ${
-                  item.Status === "Active" ? "text-green-500" : ""
-                }
-                ${item.Status === "Offline" ? "text-gray-500" : ""}
-                ${item.Status === "On-Site" ? "text-orange-500" : ""}
-                ${item.Status === "Archived" ? "text-purple-500" : ""}">
-                  ${item.Status}
-                </span>
+                <div data-provider-status class="text-center justify-start ${
+                  statusStyle.text
+                } text-xs font-medium font-['Inter'] leading-4">
+                  ${statusLabel}
+                </div>
               </div>
             </div>
           `;
@@ -3118,25 +3120,46 @@ export class JobDetailView {
     });
 
     let serviceman = null;
-    let previousClicked = "";
-    // Click item to select
-    results.addEventListener("click", (e) => {
-      if (previousClicked) {
-        previousClicked.classList.remove("bg-blue-100");
+    let previousSelected = null;
+
+    const toggleSelection = (item) => {
+      if (previousSelected && previousSelected !== item) {
+        previousSelected.classList.remove("bg-[#003882]", "text-white");
+        previousSelected
+          .querySelectorAll("[data-provider-name]")
+          .forEach((el) => el.classList.remove("text-white"));
+        previousSelected
+          .querySelectorAll("[data-provider-phone]")
+          .forEach((el) => el.classList.remove("text-slate-100"));
+        previousSelected
+          .querySelectorAll("[data-provider-status]")
+          .forEach((el) => el.classList.remove("text-white"));
       }
+
+      item.classList.add("bg-[#003882]", "text-white");
+      item
+        .querySelectorAll("[data-provider-name]")
+        .forEach((el) => el.classList.add("text-white"));
+      item
+        .querySelectorAll("[data-provider-phone]")
+        .forEach((el) => el.classList.add("text-slate-100"));
+      item
+        .querySelectorAll("[data-provider-status]")
+        .forEach((el) => el.classList.add("text-white"));
+
+      previousSelected = item;
+    };
+
+    // Double click item to select
+    results.addEventListener("dblclick", (e) => {
       const item = e.target.closest("div[data-option-index]");
       if (!item) return;
-      if (item.classList.contains("bg-blue-100")) {
-        item.classList.remove("bg-blue-100");
-      } else {
-        item.classList.add("bg-blue-100");
-      }
+      toggleSelection(item);
 
-      let idx = item.getAttribute("data-option-index");
-      const current = state.providers[Number(idx)];
-      serviceman = current;
+      const idx = item.getAttribute("data-option-index");
+      serviceman = state.providers[Number(idx)];
 
-      let confirm_allocation_btn = document.querySelector(
+      const confirm_allocation_btn = document.querySelector(
         '[data-field="confirm-allocation"]'
       );
       confirm_allocation_btn.addEventListener("click", () => {
@@ -3148,8 +3171,6 @@ export class JobDetailView {
         contact_id.value = serviceman.ID;
         results.classList.add("hidden");
       });
-
-      previousClicked = item;
     });
 
     this.updateServiceProviderSearch = (nextProviders = []) => {
@@ -3373,8 +3394,9 @@ export class JobDetailView {
         const btn = document.createElement("button");
         btn.type = "button";
         btn.dataset.optionIndex = String(idx);
+
         btn.className =
-          "!flex !w-full !flex-col !gap-1 !px-4 !py-2 !text-left !text-sm !text-slate-700 !bg-transparent hover:!bg-transparent active:!bg-transparent focus:!bg-transparent focus-visible:!bg-transparent hover:!text-slate-700 active:!text-slate-700 focus:!text-slate-700 focus-visible:!text-slate-700";
+          "!flex !w-full !flex-col !gap-1 !px-4 !py-2 text-neutral-700 text-xs font-normal font-['Inter'] leading-3";
         btn.textContent = item.label;
 
         li.id = item.id;

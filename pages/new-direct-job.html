@@ -876,16 +876,16 @@
                         </button>
 
                         <div
-                          class="absolute left-0 right-0 top-full z-[999] mt-2 hidden overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg hover:!border-slate-200 active:!border-slate-200 hover:!bg-white active:!bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-lg active:shadow-lg focus:shadow-lg focus-visible:shadow-lg"
+                          class="absolute left-0 right-0 top-full z-[999] mt-2 hidden overflow-hidden rounded border border-slate-200 bg-white shadow-lg hover:!border-slate-200 active:!border-slate-200 hover:!bg-white active:!bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-lg active:shadow-lg focus:shadow-lg focus-visible:shadow-lg browser-default"
                           data-search-panel
                         >
                           <ul
-                            class="max-h-48 overflow-y-auto py-2"
+                            class="max-h-48 overflow-y-auto py-2 browser-default"
                             data-search-results
                             data-entity-id="search-results"
                           ></ul>
                           <p
-                            class="px-4 py-3 text-sm text-slate-500 hidden hover:!text-slate-500 active:!text-slate-500 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
+                            class="px-4 py-3 text-sm text-slate-500 hidden hover:!text-slate-500 active:!text-slate-500 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500 browser-default"
                             data-search-empty
                             data-entity-id="search-empty"
                           >
@@ -897,24 +897,30 @@
                             data-search-add
                             data-entity-id="add-new-entity"
                           >
-                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <path d="M6.76923 1.76923C6.76923 1.34375 6.42548 1 6 1C5.57452 1 5.23077 1.34375 5.23077 1.76923V5.23077H1.76923C1.34375 5.23077 1 5.57452 1 6C1 6.42548 1.34375 6.76923 1.76923 6.76923H5.23077V10.2308C5.23077 10.6562 5.57452 11 6 11C6.42548 11 6.76923 10.6562 6.76923 10.2308V6.76923H10.2308C10.6562 6.76923 11 6.42548 11 6C11 5.57452 10.6562 5.23077 10.2308 5.23077H6.76923V1.76923Z" fill="#003882"></path>
+                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" class="browser-default">
+                              <path d="M6.76923 1.76923C6.76923 1.34375 6.42548 1 6 1C5.57452 1 5.23077 1.34375 5.23077 1.76923V5.23077H1.76923C1.34375 5.23077 1 5.57452 1 6C1 6.42548 1.34375 6.76923 1.76923 6.76923H5.23077V10.2308C5.23077 10.6562 5.57452 11 6 11C6.42548 11 6.76923 10.6562 6.76923 10.2308V6.76923H10.2308C10.6562 6.76923 11 6.42548 11 6C11 5.57452 10.6562 5.23077 10.2308 5.23077H6.76923V1.76923Z" fill="#003882" class="browser-default"></path>
                             </svg>
-                            <span>Add New Entity</span>
+                            <span class="browser-default">Add New Entity</span>
                           </button>
                         </div>
                       </div>
                     </div>
                   </div>
   
-                  <div class="w-full flex flex-col gap-3">
-                    <label class="block text-neutral-700 mt-3 mb-[-10px] text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700">Property Search</label>
-                    <div class="relative mt-2 w-full">
+                  <div
+                    class="w-full h-14 flex flex-col justify-start items-start gap-2"
+                  >
+                    <div
+                      class="justify-start text-neutral-700 text-sm leading-4"
+                    >
+                      Property Search
+                    </div>
+                    <div class="relative browser-default w-full">
                       <input
                         type="text"
                         data-field="properties"
                         placeholder="Search properties"
-                        class="w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
+                        class="w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default"
                       />
                       <input
                         type="hidden"
@@ -931,7 +937,7 @@
                         </svg>
                       </button>
                       <div
-                        class="absolute left-0 right-0 top-full z-[999] mt-2 hidden overflow-hidden rounded-xl border border-slate-200 bg-white shadow-lg hover:!border-slate-200 active:!border-slate-200 hover:!bg-white active:!bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-lg active:shadow-lg focus:shadow-lg focus-visible:shadow-lg browser-default"
+                        class="absolute left-0 right-0 top-full z-[999] mt-2 hidden overflow-hidden rounded border border-slate-200 bg-white shadow-lg hover:!border-slate-200 active:!border-slate-200 hover:!bg-white active:!bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-lg active:shadow-lg focus:shadow-lg focus-visible:shadow-lg browser-default"
                         data-property-search="panel"
                       >
                         <ul class="max-h-48 overflow-y-auto py-2 browser-default" data-property-search="results"></ul>
