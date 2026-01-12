@@ -2349,14 +2349,14 @@ export class JobDetailView {
 
     const applyTabStyles = (btn, isActive) => {
       if (!btn) return;
-      btn.classList.toggle("bg-[#003882]", isActive);
-      btn.classList.toggle("text-white", isActive);
-      btn.classList.toggle("shadow-sm", isActive);
-      btn.classList.toggle("bg-white", !isActive);
-      btn.classList.toggle("text-slate-600", !isActive);
-      btn.classList.add("border");
-      btn.classList.toggle("border-sky-900", isActive);
-      btn.classList.toggle("border-slate-300", !isActive);
+      btn.classList.toggle("!bg-[#003882]", isActive);
+      btn.classList.toggle("!text-white", isActive);
+      btn.classList.toggle("!shadow-sm", isActive);
+      btn.classList.toggle("!bg-white", !isActive);
+      btn.classList.toggle("!text-slate-600", !isActive);
+      btn.classList.add("!border");
+      btn.classList.toggle("!border-sky-900", isActive);
+      btn.classList.toggle("!border-slate-300", !isActive);
     };
 
     const setState = async (type) => {
