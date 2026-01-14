@@ -1,3 +1,7 @@
+const apiUrl = "https://peterpm.vitalstats.app/api/v1/graphql";
+const apiKey = "1rBR-jpR3yE3HE1VhFD0j";
+const removeStatusAfterOpValue =
+  "[Visitor//Contact as Service Provider//Remove Status After]";
 //Hide sandbox banner
 window.addEventListener("load", function () {
   setTimeout(function () {
@@ -74,8 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
-  const removeStatusAfter =
-    "[Visitor//Contact as Service Provider//Remove Status After]";
+  const removeStatusAfter =removeStatusAfterOpValue;
   const durationSelect = document.getElementById("durationSelect");
   for (let option of durationSelect.options) {
     if (option.value === removeStatusAfter) {
