@@ -1,0 +1,175 @@
+:root {
+  /*Color Variables*/
+  --primary-color: [Visitor//Owner//primaryColor];
+  --secondary-color: [Visitor//Owner//secondaryColor];
+  --accent-color: [Visitor//Owner//accentColor];
+  --complementary-color: [Visitor//Owner//complementaryColor];
+  --dark-color: [Visitor//Owner//darkColor];
+  --light-color: [Visitor//Owner//lightColor];
+  --white-color: [Visitor//Owner//whiteColor];
+  --line-color: [Visitor//Owner//lineColor];
+  --danger-color: [Visitor//Owner//dangerColor];
+  --warning-color: [Visitor//Owner//warningColor];
+  --cool-color: [Visitor//Owner//coolColor];
+  --success-color: [Visitor//Owner//successColor];
+
+  /*Fonts*/
+  --font-family: [Visitor//Owner//font-family];
+  --headline-fs: [Visitor//Owner//headline-fs];
+  --headline-lh: [Visitor//Owner//headline-lh];
+  --headline-fw: [Visitor//Owner//headline-fw];
+  --subheadline-fs: [Visitor//Owner//subheadline-fs];
+  --subheadline-lh: [Visitor//Owner//subheadline-lh];
+  --subheadline-fw: [Visitor//Owner//subheadline-fw];
+  --subheadline2-fs: [Visitor//Owner//subheadline2-fs];
+  --subheadline2-lh: [Visitor//Owner//subheadline2-lh];
+  --subheadline2-fw: [Visitor//Owner//subheadline2-fw];
+  --label-fs: [Visitor//Owner//label-fs];
+  --label-lh: [Visitor//Owner//label-lh];
+  --label-fw: [Visitor//Owner//label-fw];
+  --button-fs: [Visitor//Owner//button-fs];
+  --button-lh: [Visitor//Owner//button-lh];
+  --button-fw: [Visitor//Owner//button-fw];
+  --bodytext-fs: [Visitor//Owner//bodytext-fs];
+  --bodytext-lh: [Visitor//Owner//bodytext-lh];
+  --bodytext-fw: [Visitor//Owner//bodytext-fw];
+  --largebodytext-fs: [Visitor//Owner//largebodytext-fs];
+  --largebodytext-lh: [Visitor//Owner//largebodytext-lh];
+  --largebodytext-fw: [Visitor//Owner//largebodytext-fw];
+  --blockquote-fs: [Visitor//Owner//blockquote-fs];
+  --blockquote-lh: [Visitor//Owner//blockquote-lh];
+  --blockquote-fw: [Visitor//Owner//blockquote-fw];
+
+  /*Font Family*/
+  --font-family: [Visitor//Owner//font-family];
+}
+
+/*Font size, line-height and font-weight*/
+
+body {
+  font-family: "Inter", serif !important;
+}
+.w-800 {
+  width: 800px !important;
+}
+.min-w-max {
+  min-width: max-content;
+}
+.display-none {
+  display: none;
+}
+
+/*Width Utility*/
+.w-min {
+  width: min-content;
+}
+
+/* Layouts */
+.whitespace-nowrap {
+  white-space: nowrap;
+}
+
+.tabItem {
+  position: relative;
+}
+
+.tabItem::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--primary-color);
+  transition: width 0.3s ease;
+}
+
+.tabItem:hover::after {
+  width: 100%;
+}
+
+.activeJobsTab::after {
+  width: 100%;
+}
+
+.activeInquiriesTab::after {
+  width: 100%;
+}
+
+@media (min-width: 1100px) {
+  .xlgFlex {
+    display: flex !important;
+  }
+}
+.defaultTab {
+  color: var(--dark-color);
+}
+.selectedTab {
+  background: #003882;
+  color: white;
+}
+
+html {
+  scrollbar-width: none !important;
+}
+
+.asideNavLeftBorder {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: #f6f6f6;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  border-top-left-radius: 16px;
+  border-bottom-left-radius: 16px;
+}
+
+@media (max-width: 600px) {
+  [data-block-viewport-display="desktop"] {
+    display: block !important;
+  }
+}
+
+/*Button style*/
+.outlineButton {
+  border: 1px solid var(--primary-color);
+  color: var(--primary);
+  border: 1px solid var(--primary-color);
+}
+.outlineButton:hover {
+  background-color: var(--primary-color);
+  color: var(--white-color);
+}
+.buttonSvg path {
+  fill: var(--primary-color);
+}
+.outlineButton:hover .buttonSvg path {
+  fill: var(--white-color);
+}
+
+a {
+  text-decoration: none !important;
+}
+.pl-64px {
+  margin-left: 18rem !important;
+}
+
+.pl-20px {
+  margin-left: 5rem !important;
+}
+
+@media (max-width: 1100px) {
+  .pl-64px {
+    margin-left: 0 !important;
+  }
+
+  .pl-20px {
+    margin-left: 0 !important;
+  }
+}
+@media (min-width: 1100px) {
+  .xlgBlock {
+    display: block !important;
+  }
+}
