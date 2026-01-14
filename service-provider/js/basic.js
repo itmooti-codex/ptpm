@@ -1,3 +1,38 @@
+window.addEventListener("load", function () {
+  const loader = document.getElementById("loader");
+  setTimeout(() => {
+    loader.classList.add("fade-out");
+  }, 500);
+});
+  function toggleModal() {
+    const modal = document.getElementById("announcements-modal");
+    modal.style.display = modal.style.display === "block" ? "none" : "block";
+  }
+  
+
+const body = document.body;
+const sliders = document.querySelectorAll(".side");
+body.setAttribute("x-data", `{ isSidebarExpanded: true}`);
+sliders.forEach((slider) => {
+  slider.setAttribute(":class", "isSidebarExpanded ? 'pl-64px' : 'pl-20px'");
+});
+const urlClassMap = {
+  "https://my.awesomate.pro/components": ".bgDashboard",
+  "https://my.awesomate.pro/inquire": ".bgInquiries",
+  "https://my.awesomate.pro/quotes": ".bgQuotes",
+  "https://my.awesomate.pro/jobs": ".bgJob",
+  "https://my.awesomate.pro/payments": ".bgPayments",
+  "https://my.awesomate.pro/calender": ".bgCalendar",
+  "https://my.awesomate.pro/appointments": ".bgAppointments",
+};
+const currentUrl = window.location.href;
+if (urlClassMap[currentUrl]) {
+  const targetElement = document.querySelector(urlClassMap[currentUrl]);
+  if (targetElement) {
+    targetElement.style.backgroundColor = "#0052CC";
+  }
+}
+
 //Hide sandbox banner
 window.addEventListener("load", function () {
   setTimeout(function () {
@@ -139,3 +174,79 @@ saveStatusButton.addEventListener("click", () => {
   profileModal.classList.remove("flex");
   document.body.classList.remove("overflow-hidden");
 });
+
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        primary: "var(--primary-color)",
+        secondary: "var(--secondary-color)",
+        accent: "var(--accent-color)",
+        complementary: "var(--complementary-color)",
+        dark: "var(--dark-color)",
+        light: "var(--light-color)",
+        white: "var(--white-color)",
+        line: "var(--line-color)",
+        danger: "var(--danger-color)",
+        warning: "var(--warning-color)",
+        cool: "var(--cool-color)",
+        success: "var(--success-color)",
+      },
+      screens: {
+        xlg: "1100px",
+      },
+      fontSize: {
+        h1: [
+          "var(--headline-fs)",
+          {
+            lineHeight: "var(--headline-lh)",
+            fontWeight: "var(--headline-fw)",
+          },
+        ],
+        h2: [
+          "var(--subheadline-fs)",
+          {
+            lineHeight: "var(--subheadline-lh)",
+            fontWeight: "var(--subheadline-fw)",
+          },
+        ],
+        h3: [
+          "var(--subheadline2-fs)",
+          {
+            lineHeight: "var(--subheadline2-lh)",
+            fontWeight: "var(--subheadline2-fw)",
+          },
+        ],
+        largeBodyText: [
+          "var(--largebodytext-fs)",
+          {
+            lineHeight: "var(--largebodytext-lh)",
+            fontWeight: "var(--largebodytext-fw)",
+          },
+        ],
+        bodyText: [
+          "var(--bodytext-fs)",
+          {
+            lineHeight: "var(--bodytext-lh)",
+            fontWeight: "var(--bodytext-fw)",
+          },
+        ],
+        button: [
+          "var(--button-fs)",
+          { lineHeight: "var(--button-lh)", fontWeight: "var(--button-fw)" },
+        ],
+        label: [
+          "var(--label-fs)",
+          { lineHeight: "var(--label-lh)", fontWeight: "var(--label-fw)" },
+        ],
+        blockquote: [
+          "var(--blockquote-fs)",
+          {
+            lineHeight: "var(--blockquote-lh)",
+            fontWeight: "var(--blockquote-fw)",
+          },
+        ],
+      },
+    },
+  },
+};
