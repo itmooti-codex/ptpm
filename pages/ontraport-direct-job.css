@@ -1,0 +1,55 @@
+input {
+  border: 1px solid #e2e8f0 !important;
+  background: white !important;
+  border-radius: 0.5rem !important;
+  padding-left: 0.5rem !important;
+  box-sizing: border-box !important;
+  font-size: 14px !important;
+}
+span::before,
+span::after {
+  content: none !important;
+  display: none !important;
+}
+
+select {
+  display: block !important;
+}
+
+input[type="checkbox"] {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  position: relative !important;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
+}
+
+.thin-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #94a3b8 transparent; /* Firefox */
+}
+
+.thin-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.thin-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.thin-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #94a3b8;
+  border-radius: 9999px;
+}
+/* Keep Google Places dropdown above modals/overlays */
+.pac-container {
+  z-index: 10050 !important;
+}
+
+/* Sidebar icons inherit JS-driven color */
+[data-section-icon] svg *,
+[data-sidebar-toggle] svg * {
+  stroke: currentColor;
+}

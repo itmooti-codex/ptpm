@@ -55,18 +55,26 @@ export class JobDetailView {
     return this.jobId;
   }
 
-  init() {
+  initFlatpickrFor(root) {
+    if (!root || typeof window.flatpickr !== "function") return;
+    root.querySelectorAll(".date-picker").forEach((input) => {
+      if (input._flatpickr) return;
+      window.flatpickr(input, { dateFormat: "d/m/Y", allowInput: true });
+    });
+  }
+
+  async init() {
     this.createDealInformationModal();
     this.CreateQuoteOnBehalfOfServicemanModal();
     this.EditNotes();
     this.createViewJobDocumentsModal();
     this.createActivityListModal();
     this.createWildlifeReportModal();
-    this.createTasksModal();
-    this.createAddActivitiesSection();
-    this.createAddMaterialsSection();
+    await this.createTasksModal();
+    await this.createAddActivitiesSection();
+    await this.createAddMaterialsSection();
     this.createUploadsSection();
-    this.createInvoiceSection();
+    await this.createInvoiceSection();
     this.setupContactTypeToggle();
     this.model.fetchContacts((list) => this.setupClientSearch(list || []));
     this.model
@@ -80,12 +88,14 @@ export class JobDetailView {
     this.#createContactDetailsModalUI();
   }
 
-  createAddActivitiesSection() {
+  async createAddActivitiesSection() {
     // This section stays hidden until the Add Activities tab is shown; rows will be rendered dynamically.
     const wrapper = document.createElement("div");
     wrapper.setAttribute("data-section", "add-activities");
     wrapper.className =
       "hidden w-full h-full flex flex-row gap-4 p-4 bg-gray-50";
+    const clientInputClass =
+      "mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default";
 
     wrapper.innerHTML = `
       <div data-section="add-activities" class="w-[440px] bg-white rounded-lg border border-slate-200 p-5 flex flex-col gap-4 shadow-sm hover:!bg-white active:!bg-white hover:!border-slate-200 active:!border-slate-200 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm">
@@ -93,114 +103,123 @@ export class JobDetailView {
           <div class="text-neutral-800 text-base font-semibold hover:!text-neutral-800 active:!text-neutral-800 hover:text-neutral-800 active:text-neutral-800 focus:text-neutral-800 focus-visible:text-neutral-800 hover:text-base active:text-base focus:text-base focus-visible:text-base">Add New Activity</div>
           <label class="flex items-center gap-2 text-slate-600 text-sm hover:!text-slate-600 active:!text-slate-600 hover:text-slate-600 active:text-slate-600 focus:text-slate-600 focus-visible:text-slate-600 ">
             <input type="checkbox" data-field="invoice_to_client" class="w-4 h-4 accent-[#0A3E8C]" />
-            <span class="!pl-0">Invoice to client</span>
+            <div class="!pl-0">Invoice to client</div>
           </label>
         </div>
 
         <div class="grid grid-cols-2 gap-5">
-          <div class="flex flex-col gap-1">
+          <div class="flex flex-col">
             <label class="text-neutral-700 text-sm font-medium hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 ">Task</label>
             <div class="relative">
-              <select data-field="task" data-activity-select="task" class="appearance-none w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10 hover:!bg-white active:!bg-white hover:!border-slate-300 active:!border-slate-300 hover:!text-slate-700 active:!text-slate-700 outline outline-1 outline-offset-[-1px] outline-gray-300 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300"></select>
-              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400">
-                <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"/></svg>
+              <select data-field="task" data-activity-select="task" class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 !block appearance-none hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default"></select>
+              <span class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400 mt-2">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 9l6 6 6-6"></path>
+                </svg>
               </span>
             </div>
           </div>
 
-          <div class="hidden flex flex-col gap-1">
+          <div class="hidden flex flex-col">
             <label class="text-neutral-700 text-sm font-medium hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 ">Options</label>
             <div class="relative">
-              <select data-field="option" data-activity-select="option" class="appearance-none w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10 hover:!bg-white active:!bg-white hover:!border-slate-300 active:!border-slate-300 hover:!text-slate-700 active:!text-slate-700 outline outline-1 outline-offset-[-1px] outline-gray-300 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300"></select>
-              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400">
-                <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"/></svg>
+              <select data-field="option" data-activity-select="option" class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 !block appearance-none hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default"></select>
+              <span class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400 mt-2">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 9l6 6 6-6"></path>
+                </svg>
               </span>
             </div>
           </div>
 
-          <div class="flex flex-col gap-1">
+          <div class="flex flex-col">
             <label class="text-neutral-700 text-sm font-medium hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 ">Primary Service</label>
             <div class="relative">
-              <select data-field="service_name" data-activity-select="service" class="appearance-none w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10 hover:!bg-white active:!bg-white hover:!border-slate-300 active:!border-slate-300 hover:!text-slate-700 active:!text-slate-700 outline outline-1 outline-offset-[-1px] outline-gray-300 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300"></select>
-              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400">
-                <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"/></svg>
+              <select data-field="service_name" data-activity-select="service" class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 !block appearance-none hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default"></select>
+              <span class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400 mt-2">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 9l6 6 6-6"></path>
+                </svg>
               </span>
             </div>
           </div>
 
-          <div data-element= "service_name_secondary" class="hidden flex flex-col gap-1">
+          <div data-element= "service_name_secondary" class="hidden flex flex-col">
             <label class="text-neutral-700 text-sm font-medium hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 ">Secondary Service</label>
             <div class="relative">
-              <select data-field="service_name" data-activity-select="service" class="hidden appearance-none w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10 hover:!bg-white active:!bg-white hover:!border-slate-300 active:!border-slate-300 hover:!text-slate-700 active:!text-slate-700 outline outline-1 outline-offset-[-1px] outline-gray-300 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300"></select>
-              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400">
-                <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"/></svg>
+              <select data-field="service_name" data-activity-select="service" class="hidden mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 !block appearance-none hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default"></select>
+              <span class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400 mt-2">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 9l6 6 6-6"></path>
+                </svg>
               </span>
             </div>
           </div>
 
-          <div class="flex flex-col gap-1">
+          <div class="flex flex-col">
             <label class="text-neutral-700 text-sm font-medium hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 ">Quantity</label>
-            <input type="number" data-field="quantity" value="1" class="w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 hover:!bg-white active:!bg-white hover:!border-slate-300 active:!border-slate-300 hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700" />
+            <input type="number" data-field="quantity" value="1" class="${clientInputClass}" />
           </div>
 
-          <div class="flex flex-col gap-1">
+          <div class="flex flex-col">
             <label class="text-neutral-700 text-sm font-medium hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 ">Activity Price</label>
             <div class="relative">
-              <input type="text" data-field="activity_price" placeholder="$ 0.00" class="w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10 hover:!bg-white active:!bg-white hover:!border-slate-300 active:!border-slate-300 hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700" />
-              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400">$</span>
+              <input type="text" data-field="activity_price" placeholder="$ 0.00" class="${clientInputClass} pr-10" />
             </div>
           </div>
 
-          <div class="flex flex-col gap-1">
+          <div class="flex flex-col">
             <label class="text-neutral-700 text-sm font-medium hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 ">Activity Text</label>
             <div class="relative">
-              <input data-field="activity_text" data-activity-select="text" class="appearance-none w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10 hover:!bg-white active:!bg-white hover:!border-slate-300 active:!border-slate-300 hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700"></input>
+              <input type="text" data-field="activity_text" data-activity-select="text" class="${clientInputClass}"></input>
             </div>
           </div>
 
-          <div class="flex flex-col gap-1">
+          <div class="flex flex-col">
             <label class="text-neutral-700 text-sm font-medium hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 ">Activity Status</label>
             <div class="relative">
-              <select data-field="activity_status" data-activity-select="status" class="appearance-none w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10 hover:!bg-white active:!bg-white hover:!border-slate-300 active:!border-slate-300 hover:!text-slate-700 active:!text-slate-700 outline outline-1 outline-offset-[-1px] outline-gray-300 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300">
+              <select data-field="activity_status" data-activity-select="status" class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 !block appearance-none hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default">
                 <option value="" disabled selected>Select One</option>
               </select>
-              <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400">
-                <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"/></svg>
+              <span class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400 mt-2">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 9l6 6 6-6"></path>
+                </svg>
               </span>
             </div>
           </div>
 
-          <div class="flex flex-col gap-1">
+          <div class="flex flex-col">
             <label class="text-neutral-700 text-sm font-medium hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 ">Date Required</label>
             <div class="relative">
-              <input type="text" data-field="date_required" placeholder="dd/mm/yyyy" class="flatpickr-input date-picker w-full pr-10 pl-3 py-2 bg-white rounded border border-slate-300 text-slate-700 placeholder:text-slate-400 hover:!bg-white active:!bg-white hover:!border-slate-300 active:!border-slate-300 hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-400 active:placeholder:text-slate-400 focus:placeholder:text-slate-400 focus-visible:placeholder:text-slate-400" />
+              <input type="text" data-field="date_required" placeholder="dd/mm/yyyy" class="flatpickr-input date-picker ${clientInputClass} pr-10" />
               <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400">
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 2.5V4.5M13 2.5V4.5M3.5 7.5H14.5M4 3.5H14C14.5523 3.5 15 3.94772 15 4.5V14C15 14.5523 14.5523 15 14 15H4C3.44772 15 3 14.5523 3 14V4.5C3 3.94772 3.44772 3.5 4 3.5Z" stroke="#94A3B8" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </span>
             </div>
           </div>
 
-          <div class="hidden flex flex-col gap-1">
+          <div class="hidden flex flex-col">
             <label class="text-neutral-700 text-sm font-medium hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 ">Quoted Price</label>
             <div class="relative">
-              <input type="text" data-field="quoted_price" placeholder="$ 0.00" class="hidden w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10 hover:!bg-white active:!bg-white hover:!border-slate-300 active:!border-slate-300 hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700" />
+              <input type="text" data-field="quoted_price" placeholder="$ 0.00" class="hidden w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 pr-10 hover:!bg-white active:!bg-white hover:!border-slate-300 active:!border-slate-300 hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default" />
               <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400">$</span>
             </div>
           </div>
 
-          <div class="hidden flex flex-col gap-1 col-span-2">
+          <div class="hidden flex flex-col col-span-2">
             <label class="text-neutral-700 text-sm font-medium hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 ">Quoted Text</label>
-            <textarea data-field="quoted_text" rows="2" class="hidden w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 hover:!bg-white active:!bg-white hover:!border-slate-300 active:!border-slate-300 hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700"></textarea>
+            <textarea data-field="quoted_text" rows="2" class="hidden w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 hover:!bg-white active:!bg-white hover:!border-slate-300 active:!border-slate-300 hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default"></textarea>
           </div>
 
-          <div class="flex flex-col gap-1 col-span-2">
+          <div class="flex flex-col col-span-2">
             <label class="text-neutral-700 text-sm font-medium hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 ">Warranty</label>
-            <textarea data-field="warranty" rows="2" class="w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 hover:!bg-white active:!bg-white hover:!border-slate-300 active:!border-slate-300 hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700"></textarea>
+            <textarea data-field="warranty" rows="2" class="w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 hover:!bg-white active:!bg-white hover:!border-slate-300 active:!border-slate-300 hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default"></textarea>
           </div>
 
-          <div class="flex flex-col gap-1 col-span-2">
+          <div class="flex flex-col col-span-2">
             <label class="text-neutral-700 text-sm font-medium hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 ">Note</label>
-            <textarea data-field="note" rows="2" class="w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 hover:!bg-white active:!bg-white hover:!border-slate-300 active:!border-slate-300 hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700"></textarea>
+            <textarea data-field="note" rows="2" class="w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 hover:!bg-white active:!bg-white hover:!border-slate-300 active:!border-slate-300 hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default"></textarea>
           </div>
         </div>
 
@@ -218,6 +237,7 @@ export class JobDetailView {
     const replaceable = document.getElementById("replaceable-section");
     if (!replaceable) return;
     replaceable.appendChild(wrapper);
+    this.initFlatpickrFor(wrapper);
     const addbutton = document.getElementById("add-activities");
     if (addbutton) {
       addbutton.addEventListener("click", async () => {
@@ -274,7 +294,7 @@ export class JobDetailView {
     addOptions(selectMap.task, jobs, "Select");
     addOptions(selectMap.option, options, "Select");
     addOptions(selectMap.status, activityStatuses, "Select");
-    this.renderActivitiesTable();
+    await this.renderActivitiesTable();
   }
 
   renderAddActivitiesServices(data) {
@@ -379,12 +399,14 @@ export class JobDetailView {
     });
   }
 
-  createAddMaterialsSection() {
+  async createAddMaterialsSection() {
     // Hidden container for Materials tab content; table rows to be injected dynamically.
     const wrapper = document.createElement("div");
     wrapper.setAttribute("data-section", "add-materials");
     wrapper.className =
       "hidden w-full h-full flex flex-row gap-4 p-4 bg-gray-50";
+    const clientInputClass =
+      "mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default";
 
     wrapper.innerHTML = `<div
         data-section="add-materials"
@@ -397,7 +419,7 @@ export class JobDetailView {
             <div class="text-neutral-700 text-base font-semibold hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 hover:text-base active:text-base focus:text-base focus-visible:text-base">Add Materials</div>
 
             <div class="flex flex-col gap-5">
-              <div class="flex flex-col gap-1">
+              <div class="flex flex-col">
                 <label class="text-neutral-700 text-sm font-medium hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 "
                   >Material Name</label
                 >
@@ -405,99 +427,78 @@ export class JobDetailView {
                   type="text"
                   data-field="material_name"
                   placeholder="Enter material name"
-                  class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700"
+                  class="${clientInputClass}"
                 />
               </div>
 
-              <div class="flex flex-col gap-1">
+              <div class="flex flex-col">
                 <label class="text-neutral-700 text-sm font-medium hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 ">Total</label>
                 <div class="relative">
                   <input
+                    placeholder="$"
                     type="text"
                     data-field="total"
-                    class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700"
+                    class="${clientInputClass} pr-10"
                   />
-                  <span
-                    class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400"
-                    >$</span
-                  >
                 </div>
               </div>
 
-              <div class="flex flex-col gap-1">
+              <div class="flex flex-col">
                 <label class="text-neutral-700 text-sm font-medium hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 "
                   >Description</label
                 >
                 <textarea
                   data-field="description"
                   rows="2"
-                  class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700"
+                  class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default"
                 ></textarea>
               </div>
 
               <div class="grid grid-cols-2 gap-3">
-                <div class="flex flex-col gap-1">
+                <div class="flex flex-col">
                   <label class="text-neutral-700 text-sm font-medium hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 "
                     >Transaction Type</label
                   >
                   <div class="relative">
                     <select
                       data-field="transaction_type"
-                      class="appearance-none w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 outline-offset-[-1px] hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px]"
+                      class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 !block appearance-none hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default"
                     >
                       <option disabled="" value="">Select one</option>
                       <option value="Reimburse">Reimburse</option>
                       <option value="Deduct">Deduct</option>
                     </select>
                     <span
-                      class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
+                      class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400 mt-2"
                     >
-                      <svg
-                        width="15"
-                        height="9"
-                        viewBox="0 0 15 9"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z"
-                          fill="#78829D"
-                        ></path>
+                      <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 9l6 6 6-6"></path>
                       </svg>
                     </span>
                   </div>
                 </div>
-                <div class="flex flex-col gap-1">
+                <div class="flex flex-col">
                   <label class="text-neutral-700 text-sm font-medium hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 ">Tax</label>
                   <div class="relative">
                     <select
                       data-field="tax"
-                      class="appearance-none w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 outline-offset-[-1px] hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px]"
+                      class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 !block appearance-none hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default"
                     >
                       <option disabled="" value="">Select one</option>
                       <option value="exemptexpenses">Exemptexpenses</option>
                       <option value="input">Input</option>
                     </select>
                     <span
-                      class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
+                      class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400 mt-2"
                     >
-                      <svg
-                        width="15"
-                        height="9"
-                        viewBox="0 0 15 9"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z"
-                          fill="#78829D"
-                        ></path>
+                      <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 9l6 6 6-6"></path>
                       </svg>
                     </span>
                   </div>
                 </div>
               </div>
-              <div class="flex flex-col gap-1">
+              <div class="flex flex-col">
                 <label class="text-neutral-700 text-sm font-medium hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 ">Receipt</label>
                 <div class="flex flex-col gap-2">
                   <div
@@ -517,7 +518,7 @@ export class JobDetailView {
                   <div class="hidden" data-material-receipts></div>
                 </div>
               </div>
-              <div class="flex flex-col gap-1">
+              <div class="flex flex-col">
                 <label class="text-neutral-700 text-sm font-medium hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 "
                   >Service Provider</label
                 >
@@ -525,7 +526,7 @@ export class JobDetailView {
                   <input
                     type="text"
                     placeholder="Search by name, phone"
-                    class="w-full text-sm pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-500 placeholder:text-slate-500 hover:!bg-white active:!bg-white hover:!text-slate-500 active:!text-slate-500  hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500"
+                    class="${clientInputClass}"
                     data-material-sp-search="input"
                   />
                   <input
@@ -533,22 +534,15 @@ export class JobDetailView {
                     data-field="service_provider_id"
                     data-material-sp-field="id"
                   />
-                  <span
-                    class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                  <button
+                    type="button"
+                    class="mt-2 absolute inset-y-0 right-3 inline-flex items-center rounded-md px-2 text-slate-400 focus:text-slate-400 focus-visible:text-slate-400"
+                    aria-label="Search service provider"
                   >
-                    <svg
-                      width="18"
-                      height="18"
-                      viewBox="0 0 18 18"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M16.3311 15.5156L12.7242 11.9095C13.7696 10.6544 14.2909 9.04453 14.1797 7.41486C14.0684 5.7852 13.3331 4.26116 12.1268 3.15979C10.9205 2.05843 9.33603 1.46453 7.70299 1.50164C6.06995 1.53875 4.51409 2.20402 3.35906 3.35906C2.20402 4.51409 1.53875 6.06995 1.50164 7.70299C1.46453 9.33603 2.05843 10.9205 3.15979 12.1268C4.26116 13.3331 5.7852 14.0684 7.41486 14.1797C9.04453 14.2909 10.6544 13.7696 11.9095 12.7242L15.5156 16.3311C15.5692 16.3847 15.6328 16.4271 15.7027 16.4561C15.7727 16.4851 15.8477 16.5 15.9234 16.5C15.9991 16.5 16.0741 16.4851 16.144 16.4561C16.214 16.4271 16.2776 16.3847 16.3311 16.3311C16.3847 16.2776 16.4271 16.214 16.4561 16.144C16.4851 16.0741 16.5 15.9991 16.5 15.9234C16.5 15.8477 16.4851 15.7727 16.4561 15.7027C16.4271 15.6328 16.3847 15.5692 16.3311 15.5156ZM2.66852 7.8552C2.66852 6.82937 2.97271 5.82658 3.54263 4.97364C4.11255 4.12069 4.9226 3.4559 5.87035 3.06333C6.81809 2.67076 7.86096 2.56805 8.86708 2.76818C9.87319 2.96831 10.7974 3.46229 11.5227 4.18766C12.2481 4.91303 12.7421 5.83721 12.9422 6.84333C13.1424 7.84945 13.0396 8.89232 12.6471 9.84006C12.2545 10.7878 11.5897 11.5979 10.7368 12.1678C9.88383 12.7377 8.88103 13.0419 7.8552 13.0419C6.48008 13.0404 5.16171 12.4934 4.18935 11.5211C3.21699 10.5487 2.67004 9.23033 2.66852 7.8552Z"
-                        fill="#78829D"
-                      ></path>
+                    <svg width="12" height="12" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M16.3311 15.5156L12.7242 11.9095C13.7696 10.6544 14.2909 9.04453 14.1797 7.41486C14.0684 5.7852 13.3331 4.26116 12.1268 3.15979C10.9205 2.05843 9.33603 1.46453 7.70299 1.50164C6.06995 1.53875 4.51409 2.20402 3.35906 3.35906C2.20402 4.51409 1.53875 6.06995 1.50164 7.70299C1.46453 9.33603 2.05843 10.9205 3.15979 12.1268C4.26116 13.3331 5.7852 14.0684 7.41486 14.1797C9.04453 14.2909 10.6544 13.7696 11.9095 12.7242L15.5156 16.3311C15.5692 16.3847 15.6328 16.4271 15.7027 16.4561C15.7727 16.4851 15.8477 16.5 15.9234 16.5C15.9991 16.5 16.0741 16.4851 16.144 16.4561C16.214 16.4271 16.2776 16.3847 16.3311 16.3311C16.3847 16.2776 16.4271 16.214 16.4561 16.144C16.4851 16.0741 16.5 15.9991 16.5 15.9234C16.5 15.8477 16.4851 15.7727 16.4561 15.7027C16.4271 15.6328 16.3847 15.5692 16.3311 15.5156ZM2.66852 7.8552C2.66852 6.82937 2.97271 5.82658 3.54263 4.97364C4.11255 4.12069 4.9226 3.4559 5.87035 3.06333C6.81809 2.67076 7.86096 2.56805 8.86708 2.76818C9.87319 2.96831 10.7974 3.46229 11.5227 4.18766C12.2481 4.91303 12.7421 5.83721 12.9422 6.84333C13.1424 7.84945 13.0396 8.89232 12.6471 9.84006C12.2545 10.7878 11.5897 11.5979 10.7368 12.1678C9.88383 12.7377 8.88103 13.0419 7.8552 13.0419C6.48008 13.0404 5.16171 12.4934 4.18935 11.5211C3.21699 10.5487 2.67004 9.23033 2.66852 7.8552Z" fill="#78829D"></path>
                     </svg>
-                  </span>
+                  </button>
                   <div
                     data-material-sp-search="results"
                     class="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded shadow hidden max-h-64 overflow-y-auto z-20 hover:!bg-white active:!bg-white hover:!border-gray-200 active:!border-gray-200 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:border active:border focus:border focus-visible:border hover:border-gray-200 active:border-gray-200 focus:border-gray-200 focus-visible:border-gray-200 hover:shadow active:shadow focus:shadow focus-visible:shadow"
@@ -588,6 +582,7 @@ export class JobDetailView {
   `;
 
     document.getElementById("replaceable-section").appendChild(wrapper);
+    this.initFlatpickrFor(wrapper);
 
     this.materialUploadHandler = initFileUploadArea({
       triggerEl: wrapper.querySelector("[data-material-receipt-trigger]"),
@@ -682,7 +677,7 @@ export class JobDetailView {
         this.resetMaterialForm();
       });
     }
-    this.renderMaterialsTable();
+    await this.renderMaterialsTable();
   }
 
   createUploadsSection() {
@@ -1049,7 +1044,7 @@ export class JobDetailView {
             <div field-section="invoice-input" class="flex gap-2"><div class="flex flex-col gap-1">
               <label class="text-neutral-700 text-sm font-medium hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 ">Invoice Date</label>
               <div class="relative">
-                <input data-field="invoice_date" type="text" placeholder="dd/mm/yyyy" class="date-picker flatpickr-input w-full pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 placeholder:text-slate-500 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500">
+                <input data-field="invoice_date" type="text" placeholder="dd/mm/yyyy" class="date-picker flatpickr-input w-full pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 placeholder:text-slate-500 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default">
                 <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400">
                   <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 2.5V4.5M13 2.5V4.5M3.5 7.5H14.5M4 3.5H14C14.5523 3.5 15 3.94772 15 4.5V14C15 14.5523 14.5523 15 14 15H4C3.44772 15 3 14.5523 3 14V4.5C3 3.94772 3.44772 3.5 4 3.5Z" stroke="#94A3B8" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"></path></svg>
                 </span>
@@ -1057,7 +1052,7 @@ export class JobDetailView {
             </div><div class="flex flex-col gap-1">
               <label class="text-neutral-700 text-sm font-medium hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 ">Due Date</label>
               <div class="relative">
-                <input data-field="due_date" type="text" placeholder="dd/mm/yyyy" class="date-picker flatpickr-input w-full pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 placeholder:text-slate-500 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500">
+                <input data-field="due_date" type="text" placeholder="dd/mm/yyyy" class="date-picker flatpickr-input w-full pr-10 pl-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 placeholder:text-slate-500 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default">
                 <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400">
                   <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 2.5V4.5M13 2.5V4.5M3.5 7.5H14.5M4 3.5H14C14.5523 3.5 15 3.94772 15 4.5V14C15 14.5523 14.5523 15 14 15H4C3.44772 15 3 14.5523 3 14V4.5C3 3.94772 3.44772 3.5 4 3.5Z" stroke="#94A3B8" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"></path></svg>
                 </span>
@@ -1073,12 +1068,12 @@ export class JobDetailView {
           <div class="hidden grid grid-cols-1 md:grid-cols-4 gap-3">
             <div class="flex flex-col gap-1">
               <label class="text-neutral-700 text-sm font-medium hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 ">Payment ID</label>
-              <input data-field="payment_id" type="text" class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700" />
+              <input data-field="payment_id" type="text" class="w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default" />
             </div>
             <div class="flex flex-col gap-1">
               <label class="text-neutral-700 text-sm font-medium hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 ">Payment Method</label>
               <div class="relative">
-                <select data-field="payment_method" class="appearance-none w-full px-3 py-2.5 bg-white rounded outline outline-1 outline-gray-300 text-slate-700 pr-10 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 outline-offset-[-1px] hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px]"></select>
+                <select data-field="payment_method" class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 !block appearance-none hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default"></select>
                 <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
                   <svg width="15" height="9" viewBox="0 0 15 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8002 1.16453L7.98236 7.98236C7.91904 8.04575 7.84385 8.09604 7.76108 8.13035C7.67831 8.16466 7.5896 8.18232 7.5 8.18232C7.4104 8.18232 7.32168 8.16466 7.23892 8.13035C7.15615 8.09604 7.08096 8.04575 7.01764 7.98236L0.199801 1.16453C0.0718705 1.03659 -1.34797e-09 0.863084 0 0.682163C1.34796e-09 0.501242 0.0718705 0.327731 0.199801 0.1998C0.327731 0.0718701 0.501242 1.34796e-09 0.682163 0C0.863084 -1.34796e-09 1.03659 0.0718701 1.16452 0.1998L7.5 6.53613L13.8355 0.1998C13.8988 0.136456 13.974 0.0862081 14.0568 0.0519262C14.1395 0.0176443 14.2283 0 14.3178 0C14.4074 0 14.4961 0.0176443 14.5789 0.0519262C14.6617 0.0862081 14.7369 0.136456 14.8002 0.1998C14.8635 0.263145 14.9138 0.338346 14.9481 0.42111C14.9824 0.503874 15 0.59258 15 0.682163C15 0.771746 14.9824 0.860451 14.9481 0.943215C14.9138 1.02598 14.8635 1.10118 14.8002 1.16453Z" fill="#78829D"/></svg>
                 </span>
@@ -1370,46 +1365,46 @@ export class JobDetailView {
         <div class="py-6 space-y-4">
           <label class="block">
             <span class="block text-sm text-neutral-700 mb-2 hover:!text-neutral-700 active:!text-neutral-700  hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700">Deal Name</span>
-            <input class="w-full rounded border border-neutral-300 px-3 py-2 bg-neutral-100 outline-none hover:!border-neutral-300 active:!border-neutral-300 hover:!bg-neutral-100 active:!bg-neutral-100 hover:border active:border focus:border focus-visible:border hover:border-neutral-300 active:border-neutral-300 focus:border-neutral-300 focus-visible:border-neutral-300 hover:bg-neutral-100 active:bg-neutral-100 focus:bg-neutral-100 focus-visible:bg-neutral-100 hover:outline-none active:outline-none focus:outline-none focus-visible:outline-none" placeholder="Deal name"/>
+            <input class="w-full rounded border border-neutral-300 px-3 py-2 bg-neutral-100 outline-none hover:!border-neutral-300 active:!border-neutral-300 hover:!bg-neutral-100 active:!bg-neutral-100 hover:border active:border focus:border focus-visible:border hover:border-neutral-300 active:border-neutral-300 focus:border-neutral-300 focus-visible:border-neutral-300 hover:bg-neutral-100 active:bg-neutral-100 focus:bg-neutral-100 focus-visible:bg-neutral-100 hover:outline-none active:outline-none focus:outline-none focus-visible:outline-none mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default" placeholder="Deal name"/>
           </label>
   
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <label class="block">
               <span class="block text-sm text-neutral-700 mb-2 hover:!text-neutral-700 active:!text-neutral-700  hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700">Deal Value</span>
-              <input class="w-full rounded border border-neutral-300 px-3 py-2 hover:!border-neutral-300 active:!border-neutral-300 hover:border active:border focus:border focus-visible:border hover:border-neutral-300 active:border-neutral-300 focus:border-neutral-300 focus-visible:border-neutral-300" placeholder="0.00"/>
+              <input class="w-full rounded border border-neutral-300 px-3 py-2 hover:!border-neutral-300 active:!border-neutral-300 hover:border active:border focus:border focus-visible:border hover:border-neutral-300 active:border-neutral-300 focus:border-neutral-300 focus-visible:border-neutral-300 mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default" placeholder="0.00"/>
             </label>
   
             <label class="block">
               <span class="block text-sm text-neutral-700 mb-2 hover:!text-neutral-700 active:!text-neutral-700  hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700">Sales Stage</span>
-              <select class="w-full rounded border border-neutral-300 px-3 py-2 hover:!border-neutral-300 active:!border-neutral-300 outline outline-1 outline-offset-[-1px] outline-gray-300 hover:border active:border focus:border focus-visible:border hover:border-neutral-300 active:border-neutral-300 focus:border-neutral-300 focus-visible:border-neutral-300 hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300">
+              <select class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 !block appearance-none hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default">
                 <option>Select</option>
               </select>
             </label>
   
             <label class="block">
               <span class="block text-sm text-neutral-700 mb-2 hover:!text-neutral-700 active:!text-neutral-700  hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700">Expected Win Percentage</span>
-              <input class="w-full rounded border border-neutral-300 px-3 py-2 hover:!border-neutral-300 active:!border-neutral-300 hover:border active:border focus:border focus-visible:border hover:border-neutral-300 active:border-neutral-300 focus:border-neutral-300 focus-visible:border-neutral-300" placeholder=""/>
+              <input class="w-full rounded border border-neutral-300 px-3 py-2 hover:!border-neutral-300 active:!border-neutral-300 hover:border active:border focus:border focus-visible:border hover:border-neutral-300 active:border-neutral-300 focus:border-neutral-300 focus-visible:border-neutral-300 mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default" placeholder=""/>
             </label>
   
             <div class="grid grid-cols-2 gap-4">
               <label class="block">
                 <span class="block text-sm text-neutral-700 mb-2 hover:!text-neutral-700 active:!text-neutral-700  hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700">Expected Close Date</span>
-                <input class="w-full rounded border border-neutral-300 px-3 py-2 hover:!border-neutral-300 active:!border-neutral-300 hover:border active:border focus:border focus-visible:border hover:border-neutral-300 active:border-neutral-300 focus:border-neutral-300 focus-visible:border-neutral-300" placeholder="DD/MM/YYYY"/>
+                <input class="w-full rounded border border-neutral-300 px-3 py-2 hover:!border-neutral-300 active:!border-neutral-300 hover:border active:border focus:border focus-visible:border hover:border-neutral-300 active:border-neutral-300 focus:border-neutral-300 focus-visible:border-neutral-300 mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default" placeholder="dd/mm/yyyy"/>
               </label>
               <label class="block">
                 <span class="block text-sm text-neutral-700 mb-2 hover:!text-neutral-700 active:!text-neutral-700  hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700">Actual Close Date</span>
-                <input class="w-full rounded border border-neutral-300 px-3 py-2 hover:!border-neutral-300 active:!border-neutral-300 hover:border active:border focus:border focus-visible:border hover:border-neutral-300 active:border-neutral-300 focus:border-neutral-300 focus-visible:border-neutral-300" placeholder="DD/MM/YYYY"/>
+                <input class="w-full rounded border border-neutral-300 px-3 py-2 hover:!border-neutral-300 active:!border-neutral-300 hover:border active:border focus:border focus-visible:border hover:border-neutral-300 active:border-neutral-300 focus:border-neutral-300 focus-visible:border-neutral-300 mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default" placeholder="dd/mm/yyyy"/>
               </label>
             </div>
   
             <label class="block">
               <span class="block text-sm text-neutral-700 mb-2 hover:!text-neutral-700 active:!text-neutral-700  hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700">Weighted Value</span>
-              <input class="w-full rounded border border-neutral-300 px-3 py-2 hover:!border-neutral-300 active:!border-neutral-300 hover:border active:border focus:border focus-visible:border hover:border-neutral-300 active:border-neutral-300 focus:border-neutral-300 focus-visible:border-neutral-300" placeholder="0.00"/>
+              <input class="w-full rounded border border-neutral-300 px-3 py-2 hover:!border-neutral-300 active:!border-neutral-300 hover:border active:border focus:border focus-visible:border hover:border-neutral-300 active:border-neutral-300 focus:border-neutral-300 focus-visible:border-neutral-300 mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default" placeholder="0.00"/>
             </label>
   
             <label class="block">
               <span class="block text-sm text-neutral-700 mb-2 hover:!text-neutral-700 active:!text-neutral-700  hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700">Recent Activity</span>
-              <select class="w-full rounded border border-neutral-300 px-3 py-2 hover:!border-neutral-300 active:!border-neutral-300 outline outline-1 outline-offset-[-1px] outline-gray-300 hover:border active:border focus:border focus-visible:border hover:border-neutral-300 active:border-neutral-300 focus:border-neutral-300 focus-visible:border-neutral-300 hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300">
+              <select class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 !block appearance-none hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default">
                 <option>Select</option>
               </select>
             </label>
@@ -1567,7 +1562,7 @@ export class JobDetailView {
             Recommendations
           </label>
           <textarea id="notesRecommendations" rows="3"
-            class="w-full resize-y rounded-md border border-slate-300 bg-white p-3 outline-none focus:border-sky-600 focus:ring-1 focus:ring-sky-600 hover:!border-slate-300 active:!border-slate-300 hover:!bg-white active:!bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline-none active:outline-none focus:outline-none focus-visible:outline-none"
+            class="w-full resize-y rounded-md border border-slate-300 bg-white p-3 outline-none focus:border-sky-600 focus:ring-1 focus:ring-sky-600 hover:!border-slate-300 active:!border-slate-300 hover:!bg-white active:!bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline-none active:outline-none focus:outline-none focus-visible:outline-none mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default"
             placeholder=""></textarea>
         </div>
   
@@ -1640,7 +1635,7 @@ export class JobDetailView {
           </button>
         </div>
 
-        <div class="my-3 p-3 flex flex-col gap-2 border border-slate-200 rounded-xl hover:!border-slate-200 active:!border-slate-200 hover:border active:border focus:border focus-visible:border hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200">
+        <div class="my-3 p-3 flex flex-col gap-2 border border-slate-200 rounded hover:!border-slate-200 active:!border-slate-200 hover:border active:border focus:border focus-visible:border hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200">
         <!-- Upload Dropzone -->
         <div class="py-6">
           <div class="border-2 border-dashed border-gray-300 rounded-lg bg-slate-50 hover:!border-gray-300 active:!border-gray-300 hover:!bg-slate-50 active:!bg-slate-50 hover:border-2 active:border-2 focus:border-2 focus-visible:border-2 hover:border-dashed active:border-dashed focus:border-dashed focus-visible:border-dashed hover:border-gray-300 active:border-gray-300 focus:border-gray-300 focus-visible:border-gray-300 hover:bg-slate-50 active:bg-slate-50 focus:bg-slate-50 focus-visible:bg-slate-50">
@@ -1961,7 +1956,7 @@ export class JobDetailView {
           <div>
             <label class="block text-sm text-gray-700 mb-1 hover:!text-gray-700 active:!text-gray-700  hover:text-gray-700 active:text-gray-700 focus:text-gray-700 focus-visible:text-gray-700">Possums</label>
             <div class="relative">
-              <select id="wrPossums" class="appearance-none w-full border border-gray-300 rounded-md px-3 py-2 pr-9 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:!border-gray-300 active:!border-gray-300 hover:!text-gray-800 active:!text-gray-800 outline outline-1 outline-offset-[-1px] outline-gray-300 hover:border active:border focus:border focus-visible:border hover:border-gray-300 active:border-gray-300 focus:border-gray-300 focus-visible:border-gray-300 hover:text-gray-800 active:text-gray-800 focus:text-gray-800 focus-visible:text-gray-800 hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300">
+              <select id="wrPossums" class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 !block appearance-none hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default">
                 ${Array.from(
                   { length: 10 },
                   (_, i) =>
@@ -1977,14 +1972,14 @@ export class JobDetailView {
           </div>
           <div>
             <label class="block text-sm text-gray-700 mb-1 hover:!text-gray-700 active:!text-gray-700  hover:text-gray-700 active:text-gray-700 focus:text-gray-700 focus-visible:text-gray-700">Comment</label>
-            <textarea id="wrPossumComment" rows="3" class="w-full border border-gray-300 rounded-md px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:!border-gray-300 active:!border-gray-300 hover:!text-gray-800 active:!text-gray-800 hover:border active:border focus:border focus-visible:border hover:border-gray-300 active:border-gray-300 focus:border-gray-300 focus-visible:border-gray-300 hover:text-gray-800 active:text-gray-800 focus:text-gray-800 focus-visible:text-gray-800" placeholder=""></textarea>
+            <textarea id="wrPossumComment" rows="3" class="w-full border border-gray-300 rounded-md px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:!border-gray-300 active:!border-gray-300 hover:!text-gray-800 active:!text-gray-800 hover:border active:border focus:border focus-visible:border hover:border-gray-300 active:border-gray-300 focus:border-gray-300 focus-visible:border-gray-300 hover:text-gray-800 active:text-gray-800 focus:text-gray-800 focus-visible:text-gray-800 mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default" placeholder=""></textarea>
           </div>
   
           <!-- Turkeys -->
           <div>
             <label class="block text-sm text-gray-700 mb-1 hover:!text-gray-700 active:!text-gray-700  hover:text-gray-700 active:text-gray-700 focus:text-gray-700 focus-visible:text-gray-700">Turkeys</label>
             <div class="relative">
-              <select id="wrTurkeys" class="appearance-none w-full border border-gray-300 rounded-md px-3 py-2 pr-9 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:!border-gray-300 active:!border-gray-300 hover:!text-gray-800 active:!text-gray-800 outline outline-1 outline-offset-[-1px] outline-gray-300 hover:border active:border focus:border focus-visible:border hover:border-gray-300 active:border-gray-300 focus:border-gray-300 focus-visible:border-gray-300 hover:text-gray-800 active:text-gray-800 focus:text-gray-800 focus-visible:text-gray-800 hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300">
+              <select id="wrTurkeys" class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 !block appearance-none hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default">
                 ${Array.from(
                   { length: 10 },
                   (_, i) =>
@@ -2000,13 +1995,13 @@ export class JobDetailView {
           </div>
           <div>
             <label class="block text-sm text-gray-700 mb-1 hover:!text-gray-700 active:!text-gray-700  hover:text-gray-700 active:text-gray-700 focus:text-gray-700 focus-visible:text-gray-700">Comment</label>
-            <textarea id="wrTurkeyComment" rows="3" class="w-full border border-gray-300 rounded-md px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:!border-gray-300 active:!border-gray-300 hover:!text-gray-800 active:!text-gray-800 hover:border active:border focus:border focus-visible:border hover:border-gray-300 active:border-gray-300 focus:border-gray-300 focus-visible:border-gray-300 hover:text-gray-800 active:text-gray-800 focus:text-gray-800 focus-visible:text-gray-800" placeholder=""></textarea>
+            <textarea id="wrTurkeyComment" rows="3" class="w-full border border-gray-300 rounded-md px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:!border-gray-300 active:!border-gray-300 hover:!text-gray-800 active:!text-gray-800 hover:border active:border focus:border focus-visible:border hover:border-gray-300 active:border-gray-300 focus:border-gray-300 focus-visible:border-gray-300 hover:text-gray-800 active:text-gray-800 focus:text-gray-800 focus-visible:text-gray-800 mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default" placeholder=""></textarea>
           </div>
   
           <!-- Address -->
           <div>
             <label class="block text-sm text-gray-700 mb-1 hover:!text-gray-700 active:!text-gray-700  hover:text-gray-700 active:text-gray-700 focus:text-gray-700 focus-visible:text-gray-700">Release Address</label>
-            <input id="wrAddress" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:!border-gray-300 active:!border-gray-300 hover:!text-gray-800 active:!text-gray-800 hover:border active:border focus:border focus-visible:border hover:border-gray-300 active:border-gray-300 focus:border-gray-300 focus-visible:border-gray-300 hover:text-gray-800 active:text-gray-800 focus:text-gray-800 focus-visible:text-gray-800" />
+            <input id="wrAddress" type="text" class="w-full border border-gray-300 rounded-md px-3 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:!border-gray-300 active:!border-gray-300 hover:!text-gray-800 active:!text-gray-800 hover:border active:border focus:border focus-visible:border hover:border-gray-300 active:border-gray-300 focus:border-gray-300 focus-visible:border-gray-300 hover:text-gray-800 active:text-gray-800 focus:text-gray-800 focus-visible:text-gray-800 mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-slate-500 active:placeholder:text-slate-500 focus:placeholder:text-slate-500 focus-visible:placeholder:text-slate-500 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default" />
           </div>
         </div>
   
@@ -2066,7 +2061,7 @@ export class JobDetailView {
     };
   }
 
-  createTasksModal(tasks) {
+  async createTasksModal(tasks) {
     const demo = [
       {
         title: "Field Inspection and building inspection",
@@ -2364,17 +2359,17 @@ export class JobDetailView {
 
     const applyTabStyles = (btn, isActive) => {
       if (!btn) return;
-      btn.classList.toggle("bg-[#003882]", isActive);
-      btn.classList.toggle("text-white", isActive);
-      btn.classList.toggle("shadow-sm", isActive);
-      btn.classList.toggle("bg-white", !isActive);
-      btn.classList.toggle("text-slate-600", !isActive);
-      btn.classList.add("border");
-      btn.classList.toggle("border-sky-900", isActive);
-      btn.classList.toggle("border-slate-300", !isActive);
+      btn.classList.toggle("!bg-[#003882]", isActive);
+      btn.classList.toggle("!text-white", isActive);
+      btn.classList.toggle("!shadow-sm", isActive);
+      btn.classList.toggle("!bg-white", !isActive);
+      btn.classList.toggle("!text-slate-600", !isActive);
+      btn.classList.add("!border");
+      btn.classList.toggle("!border-sky-900", isActive);
+      btn.classList.toggle("!border-slate-300", !isActive);
     };
 
-    const setState = (type) => {
+    const setState = async (type) => {
       this.activeContactType = type;
       if (contactTypeField) contactTypeField.value = type;
 
@@ -2398,12 +2393,14 @@ export class JobDetailView {
       this.toggleEntityModalFields(!isIndividual);
 
       if (!isIndividual) {
-        this.ensureCompaniesLoaded();
+        await this.ensureCompaniesLoaded();
       }
     };
 
-    individualBtn?.addEventListener("click", () => setState("individual"));
-    entityBtn?.addEventListener("click", () => setState("entity"));
+    individualBtn?.addEventListener("click", async () =>
+      setState("individual")
+    );
+    entityBtn?.addEventListener("click", async () => setState("entity"));
 
     setState("individual");
   }
@@ -2501,20 +2498,15 @@ export class JobDetailView {
         btn.type = "button";
         btn.dataset.optionIndex = String(idx);
         btn.className =
-          "!w-full !px-4 !py-3 !text-left !bg-transparent hover:!bg-transparent active:!bg-transparent focus:!bg-transparent focus-visible:!bg-transparent !focus:outline-none hover:!text-current active:!text-current focus:!text-current focus-visible:!text-current";
+          "!flex !w-full !flex-col !gap-1 !px-4 !py-2 !text-left !text-sm !text-slate-700 !bg-transparent hover:!bg-transparent active:!bg-transparent focus:!bg-transparent focus-visible:!bg-transparent hover:!text-slate-700 active:!text-slate-700 focus:!text-slate-700 focus-visible:!text-slate-700";
         btn.innerHTML = `
           <div class="flex items-start justify-between gap-3">
             <div>
-              <p class="text-sm font-medium text-slate-700 hover:!text-slate-700 active:!text-slate-700  hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700">${
+              <p class="font-normal text-xs font-['Inter'] justify-start text-neutral-700">${
                 item.name
               }</p>
-              <p class="text-xs text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500">${
-                item.account_type || ""
-              }</p>
+              <p class="text-xs text-neutral-700">${item.account_type || ""}</p>
             </div>
-            <span class="text-xs text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400">#${
-              item.id
-            }</span>
           </div>
         `;
 
@@ -2879,7 +2871,7 @@ export class JobDetailView {
             email ||
             phone ||
             "Unknown contact",
-          meta: [email, phone].filter(Boolean).join(" • "),
+          meta: [email].filter(Boolean).join(" "),
           raw: c,
         };
       });
@@ -2919,13 +2911,14 @@ export class JobDetailView {
           "!flex !w-full !flex-col !gap-1 !px-4 !py-2 !text-left !text-sm !text-slate-700 !bg-transparent hover:!bg-transparent active:!bg-transparent focus:!bg-transparent focus-visible:!bg-transparent hover:!text-slate-700 active:!text-slate-700 focus:!text-slate-700 focus-visible:!text-slate-700";
 
         const label = document.createElement("span");
-        label.className = "font-medium text-slate-700";
+        label.className =
+          "font-normal text-xs font-['Inter'] justify-start text-neutral-700";
         label.textContent = item.label;
         btn.appendChild(label);
 
         if (item.meta) {
           const meta = document.createElement("span");
-          meta.className = "text-xs text-slate-500";
+          meta.className = "text-xs text-neutral-700";
           meta.textContent = item.meta;
           btn.appendChild(meta);
         }
@@ -3048,50 +3041,56 @@ export class JobDetailView {
         );
       });
 
+      const statusMap = {
+        Active: { text: "text-green-600", dot: "bg-green-600" },
+        Offline: { text: "text-slate-500", dot: "bg-slate-500" },
+        "On-Site": { text: "text-orange-600", dot: "bg-orange-600" },
+        Archived: { text: "text-purple-600", dot: "bg-purple-600" },
+        Looking: { text: "text-teal-700", dot: "bg-teal-700" },
+      };
+
       const html = filtered
         .map((item, idx) => {
+          const statusLabel = item.Status || "Looking";
+          const statusStyle = statusMap[statusLabel] || statusMap.Looking;
           return `
-            <div data-option-index="${idx}" class="flex items-center gap-3 p-3 hover:!bg-gray-50 cursor-pointer" 
-                 data-id="${item.ID}">
-                
-              <img 
-                src="${
-                  item.Contact_Information_Profile_Image ||
-                  "https://via.placeholder.com/40"
-                }" 
-                alt="" 
-                class="h-10 w-10 rounded-full object-cover"
-              >
-  
-              <div class="flex flex-col flex-1">
-                <div class="text-gray-900 font-semibold text-sm hover:!text-gray-900 active:!text-gray-900 hover:text-gray-900 active:text-gray-900 focus:text-gray-900 focus-visible:text-gray-900 ">
-                  ${item.Contact_Information_First_Name} ${
+            <div
+              data-option-index="${idx}"
+              data-id="${item.ID}"
+              class="w-72 px-4 py-2 bg-white inline-flex justify-between items-center cursor-pointer"
+            >
+              <div class="flex justify-start items-center gap-2">
+                <img
+                  class="w-10 h-10 relative rounded-[32px] object-cover"
+                  src="${
+                    item.Contact_Information_Profile_Image ||
+                    "https://via.placeholder.com/40"
+                  }"
+                  alt=""
+                />
+                <div class="inline-flex flex-col justify-center items-start gap-1.5">
+                  <div data-provider-name class="justify-start text-neutral-700 text-sm font-medium font-['Inter'] leading-4">
+                    ${item.Contact_Information_First_Name} ${
             item.Contact_Information_Last_Name
           }
-                </div>
-                <div class="text-gray-500 text-xs hover:!text-gray-500 active:!text-gray-500 hover:text-gray-500 active:text-gray-500 focus:text-gray-500 focus-visible:text-gray-500 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs">
-                  ${item.Contact_Information_SMS_Number}
+                  </div>
+                  <div data-provider-phone class="justify-start text-slate-500 text-xs font-normal font-['Inter'] leading-3">
+                    ${item.Contact_Information_SMS_Number}
+                  </div>
                 </div>
               </div>
-  
-              <div class="flex items-center gap-2">
-                <div class="h-2.5 w-2.5 rounded-full ${
-                  item.Status === "Active" ? "bg-green-200" : ""
-                }
-                  ${item.Status === "Offline" ? "bg-gray-200" : ""}
-                  ${item.Status === "On-Site" ? "bg-orange-200" : ""}
-                  ${item.Status === "Archived" ? "bg-purple-200" : ""}
-                  ">
+              <div data-property-1="${statusLabel}" class="py-0.5 flex justify-center items-center gap-1">
+                <div class="w-3 h-3 relative">
+                  <div class="w-3 h-3 left-0 top-0 absolute bg-neutral-200 rounded-full"></div>
+                  <div class="w-1.5 h-1.5 left-[3px] top-[3px] absolute ${
+                    statusStyle.dot
+                  } rounded-full"></div>
                 </div>
-  
-                <span class="text-xs ${
-                  item.Status === "Active" ? "text-green-500" : ""
-                }
-                ${item.Status === "Offline" ? "text-gray-500" : ""}
-                ${item.Status === "On-Site" ? "text-orange-500" : ""}
-                ${item.Status === "Archived" ? "text-purple-500" : ""}">
-                  ${item.Status}
-                </span>
+                <div data-provider-status class="text-center justify-start ${
+                  statusStyle.text
+                } text-xs font-medium font-['Inter'] leading-4">
+                  ${statusLabel}
+                </div>
               </div>
             </div>
           `;
@@ -3121,25 +3120,46 @@ export class JobDetailView {
     });
 
     let serviceman = null;
-    let previousClicked = "";
-    // Click item to select
-    results.addEventListener("click", (e) => {
-      if (previousClicked) {
-        previousClicked.classList.remove("bg-blue-100");
+    let previousSelected = null;
+
+    const toggleSelection = (item) => {
+      if (previousSelected && previousSelected !== item) {
+        previousSelected.classList.remove("bg-[#003882]", "text-white");
+        previousSelected
+          .querySelectorAll("[data-provider-name]")
+          .forEach((el) => el.classList.remove("text-white"));
+        previousSelected
+          .querySelectorAll("[data-provider-phone]")
+          .forEach((el) => el.classList.remove("text-slate-100"));
+        previousSelected
+          .querySelectorAll("[data-provider-status]")
+          .forEach((el) => el.classList.remove("text-white"));
       }
+
+      item.classList.add("bg-[#003882]", "text-white");
+      item
+        .querySelectorAll("[data-provider-name]")
+        .forEach((el) => el.classList.add("text-white"));
+      item
+        .querySelectorAll("[data-provider-phone]")
+        .forEach((el) => el.classList.add("text-slate-100"));
+      item
+        .querySelectorAll("[data-provider-status]")
+        .forEach((el) => el.classList.add("text-white"));
+
+      previousSelected = item;
+    };
+
+    // Double click item to select
+    results.addEventListener("dblclick", (e) => {
       const item = e.target.closest("div[data-option-index]");
       if (!item) return;
-      if (item.classList.contains("bg-blue-100")) {
-        item.classList.remove("bg-blue-100");
-      } else {
-        item.classList.add("bg-blue-100");
-      }
+      toggleSelection(item);
 
-      let idx = item.getAttribute("data-option-index");
-      const current = state.providers[Number(idx)];
-      serviceman = current;
+      const idx = item.getAttribute("data-option-index");
+      serviceman = state.providers[Number(idx)];
 
-      let confirm_allocation_btn = document.querySelector(
+      const confirm_allocation_btn = document.querySelector(
         '[data-field="confirm-allocation"]'
       );
       confirm_allocation_btn.addEventListener("click", () => {
@@ -3151,8 +3171,6 @@ export class JobDetailView {
         contact_id.value = serviceman.ID;
         results.classList.add("hidden");
       });
-
-      previousClicked = item;
     });
 
     this.updateServiceProviderSearch = (nextProviders = []) => {
@@ -3376,8 +3394,9 @@ export class JobDetailView {
         const btn = document.createElement("button");
         btn.type = "button";
         btn.dataset.optionIndex = String(idx);
+
         btn.className =
-          "!flex !w-full !flex-col !gap-1 !px-4 !py-2 !text-left !text-sm !text-slate-700 !bg-transparent hover:!bg-transparent active:!bg-transparent focus:!bg-transparent focus-visible:!bg-transparent hover:!text-slate-700 active:!text-slate-700 focus:!text-slate-700 focus-visible:!text-slate-700";
+          "!flex !w-full !flex-col !gap-1 !px-4 !py-2 text-neutral-700 text-xs font-normal font-['Inter'] leading-3";
         btn.textContent = item.label;
 
         li.id = item.id;
@@ -4515,7 +4534,7 @@ export class JobDetailView {
       modal.className =
         "fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 backdrop-blur-sm";
       modal.innerHTML = `
-        <div class="bg-white rounded-xl shadow-lg w-full max-w-sm p-5 space-y-4 hover:!bg-white active:!bg-white hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-lg active:shadow-lg focus:shadow-lg focus-visible:shadow-lg">
+        <div class="bg-white rounded shadow-lg w-full max-w-sm p-5 space-y-4 hover:!bg-white active:!bg-white hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:shadow-lg active:shadow-lg focus:shadow-lg focus-visible:shadow-lg">
           <div class="space-y-1">
             <h3 class="text-base font-semibold text-slate-900 hover:!text-slate-900 active:!text-slate-900 hover:text-base active:text-base focus:text-base focus-visible:text-base hover:text-slate-900 active:text-slate-900 focus:text-slate-900 focus-visible:text-slate-900">${title}</h3>
             <p class="text-sm text-slate-600 hover:!text-slate-600 active:!text-slate-600  hover:text-slate-600 active:text-slate-600 focus:text-slate-600 focus-visible:text-slate-600">${message}</p>

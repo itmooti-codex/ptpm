@@ -39,7 +39,7 @@ function applyBrowserDefault() {
     loaderElement?.querySelector("[data-loader-message]") || null;
   const loaderCounter = { count: 0 };
 
-  showLoader(loaderElement, loaderMessageEl, loaderCounter, "Loading app...");
+  // showLoader(loaderElement, loaderMessageEl, loaderCounter, "Loading app...");
   const App = {
     services: {},
     controllers: {},
@@ -69,7 +69,7 @@ function applyBrowserDefault() {
       // Page-specific
       if (page == "new-inquiry") this.initNewInquiry();
       if (page === "dashboard") await this.maybeInitDashboard();
-      if (page == "new-direct-job") this.initDirectJob();
+      if (page == "new-direct-job") await this.initDirectJob();
       if (page === "notification") this.initNotification();
     },
 
@@ -98,11 +98,11 @@ function applyBrowserDefault() {
       this.controllers.newInquiry = ctrl;
     },
 
-    initDirectJob() {
+    async initDirectJob() {
       const model = new JobDetailModal(tempPlugin);
       const view = new JobDetailView(model);
       const controller = new JobDetailController(model, view);
-      controller.init();
+      await controller.init();
       // Google Places callback for property search
       window.initAutocomplete = controller.initAutocomplete.bind(controller);
     },
