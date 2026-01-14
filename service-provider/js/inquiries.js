@@ -13,7 +13,7 @@ const LIST_CONFIG = {
 const TABLE_ATTRS = {
   entity: "peterpm",
   entityKey: "1rBR-jpR3yE3HE1VhFD0j",
-  varServiceproviderid: "[Visitor//Contact ID]",
+  varServiceproviderid: loggedInUserIdOp,
   table: "true",
   op: "subscribe",
   initCbName: "initInquiryTable",
