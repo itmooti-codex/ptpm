@@ -12,7 +12,7 @@ window.addEventListener("load", function () {
 
 const body = document.body;
 const sliders = document.querySelectorAll(".side");
-body.setAttribute("x-data", `{ isSidebarExpanded: true}`);
+body.setAttribute('x-data', `{deleteQuoteId: {},deleting:false, isSidebarExpanded: true, deleteQuoteModal: false, createQuoteModal: false}`);
 sliders.forEach((slider) => {
   slider.setAttribute(":class", "isSidebarExpanded ? 'pl-64px' : 'pl-20px'");
 });
