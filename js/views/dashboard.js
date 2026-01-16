@@ -1327,11 +1327,11 @@ export class DashboardView {
     links.forEach((a) => {
       const isActive = a.getAttribute("data-tab") === tab;
       a.setAttribute("data-active", isActive ? "true" : "false");
-      a.classList.toggle("text-sky-900", isActive);
-      a.classList.toggle("text-neutral-700", !isActive);
-      a.classList.toggle("border-sky-900", isActive);
-      a.classList.toggle("border-b-2", true);
-      a.classList.toggle("border-transparent", !isActive);
+      a.classList.toggle("!text-sky-900", isActive);
+      a.classList.toggle("!text-neutral-700", !isActive);
+      a.classList.toggle("!border-sky-900", isActive);
+      a.classList.toggle("!border-b-2", true);
+      a.classList.toggle("!border-transparent", !isActive);
     });
 
     if (panels.length) {
@@ -1400,7 +1400,6 @@ export class DashboardView {
     const wrapper = document.createElement("div");
     wrapper.id = "create-button-wrapper";
     wrapper.className = "fixed inset-0 z-50 hidden";
-
     const modalBox = document.createElement("div");
     modalBox.id = "create-button-popup";
     modalBox.className =
@@ -1543,11 +1542,11 @@ export class DashboardView {
 
     const updateModelRange = (shouldNotify = false) => {
       if (!this.model) return;
-      const totalCount = this.model.totalCount;
-      const startIndex = 300 + totalCount - (currentIdx - 1) * limit;
-      this.model.startIndex = Number.isFinite(startIndex) ? startIndex : null;
-      this.model.endIndex =
-        this.model.startIndex != null ? this.model.startIndex + limit : null;
+      // const totalCount = this.model.totalCount;
+      // const startIndex = 300 + totalCount - (currentIdx - 1) * limit;
+      // this.model.startIndex = Number.isFinite(startIndex) ? startIndex : null;
+      // this.model.endIndex =
+      //   this.model.startIndex != null ? this.model.startIndex + limit : null;
 
       if (shouldNotify && typeof this.onPageChange === "function") {
         this.onPageChange(currentIdx);
