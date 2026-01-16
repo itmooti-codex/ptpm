@@ -5154,59 +5154,120 @@
                 </div>
               </div>
 
-              <div class="space-y-3">
-                <div
-                  class="flex items-center justify-between rounded-xl border border-slate-200 px-4 py-3 text-sm hover:!border-slate-200 active:!border-slate-200 hover:border active:border focus:border focus-visible:border hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200"
+              <div class="space-y-4">
+                <details
+                  class="group overflow-hidden rounded-xl border border-slate-200"
+                  open
                 >
-                  <div>
-                    <p
-                      class="font-semibold text-slate-900 hover:!text-slate-900 active:!text-slate-900 hover:text-slate-900 active:text-slate-900 focus:text-slate-900 focus-visible:text-slate-900"
+                  <summary
+                    class="flex cursor-pointer items-center justify-between px-4 py-3 text-sm hover:bg-slate-50"
+                  >
+                    <span class="font-semibold text-slate-900">Items</span>
+                    <svg
+                      class="h-4 w-4 text-slate-400 transition group-open:rotate-180"
+                      viewBox="0 0 14 14"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
                     >
-                      Client Invoice
-                    </p>
-                    <p
-                      class="text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
+                      <path
+                        d="M3.5 5.25L7 8.75L10.5 5.25"
+                        stroke="currentColor"
+                        stroke-width="1.2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </summary>
+                  <div class="border-t border-slate-200 px-4 py-4">
+                    <div
+                      class="grid grid-cols-2 text-xs font-semibold uppercase tracking-wide text-slate-500"
                     >
-                      Invoice items and fees
-                    </p>
+                      <span>Item</span>
+                      <span class="text-right">Total Price</span>
+                    </div>
+                    <div class="mt-2 divide-y divide-slate-100 text-sm">
+                      <div class="grid grid-cols-2 py-2">
+                        <span>Possum Roof</span>
+                        <span class="text-right">$500.00</span>
+                      </div>
+                      <div class="grid grid-cols-2 py-2 bg-slate-50">
+                        <span>Rat Removal</span>
+                        <span class="text-right">$50.00</span>
+                      </div>
+                      <div class="grid grid-cols-2 py-2">
+                        <span>Inspection</span>
+                        <span class="text-right">$250.00</span>
+                      </div>
+                    </div>
                   </div>
-                  <div class="flex items-center gap-2">
-                    <span
-                      class="text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
-                      >Total:</span
-                    >
-                    <span
-                      class="text-base font-semibold text-emerald-600 hover:!text-emerald-600 active:!text-emerald-600 hover:text-emerald-600 active:text-emerald-600 focus:text-emerald-600 focus-visible:text-emerald-600"
-                      >$[Invoice_Total]</span
-                    >
-                  </div>
-                </div>
-                <div
-                  class="flex items-center justify-between rounded-xl border border-slate-200 px-4 py-3 text-sm hover:!border-slate-200 active:!border-slate-200 hover:border active:border focus:border focus-visible:border hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200"
+                </details>
+
+                <details
+                  class="group overflow-hidden rounded-xl border border-slate-200"
+                  open
                 >
-                  <div>
-                    <p
-                      class="font-semibold text-slate-900 hover:!text-slate-900 active:!text-slate-900 hover:text-slate-900 active:text-slate-900 focus:text-slate-900 focus-visible:text-slate-900"
+                  <summary
+                    class="flex cursor-pointer items-center justify-between px-4 py-3 text-sm hover:bg-slate-50"
+                  >
+                    <span class="font-semibold text-slate-900">Materials</span>
+                    <svg
+                      class="h-4 w-4 text-slate-400 transition group-open:rotate-180"
+                      viewBox="0 0 14 14"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
                     >
-                      Materials
-                    </p>
-                    <p
-                      class="text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
+                      <path
+                        d="M3.5 5.25L7 8.75L10.5 5.25"
+                        stroke="currentColor"
+                        stroke-width="1.2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </summary>
+                  <div class="border-t border-slate-200 px-4 py-4">
+                    <div
+                      class="grid grid-cols-3 text-xs font-semibold uppercase tracking-wide text-slate-500"
                     >
-                      Materials & supplies
-                    </p>
+                      <span>Material</span>
+                      <span>Transaction Type</span>
+                      <span class="text-right">Total Price</span>
+                    </div>
+                    <div class="mt-2 divide-y divide-slate-100 text-sm">
+                      <div class="grid grid-cols-3 py-2">
+                        <span>Tin Foil</span>
+                        <span>Reimburse</span>
+                        <span class="text-right">$500.00</span>
+                      </div>
+                      <div class="grid grid-cols-3 py-2 bg-slate-50">
+                        <span>Pest Spray</span>
+                        <span>Deduct</span>
+                        <span class="text-right">$50.00</span>
+                      </div>
+                      <div class="grid grid-cols-3 py-2">
+                        <span>Axe</span>
+                        <span>Deduct</span>
+                        <span class="text-right">$250.00</span>
+                      </div>
+                    </div>
+                    <div
+                      class="mt-4 space-y-2 border-t border-slate-200 pt-3 text-sm"
+                    >
+                      <div class="flex items-center justify-between">
+                        <span class="text-slate-500">Deduct Total</span>
+                        <span>$0.00</span>
+                      </div>
+                      <div class="flex items-center justify-between">
+                        <span class="text-slate-500">Reimburse Total</span>
+                        <span>$240.00</span>
+                      </div>
+                      <div class="flex items-center justify-between">
+                        <span class="text-slate-500">Materials Total</span>
+                        <span class="font-semibold">$900.00</span>
+                      </div>
+                    </div>
                   </div>
-                  <div class="flex items-center gap-2">
-                    <span
-                      class="text-slate-500 hover:!text-slate-500 active:!text-slate-500 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
-                      >Total:</span
-                    >
-                    <span
-                      class="text-base font-semibold text-emerald-600 hover:!text-emerald-600 active:!text-emerald-600 hover:text-emerald-600 active:text-emerald-600 focus:text-emerald-600 focus-visible:text-emerald-600"
-                      >$[Materials_Total]</span
-                    >
-                  </div>
-                </div>
+                </details>
               </div>
 
               <div

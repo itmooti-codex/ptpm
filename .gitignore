@@ -1,0 +1,13 @@
+# Ignore rmd dynamic list table and SDK folders
+rmd-dynamic-list-table/
+sdk/
+
+# Ignore specific markdown guide files (if they are generated or not to be tracked)
+dynamicguide.md
+sdkGuide.md
+
+# Common ignores
+node_modules/
+dist/
+.env
+.DS_Store
