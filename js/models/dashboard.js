@@ -58,9 +58,9 @@ export class DashboardModel {
     this.selectedDate = this.calendarDays[0]?.iso;
     this.inquiryDataByDate = {};
     this.allRows = [];
-    this.offset = null;
-    this.startIndex = 300;
-    this.endIndex = 346;
+    this.offset = 0;
+    // this.startIndex = 300;
+    // this.endIndex = 346;
     this.totalCount = null;
     this.paginationLimit = 5;
   }
@@ -151,24 +151,26 @@ export class DashboardModel {
     return q;
   }
 
-  async fetchTabCount(tab) {
-    const map = {
-      inquiry: ptpmDealModel,
-      quote: ptpmJobModel,
-      jobs: ptpmJobModel,
-      payment: ptpmJobModel,
-      "active-jobs": ptpmJobModel,
-      "urgent-calls": ptpmDealModel,
-    };
-    const model = map[tab];
-    if (!model || typeof model.query !== "function") return 0;
-    try {
-      const q = model.query().deSelectAll().select(["id"]).noDestroy();
-      const result = await q.fetchDirect().toPromise();
-      return Array.isArray(result?.resp) ? result.resp.length : 0;
-    } catch (e) {
-      console.log("Fetch tab count error", e);
-      return 0;
+  async fetchTabCount(tab, filters) {
+    switch (tab) {
+      case "inquiry":
+        await this.fetchDeal(filters);
+        break;
+      case "quote":
+        await this.fetchQuotesCreated(filters);
+        break;
+      case "jobs":
+        await this.fetchJobs(filters);
+        break;
+      case "payment":
+        await this.fetchPayments(filters);
+        break;
+      case "active-jobs":
+        await this.fetchActiveJobs(filters);
+        break;
+      default:
+        console.warn(`Unknown tab: ${tab}`);
+        return null;
     }
   }
 
@@ -243,44 +245,39 @@ export class DashboardModel {
       if (endEpoch != null) q.andWhere("quote_valid_until", "<=", endEpoch);
     });
 
-    this.dealQuery = this.applyIdRange(
-      this.dealQuery
-        .orderBy("created_at", "desc")
-        .deSelectAll()
-        .select([
-          "id",
-          "Unique_ID",
-          "Date_Added",
-          "Type",
-          "Inquiry_Status",
-          "How_did_you_hear",
+    this.dealQuery = this.dealQuery
+      .orderBy("id", "desc")
+      .deSelectAll()
+      .select([
+        "id",
+        "Unique_ID",
+        "Date_Added",
+        "Type",
+        "Inquiry_Status",
+        "How_did_you_hear",
+      ])
+      .include("Company", (q) =>
+        q.deSelectAll().select(["name", "account_type"])
+      )
+      .include("Service_Inquiry", (q) => q.select(["service_name"]))
+      .include("Primary_Contact", (q) =>
+        q.select([
+          "first_name",
+          "last_name",
+          "email",
+          "sms_number",
+          "address_1",
         ])
-        .include("Company", (q) =>
-          q.deSelectAll().select(["name", "account_type"])
-        )
-        .include("Service_Inquiry", (q) => q.select(["service_name"]))
-        .include("Primary_Contact", (q) =>
-          q.select([
-            "first_name",
-            "last_name",
-            "email",
-            "sms_number",
-            "address_1",
-          ])
-        )
-        .include("Property", (q) => {
-          q.deSelectAll().select(["address_1"]);
-        })
-        .include("Service_Provider", (q) => {
-          q.deSelectAll().include("Contact_Information", (q) => {
-            q.deSelectAll().select(["first_name", "last_name"]);
-          });
-        })
-        .orderBy("created_at", "desc")
-        // .limit(this.paginationLimit)
-        // .offset(this.offset)
-        .noDestroy()
-    );
+      )
+      .include("Property", (q) => {
+        q.deSelectAll().select(["address_1"]);
+      })
+      .include("Service_Provider", (q) => {
+        q.deSelectAll().include("Contact_Information", (q) => {
+          q.deSelectAll().select(["first_name", "last_name"]);
+        });
+      })
+      .noDestroy();
   }
 
   BuildQuoteQuery(filters = {}) {
@@ -986,61 +983,161 @@ export class DashboardModel {
     return;
   }
 
-  async fetchDeal(filters) {
+  async fetchDeal(filters = {}) {
     try {
-      await this.BuildDealQuery(filters);
-      return await this.dealQuery
-        .fetch()
+      // 1️⃣ Build COUNT query (no includes, no limit)
+      this.BuildDealQuery(filters);
+      const countQuery = this.dealQuery
+        .deSelectAll()
+        .count("id", "total")
+        .noDestroy();
+
+      const totalRes = await countQuery.fetchDirect().toPromise();
+      this.totalCount = totalRes?.resp?.length ?? 0;
+      this.totalPages = Math.ceil(this.totalCount / this.paginationLimit);
+
+      // 2️⃣ Build FETCH query again (with includes + pagination)
+      this.BuildDealQuery(filters);
+      const rows = await this.dealQuery
+        .fetch({
+          variables: { limit: this.paginationLimit, offset: this.offset },
+        })
         .pipe(window.toMainInstance?.(true) ?? ((x) => x))
         .toPromise();
+
+      return {
+        rows,
+        totalCount: this.totalCount,
+        totalPages: this.totalPages,
+      };
     } catch (e) {
       console.log("Fetch deal error", e);
     }
   }
 
-  async fetchQuotesCreated(filters) {
+  async fetchQuotesCreated(filters = {}) {
     try {
-      await this.BuildQuoteQuery(filters);
-      return await this.quoteQuery
-        .fetch()
+      // 1️⃣ Build COUNT query (no includes, no pagination)
+      this.BuildQuoteQuery(filters);
+      const countQuery = this.quoteQuery
+        .deSelectAll()
+        .count("id", "total")
+        .noDestroy();
+
+      const totalRes = await countQuery.fetchDirect().toPromise();
+      this.totalCount = totalRes?.resp?.length ?? 0;
+      this.totalPages = Math.ceil(this.totalCount / this.paginationLimit);
+
+      // 2️⃣ Build FETCH query again (with includes + pagination)
+      this.BuildQuoteQuery(filters);
+      const rows = await this.quoteQuery
+        .fetch({
+          variables: { limit: this.paginationLimit, offset: this.offset },
+        })
         .pipe(window.toMainInstance?.(true) ?? ((x) => x))
         .toPromise();
+
+      return {
+        rows,
+        totalCount: this.totalCount,
+        totalPages: this.totalPages,
+      };
     } catch (e) {
       console.log("Fetch quotes error", e);
     }
   }
 
-  async fetchJobs(filters) {
+  async fetchJobs(filters = {}) {
     try {
-      await this.BuildJobQuery(filters);
-      return await this.jobQuery
-        .fetch()
+      // 1️⃣ Build COUNT query first (NO includes, NO pagination)
+      this.BuildJobQuery(filters);
+      const countQuery = this.jobQuery
+        .deSelectAll()
+        .count("id", "total")
+        .noDestroy();
+
+      const totalRes = await countQuery.fetchDirect().toPromise();
+      this.totalCount = totalRes?.resp?.length ?? 0;
+      this.totalPages = Math.ceil(this.totalCount / this.paginationLimit);
+
+      // 2️⃣ Build FETCH query again (with includes + pagination)
+      this.BuildJobQuery(filters);
+      const rows = await this.jobQuery
+        .fetch({
+          variables: { limit: this.paginationLimit, offset: this.offset },
+        })
         .pipe(window.toMainInstance?.(true) ?? ((x) => x))
         .toPromise();
+
+      return {
+        rows,
+        totalCount: this.totalCount,
+        totalPages: this.totalPages,
+      };
     } catch (e) {
       console.log("Fetch jobs error", e);
     }
   }
 
-  async fetchPayments(filters) {
+  async fetchPayments(filters = {}) {
     try {
-      await this.BuildPaymentQuery(filters);
-      return await this.paymentQuery
-        .fetch()
+      // 1️⃣ Build COUNT query (no includes, no pagination)
+      this.BuildPaymentQuery(filters);
+      const countQuery = this.paymentQuery
+        .deSelectAll()
+        .count("id", "total")
+        .noDestroy();
+
+      const totalRes = await countQuery.fetchDirect().toPromise();
+      this.totalCount = totalRes?.resp?.length ?? 0;
+      this.totalPages = Math.ceil(this.totalCount / this.paginationLimit);
+
+      // 2️⃣ Build FETCH query fresh (includes + limit/offset)
+      this.BuildPaymentQuery(filters);
+      const rows = await this.paymentQuery
+        .fetch({
+          variables: { limit: this.paginationLimit, offset: this.offset },
+        })
         .pipe(window.toMainInstance?.(true) ?? ((x) => x))
         .toPromise();
+
+      return {
+        rows,
+        totalCount: this.totalCount,
+        totalPages: this.totalPages,
+      };
     } catch (e) {
-      console.log("Fetch jobs error", e);
+      console.log("Fetch payments error", e);
     }
   }
 
-  async fetchActiveJobs(filters) {
-    await this.BuildactiveJobsQuery(filters);
+  async fetchActiveJobs(filters = {}) {
     try {
-      return await this.activeJobsQuery
-        .fetch()
+      // 1️⃣ Build COUNT query (no includes, no pagination)
+      this.BuildactiveJobsQuery(filters);
+      const countQuery = this.activeJobsQuery
+        .deSelectAll()
+        .count("id", "total")
+        .noDestroy();
+
+      const totalRes = await countQuery.fetchDirect().toPromise();
+      this.totalCount = totalRes?.resp?.length ?? 0;
+      this.totalPages = Math.ceil(this.totalCount / this.paginationLimit);
+
+      // 2️⃣ Build FETCH query again (includes + pagination)
+      this.BuildactiveJobsQuery(filters);
+      const rows = await this.activeJobsQuery
+        .fetch({
+          variables: { limit: this.paginationLimit, offset: this.offset },
+        })
         .pipe(window.toMainInstance?.(true) ?? ((x) => x))
         .toPromise();
+
+      return {
+        rows,
+        totalCount: this.totalCount,
+        totalPages: this.totalPages,
+      };
     } catch (e) {
       console.log("Fetch active jobs error", e);
     }

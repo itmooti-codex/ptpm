@@ -104,12 +104,15 @@ export class DashboardController {
   }
 
   async updateTotalCountForTab(tab) {
-    // if (!this.model || typeof this.model.fetchTabCount !== "function") return;
-    // const total = await this.model.fetchTabCount(tab);
-    // this.model.totalCount = total;
-    // this.view.renderPagination(async () => {
-    //   await this.handleTabChange(this.currentTab, { skipCount: true });
-    // });
+    if (!this.model || typeof this.model.fetchTabCount !== "function") return;
+    try {
+      await this.model.fetchTabCount(tab, this.filters);
+    } catch (e) {
+      console.error("Failed to update tab count", e);
+    }
+    this.view.renderPagination(async () => {
+      await this.handleTabChange(this.currentTab, { skipCount: true });
+    });
   }
 
   initServiceProviderDropdown() {
@@ -399,21 +402,27 @@ export class DashboardController {
       switch (tab) {
         case "quote":
           await this.fetchQuotesAndRenderTable();
+
           break;
         case "payment":
           await this.fetchPaymentsAndRenderTable();
+
           break;
         case "active-jobs":
           await this.fetchActiveJobsAndRenderTable();
+
           break;
         case "jobs":
           await this.fetchJobsAndRenderTable();
+
           break;
         case "urgent-calls":
           await this.fetchUrgentCallsAndRenderTable();
+
           break;
         case "inquiry":
           await this.fetchDealsAndRenderTable();
+
           break;
         default:
           this.deals = [];
@@ -729,7 +738,7 @@ export class DashboardController {
           ? await this.model.fetchDeal(this.filters)
           : {};
       const mappedDealData =
-        this.dashboardHelper.mapDealToTableRow(dealData ?? {}) ?? [];
+        this.dashboardHelper.mapDealToTableRow(dealData?.rows ?? {}) ?? [];
       const sampleRows = this.dashboardHelper.mapInquirysRows(
         mappedDealData,
         (iso) => this.model.formatDisplayDate(iso)
@@ -750,7 +759,9 @@ export class DashboardController {
         typeof this.model.fetchQuotesCreated === "function"
           ? await this.model.fetchQuotesCreated(this.filters)
           : {};
-      const sampleRows = this.dashboardHelper.mapQuoteRows(quoteData);
+      const sampleRows = this.dashboardHelper.mapQuoteRows(
+        quoteData?.rows ?? {}
+      );
       this.deals = sampleRows;
       this.reRenderActiveTab();
       return sampleRows;
@@ -767,7 +778,7 @@ export class DashboardController {
         typeof this.model.fetchJobs === "function"
           ? await this.model.fetchJobs(this.filters)
           : {};
-      const sampleRows = this.dashboardHelper.mapJobRows(jobData);
+      const sampleRows = this.dashboardHelper.mapJobRows(jobData?.rows ?? {});
       this.deals = sampleRows;
       this.reRenderActiveTab();
       return sampleRows;
@@ -785,7 +796,7 @@ export class DashboardController {
         typeof this.model.fetchPayments === "function"
           ? await this.model.fetchPayments(this.filters)
           : [];
-      const rows = this.dashboardHelper.mapPaymentRows(paymentData);
+      const rows = this.dashboardHelper.mapPaymentRows(paymentData?.rows ?? {});
       this.deals = rows;
       this.reRenderActiveTab();
       return rows;
@@ -802,7 +813,7 @@ export class DashboardController {
         typeof this.model.fetchPayments === "function"
           ? await this.model.fetchActiveJobs(this.filters)
           : {};
-      const rows = this.dashboardHelper.mapPaymentRows(data);
+      const rows = this.dashboardHelper.mapPaymentRows(data?.rows ?? {});
       this.deals = rows;
       this.reRenderActiveTab();
       return rows;
@@ -821,7 +832,7 @@ export class DashboardController {
           : () => this.model.fetchDeal(this.filters);
       const urgentData = await fetcher();
       const mapped =
-        this.dashboardHelper.mapDealToTableRow(urgentData ?? {}) ?? [];
+        this.dashboardHelper.mapDealToTableRow(urgentData.rows ?? {}) ?? [];
       const rows = this.dashboardHelper.mapUrgentCallRows(mapped);
       this.deals = rows;
       this.renderTable(null, rows);
