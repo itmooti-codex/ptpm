@@ -13,8 +13,48 @@ const body = document.body;
 const sliders = document.querySelectorAll(".side");
 body.setAttribute(
   "x-data",
-  `{deleteQuoteId: {},deleting:false, isSidebarExpanded: true, deleteQuoteModal: false, createQuoteModal: false, paymentsData: {PeterpmService_Service_Name:[], activityData:[], Xero_Bill_Status:[]}, modalIsOpen: false, isChecked: false, isExpandedClientSection: false, isExpandedMaterialsSection: false}`,
+  JSON.stringify({
+    deleteQuoteId: {},
+    deleting: false,
+    isSidebarExpanded: true,
+    deleteQuoteModal: false,
+    createQuoteModal: false,
+    paymentsData: {
+      PeterpmService_Service_Name: [],
+      activityData: [],
+      Xero_Bill_Status: [],
+    },
+    modalIsOpen: false,
+    isChecked: false,
+    isExpandedClientSection: false,
+    isExpandedMaterialsSection: false,
+    accordianPropertyAndOwnerInformationExpoanded: window.innerWidth >= 1100,
+    accordianHelpExpoanded: window.innerWidth >= 1100,
+    accordianPropertyDescriptionExpoanded: window.innerWidth >= 1100,
+    accordianPropertyInformationExpoanded: window.innerWidth >= 1100,
+    accordianResidentExpoanded: window.innerWidth >= 1100,
+    accordianExpanded: window.innerWidth >= 1100,
+    appointmentData: {},
+    scheduledData: {},
+    openScheduledInquiryModal: false,
+    returnInquiryModal: false,
+    scheduleSiteVisitModal: false,
+    scheduledRreturnInquiryModal: false,
+    rescheduleVisitOpenModal: false,
+    selectedTab: "overview",
+  }),
 );
+window.addEventListener("resize", () => {
+  const xData = JSON.parse(document.body.getAttribute("x-data"));
+  xData.accordianExpanded = window.innerWidth >= 1100;
+  document.body.setAttribute("x-data", JSON.stringify(xData));
+});
+
+window.addEventListener("resize", () => {
+  const xDatas = JSON.parse(document.body.getAttribute("x-data"));
+  xDatas.accordianResidentExpoanded = window.innerWidth >= 1100;
+  document.body.setAttribute("x-data", JSON.stringify(xDatas));
+});
 sliders.forEach((slider) => {
   slider.setAttribute(":class", "isSidebarExpanded ? 'pl-64px' : 'pl-20px'");
 });
