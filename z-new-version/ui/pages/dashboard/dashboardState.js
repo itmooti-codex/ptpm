@@ -3,9 +3,33 @@ export const paginationState = {
   itemsPerPage: 5,
   totalItems: 0,
   offset: 0,
+  totalPages: 0,
+  startIndex: 0,
+  endIndex: 0,
+  totalPageButonsGroup: 4,
 };
 
 export const tableState = {
   initialLoad: true,
   activeTab: "inquiry",
+  previousTab: null,
+  filters: {
+    global: "",
+    accountName: "",
+    resident: "",
+    address: "",
+    source: [],
+    serviceman: "",
+    type: "",
+    accountTypes: [],
+    quoteNumber: "",
+    invoiceNumber: "",
+    recommendation: "",
+    priceMin: null,
+    priceMax: null,
+    statuses: [],
+    serviceProviders: [],
+    dateFrom: null,
+    dateTo: null,
+  },
 };

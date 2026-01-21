@@ -16,14 +16,14 @@ document.addEventListener("DOMContentLoaded", () => {
       optonSelect.style.display = "hidden";
 
       const mutation = `
-mutation updateServiceProvider($payload: ServiceProviderUpdateInput = null) {
-updateServiceProvider(
-query: [{ where: { id: ${IDServi} } }]
-payload: $payload
-) {
-workload_capacity   
-}
-}`;
+        mutation updateServiceProvider($payload: ServiceProviderUpdateInput = null) {
+        updateServiceProvider(
+        query: [{ where: { id: ${IDServi} } }]
+        payload: $payload
+        ) {
+        workload_capacity   
+        }
+        }`;
 
       const variables = {
         payload: {

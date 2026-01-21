@@ -360,6 +360,9 @@ export class DashboardView {
     });
   }
 
+  // NAV: Filters panel toggle — setupResponsiveLayout
+  // Quick note: this controls showing/hiding the left filters panel (#filters-panel)
+  // Search token: "NAV: Filters panel toggle"
   setupResponsiveLayout() {
     const filterPanel = document.getElementById("filters-panel");
     const toggleBtn = document.getElementById("filters-toggle");
@@ -1298,6 +1301,9 @@ export class DashboardView {
     });
   }
 
+  // NAV: Tab <-> filters mapping and toggling — setActive
+  // Quick note: setActive hides previous tab's filter ids and shows current tab's ids
+  // Search token: "NAV: Tab <-> filters mapping and toggling"
   setActive(tab, context, links, panels) {
     const relatedFilters = document.getElementById("related-filters");
     const paymentRelated = document.getElementById("payment-related-filter");
