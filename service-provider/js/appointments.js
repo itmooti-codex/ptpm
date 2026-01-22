@@ -250,9 +250,10 @@ const normalizeAppointmentData = (row) => {
   const type = row.Type || row.type || "";
   const durationHours = row.Duration_Hours || row.duration_hours || 0;
   const durationMinutes = row.Duration_Minutes || row.duration_minutes || 0;
-  const startTime = row.Start_Time || row.start_time || "";
-  const endTime = row.End_Time || row.end_time || "";
+  const startTime = row.Start_Time || row.Start || row.start_time || "";
+  const endTime = row.End_Time || row.End || row.end_time || "";
   const uniqueId =
+    row.ID ||
     row.unique_id ||
     row.Unique_ID ||
     row.uniqueId ||
@@ -294,7 +295,8 @@ const normalizeAppointmentData = (row) => {
 
   return {
     ...row,
-    formattedDateAndTime: formatDateAndTime(startTime),
+    formattedDateAndTime:
+      formatDateAndTime(startTime) || row.Start || row.Start_Time || "",
     descriptions: description,
     description,
     title,
@@ -645,6 +647,9 @@ const scheduleAppointmentFromModal = async () => {
       duration_minutes: parseInt(durationMinute, 10) || 0,
       duration_hours: parseInt(durationHour, 10) || 0,
       description: scheduleDescription,
+      Inquiry: {
+        inquiry_status: "Site Visit to be Re-Scheduled",
+      },
     };
 
     const plugin = await getVitalStatsPlugin();
