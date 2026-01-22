@@ -6,10 +6,10 @@ const STATUS_FIELD_RE = /^status$/i;
 const ACTIONS_FIELD = "__actions";
 
 const LIST_CONFIG = {
-  all: "k4wkv7J8fLefA_cZRMt1e",
-  new: "APPOINTMENTS_NEW_LIST_ID",
-  scheduled: "APPOINTMENTS_SCHEDULED_LIST_ID",
-  completed: "APPOINTMENTS_COMPLETED_LIST_ID",
+  all: allAppointments,
+  new: newAppointments,
+  scheduled: scheduledAppointments,
+  completed: completedAppointments,
 };
 
 const TABLE_ATTRS = {
@@ -400,3 +400,6 @@ if (monthFilter) {
 }
 
 setRange(currentRange, { refresh: true });
+
+
+
