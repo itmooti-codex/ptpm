@@ -241,6 +241,14 @@ const getAlpineData = () => {
 };
 
 const normalizeAppointmentData = (row) => {
+  const extractLeadingNumber = (value) => {
+    if (value === null || value === undefined) {
+      return "";
+    }
+    const match = String(value).trim().match(/^(\d+)/);
+    return match ? match[1] : "";
+  };
+
   const inquiryId =
     row.Inquiry_Unique_ID || row.Inquiry_ID || row.inquiry_id || "";
   const jobId = row.Job_Unique_ID || row.Job_ID || row.job_id || "";
@@ -292,6 +300,17 @@ const normalizeAppointmentData = (row) => {
   const contactFirstName =
     row.Contact_First_Name || row.contact_first_name || "";
   const contactLastName = row.Contact_Last_Name || row.contact_last_name || "";
+  const locationIdFromAddress = extractLeadingNumber(row.Address || "");
+  const primaryGuestIdFromGuest = extractLeadingNumber(row.Guest || "");
+  const locationId =
+    row.location_id || row.Location_ID || locationIdFromAddress || "";
+  const primaryGuestId =
+    row.primary_guest_id ||
+    row.Primary_Guest_ID ||
+    row.Primary_Guest_Contact_ID ||
+    row.primary_guest_contact_id ||
+    primaryGuestIdFromGuest ||
+    "";
 
   return {
     ...row,
@@ -319,8 +338,9 @@ const normalizeAppointmentData = (row) => {
     location_state: locationState,
     Primary_Guest_First_Name: primaryGuestFirstName,
     Primary_Guest_Last_Name: primaryGuestLastName,
-    Primary_Guest_Contact_ID: primaryGuestContactId,
-    primary_guest_contact_id: primaryGuestContactId,
+    Primary_Guest_Contact_ID: primaryGuestId || primaryGuestContactId,
+    primary_guest_contact_id: primaryGuestId || primaryGuestContactId,
+    primary_guest_id: primaryGuestId,
     Primary_GuestEmail: primaryGuestEmail,
     Primary_Guest_SMS_Number: primaryGuestSms,
     Contact_Contact_ID: contactId,
@@ -335,8 +355,8 @@ const normalizeAppointmentData = (row) => {
     Primary_Guest_Unique_ID:
       row.Primary_Guest_Unique_ID || primaryGuestContactId,
     PeterpmProperty_Unique_ID:
-      row.PeterpmProperty_Unique_ID || row.Location_ID || row.location_id || "",
-    location_id: row.location_id || row.Location_ID || "",
+      row.PeterpmProperty_Unique_ID || locationId || "",
+    location_id: locationId,
   };
 };
 
