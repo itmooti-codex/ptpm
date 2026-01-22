@@ -644,7 +644,7 @@ const scheduleAppointmentFromModal = async () => {
       primary_guest_id: contactID,
       duration_minutes: parseInt(durationMinute, 10) || 0,
       duration_hours: parseInt(durationHour, 10) || 0,
-      descriptions: scheduleDescription,
+      description: scheduleDescription,
     };
 
     const plugin = await getVitalStatsPlugin();
