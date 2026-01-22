@@ -1,0 +1,1294 @@
+<style>
+  #of3f95356322c {
+    z-index: 10 !important;
+  }
+</style>
+
+<div
+  x-cloak
+  x-show="modalIsOpen"
+  x-transition.opacity.duration.200ms
+  x-trap.inert.noscroll="modalIsOpen"
+  @keydown.esc.window="modalIsOpen = false"
+  @click.self="modalIsOpen = false"
+  data-appointment-detail-modal
+  class="fixed inset-0 z-30 flex items-end justify-center bg-black/20 p-4 pb-8 backdrop-blur-md max-[1100px]:bg-[#f6f6f6] max-[1100px]:p-0 sm:items-center lg:p-8"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="defaultModalTitle"
+>
+  <div
+    x-show="modalIsOpen"
+    x-transition:enter="transition ease-out duration-200 delay-100 motion-reduce:transition-opacity"
+    x-transition:enter-start="opacity-0 scale-50"
+    x-transition:enter-end="opacity-100 scale-100"
+    class="flex w-[70%] flex-col gap-4 bg-white max-[1100px]:fixed max-[1100px]:top-0 max-[1100px]:h-screen max-[1100px]:w-screen max-[1100px]:overflow-auto max-[1100px]:bg-[#f6f6f6] max-[1100px]:p-0"
+  >
+    <!--Desktop Header-->
+    <div
+      class="border-light flex items-center justify-between border-b px-6 max-[1100px]:border-[#d3d7e2] max-[1100px]:px-[16px] max-[1100px]:py-[12px]"
+    >
+      <div class="flex items-center gap-4">
+        <div class="text-h1 text-dark py-4 text-start">Appointment Detail</div>
+        <div class="inquiryData">
+          <div class="rounded-xl bg-[#626c87] px-2 py-1">
+            <div class="font-['Inter'] text-xs font-normal text-white">
+              Inquiry
+            </div>
+          </div>
+        </div>
+        <div class="jobData">
+          <div class="rounded-xl bg-[#626c87] px-2 py-1">
+            <div class="font-['Inter'] text-xs font-normal text-white">Job</div>
+          </div>
+        </div>
+      </div>
+      <svg
+        @click="modalIsOpen = false"
+        class="cursor-pointer"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M18.75 6.81984L17.1802 5.25L12 10.4302L6.81984 5.25L5.25 6.81984L10.4302 12L5.25 17.1802L6.81984 18.75L12 13.5698L17.1802 18.75L18.75 17.1802L13.5698 12L18.75 6.81984Z"
+          fill="#21272A"
+        />
+      </svg>
+    </div>
+    <!--Desktop Header-->
+
+    <!--SubHeader-->
+    <div class="flex items-center justify-between px-6">
+      <div
+        class="font-['Inter'] text-base font-medium leading-none text-[#414042] jobData"
+      >
+        Confirmed Job Appointment
+      </div>
+      <div
+        class="font-['Inter'] text-base font-medium leading-none text-[#414042] inquiryData"
+      >
+        Confirmed Inquiry Appointment
+      </div>
+      <div class="label text-dark px-6 text-end">
+        <span
+          class="text-button text-[#636D88] max-[1100px]:text-[14px] max-[1100px]:font-[400] max-[1100px]:leading-[20px]"
+          >Date Added :
+        </span>
+        <span
+          data-appointment-text="formattedDateAndTime"
+          data-appointment-empty=""
+          class="text-button max-[1100px]:text-[14px] max-[1100px]:font-[400] max-[1100px]:leading-[20px]"
+        ></span>
+      </div>
+    </div>
+    <!--SubHeader-->
+
+    <!--Top Card-->
+    <div
+      class="xlg:p-4 xlg:border xlg:border-[#d3d7e2] House Resident Informationder-none mx-6 mx-6 flex items-start gap-6 rounded bg-neutral-100 max-[1100px]:flex-col max-[1100px]:items-start max-[1100px]:justify-start max-[1100px]:gap-0 max-[1100px]:border-none"
+    >
+      <div
+        class="flex w-[65%] flex-col items-start justify-start gap-3 max-[1100px]:w-[100%] max-[1100px]:gap-6 max-[1100px]:rounded-t-[12px] max-[1100px]:bg-white max-[1100px]:p-[12px]"
+      >
+        <div
+          class="text-h3 text-dark !max-[1100px]:text-[18px] !max-[1100px]:font-[600] !max-[1100px]:leading-[20px]"
+        >
+          Appointed Time, Date and Location
+        </div>
+        <div class="flex items-start justify-start gap-4 max-[1100px]:flex-col">
+          <div class="flex items-center justify-start gap-2">
+            <div class="relative h-3.5 w-3.5">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 14 14"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M4.52097 1.45703C4.52097 1.341 4.47488 1.22972 4.39283 1.14767C4.31079 1.06562 4.19951 1.01953 4.08347 1.01953C3.96744 1.01953 3.85616 1.06562 3.77411 1.14767C3.69207 1.22972 3.64597 1.341 3.64597 1.45703V2.3787C2.80597 2.44578 2.25531 2.61028 1.85047 3.0157C1.44506 3.42053 1.28056 3.97178 1.21289 4.8112H12.7874C12.7197 3.9712 12.5552 3.42053 12.1498 3.0157C11.745 2.61028 11.1937 2.44578 10.3543 2.37811V1.45703C10.3543 1.341 10.3082 1.22972 10.2262 1.14767C10.1441 1.06562 10.0328 1.01953 9.91681 1.01953C9.80077 1.01953 9.68949 1.06562 9.60745 1.14767C9.5254 1.22972 9.47931 1.341 9.47931 1.45703V2.33961C9.09139 2.33203 8.65622 2.33203 8.16681 2.33203H5.83347C5.34406 2.33203 4.90889 2.33203 4.52097 2.33961V1.45703Z"
+                  fill="#636D88"
+                />
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M1.16699 7C1.16699 6.51058 1.16699 6.07542 1.17458 5.6875H12.8261C12.8337 6.07542 12.8337 6.51058 12.8337 7V8.16667C12.8337 10.3664 12.8337 11.4666 12.15 12.1497C11.4663 12.8327 10.3667 12.8333 8.16699 12.8333H5.83366C3.63391 12.8333 2.53374 12.8333 1.85066 12.1497C1.16758 11.466 1.16699 10.3664 1.16699 8.16667V7ZM9.91699 8.16667C10.0717 8.16667 10.2201 8.10521 10.3295 7.99581C10.4389 7.88642 10.5003 7.73804 10.5003 7.58333C10.5003 7.42862 10.4389 7.28025 10.3295 7.17085C10.2201 7.06146 10.0717 7 9.91699 7C9.76228 7 9.61391 7.06146 9.50451 7.17085C9.39512 7.28025 9.33366 7.42862 9.33366 7.58333C9.33366 7.73804 9.39512 7.88642 9.50451 7.99581C9.61391 8.10521 9.76228 8.16667 9.91699 8.16667ZM9.91699 10.5C10.0717 10.5 10.2201 10.4385 10.3295 10.3291C10.4389 10.2197 10.5003 10.0714 10.5003 9.91667C10.5003 9.76196 10.4389 9.61358 10.3295 9.50419C10.2201 9.39479 10.0717 9.33333 9.91699 9.33333C9.76228 9.33333 9.61391 9.39479 9.50451 9.50419C9.39512 9.61358 9.33366 9.76196 9.33366 9.91667C9.33366 10.0714 9.39512 10.2197 9.50451 10.3291C9.61391 10.4385 9.76228 10.5 9.91699 10.5ZM7.58366 7.58333C7.58366 7.73804 7.5222 7.88642 7.4128 7.99581C7.30341 8.10521 7.15504 8.16667 7.00033 8.16667C6.84562 8.16667 6.69724 8.10521 6.58785 7.99581C6.47845 7.88642 6.41699 7.73804 6.41699 7.58333C6.41699 7.42862 6.47845 7.28025 6.58785 7.17085C6.69724 7.06146 6.84562 7 7.00033 7C7.15504 7 7.30341 7.06146 7.4128 7.17085C7.5222 7.28025 7.58366 7.42862 7.58366 7.58333ZM7.58366 9.91667C7.58366 10.0714 7.5222 10.2197 7.4128 10.3291C7.30341 10.4385 7.15504 10.5 7.00033 10.5C6.84562 10.5 6.69724 10.4385 6.58785 10.3291C6.47845 10.2197 6.41699 10.0714 6.41699 9.91667C6.41699 9.76196 6.47845 9.61358 6.58785 9.50419C6.69724 9.39479 6.84562 9.33333 7.00033 9.33333C7.15504 9.33333 7.30341 9.39479 7.4128 9.50419C7.5222 9.61358 7.58366 9.76196 7.58366 9.91667ZM4.08366 8.16667C4.23837 8.16667 4.38674 8.10521 4.49614 7.99581C4.60553 7.88642 4.66699 7.73804 4.66699 7.58333C4.66699 7.42862 4.60553 7.28025 4.49614 7.17085C4.38674 7.06146 4.23837 7 4.08366 7C3.92895 7 3.78058 7.06146 3.67118 7.17085C3.56178 7.28025 3.50033 7.42862 3.50033 7.58333C3.50033 7.73804 3.56178 7.88642 3.67118 7.99581C3.78058 8.10521 3.92895 8.16667 4.08366 8.16667ZM4.08366 10.5C4.23837 10.5 4.38674 10.4385 4.49614 10.3291C4.60553 10.2197 4.66699 10.0714 4.66699 9.91667C4.66699 9.76196 4.60553 9.61358 4.49614 9.50419C4.38674 9.39479 4.23837 9.33333 4.08366 9.33333C3.92895 9.33333 3.78058 9.39479 3.67118 9.50419C3.56178 9.61358 3.50033 9.76196 3.50033 9.91667C3.50033 10.0714 3.56178 10.2197 3.67118 10.3291C3.78058 10.4385 3.92895 10.5 4.08366 10.5Z"
+                  fill="#636D88"
+                />
+              </svg>
+            </div>
+            <div
+              class="label text-dark"
+              data-appointment-text="formattedDateAndTime"
+              data-appointment-empty=""
+            ></div>
+          </div>
+          <div class="flex items-center justify-start gap-2">
+            <div class="relative h-3.5 w-3.5">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 14 14"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M11.4852 5.21021C11.4852 5.07701 11.5247 4.9468 11.5987 4.83606C11.6727 4.72531 11.7779 4.63899 11.901 4.58802C12.024 4.53705 12.1594 4.52371 12.2901 4.54969C12.4207 4.57568 12.5407 4.63982 12.6349 4.734C12.7291 4.82819 12.7932 4.94818 12.8192 5.07882C12.8452 5.20946 12.8318 5.34487 12.7809 5.46792C12.7299 5.59098 12.6436 5.69616 12.5328 5.77016C12.4221 5.84416 12.2919 5.88366 12.1587 5.88366C11.9801 5.88366 11.8088 5.81271 11.6825 5.68641C11.5562 5.56011 11.4852 5.38882 11.4852 5.21021ZM10.8118 3.8633C10.945 3.8633 11.0752 3.8238 11.1859 3.74981C11.2967 3.67581 11.383 3.57063 11.434 3.44757C11.4849 3.32451 11.4983 3.1891 11.4723 3.05847C11.4463 2.92783 11.3822 2.80783 11.288 2.71365C11.1938 2.61946 11.0738 2.55532 10.9432 2.52934C10.8125 2.50335 10.6771 2.51669 10.5541 2.56766C10.431 2.61863 10.3258 2.70495 10.2518 2.8157C10.1778 2.92645 10.1383 3.05665 10.1383 3.18985C10.1383 3.36846 10.2093 3.53976 10.3356 3.66605C10.4619 3.79235 10.6332 3.8633 10.8118 3.8633ZM12.4202 7.00608C12.3016 6.9963 12.1839 7.03401 12.0931 7.11094C12.0023 7.18787 11.9457 7.29771 11.9359 7.41632C11.8555 8.35492 11.5088 9.25105 10.9364 9.99926C10.364 10.7475 9.58989 11.3167 8.70502 11.6398C7.82015 11.963 6.86139 12.0267 5.94154 11.8234C5.02169 11.6202 4.17903 11.1584 3.51271 10.4925C2.84638 9.82663 2.38411 8.98426 2.18028 8.06454C1.97646 7.14482 2.03956 6.18602 2.36216 5.30095C2.68477 4.41588 3.25345 3.64136 4.00131 3.06852C4.74916 2.49569 5.64507 2.14837 6.58362 2.06743C6.64258 2.06257 6.7 2.04614 6.75261 2.01908C6.80522 1.99202 6.85199 1.95487 6.89024 1.90974C6.92849 1.86461 6.95748 1.81239 6.97555 1.75605C6.99362 1.69972 7.00041 1.64038 6.99555 1.58142C6.99068 1.52246 6.97426 1.46504 6.9472 1.41243C6.92014 1.35982 6.88299 1.31305 6.83786 1.2748C6.79273 1.23655 6.74051 1.20756 6.68417 1.1895C6.62784 1.17143 6.5685 1.16463 6.50954 1.16949C5.4006 1.26488 4.34198 1.675 3.45821 2.3516C2.57444 3.0282 1.90229 3.94314 1.52085 4.98877C1.13941 6.0344 1.06453 7.16722 1.30504 8.25396C1.54555 9.34069 2.09143 10.3361 2.87846 11.1232C3.66549 11.9102 4.66093 12.4561 5.74767 12.6966C6.83441 12.9371 7.96723 12.8622 9.01286 12.4808C10.0585 12.0993 10.9734 11.4272 11.65 10.5434C12.3266 9.65965 12.7367 8.60102 12.8321 7.49209C12.8372 7.43309 12.8306 7.37367 12.8126 7.31725C12.7946 7.26083 12.7656 7.20853 12.7273 7.16336C12.689 7.11818 12.6422 7.08103 12.5895 7.05404C12.5368 7.02705 12.4792 7.01075 12.4202 7.00608ZM6.99555 2.96537C7.79473 2.96537 8.57596 3.20235 9.24045 3.64635C9.90494 4.09035 10.4228 4.72142 10.7287 5.45976C11.0345 6.19811 11.1145 7.01056 10.9586 7.79438C10.8027 8.5782 10.4179 9.29819 9.85276 9.86329C9.28766 10.4284 8.56767 10.8132 7.78385 10.9691C7.00003 11.1251 6.18758 11.045 5.44924 10.7392C4.71089 10.4334 4.07982 9.91547 3.63582 9.25098C3.19182 8.58649 2.95484 7.80525 2.95484 7.00608C2.95603 5.93478 3.38212 4.9077 4.13965 4.15018C4.89717 3.39265 5.92425 2.96655 6.99555 2.96537ZM6.54658 7.00608C6.54658 7.12515 6.59388 7.23935 6.67808 7.32355C6.76228 7.40774 6.87648 7.45505 6.99555 7.45505H9.68936C9.80843 7.45505 9.92263 7.40774 10.0068 7.32355C10.091 7.23935 10.1383 7.12515 10.1383 7.00608C10.1383 6.887 10.091 6.77281 10.0068 6.68861C9.92263 6.60441 9.80843 6.55711 9.68936 6.55711H7.44452V4.31227C7.44452 4.1932 7.39722 4.079 7.31302 3.9948C7.22882 3.9106 7.11462 3.8633 6.99555 3.8633C6.87648 3.8633 6.76228 3.9106 6.67808 3.9948C6.59388 4.079 6.54658 4.1932 6.54658 4.31227V7.00608ZM8.79142 2.5164C8.92462 2.5164 9.05482 2.4769 9.16557 2.4029C9.27632 2.3289 9.36264 2.22372 9.41361 2.10067C9.46458 1.97761 9.47792 1.8422 9.45193 1.71156C9.42595 1.58093 9.36181 1.46093 9.26762 1.36674C9.17344 1.27256 9.05344 1.20842 8.9228 1.18243C8.79217 1.15645 8.65676 1.16979 8.5337 1.22076C8.41065 1.27173 8.30547 1.35805 8.23147 1.4688C8.15747 1.57954 8.11797 1.70975 8.11797 1.84295C8.11797 2.02156 8.18892 2.19285 8.31522 2.31915C8.44152 2.44545 8.61281 2.5164 8.79142 2.5164Z"
+                  fill="#636D88"
+                />
+              </svg>
+            </div>
+            <div class="label text-dark">
+              For
+              <span
+                data-appointment-text="duration_hours"
+                data-appointment-empty="0"
+              ></span>
+              hr
+              <span
+                data-appointment-text="duration_minutes"
+                data-appointment-empty="0"
+              ></span>
+              min.
+            </div>
+          </div>
+          <div class="flex items-center justify-start gap-2">
+            <div class="relative h-3.5 w-3.5">
+              <svg
+                width="10"
+                height="12"
+                viewBox="0 0 10 12"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M4.91639 0.167969C3.70122 0.169347 2.53622 0.65268 1.67697 1.51193C0.817719 2.37118 0.334386 3.53618 0.333008 4.75135C0.333008 8.67326 4.49972 11.6353 4.67732 11.7592C4.74738 11.8083 4.83085 11.8346 4.91639 11.8346C5.00193 11.8346 5.08539 11.8083 5.15545 11.7592C5.33306 11.6353 9.49977 8.67326 9.49977 4.75135C9.49839 3.53618 9.01505 2.37118 8.1558 1.51193C7.29655 0.65268 6.13155 0.169347 4.91639 0.167969ZM4.91639 3.08466C5.24603 3.08466 5.56826 3.18241 5.84235 3.36555C6.11643 3.54869 6.33005 3.80899 6.4562 4.11354C6.58235 4.41808 6.61535 4.7532 6.55105 5.0765C6.48674 5.39981 6.328 5.69678 6.09491 5.92987C5.86182 6.16296 5.56485 6.3217 5.24154 6.38601C4.91824 6.45032 4.58312 6.41731 4.27857 6.29116C3.97403 6.16502 3.71373 5.95139 3.53059 5.67731C3.34745 5.40322 3.2497 5.08099 3.2497 4.75135C3.2497 4.30932 3.4253 3.88539 3.73786 3.57282C4.05043 3.26026 4.47436 3.08466 4.91639 3.08466Z"
+                  fill="#636D88"
+                />
+              </svg>
+            </div>
+            <div class="label" style="color: #0052cc">
+              <a
+                href="https://www.google.com/maps?q="
+                data-appointment-text="Location_Display"
+                data-appointment-empty="N/A"
+                data-appointment-href="Location_Map_Query"
+                data-appointment-href-prefix="https://www.google.com/maps?q="
+                data-appointment-href-encode="true"
+              ></a>
+            </div>
+          </div>
+        </div>
+        <div
+          class="body-text text-dark"
+          data-appointment-text="descriptions"
+          data-appointment-empty="N/A"
+        ></div>
+      </div>
+      <div class="dividerLine block max-[1100px]:hidden"></div>
+      <div
+        class="flex flex-col gap-3 max-[1100px]:w-full max-[1100px]:gap-6 max-[1100px]:rounded-b-[12px] max-[1100px]:bg-white max-[1100px]:p-[12px]"
+      >
+        <div class="text-h3 text-dark">House Resident Information</div>
+        <div class="flex flex-col items-start justify-center gap-2">
+          <div
+            class="flex flex-col items-start justify-center gap-4 max-[1100px]:w-full"
+          >
+            <div
+              class="inline-flex items-center justify-start gap-2 max-[1100px]:w-full max-[1100px]:rounded-[12px] max-[1100px]:bg-[#f5f5f5] max-[1100px]:p-[12px]"
+            >
+              <div
+                class="hidden w-full items-center justify-between max-[1100px]:flex"
+              >
+                <div class="flex flex-col gap-2">
+                  <div class="text-button text-dark">Client Name</div>
+                  <div
+                    class="text-h3 text-dark"
+                    data-appointment-text="Primary_Guest_Full_Name"
+                    data-appointment-empty="N/A"
+                  ></div>
+                </div>
+                <div class="relative h-4 w-4">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M14.598 13.8986C14.5529 13.9765 14.4882 14.0413 14.4102 14.0863C14.3322 14.1313 14.2437 14.155 14.1537 14.155H1.84533C1.75535 14.1549 1.66698 14.1311 1.58909 14.0861C1.5112 14.041 1.44653 13.9763 1.40159 13.8983C1.35664 13.8204 1.33298 13.732 1.33301 13.642C1.33303 13.552 1.35673 13.4636 1.40172 13.3857C2.37805 11.6978 3.88262 10.4875 5.63849 9.91373C4.76996 9.39669 4.09516 8.60884 3.71773 7.67117C3.3403 6.7335 3.28111 5.69786 3.54923 4.72329C3.81736 3.74872 4.39798 2.88911 5.20194 2.27647C6.0059 1.66383 6.98873 1.33203 7.99951 1.33203C9.01029 1.33203 9.99313 1.66383 10.7971 2.27647C11.601 2.88911 12.1817 3.74872 12.4498 4.72329C12.7179 5.69786 12.6587 6.7335 12.2813 7.67117C11.9039 8.60884 11.2291 9.39669 10.3605 9.91373C12.1164 10.4875 13.621 11.6978 14.5973 13.3857C14.6424 13.4636 14.6662 13.552 14.6663 13.6421C14.6665 13.7321 14.6429 13.8205 14.598 13.8986Z"
+                      fill="#636D88"
+                    />
+                  </svg>
+                </div>
+              </div>
+              <div
+                class="relative flex h-4 w-4 flex-col gap-1 max-[1100px]:hidden"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M14.598 13.8986C14.5529 13.9765 14.4882 14.0413 14.4102 14.0863C14.3322 14.1313 14.2437 14.155 14.1537 14.155H1.84533C1.75535 14.1549 1.66698 14.1311 1.58909 14.0861C1.5112 14.041 1.44653 13.9763 1.40159 13.8983C1.35664 13.8204 1.33298 13.732 1.33301 13.642C1.33303 13.552 1.35673 13.4636 1.40172 13.3857C2.37805 11.6978 3.88262 10.4875 5.63849 9.91373C4.76996 9.39669 4.09516 8.60884 3.71773 7.67117C3.3403 6.7335 3.28111 5.69786 3.54923 4.72329C3.81736 3.74872 4.39798 2.88911 5.20194 2.27647C6.0059 1.66383 6.98873 1.33203 7.99951 1.33203C9.01029 1.33203 9.99313 1.66383 10.7971 2.27647C11.601 2.88911 12.1817 3.74872 12.4498 4.72329C12.7179 5.69786 12.6587 6.7335 12.2813 7.67117C11.9039 8.60884 11.2291 9.39669 10.3605 9.91373C12.1164 10.4875 13.621 11.6978 14.5973 13.3857C14.6424 13.4636 14.6662 13.552 14.6663 13.6421C14.6665 13.7321 14.6429 13.8205 14.598 13.8986Z"
+                    fill="#636D88"
+                  />
+                </svg>
+              </div>
+              <div class="flex flex-col gap-1">
+                <div class="text-button text-[#636D88] min-[1100px]:hidden">
+                  Client Name
+                </div>
+                <div
+                  class="h3 text-dark block max-[1100px]:hidden"
+                  data-appointment-text="Primary_Guest_Full_Name"
+                  data-appointment-empty="N/A"
+                ></div>
+              </div>
+            </div>
+            <div
+              class="inline-flex items-center justify-start gap-2 max-[1100px]:w-full max-[1100px]:rounded-[12px] max-[1100px]:bg-[#f5f5f5] max-[1100px]:p-[12px]"
+            >
+              <div
+                class="hidden w-full items-center justify-between max-[1100px]:flex"
+              >
+                <div class="flex flex-col gap-2">
+                  <div class="text-button text-dark">Client Contact Number</div>
+                  <a
+                    href="mailto:"
+                    class="label"
+                    style="color: #0052cc"
+                    data-appointment-text="Primary_GuestEmail"
+                    data-appointment-empty="N/A"
+                    data-appointment-href="Primary_GuestEmail"
+                    data-appointment-href-prefix="mailto:"
+                    data-appointment-href-encode="false"
+                  ></a>
+                </div>
+                <div class="relative h-4 w-4">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M14.1535 2.66797H1.84583C1.70982 2.66797 1.57938 2.722 1.48321 2.81817C1.38704 2.91434 1.33301 3.04478 1.33301 3.18079V11.8987C1.33301 12.1708 1.44107 12.4316 1.63341 12.624C1.82576 12.8163 2.08663 12.9244 2.35865 12.9244H13.6407C13.9127 12.9244 14.1736 12.8163 14.3659 12.624C14.5583 12.4316 14.6663 12.1708 14.6663 11.8987V3.18079C14.6663 3.04478 14.6123 2.91434 14.5161 2.81817C14.42 2.722 14.2895 2.66797 14.1535 2.66797ZM13.6407 11.8987H2.35865V4.34681L7.65288 9.20002C7.74749 9.28687 7.87125 9.33506 7.99967 9.33506C8.1281 9.33506 8.25186 9.28687 8.34647 9.20002L13.6407 4.34681V11.8987Z"
+                      fill="#636D88"
+                    />
+                  </svg>
+                </div>
+              </div>
+              <div class="relative block h-4 w-4 max-[1100px]:hidden">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M14.1535 2.66797H1.84583C1.70982 2.66797 1.57938 2.722 1.48321 2.81817C1.38704 2.91434 1.33301 3.04478 1.33301 3.18079V11.8987C1.33301 12.1708 1.44107 12.4316 1.63341 12.624C1.82576 12.8163 2.08663 12.9244 2.35865 12.9244H13.6407C13.9127 12.9244 14.1736 12.8163 14.3659 12.624C14.5583 12.4316 14.6663 12.1708 14.6663 11.8987V3.18079C14.6663 3.04478 14.6123 2.91434 14.5161 2.81817C14.42 2.722 14.2895 2.66797 14.1535 2.66797ZM13.6407 11.8987H2.35865V4.34681L7.65288 9.20002C7.74749 9.28687 7.87125 9.33506 7.99967 9.33506C8.1281 9.33506 8.25186 9.28687 8.34647 9.20002L13.6407 4.34681V11.8987Z"
+                    fill="#636D88"
+                  />
+                </svg>
+              </div>
+              <div class="flex flex-col gap-1">
+                <div class="text-button text-[#636D88] min-[1100px]:hidden">
+                  Client Email
+                </div>
+                <a
+                  class="label block max-[1100px]:hidden"
+                  style="color: #0052cc"
+                  href="mailto:"
+                  data-appointment-text="Primary_GuestEmail"
+                  data-appointment-empty="N/A"
+                  data-appointment-href="Primary_GuestEmail"
+                  data-appointment-href-prefix="mailto:"
+                  data-appointment-href-encode="false"
+                ></a>
+              </div>
+            </div>
+            <div
+              class="inline-flex items-center justify-start gap-2 max-[1100px]:w-full max-[1100px]:rounded-[12px] max-[1100px]:bg-[#f5f5f5] max-[1100px]:p-[12px]"
+            >
+              <div
+                class="hidden w-full items-center justify-between max-[1100px]:flex"
+              >
+                <div class="flex flex-col gap-2">
+                  <div class="text-button text-dark">Client Email</div>
+                  <a
+                    class="label"
+                    style="color: #0052cc"
+                    href="tel:"
+                    data-appointment-text="Primary_Guest_SMS_Number"
+                    data-appointment-empty="N/A"
+                    data-appointment-href="Primary_Guest_SMS_Number"
+                    data-appointment-href-prefix="tel:"
+                    data-appointment-href-encode="false"
+                  ></a>
+                </div>
+                <div class="relative h-4 w-4">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M14.6586 11.4041C14.5397 12.3074 14.0961 13.1366 13.4105 13.7368C12.7249 14.337 11.8443 14.6671 10.9332 14.6655C5.63975 14.6655 1.33301 10.3587 1.33301 5.06529C1.33138 4.15414 1.66148 3.27354 2.26165 2.58798C2.86183 1.90242 3.69103 1.45877 4.5944 1.3399C4.82284 1.312 5.05418 1.35874 5.25387 1.47312C5.45357 1.58751 5.61091 1.76341 5.70242 1.97457L7.11045 5.11796V5.12596C7.18051 5.2876 7.20944 5.46407 7.19467 5.63962C7.17989 5.81517 7.12187 5.98432 7.02578 6.13198C7.01378 6.14998 7.00111 6.16665 6.98778 6.18331L5.59975 7.82867C6.0991 8.84336 7.16045 9.89538 8.18847 10.3961L9.81116 9.01536C9.82708 9.00195 9.84378 8.98949 9.86116 8.97803C10.0087 8.87963 10.1784 8.81956 10.355 8.80327C10.5316 8.78697 10.7095 8.81496 10.8725 8.88469L10.8812 8.88869L14.0219 10.2961C14.2334 10.3872 14.4098 10.5444 14.5245 10.7442C14.6393 10.9439 14.6863 11.1754 14.6586 11.4041Z"
+                      fill="#636D88"
+                    />
+                  </svg>
+                </div>
+              </div>
+              <div class="relative block h-4 w-4 max-[1100px]:hidden">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M14.6586 11.4041C14.5397 12.3074 14.0961 13.1366 13.4105 13.7368C12.7249 14.337 11.8443 14.6671 10.9332 14.6655C5.63975 14.6655 1.33301 10.3587 1.33301 5.06529C1.33138 4.15414 1.66148 3.27354 2.26165 2.58798C2.86183 1.90242 3.69103 1.45877 4.5944 1.3399C4.82284 1.312 5.05418 1.35874 5.25387 1.47312C5.45357 1.58751 5.61091 1.76341 5.70242 1.97457L7.11045 5.11796V5.12596C7.18051 5.2876 7.20944 5.46407 7.19467 5.63962C7.17989 5.81517 7.12187 5.98432 7.02578 6.13198C7.01378 6.14998 7.00111 6.16665 6.98778 6.18331L5.59975 7.82867C6.0991 8.84336 7.16045 9.89538 8.18847 10.3961L9.81116 9.01536C9.82708 9.00195 9.84378 8.98949 9.86116 8.97803C10.0087 8.87963 10.1784 8.81956 10.355 8.80327C10.5316 8.78697 10.7095 8.81496 10.8725 8.88469L10.8812 8.88869L14.0219 10.2961C14.2334 10.3872 14.4098 10.5444 14.5245 10.7442C14.6393 10.9439 14.6863 11.1754 14.6586 11.4041Z"
+                    fill="#636D88"
+                  />
+                </svg>
+              </div>
+              <div class="flex flex-col gap-1">
+                <div class="text-button text-[#636D88] min-[1100px]:hidden">
+                  Client Contact
+                </div>
+                <a
+                  class="label"
+                  style="color: #0052cc"
+                  href="tel:"
+                  data-appointment-text="Primary_Guest_SMS_Number"
+                  data-appointment-empty="N/A"
+                  data-appointment-href="Primary_Guest_SMS_Number"
+                  data-appointment-href-prefix="tel:"
+                  data-appointment-href-encode="false"
+                ></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--Top Card-->
+
+    <!-- Tabbed Section -->
+    <div
+      class="xlg:justify-between flex h-full w-full flex-col gap-4 px-6 py-2 max-[1100px]:mb-[200px] max-[1100px]:p-4"
+    >
+      <!--Tabs-->
+      <div class="xlg:my-4 tabsWrapper mt-4">
+        <div
+          @keydown.right.prevent="$focus.wrap().next()"
+          @keydown.left.prevent="$focus.wrap().previous()"
+          class="tabsLists flex gap-2 overflow-x-auto"
+          role="tablist"
+          aria-label="tab options"
+        >
+          <div
+            @click="selectedTab = 'overview'"
+            :aria-selected="selectedTab === 'overview'"
+            :tabindex="selectedTab === 'overview' ? '0' : '-1'"
+            :class="selectedTab === 'overview' ? 'text-primary text-h2 border-b-[2px] border-primary' : 'text-dark text-h2 border-b border-transparent'"
+            class="hover:text-primary h-min cursor-pointer px-4 py-3"
+            role="tab"
+            aria-controls="tabpanelOverview"
+          >
+            Overview
+          </div>
+          <div
+            @click="selectedTab = 'property'"
+            :aria-selected="selectedTab === 'property'"
+            :tabindex="selectedTab === 'property' ? '0' : '-1'"
+            :class="selectedTab === 'property' ? 'text-primary text-h2 border-b-[2px] border-primary' : 'text-dark text-h2 border-b border-transparent'"
+            class="hover:text-primary h-min cursor-pointer px-4 py-3"
+            role="tab"
+            aria-controls="tabpanelProperty"
+          >
+            Property
+          </div>
+        </div>
+      </div>
+      <!--Tabs-->
+
+      <!--Overview Tab-->
+      <div
+        x-show="selectedTab === 'overview'"
+        id="tabpanelOverview"
+        role="tabpanel"
+        aria-label="overview"
+        class="mb-6 max-[1100px]:pb-4 flex gap-4 max-[1100px]:flex-col"
+      >
+        <div class="flex flex-col gap-4 w-full">
+          <div
+            class="p-4 bg-white rounded-lg border border-[#d3d7e2] flex-col justify-start items-start gap-6 flex"
+          >
+            <div class="flex-col justify-start items-start gap-2 flex">
+              <div class="justify-start items-center gap-3 flex">
+                <div class="inquiryData flex items-center gap-3">
+                  <div
+                    class="text-[#626c87] text-sm font-normal font-['Inter'] leading-tight"
+                  >
+                    Inquiry ID :
+                  </div>
+                  <div
+                    class="text-[#0052cc] text-base font-normal font-['Inter'] leading-tight"
+                  >
+                    #<span
+                      data-appointment-text="Inquiry_Unique_ID"
+                      data-appointment-empty="N/A"
+                    ></span>
+                  </div>
+                </div>
+                <div class="jobData flex items-center gap-3">
+                  <div
+                    class="text-[#626c87] text-sm font-normal font-['Inter'] leading-tight"
+                  >
+                    Job ID :
+                  </div>
+                  <div
+                    class="text-[#0052cc] text-base font-normal font-['Inter'] leading-tight"
+                  >
+                    #<span
+                      data-appointment-text="Job_Unique_ID"
+                      data-appointment-empty="N/A"
+                    ></span>
+                  </div>
+                </div>
+                <div class="inquiryData">
+                  <a
+                    href="https://my.awesomate.pro/inquiry/"
+                    data-appointment-href="Inquiry_Unique_ID"
+                    data-appointment-href-prefix="https://my.awesomate.pro/inquiry/"
+                    data-appointment-href-encode="false"
+                    class="px-3 py-2 bg-neutral-100 rounded justify-start items-center gap-2 flex"
+                  >
+                    <div
+                      class="text-[#003882] text-sm font-medium font-['Inter'] leading-[14px]"
+                    >
+                      Inquiry Detail
+                    </div>
+                    <div class="w-3.5 h-3.5 relative overflow-hidden">
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 14 14"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          clip-rule="evenodd"
+                          d="M2.91602 2.33464C2.76131 2.33464 2.61293 2.39609 2.50354 2.50549C2.39414 2.61489 2.33268 2.76326 2.33268 2.91797V11.0846C2.33268 11.2393 2.39414 11.3877 2.50354 11.4971C2.61293 11.6065 2.76131 11.668 2.91602 11.668H11.0827C11.2374 11.668 11.3858 11.6065 11.4952 11.4971C11.6046 11.3877 11.666 11.2393 11.666 11.0846V8.16797C11.666 7.8458 11.9272 7.58464 12.2493 7.58464C12.5715 7.58464 12.8327 7.8458 12.8327 8.16797V11.0846C12.8327 11.5488 12.6483 11.9939 12.3201 12.3221C11.9919 12.6503 11.5468 12.8346 11.0827 12.8346H2.91602C2.45189 12.8346 2.00677 12.6503 1.67858 12.3221C1.35039 11.9939 1.16602 11.5488 1.16602 11.0846V2.91797C1.16602 2.45384 1.35039 2.00872 1.67858 1.68053C2.00677 1.35234 2.45189 1.16797 2.91602 1.16797H5.83268C6.15485 1.16797 6.41602 1.42914 6.41602 1.7513C6.41602 2.07347 6.15485 2.33464 5.83268 2.33464H2.91602ZM9.33268 2.33464C9.01052 2.33464 8.74935 2.07347 8.74935 1.7513C8.74935 1.42914 9.01052 1.16797 9.33268 1.16797H12.2493C12.5715 1.16797 12.8327 1.42914 12.8327 1.7513V4.66797C12.8327 4.99013 12.5715 5.2513 12.2493 5.2513C11.9272 5.2513 11.666 4.99013 11.666 4.66797V3.15959L8.28683 6.53878C8.05902 6.76659 7.68968 6.76659 7.46187 6.53878C7.23406 6.31098 7.23406 5.94163 7.46187 5.71382L10.8411 2.33464H9.33268Z"
+                          fill="#003882"
+                        />
+                      </svg>
+                    </div>
+                  </a>
+                </div>
+                <div class="jobData">
+                  <a
+                    href="https://my.awesomate.pro/edit-job/"
+                    data-appointment-href="Job_Unique_ID"
+                    data-appointment-href-prefix="https://my.awesomate.pro/edit-job/"
+                    data-appointment-href-encode="false"
+                    class="px-3 py-2 bg-neutral-100 rounded justify-start items-center gap-2 flex"
+                  >
+                    <div
+                      class="text-[#003882] text-sm font-medium font-['Inter'] leading-[14px]"
+                    >
+                      Job Detail
+                    </div>
+                    <div class="w-3.5 h-3.5 relative overflow-hidden">
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 14 14"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          clip-rule="evenodd"
+                          d="M2.91602 2.33464C2.76131 2.33464 2.61293 2.39609 2.50354 2.50549C2.39414 2.61489 2.33268 2.76326 2.33268 2.91797V11.0846C2.33268 11.2393 2.39414 11.3877 2.50354 11.4971C2.61293 11.6065 2.76131 11.668 2.91602 11.668H11.0827C11.2374 11.668 11.3858 11.6065 11.4952 11.4971C11.6046 11.3877 11.666 11.2393 11.666 11.0846V8.16797C11.666 7.8458 11.9272 7.58464 12.2493 7.58464C12.5715 7.58464 12.8327 7.8458 12.8327 8.16797V11.0846C12.8327 11.5488 12.6483 11.9939 12.3201 12.3221C11.9919 12.6503 11.5468 12.8346 11.0827 12.8346H2.91602C2.45189 12.8346 2.00677 12.6503 1.67858 12.3221C1.35039 11.9939 1.16602 11.5488 1.16602 11.0846V2.91797C1.16602 2.45384 1.35039 2.00872 1.67858 1.68053C2.00677 1.35234 2.45189 1.16797 2.91602 1.16797H5.83268C6.15485 1.16797 6.41602 1.42914 6.41602 1.7513C6.41602 2.07347 6.15485 2.33464 5.83268 2.33464H2.91602ZM9.33268 2.33464C9.01052 2.33464 8.74935 2.07347 8.74935 1.7513C8.74935 1.42914 9.01052 1.16797 9.33268 1.16797H12.2493C12.5715 1.16797 12.8327 1.42914 12.8327 1.7513V4.66797C12.8327 4.99013 12.5715 5.2513 12.2493 5.2513C11.9272 5.2513 11.666 4.99013 11.666 4.66797V3.15959L8.28683 6.53878C8.05902 6.76659 7.68968 6.76659 7.46187 6.53878C7.23406 6.31098 7.23406 5.94163 7.46187 5.71382L10.8411 2.33464H9.33268Z"
+                          fill="#003882"
+                        />
+                      </svg>
+                    </div>
+                  </a>
+                </div>
+              </div>
+              <div class="flex-col justify-start items-start gap-2 flex">
+                <div
+                  class="text-[#414042] text-sm font-medium font-['Inter'] leading-[14px] line-clamp-1"
+                  data-appointment-text="title"
+                  data-appointment-empty="N/A"
+                ></div>
+              </div>
+              <div class="justify-start items-center gap-3 flex">
+                <div class="justify-start items-center gap-2 flex">
+                  <div class="justify-start items-center gap-3 flex">
+                    <div
+                      class="text-[#626c87] text-sm font-normal font-['Inter'] leading-tight"
+                    >
+                      Service Type:
+                    </div>
+                    <div
+                      class="text-[#414042] text-sm font-normal font-['Inter'] leading-tight"
+                      data-appointment-text="PeterpmService_Service_Name"
+                      data-appointment-empty="N/A"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="p-4 bg-white rounded-lg border border-[#d3d7e2] flex-col justify-start items-start gap-6 flex"
+          >
+            <div class="bg-white rounded justify-start items-start gap-6 flex">
+              <div class="h-full w-[2px] bg-[#0052cc]"></div>
+              <div class="flex-col justify-start items-start gap-3 flex">
+                <div
+                  class="text-[#414042] text-sm font-medium font-['Inter'] leading-[14px]"
+                >
+                  Client Information
+                </div>
+                <div class="justify-start items-center gap-2 flex">
+                  <div
+                    class="justify-start items-center gap-4 flex max-[1100px]:flex-col max-[1100px]:items-start"
+                  >
+                    <div class="justify-start items-center gap-2 flex">
+                      <div class="w-4 h-4 relative overflow-hidden">
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 16 16"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M14.5989 13.8986C14.5539 13.9765 14.4891 14.0413 14.4112 14.0863C14.3332 14.1313 14.2447 14.155 14.1547 14.155H1.84631C1.75633 14.1549 1.66796 14.1311 1.59007 14.0861C1.51218 14.041 1.44751 13.9763 1.40256 13.8983C1.35761 13.8204 1.33396 13.732 1.33398 13.642C1.33401 13.552 1.3577 13.4636 1.40269 13.3857C2.37903 11.6978 3.8836 10.4875 5.63946 9.91373C4.77093 9.39669 4.09614 8.60884 3.71871 7.67117C3.34128 6.7335 3.28208 5.69786 3.55021 4.72329C3.81834 3.74872 4.39896 2.88911 5.20292 2.27647C6.00688 1.66383 6.98971 1.33203 8.00049 1.33203C9.01127 1.33203 9.99411 1.66383 10.7981 2.27647C11.602 2.88911 12.1826 3.74872 12.4508 4.72329C12.7189 5.69786 12.6597 6.7335 12.2823 7.67117C11.9048 8.60884 11.23 9.39669 10.3615 9.91373C12.1174 10.4875 13.622 11.6978 14.5983 13.3857C14.6434 13.4636 14.6672 13.552 14.6673 13.6421C14.6674 13.7321 14.6438 13.8205 14.5989 13.8986Z"
+                            fill="#636D88"
+                          />
+                        </svg>
+                      </div>
+                      <div
+                        class="text-[#414042] text-sm font-medium font-['Inter'] leading-[14px]"
+                        data-appointment-text="Primary_Guest_Full_Name"
+                        data-appointment-empty="N/A"
+                      ></div>
+                    </div>
+                    <div class="justify-start items-center gap-2 flex">
+                      <div class="w-4 h-4 relative overflow-hidden">
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 16 16"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M14.1545 2.66797H1.8468C1.7108 2.66797 1.58036 2.722 1.48419 2.81817C1.38801 2.91434 1.33398 3.04478 1.33398 3.18079V11.8987C1.33398 12.1708 1.44204 12.4316 1.63439 12.624C1.82673 12.8163 2.08761 12.9244 2.35963 12.9244H13.6417C13.9137 12.9244 14.1746 12.8163 14.3669 12.624C14.5593 12.4316 14.6673 12.1708 14.6673 11.8987V3.18079C14.6673 3.04478 14.6133 2.91434 14.5171 2.81817C14.4209 2.722 14.2905 2.66797 14.1545 2.66797ZM13.6417 11.8987H2.35963V4.34681L7.65386 9.20002C7.74847 9.28687 7.87222 9.33506 8.00065 9.33506C8.12908 9.33506 8.25284 9.28687 8.34745 9.20002L13.6417 4.34681V11.8987Z"
+                            fill="#636D88"
+                          />
+                        </svg>
+                      </div>
+                      <div
+                        class="text-[#0052cc] text-sm font-normal font-['Inter'] leading-tight"
+                      >
+                        <a
+                          href="mailto:"
+                          data-appointment-text="Primary_GuestEmail"
+                          data-appointment-empty="N/A"
+                          data-appointment-href="Primary_GuestEmail"
+                          data-appointment-href-prefix="mailto:"
+                          data-appointment-href-encode="false"
+                        ></a>
+                      </div>
+                    </div>
+                    <div class="justify-start items-center gap-2 flex">
+                      <div class="w-4 h-4 relative overflow-hidden">
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 16 16"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M14.6596 11.4041C14.5407 12.3074 14.097 13.1366 13.4115 13.7368C12.7259 14.337 11.8453 14.6671 10.9342 14.6655C5.64073 14.6655 1.33399 10.3587 1.33399 5.06529C1.33236 4.15414 1.66245 3.27354 2.26263 2.58798C2.8628 1.90242 3.69201 1.45877 4.59538 1.3399C4.82382 1.312 5.05515 1.35874 5.25485 1.47312C5.45454 1.58751 5.61189 1.76341 5.7034 1.97457L7.11142 5.11796V5.12596C7.18148 5.2876 7.21042 5.46407 7.19564 5.63962C7.18087 5.81517 7.12284 5.98432 7.02675 6.13198C7.01475 6.14998 7.00209 6.16665 6.98875 6.18331L5.60073 7.82867C6.10007 8.84336 7.16142 9.89538 8.18944 10.3961L9.81214 9.01536C9.82806 9.00195 9.84476 8.98949 9.86214 8.97803C10.0097 8.87963 10.1794 8.81956 10.356 8.80327C10.5326 8.78697 10.7104 8.81496 10.8735 8.88469L10.8822 8.88869L14.0229 10.2961C14.2344 10.3872 14.4107 10.5444 14.5255 10.7442C14.6403 10.9439 14.6873 11.1754 14.6596 11.4041Z"
+                            fill="#636D88"
+                          />
+                        </svg>
+                      </div>
+                      <div
+                        class="text-[#0052cc] text-sm font-normal font-['Inter'] leading-tight"
+                      >
+                        <a
+                          href="tel:"
+                          data-appointment-text="Primary_Guest_SMS_Number"
+                          data-appointment-empty="N/A"
+                          data-appointment-href="Primary_Guest_SMS_Number"
+                          data-appointment-href-prefix="tel:"
+                          data-appointment-href-encode="false"
+                        ></a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="flex flex-col gap-4 w-full">
+          <div
+            class="bg-white rounded-lg border border-[#d3d7e2] w-full flex flex-col gap-6 rounded-md border p-4 max-[1100px]:rounded-[12px] max-[1100px]:bg-white"
+          >
+            <div class="text-dark xlg:text-h2 xlg:!block text-h3 !hidden">
+              Admin Notes
+            </div>
+            <div
+              @click="accordianResidentExpoanded = ! accordianResidentExpoanded"
+              :aria-expanded="accordianResidentExpoanded ? 'true' : 'false'"
+              class="text-h1 !hidden items-center justify-between text-[#414042] max-[1100px]:!flex"
+            >
+              <div>Admin Notes</div>
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M21.7336 8.5527L12.6431 17.6431C12.5587 17.7277 12.4585 17.7947 12.3481 17.8405C12.2378 17.8862 12.1195 17.9098 12 17.9098C11.8805 17.9098 11.7622 17.8862 11.6519 17.8405C11.5415 17.7947 11.4413 17.7277 11.3568 17.6431L2.2664 8.5527C2.09583 8.38213 2 8.15078 2 7.90955C2 7.66832 2.09583 7.43697 2.2664 7.2664C2.43697 7.09583 2.66832 7 2.90955 7C3.15078 7 3.38213 7.09583 3.5527 7.2664L12 15.7148L20.4473 7.2664C20.5318 7.18194 20.632 7.11494 20.7424 7.06923C20.8527 7.02353 20.971 7 21.0904 7C21.2099 7 21.3282 7.02353 21.4385 7.06923C21.5489 7.11494 21.6491 7.18194 21.7336 7.2664C21.8181 7.35086 21.8851 7.45113 21.9308 7.56148C21.9765 7.67183 22 7.79011 22 7.90955C22 8.02899 21.9765 8.14727 21.9308 8.25762C21.8851 8.36797 21.8181 8.46824 21.7336 8.5527Z"
+                  fill="#636D88"
+                />
+              </svg>
+            </div>
+            <div
+              x-cloak
+              x-show="accordianResidentExpoanded"
+              id="accordionItemOne"
+              role="region"
+              aria-labelledby="controlsAccordionItemOne"
+              x-collapse
+            >
+              <div
+                class="flex items-start justify-between max-[500px]:flex-col max-[500px]:items-start max-[500px]:justify-start"
+              >
+                <div class="flex flex-1 flex-col gap-6">
+                  <div
+                    class="text-[#414042] text-sm font-medium font-['Inter'] leading-[14px] line-clamp-1"
+                    data-appointment-text="Inquiry_Admin_Notes"
+                    data-appointment-empty="N/A"
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="bg-white rounded-lg border border-[#d3d7e2] w-full flex flex-col gap-6 rounded-md border p-4 max-[1100px]:rounded-[12px] max-[1100px]:bg-white"
+          >
+            <div class="text-dark xlg:text-h2 xlg:!block text-h3 !hidden">
+              How Can We Help
+            </div>
+            <div
+              @click="accordianHelpExpoanded = ! accordianHelpExpoanded"
+              :aria-expanded="accordianHelpExpoanded ? 'true' : 'false'"
+              class="text-h1 !hidden items-center justify-between text-[#414042] max-[1100px]:!flex"
+            >
+              <div>How Can We Help</div>
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M21.7336 8.5527L12.6431 17.6431C12.5587 17.7277 12.4585 17.7947 12.3481 17.8405C12.2378 17.8862 12.1195 17.9098 12 17.9098C11.8805 17.9098 11.7622 17.8862 11.6519 17.8405C11.5415 17.7947 11.4413 17.7277 11.3568 17.6431L2.2664 8.5527C2.09583 8.38213 2 8.15078 2 7.90955C2 7.66832 2.09583 7.43697 2.2664 7.2664C2.43697 7.09583 2.66832 7 2.90955 7C3.15078 7 3.38213 7.09583 3.5527 7.2664L12 15.7148L20.4473 7.2664C20.5318 7.18194 20.632 7.11494 20.7424 7.06923C20.8527 7.02353 20.971 7 21.0904 7C21.2099 7 21.3282 7.02353 21.4385 7.06923C21.5489 7.11494 21.6491 7.18194 21.7336 7.2664C21.8181 7.35086 21.8851 7.45113 21.9308 7.56148C21.9765 7.67183 22 7.79011 22 7.90955C22 8.02899 21.9765 8.14727 21.9308 8.25762C21.8851 8.36797 21.8181 8.46824 21.7336 8.5527Z"
+                  fill="#636D88"
+                />
+              </svg>
+            </div>
+            <div
+              x-cloak
+              x-show="accordianHelpExpoanded"
+              id="accordionItemFour"
+              role="region"
+              aria-labelledby="controlsAccordionItemFour"
+              x-collapse
+            >
+              <div
+                class="flex items-start justify-between max-[500px]:flex-col max-[500px]:items-start max-[500px]:justify-start"
+              >
+                <div class="flex flex-1 flex-col gap-6">
+                  <div
+                    class="text-[#414042] text-sm font-medium font-['Inter'] leading-[14px] line-clamp-1"
+                    data-appointment-text="Inquiry_How_can_we_help"
+                    data-appointment-empty="N/A"
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--Overview Tab-->
+
+      <!--Property Tab-->
+      <div
+        x-show="selectedTab === 'property'"
+        id="tabpanelProperty"
+        role="tabpanel"
+        aria-label="overview"
+        class="mb-6 max-[1100px]:pb-4 flex gap-4"
+      >
+        <div class="flex flex-col gap-4 w-full max-[1100px]:mb-[100px]">
+          <div class="flex-col justify-start items-start gap-3 flex">
+            <div
+              class="p-4 bg-white rounded-lg border border-[#d3d7e2] flex-col justify-start items-start gap-6 flex w-full"
+            >
+              <div class="text-dark xlg:text-h2 xlg:!block text-h3 !hidden">
+                Property Information
+              </div>
+              <div
+                @click="accordianPropertyInformationExpoanded = ! accordianPropertyInformationExpoanded"
+                :aria-expanded="accordianPropertyInformationExpoanded ? 'true' : 'false'"
+                class="text-h1 !hidden items-center justify-between text-[#414042] max-[1100px]:!flex w-full"
+              >
+                <div
+                  class="text-[#414042] text-lg font-semibold font-['Inter'] leading-tight"
+                >
+                  Property Information
+                </div>
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M21.7336 8.5527L12.6431 17.6431C12.5587 17.7277 12.4585 17.7947 12.3481 17.8405C12.2378 17.8862 12.1195 17.9098 12 17.9098C11.8805 17.9098 11.7622 17.8862 11.6519 17.8405C11.5415 17.7947 11.4413 17.7277 11.3568 17.6431L2.2664 8.5527C2.09583 8.38213 2 8.15078 2 7.90955C2 7.66832 2.09583 7.43697 2.2664 7.2664C2.43697 7.09583 2.66832 7 2.90955 7C3.15078 7 3.38213 7.09583 3.5527 7.2664L12 15.7148L20.4473 7.2664C20.5318 7.18194 20.632 7.11494 20.7424 7.06923C20.8527 7.02353 20.971 7 21.0904 7C21.2099 7 21.3282 7.02353 21.4385 7.06923C21.5489 7.11494 21.6491 7.18194 21.7336 7.2664C21.8181 7.35086 21.8851 7.45113 21.9308 7.56148C21.9765 7.67183 22 7.79011 22 7.90955C22 8.02899 21.9765 8.14727 21.9308 8.25762C21.8851 8.36797 21.8181 8.46824 21.7336 8.5527Z"
+                    fill="#636D88"
+                  />
+                </svg>
+              </div>
+              <div
+                x-cloak
+                x-show="accordianPropertyInformationExpoanded"
+                id="accordionItemTwo"
+                role="region"
+                aria-labelledby="controlsAccordionItemTwo"
+                x-collapse
+              >
+                <div class="flex-col justify-center items-start gap-6 flex">
+                  <div class="flex-col justify-center items-start gap-3 flex">
+                    <div
+                      class="text-[#626c87] text-sm font-medium font-['Inter'] leading-[14px]"
+                    >
+                      Property Name
+                    </div>
+                    <div
+                      class="text-[#0052cc] text-base font-medium font-['Inter'] leading-none"
+                    >
+                      <a
+                        href="https://www.google.com/maps?q="
+                        data-appointment-text="Location_Display"
+                        data-appointment-empty="N/A"
+                        data-appointment-href="Location_Map_Query"
+                        data-appointment-href-prefix="https://www.google.com/maps?q="
+                        data-appointment-href-encode="true"
+                      ></a>
+                    </div>
+                  </div>
+                  <div
+                    class="justify-start items-start gap-6 flex max-[1100px]:flex-col"
+                  >
+                    <div
+                      class="justify-start items-start gap-6 flex max-[1100px]:flex-col"
+                    >
+                      <div
+                        class="flex-col justify-center items-start gap-3 flex"
+                      >
+                        <div
+                          class="text-[#626c87] text-sm font-medium font-['Inter'] leading-[14px]"
+                        >
+                          Lot Number
+                        </div>
+                        <div
+                          class="text-[#414042] text-base font-medium font-['Inter'] leading-none"
+                          data-appointment-text="Location_Lot_Number"
+                          data-appointment-empty="N/A"
+                        ></div>
+                      </div>
+                      <div
+                        class="flex-col justify-center items-start gap-3 flex"
+                      >
+                        <div
+                          class="text-[#626c87] text-sm font-medium font-['Inter'] leading-[14px]"
+                        >
+                          Unit Number
+                        </div>
+                        <div
+                          class="text-[#414042] text-base font-medium font-['Inter'] leading-none"
+                          data-appointment-text="Location_Unit_Number"
+                          data-appointment-empty="N/A"
+                        ></div>
+                      </div>
+                      <div
+                        class="flex-col justify-center items-start gap-3 flex"
+                      >
+                        <div
+                          class="text-[#626c87] text-sm font-medium font-['Inter'] leading-[14px]"
+                        >
+                          Address
+                        </div>
+                        <div
+                          class="text-[#414042] text-base font-medium font-['Inter'] leading-none"
+                          data-appointment-text="Location_Address_1"
+                          data-appointment-empty="N/A"
+                        ></div>
+                      </div>
+                    </div>
+                    <div
+                      class="justify-start items-start gap-6 flex max-[1100px]:flex-col"
+                    >
+                      <div
+                        class="flex-col justify-center items-start gap-3 flex"
+                      >
+                        <div
+                          class="text-[#626c87] text-sm font-medium font-['Inter'] leading-[14px]"
+                        >
+                          Suburb/ Town
+                        </div>
+                        <div
+                          class="text-[#414042] text-base font-medium font-['Inter'] leading-none"
+                          data-appointment-text="Location_Suburb_Town"
+                          data-appointment-empty="N/A"
+                        ></div>
+                      </div>
+                      <div
+                        class="flex-col justify-center items-start gap-3 flex"
+                      >
+                        <div
+                          class="text-[#626c87] text-sm font-medium font-['Inter'] leading-[14px]"
+                        >
+                          Postal Code
+                        </div>
+                        <div
+                          class="text-[#414042] text-base font-medium font-['Inter'] leading-none"
+                          data-appointment-text="Location_Postal_Code"
+                          data-appointment-empty="N/A"
+                        ></div>
+                      </div>
+                      <div
+                        class="flex-col justify-center items-start gap-3 flex"
+                      >
+                        <div
+                          class="text-[#626c87] text-sm font-medium font-['Inter'] leading-[14px]"
+                        >
+                          State
+                        </div>
+                        <div
+                          class="text-[#414042] text-base font-medium font-['Inter'] leading-none"
+                          data-appointment-text="LocationState"
+                          data-appointment-empty="N/A"
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="p-4 bg-white rounded-lg border border-[#d3d7e2] flex-col justify-start items-start gap-6 flex w-full"
+            >
+              <div class="text-dark xlg:text-h2 xlg:!block text-h3 !hidden">
+                Property Owner and Resident
+              </div>
+              <div
+                @click="accordianPropertyAndOwnerInformationExpoanded = ! accordianPropertyAndOwnerInformationExpoanded"
+                :aria-expanded="accordianPropertyAndOwnerInformationExpoanded ? 'true' : 'false'"
+                class="text-h1 !hidden items-center justify-between text-[#414042] max-[1100px]:!flex w-full"
+              >
+                <div
+                  class="text-[#414042] text-lg font-semibold font-['Inter'] leading-tight"
+                >
+                  Property Owner and Resident
+                </div>
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M21.7336 8.5527L12.6431 17.6431C12.5587 17.7277 12.4585 17.7947 12.3481 17.8405C12.2378 17.8862 12.1195 17.9098 12 17.9098C11.8805 17.9098 11.7622 17.8862 11.6519 17.8405C11.5415 17.7947 11.4413 17.7277 11.3568 17.6431L2.2664 8.5527C2.09583 8.38213 2 8.15078 2 7.90955C2 7.66832 2.09583 7.43697 2.2664 7.2664C2.43697 7.09583 2.66832 7 2.90955 7C3.15078 7 3.38213 7.09583 3.5527 7.2664L12 15.7148L20.4473 7.2664C20.5318 7.18194 20.632 7.11494 20.7424 7.06923C20.8527 7.02353 20.971 7 21.0904 7C21.2099 7 21.3282 7.02353 21.4385 7.06923C21.5489 7.11494 21.6491 7.18194 21.7336 7.2664C21.8181 7.35086 21.8851 7.45113 21.9308 7.56148C21.9765 7.67183 22 7.79011 22 7.90955C22 8.02899 21.9765 8.14727 21.9308 8.25762C21.8851 8.36797 21.8181 8.46824 21.7336 8.5527Z"
+                    fill="#636D88"
+                  />
+                </svg>
+              </div>
+              <div
+                x-cloak
+                x-show="accordianPropertyAndOwnerInformationExpoanded"
+                id="accordionItemThree"
+                role="region"
+                aria-labelledby="controlsAccordionItemThree"
+                x-collapse
+              >
+                <div
+                  class="justify-start items-center gap-6 flex max-[1100px]:flex-col max-[1100px]:items-start"
+                >
+                  <div
+                    class="justify-start items-start gap-6 flex max-[1100px]:flex-col"
+                  >
+                    <div class="flex-col justify-center items-start gap-3 flex">
+                      <div
+                        class="text-[#626c87] text-sm font-medium font-['Inter'] leading-[14px]"
+                      >
+                        Owner Type
+                      </div>
+                      <div
+                        class="text-[#414042] text-base font-medium font-['Inter'] leading-none"
+                        data-appointment-text="Location_Owner_Type"
+                        data-appointment-empty="N/A"
+                      ></div>
+                    </div>
+                    <div class="flex-col justify-center items-start gap-3 flex">
+                      <div
+                        class="text-[#626c87] text-sm font-medium font-['Inter'] leading-[14px]"
+                      >
+                        Owner Company
+                      </div>
+                      <div
+                        class="text-[#414042] text-base font-medium font-['Inter'] leading-none"
+                        data-appointment-text="CompanyName"
+                        data-appointment-empty="N/A"
+                      ></div>
+                    </div>
+                  </div>
+                  <div
+                    class="justify-start items-start gap-6 flex max-[1100px]:flex-col"
+                  >
+                    <div class="flex-col justify-center items-start gap-3 flex">
+                      <div
+                        class="text-[#626c87] text-sm font-medium font-['Inter'] leading-[14px]"
+                      >
+                        Resident's Name
+                      </div>
+                      <div
+                        class="text-[#414042] text-base font-medium font-['Inter'] leading-none"
+                        data-appointment-text="Location_Resident_s_Name"
+                        data-appointment-empty="N/A"
+                      ></div>
+                    </div>
+                    <div class="flex-col justify-center items-start gap-3 flex">
+                      <div
+                        class="text-[#626c87] text-sm font-medium font-['Inter'] leading-[14px]"
+                      >
+                        Resident's Mobile
+                      </div>
+                      <div
+                        class="text-[#0052cc] text-base font-medium font-['Inter'] leading-none"
+                        data-appointment-text="Location_Resident_s_Mobile"
+                        data-appointment-empty="N/A"
+                      ></div>
+                    </div>
+                    <div class="flex-col justify-center items-start gap-3 flex">
+                      <div
+                        class="text-[#626c87] text-sm font-medium font-['Inter'] leading-[14px]"
+                      >
+                        Resident's Email
+                      </div>
+                      <div
+                        class="text-[#0052cc] text-base font-medium font-['Inter'] leading-none"
+                        data-appointment-text="Location_Resident_s_Email"
+                        data-appointment-empty="N/A"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="p-4 bg-white rounded-lg border border-[#d3d7e2] flex-col justify-start items-start gap-6 flex w-full"
+            >
+              <div class="text-dark xlg:text-h2 xlg:!block text-h3 !hidden">
+                Property Description
+              </div>
+              <div
+                @click="accordianPropertyDescriptionExpoanded = ! accordianPropertyDescriptionExpoanded"
+                :aria-expanded="accordianPropertyDescriptionExpoanded ? 'true' : 'false'"
+                class="text-h1 !hidden items-center justify-between text-[#414042] max-[1100px]:!flex w-full"
+              >
+                <div
+                  class="text-[#414042] text-lg font-semibold font-['Inter'] leading-tight"
+                >
+                  Property Description
+                </div>
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M21.7336 8.5527L12.6431 17.6431C12.5587 17.7277 12.4585 17.7947 12.3481 17.8405C12.2378 17.8862 12.1195 17.9098 12 17.9098C11.8805 17.9098 11.7622 17.8862 11.6519 17.8405C11.5415 17.7947 11.4413 17.7277 11.3568 17.6431L2.2664 8.5527C2.09583 8.38213 2 8.15078 2 7.90955C2 7.66832 2.09583 7.43697 2.2664 7.2664C2.43697 7.09583 2.66832 7 2.90955 7C3.15078 7 3.38213 7.09583 3.5527 7.2664L12 15.7148L20.4473 7.2664C20.5318 7.18194 20.632 7.11494 20.7424 7.06923C20.8527 7.02353 20.971 7 21.0904 7C21.2099 7 21.3282 7.02353 21.4385 7.06923C21.5489 7.11494 21.6491 7.18194 21.7336 7.2664C21.8181 7.35086 21.8851 7.45113 21.9308 7.56148C21.9765 7.67183 22 7.79011 22 7.90955C22 8.02899 21.9765 8.14727 21.9308 8.25762C21.8851 8.36797 21.8181 8.46824 21.7336 8.5527Z"
+                    fill="#636D88"
+                  />
+                </svg>
+              </div>
+              <div
+                x-cloak
+                x-show="accordianPropertyDescriptionExpoanded"
+                id="accordionItemFour"
+                role="region"
+                aria-labelledby="controlsAccordionItemFour"
+                x-collapse
+              >
+                <div
+                  class="justify-start items-center gap-6 flex max-[1100px]:flex-col max-[1100px]:items-start"
+                >
+                  <div
+                    class="justify-start items-start gap-6 flex max-[1100px]:flex-col"
+                  >
+                    <div class="flex-col justify-center items-start gap-3 flex">
+                      <div
+                        class="text-[#626c87] text-sm font-medium font-['Inter'] leading-[14px]"
+                      >
+                        Property Type
+                      </div>
+                      <div
+                        class="text-[#414042] text-base font-medium font-['Inter'] leading-none"
+                        data-appointment-text="Location_Property_Type"
+                        data-appointment-empty="N/A"
+                      ></div>
+                    </div>
+                    <div class="flex-col justify-center items-start gap-3 flex">
+                      <div
+                        class="text-[#626c87] text-sm font-medium font-['Inter'] leading-[14px]"
+                      >
+                        Building Type
+                      </div>
+                      <div
+                        class="text-[#414042] text-base font-medium font-['Inter'] leading-none"
+                        data-appointment-text="Location_Building_Type"
+                        data-appointment-empty="N/A"
+                      ></div>
+                    </div>
+                    <div class="flex-col justify-center items-start gap-3 flex">
+                      <div
+                        class="text-[#626c87] text-sm font-medium font-['Inter'] leading-[14px]"
+                      >
+                        Building Type : Other
+                      </div>
+                      <div
+                        class="text-[#414042] text-base font-medium font-['Inter'] leading-none"
+                        data-appointment-text="Location_Building_Type_Other"
+                        data-appointment-empty="N/A"
+                      ></div>
+                    </div>
+                  </div>
+                  <div
+                    class="justify-start items-start gap-6 flex max-[1100px]:flex-col"
+                  >
+                    <div class="flex-col justify-center items-start gap-3 flex">
+                      <div
+                        class="text-[#626c87] text-sm font-medium font-['Inter'] leading-[14px]"
+                      >
+                        Foundation Type
+                      </div>
+                      <div
+                        class="text-[#414042] text-base font-medium font-['Inter'] leading-none"
+                        data-appointment-text="Location_Foundation_Type"
+                        data-appointment-empty="N/A"
+                      ></div>
+                    </div>
+                    <div class="flex-col justify-center items-start gap-3 flex">
+                      <div
+                        class="text-[#626c87] text-sm font-medium font-['Inter'] leading-[14px]"
+                      >
+                        Bedrooms
+                      </div>
+                      <div
+                        class="text-[#414042] text-base font-medium font-['Inter'] leading-none"
+                        data-appointment-text="LocationBedrooms"
+                        data-appointment-empty="N/A"
+                      ></div>
+                    </div>
+                    <div class="flex-col justify-center items-start gap-3 flex">
+                      <div
+                        class="text-[#626c87] text-sm font-medium font-['Inter'] leading-[14px]"
+                      >
+                        Stories
+                      </div>
+                      <div
+                        class="text-[#414042] text-base font-medium font-['Inter'] leading-none"
+                        data-appointment-text="LocationStories"
+                        data-appointment-empty="N/A"
+                      ></div>
+                    </div>
+                    <div class="flex-col justify-center items-start gap-3 flex">
+                      <div
+                        class="text-[#626c87] text-sm font-medium font-['Inter'] leading-[14px]"
+                      >
+                        Manhole
+                      </div>
+                      <div
+                        class="text-[#414042] text-base font-medium font-['Inter'] leading-none"
+                        data-appointment-text="LocationManholeLabel"
+                        data-appointment-empty="N/A"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--Property Tab-->
+    </div>
+    <!-- Tabbed Section -->
+
+    <!--Footer Buttons -->
+    <div
+      class="border-light flex items-center justify-end gap-4 border-t px-6 py-3 max-[1100px]:fixed max-[1100px]:bottom-0 max-[1100px]:right-0 max-[1100px]:w-full max-[1100px]:bg-white max-[1100px]:p-4"
+    >
+      <button
+        class="button-outline"
+        @click="returnInquiryModal = true; modalIsOpen = false"
+      >
+        Return Inquiry
+      </button>
+      <button
+        @click="window.prefillRescheduleModal && window.prefillRescheduleModal(); scheduleSiteVisitModal = true; modalIsOpen = false"
+        class="button-outline group flex items-center gap-2"
+      >
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 14 14"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            class="transition-all group-hover:fill-white"
+            d="M4.52097 1.45703C4.52097 1.341 4.47488 1.22972 4.39283 1.14767C4.31079 1.06562 4.19951 1.01953 4.08347 1.01953C3.96744 1.01953 3.85616 1.06562 3.77411 1.14767C3.69207 1.22972 3.64597 1.341 3.64597 1.45703V2.3787C2.80597 2.44578 2.25531 2.61028 1.85047 3.0157C1.44506 3.42053 1.28056 3.97178 1.21289 4.8112H12.7874C12.7197 3.9712 12.5552 3.42053 12.1498 3.0157C11.745 2.61028 11.1937 2.44578 10.3543 2.37811V1.45703C10.3543 1.341 10.3082 1.22972 10.2262 1.14767C10.1441 1.06562 10.0328 1.01953 9.91681 1.01953C9.80077 1.01953 9.68949 1.06562 9.60745 1.14767C9.5254 1.22972 9.47931 1.341 9.47931 1.45703V2.33961C9.09139 2.33203 8.65622 2.33203 8.16681 2.33203H5.83347C5.34406 2.33203 4.90889 2.33203 4.52097 2.33961V1.45703Z"
+            fill="#003882"
+          />
+          <path
+            class="transition-all group-hover:fill-white"
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M1.16699 7C1.16699 6.51058 1.16699 6.07542 1.17458 5.6875H12.8261C12.8337 6.07542 12.8337 6.51058 12.8337 7V8.16667C12.8337 10.3664 12.8337 11.4666 12.15 12.1497C11.4663 12.8327 10.3667 12.8333 8.16699 12.8333H5.83366C3.63391 12.8333 2.53374 12.8333 1.85066 12.1497C1.16758 11.466 1.16699 10.3664 1.16699 8.16667V7ZM9.91699 8.16667C10.0717 8.16667 10.2201 8.10521 10.3295 7.99581C10.4389 7.88642 10.5003 7.73804 10.5003 7.58333C10.5003 7.42862 10.4389 7.28025 10.3295 7.17085C10.2201 7.06146 10.0717 7 9.91699 7C9.76228 7 9.61391 7.06146 9.50451 7.17085C9.39512 7.28025 9.33366 7.42862 9.33366 7.58333C9.33366 7.73804 9.39512 7.88642 9.50451 7.99581C9.61391 8.10521 9.76228 8.16667 9.91699 8.16667ZM9.91699 10.5C10.0717 10.5 10.2201 10.4385 10.3295 10.3291C10.4389 10.2197 10.5003 10.0714 10.5003 9.91667C10.5003 9.76196 10.4389 9.61358 10.3295 9.50419C10.2201 9.39479 10.0717 9.33333 9.91699 9.33333C9.76228 9.33333 9.61391 9.39479 9.50451 9.50419C9.39512 9.61358 9.33366 9.76196 9.33366 9.91667C9.33366 10.0714 9.39512 10.2197 9.50451 10.3291C9.61391 10.4385 9.76228 10.5 9.91699 10.5ZM7.58366 7.58333C7.58366 7.73804 7.5222 7.88642 7.4128 7.99581C7.30341 8.10521 7.15504 8.16667 7.00033 8.16667C6.84562 8.16667 6.69724 8.10521 6.58785 7.99581C6.47845 7.88642 6.41699 7.73804 6.41699 7.58333C6.41699 7.42862 6.47845 7.28025 6.58785 7.17085C6.69724 7.06146 6.84562 7 7.00033 7C7.15504 7 7.30341 7.06146 7.4128 7.17085C7.5222 7.28025 7.58366 7.42862 7.58366 7.58333ZM7.58366 9.91667C7.58366 10.0714 7.5222 10.2197 7.4128 10.3291C7.30341 10.4385 7.15504 10.5 7.00033 10.5C6.84562 10.5 6.69724 10.4385 6.58785 10.3291C6.47845 10.2197 6.41699 10.0714 6.41699 9.91667C6.41699 9.76196 6.47845 9.61358 6.58785 9.50419C6.69724 9.39479 6.84562 9.33333 7.00033 9.33333C7.15504 9.33333 7.30341 9.39479 7.4128 9.50419C7.5222 9.61358 7.58366 9.76196 7.58366 9.91667ZM4.08366 8.16667C4.23837 8.16667 4.38674 8.10521 4.49614 7.99581C4.60553 7.88642 4.66699 7.73804 4.66699 7.58333C4.66699 7.42862 4.60553 7.28025 4.49614 7.17085C4.38674 7.06146 4.23837 7 4.08366 7C3.92895 7 3.78058 7.06146 3.67118 7.17085C3.56178 7.28025 3.50033 7.42862 3.50033 7.58333C3.50033 7.73804 3.56178 7.88642 3.67118 7.99581C3.78058 8.10521 3.92895 8.16667 4.08366 8.16667ZM4.08366 10.5C4.23837 10.5 4.38674 10.4385 4.49614 10.3291C4.60553 10.2197 4.66699 10.0714 4.66699 9.91667C4.66699 9.76196 4.60553 9.61358 4.49614 9.50419C4.38674 9.39479 4.23837 9.33333 4.08366 9.33333C3.92895 9.33333 3.78058 9.39479 3.67118 9.50419C3.56178 9.61358 3.50033 9.76196 3.50033 9.91667C3.50033 10.0714 3.56178 10.2197 3.67118 10.3291C3.78058 10.4385 3.92895 10.5 4.08366 10.5Z"
+            fill="#003882"
+          />
+        </svg>
+        <div>Reschedule site visit</div>
+      </button>
+      <div class="hidden">
+        <div
+          class="jobUniqueID"
+          data-appointment-text="PeterpmJob_Unique_ID"
+        ></div>
+        <div
+          class="inquiryUniqueID"
+          data-appointment-text="Inquiry_Unique_ID"
+        ></div>
+        <div
+          class="guestID"
+          data-appointment-text="Primary_Guest_Unique_ID"
+        ></div>
+        <div
+          class="propertyId"
+          data-appointment-text="PeterpmProperty_Unique_ID"
+        ></div>
+      </div>
+      <button
+        class="quoteButton button-primary"
+        data-appointment-text="Quote_Button_Label"
+      ></button>
+    </div>
+    <!--Footer Buttons -->
+  </div>
+</div>
+
+<script>
+  const buttonDiv = document.querySelector(".quoteButton");
+  if (buttonDiv) {
+    buttonDiv.addEventListener("click", () => {
+      const data = window.appointmentData || {};
+      const inquiryUniqueID =
+        data.Inquiry_Unique_ID || data.Inquiry_ID || data.inquiry_id || "";
+      const guestID =
+        data.Primary_Guest_Unique_ID ||
+        data.Primary_Guest_ID ||
+        data.primary_guest_id ||
+        data.Primary_Guest_Contact_ID ||
+        "";
+      const propertyId =
+        data.PeterpmProperty_Unique_ID ||
+        data.Location_ID ||
+        data.location_id ||
+        "";
+      const jobId =
+        data.PeterpmJob_Unique_ID ||
+        data.Job_Unique_ID ||
+        data.job_id ||
+        "";
+
+      if (!jobId) {
+        const inquiryInput = document.querySelector(
+          ".inquiryRecordUniqueID input",
+        );
+        const contactInput = document.querySelector(
+          ".clientContactUniqueID input",
+        );
+        const propertyInput = document.querySelector(
+          ".propertyUniqueID input",
+        );
+
+        if (inquiryInput) {
+          inquiryInput.value = inquiryUniqueID || "";
+        }
+        if (contactInput) {
+          contactInput.value = guestID || "";
+        }
+        if (propertyInput) {
+          propertyInput.value = propertyId || "";
+        }
+
+        const createQuoteBtn = document.querySelector(".createQuoteBtn");
+        if (createQuoteBtn) {
+          createQuoteBtn.click();
+        }
+      } else {
+        window.location.href = `/edit-quote/${jobId}`;
+      }
+    });
+  }
+</script>
