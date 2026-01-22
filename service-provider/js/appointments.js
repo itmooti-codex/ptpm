@@ -657,6 +657,13 @@ const scheduleAppointmentFromModal = async () => {
       return;
     }
 
+    const hostId =
+      typeof loggedInUserIdOp !== "undefined" && loggedInUserIdOp !== null
+        ? loggedInUserIdOp
+        : appointmentData.contact_contact_id ||
+          appointmentData.Contact_Contact_ID ||
+          "";
+
     const payload = {
       inquiry_id: inquiryId,
       status: "New",
@@ -664,6 +671,7 @@ const scheduleAppointmentFromModal = async () => {
       title: appointmentTitle,
       location_id: propertyID,
       primary_guest_id: contactID,
+      host_id: hostId,
       duration_minutes: parseInt(durationMinute, 10) || 0,
       duration_hours: parseInt(durationHour, 10) || 0,
       description: scheduleDescription,
