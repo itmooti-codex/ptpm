@@ -532,3 +532,148 @@ if (monthFilter) {
 
 setRange(currentRange, { refresh: true });
 
+const SDK_CONFIG = {
+  slug: "peterpm",
+  apiKey: "1rBR-jpR3yE3HE1VhFD0j",
+};
+
+const loadVitalStatsSdk = () => {
+  if (window.initVitalStats || window.initVitalStatsSDK) {
+    return Promise.resolve();
+  }
+  return new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = "https://static-au03.vitalstats.app/static/sdk/v1/latest.js";
+    script.async = true;
+    script.crossOrigin = "anonymous";
+    script.onload = resolve;
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+};
+
+const getVitalStatsPlugin = async () => {
+  if (window.vitalStatsPlugin) {
+    return window.vitalStatsPlugin;
+  }
+  if (!window.vitalStatsPluginPromise) {
+    window.vitalStatsPluginPromise = (async () => {
+      await loadVitalStatsSdk();
+      const initFn = window.initVitalStats || window.initVitalStatsSDK;
+      if (!initFn) {
+        throw new Error("VitalStats SDK init function missing");
+      }
+      const { plugin } = await initFn({
+        slug: SDK_CONFIG.slug,
+        apiKey: SDK_CONFIG.apiKey,
+        isDefault: true,
+      }).toPromise();
+      window.vitalStatsPlugin = plugin;
+      return plugin;
+    })();
+  }
+  return window.vitalStatsPluginPromise;
+};
+
+const scheduleAppointmentFromModal = async () => {
+  try {
+    const alpineData = getAlpineData();
+    const appointmentData =
+      (alpineData && alpineData.appointmentData) || window.appointmentData;
+    if (!appointmentData) {
+      alert("Appointment data is missing.");
+      return;
+    }
+
+    const dateTimeInputEl = document.querySelector(
+      ".dateTimeScheduleInquiry",
+    );
+    const scheduleDescriptionEl = document.querySelector(
+      ".scheduleDescription",
+    );
+    const appointmentTitleEl = document.querySelector("#appointmentTitle");
+    const durationHourEl = document.getElementById("durationHour");
+    const durationMinuteEl = document.getElementById("durationMinute");
+
+    const dateTimeInput = dateTimeInputEl ? dateTimeInputEl.value : "";
+    const scheduleDescription = scheduleDescriptionEl
+      ? scheduleDescriptionEl.value
+      : "";
+    const appointmentTitle = appointmentTitleEl ? appointmentTitleEl.value : "";
+    const durationHour = durationHourEl ? durationHourEl.value : "0";
+    const durationMinute = durationMinuteEl ? durationMinuteEl.value : "0";
+
+    if (!dateTimeInput) {
+      alert("Please select a date and time.");
+      return;
+    }
+
+    const dateObj = new Date(dateTimeInput);
+    if (Number.isNaN(dateObj.getTime())) {
+      alert("Invalid date/time selected.");
+      return;
+    }
+
+    const timestamp = Math.floor(dateObj.getTime() / 1000);
+    const propertyID =
+      appointmentData.location_id ||
+      appointmentData.Location_ID ||
+      appointmentData.PeterpmProperty_Unique_ID ||
+      "";
+    const inquiryId =
+      appointmentData.inquiry_id ||
+      appointmentData.Inquiry_ID ||
+      appointmentData.Inquiry_Unique_ID ||
+      "";
+    const contactID =
+      appointmentData.Primary_Guest_Contact_ID ||
+      appointmentData.primary_guest_contact_id ||
+      "";
+
+    if (!propertyID || !inquiryId || !contactID) {
+      alert("Missing property, inquiry, or contact details.");
+      return;
+    }
+
+    const payload = {
+      inquiry_id: inquiryId,
+      status: "New",
+      start_time: timestamp,
+      title: appointmentTitle,
+      location_id: propertyID,
+      primary_guest_id: contactID,
+      duration_minutes: parseInt(durationMinute, 10) || 0,
+      duration_hours: parseInt(durationHour, 10) || 0,
+      descriptions: scheduleDescription,
+    };
+
+    const plugin = await getVitalStatsPlugin();
+    const appointmentModel = plugin.switchTo("PeterpmAppointment");
+    const appointmentMutation = appointmentModel.mutation();
+    appointmentMutation.createOne(payload);
+    await appointmentMutation.execute(true).toPromise();
+
+    const dealModel = plugin.switchTo("PeterpmDeal");
+    const dealMutation = dealModel.mutation();
+    const inquiryField =
+      typeof inquiryId === "string" && inquiryId.trim().length
+        ? Number.isFinite(Number(inquiryId))
+          ? "id"
+          : "unique_id"
+        : "id";
+    dealMutation.update((q) =>
+      q.where(inquiryField, inquiryId).set({
+        inquiry_status: "Site Visit to be Re-Scheduled",
+      }),
+    );
+    await dealMutation.execute(true).toPromise();
+
+    alert("Appointment scheduled successfully.");
+    location.reload();
+  } catch (error) {
+    console.error("Reschedule appointment failed:", error);
+    alert("Failed to schedule appointment. Check console for details.");
+  }
+};
+
+window.scheduleAppointmentFromModal = scheduleAppointmentFromModal;
