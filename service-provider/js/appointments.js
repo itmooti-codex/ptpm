@@ -240,161 +240,304 @@ const getAlpineData = () => {
   return null;
 };
 
-const normalizeAppointmentData = (row) => {
-  const extractLeadingNumber = (value) => {
-    if (value === null || value === undefined) {
-      return "";
-    }
-    const match = String(value).trim().match(/^(\d+)/);
-    return match ? match[1] : "";
-  };
+const mapAppointmentRecord = (record) => {
+  const location = record?.Location || {};
+  const primaryGuest = record?.Primary_Guest || {};
+  const inquiry = record?.Inquiry || {};
+  const ownerCompany = location?.Owner_Company || {};
+  let residentLink = location?.Primary_Resident_Contact_for_Property || {};
+  if (Array.isArray(residentLink)) {
+    residentLink = residentLink[0] || {};
+  }
+  let residentContact = residentLink?.Contact || {};
+  if (Array.isArray(residentContact)) {
+    residentContact = residentContact[0] || {};
+  }
 
-  const inquiryId =
-    row.Inquiry_Unique_ID || row.Inquiry_ID || row.inquiry_id || "";
-  const jobId = row.Job_Unique_ID || row.Job_ID || row.job_id || "";
-  const title = row.Title || row.title || "";
-  const description = row.Description || row.description || "";
-  const status = row.Status || row.status || "";
-  const type = row.Type || row.type || "";
-  const durationHours = row.Duration_Hours || row.duration_hours || 0;
-  const durationMinutes = row.Duration_Minutes || row.duration_minutes || 0;
-  const startTime = row.Start_Time || row.Start || row.start_time || "";
-  const endTime = row.End_Time || row.End || row.end_time || "";
-  const uniqueId =
-    row.ID ||
-    row.unique_id ||
-    row.Unique_ID ||
-    row.uniqueId ||
-    inquiryId ||
-    jobId ||
-    "";
-  const locationPropertyName =
-    row.Location_Property_Name || row.location_property_name || "";
-  const locationAddress1 =
-    row.Location_Address_1 || row.location_address_1 || "";
-  const locationSuburbTown =
-    row.Location_Suburb_Town || row.location_suburb_town || "";
-  const locationState =
-    row.LocationState || row.location_state || row.Location_State || "";
-  const primaryGuestFirstName =
-    row.Primary_Guest_First_Name || row.primary_guest_first_name || "";
-  const primaryGuestLastName =
-    row.Primary_Guest_Last_Name || row.primary_guest_last_name || "";
-  const primaryGuestContactId =
-    row.Primary_Guest_Contact_ID || row.primary_guest_contact_id || "";
-  const primaryGuestEmail =
-    row.Primary_GuestEmail ||
-    row.Primary_Guest_Email ||
-    row.Primary_Guest_Email_Address ||
-    row.Primary_Guest_Email_Address_1 ||
-    row.Primary_Guest_Email_Address_2 ||
-    row.primary_guest_email ||
-    "";
-  const primaryGuestSms =
-    row.Primary_Guest_SMS_Number ||
-    row.Primary_Guest_SMS ||
-    row.primary_guest_sms_number ||
-    row.primary_guest_sms ||
-    "";
-  const contactId = row.Contact_Contact_ID || row.contact_contact_id || "";
-  const contactFirstName =
-    row.Contact_First_Name || row.contact_first_name || "";
-  const contactLastName = row.Contact_Last_Name || row.contact_last_name || "";
-  const locationIdFromAddress = extractLeadingNumber(row.Address || "");
-  const primaryGuestIdFromGuest = extractLeadingNumber(row.Guest || "");
-  const locationId =
-    row.location_id || row.Location_ID || locationIdFromAddress || "";
-  const primaryGuestId =
-    row.primary_guest_id ||
-    row.Primary_Guest_ID ||
-    row.Primary_Guest_Contact_ID ||
-    row.primary_guest_contact_id ||
-    primaryGuestIdFromGuest ||
-    "";
+  const startTime = record?.start_time || "";
+  const endTime = record?.end_time || "";
+  const description = record?.description || "";
+
+  const addressParts = [
+    location?.property_name,
+    location?.address_1,
+    location?.suburb_town,
+    location?.state,
+  ]
+    .filter((value) => value)
+    .join(" ");
 
   return {
-    ...row,
-    formattedDateAndTime:
-      formatDateAndTime(startTime) || row.Start || row.Start_Time || "",
+    ID: record?.id || "",
+    Type: record?.type || "",
+    Title: record?.title || "",
+    Job_ID: record?.job_id || "",
+    Status: record?.status || "",
+    Host_ID: record?.host_id || "",
+    End_Time: endTime,
+    Owner_ID: record?.owner_id || "",
+    Last_Note: record?.last_note || "",
+    Unique_ID: record?.unique_id || "",
+    Date_Added: record?.created_at || "",
+    Inquiry_ID: record?.inquiry_id || "",
+    IP_Address: record?.ip_address || "",
+    Start_Time: startTime,
+    Description: description,
+    Location_ID: record?.location_id || "",
+    API_Response: record?.api_response || "",
+    Event_Colour: record?.event_colour || "",
+    Last_Activity: record?.last_activity || "",
+    Last_SMS_Sent: record?.last_sms_sent || "",
+    Profile_Image: record?.profile_image || "",
+    Duration_Hours: record?.duration_hours || 0,
+    Last_Email_Sent: record?.last_email_sent || "",
+    Duration_Minutes: record?.duration_minutes || 0,
+    Last_Call_Logged: record?.last_call_logged || "",
+    Date_Modified: record?.last_modified_at || "",
+    Primary_Guest_ID: record?.primary_guest_id || "",
+    Calendar_Event_ID: record?.calendar_event_id || "",
+    Last_SMS_Received: record?.last_sms_received || "",
+    Last_Email_Received: record?.last_email_received || "",
+    externalRawDataStatus: record?.externalRawDataStatus || "",
+    Appointment_Edit_Page_URL: record?.appointment_edit_page_url || "",
+    Appointment_Edit_Page_visits: record?.appointment_edit_page_visits || "",
+    Appointment_Edit_Page_published:
+      record?.appointment_edit_page_published || "",
+    Appointment_Edit_Page_unique_visits:
+      record?.appointment_edit_page_unique_visits || "",
+    Primary_Guest_First_Name: primaryGuest?.first_name || "",
+    Primary_Guest_Last_Name: primaryGuest?.last_name || "",
+    Primary_Guest_Email: primaryGuest?.email || "",
+    Primary_Guest_SMS_Number: primaryGuest?.sms_number || "",
+    Location_Property_Name: location?.property_name || "",
+    Location_Address_1: location?.address_1 || "",
+    Location_Address_2: location?.address_2 || "",
+    Location_Lot_Number: location?.lot_number || "",
+    Location_Unit_Number: location?.unit_number || "",
+    Location_Suburb_Town: location?.suburb_town || "",
+    Location_Postal_Code: location?.postal_code || "",
+    LocationState: location?.state || "",
+    Location_Owner_Type: location?.owner_type || "",
+    Location_Property_Type: location?.property_type || "",
+    Location_Building_Type: location?.building_type || "",
+    Location_Building_Type_Other: location?.building_type_other || "",
+    Location_Foundation_Type: location?.foundation_type || "",
+    LocationBedrooms: location?.bedrooms || "",
+    LocationStories: location?.stories || "",
+    LocationManhole: location?.manhole || "",
+    CompanyName: ownerCompany?.name || "",
+    Contact_First_Name: residentContact?.first_name || "",
+    Contact_Last_Name: residentContact?.last_name || "",
+    Contact_SMS_Number: residentContact?.sms_number || "",
+    ContactEmail: residentContact?.email || "",
+    Inquiry_Admin_Notes: inquiry?.admin_notes || "",
+    Inquiry_How_Can_We_Help: inquiry?.how_can_we_help || "",
+    Inquiry_How_can_we_help: inquiry?.how_can_we_help || "",
+    Inquiry_Service_Type: inquiry?.service_type || "",
+    formattedDateAndTime: formatDateAndTime(startTime),
     descriptions: description,
     description,
-    title,
-    status,
-    type,
-    unique_id: uniqueId,
-    inquiry_id: inquiryId,
-    job_id: jobId,
-    duration_hours: durationHours,
-    duration_minutes: durationMinutes,
+    title: record?.title || "",
+    status: record?.status || "",
+    type: record?.type || "",
+    unique_id: record?.unique_id || "",
+    inquiry_id: record?.inquiry_id || "",
+    job_id: record?.job_id || "",
+    duration_hours: record?.duration_hours || 0,
+    duration_minutes: record?.duration_minutes || 0,
     start_time: startTime,
     end_time: endTime,
-    Location_Property_Name: locationPropertyName,
-    Location_Address_1: locationAddress1,
-    Location_Suburb_Town: locationSuburbTown,
-    LocationState: locationState,
-    location_property_name: locationPropertyName,
-    location_address_1: locationAddress1,
-    location_suburb_town: locationSuburbTown,
-    location_state: locationState,
-    Primary_Guest_First_Name: primaryGuestFirstName,
-    Primary_Guest_Last_Name: primaryGuestLastName,
-    Primary_Guest_Contact_ID: primaryGuestId || primaryGuestContactId,
-    primary_guest_contact_id: primaryGuestId || primaryGuestContactId,
-    primary_guest_id: primaryGuestId,
-    Primary_GuestEmail: primaryGuestEmail,
-    Primary_Guest_SMS_Number: primaryGuestSms,
-    Contact_Contact_ID: contactId,
-    Contact_First_Name: contactFirstName,
-    Contact_Last_Name: contactLastName,
-    contact_contact_id: contactId,
-    contact_first_name: contactFirstName,
-    contact_last_name: contactLastName,
-    Inquiry_Unique_ID: inquiryId,
-    Job_Unique_ID: jobId,
-    PeterpmJob_Unique_ID: row.PeterpmJob_Unique_ID || jobId,
-    Primary_Guest_Unique_ID:
-      row.Primary_Guest_Unique_ID || primaryGuestContactId,
-    PeterpmProperty_Unique_ID:
-      row.PeterpmProperty_Unique_ID || locationId || "",
-    location_id: locationId,
+    location_id: record?.location_id || "",
+    Primary_Guest_Contact_ID: record?.primary_guest_id || "",
+    primary_guest_contact_id: record?.primary_guest_id || "",
+    primary_guest_id: record?.primary_guest_id || "",
+    Primary_GuestEmail: primaryGuest?.email || "",
+    Address: addressParts,
+    Inquiry_Unique_ID: record?.inquiry_id || "",
+    Job_Unique_ID: record?.job_id || "",
+    PeterpmJob_Unique_ID: record?.job_id || "",
+    Primary_Guest_Unique_ID: record?.primary_guest_id || "",
+    PeterpmProperty_Unique_ID: record?.location_id || "",
   };
 };
 
-const handleAppointmentSelect = (row) => {
+const extractFirstRecord = (payload) => {
+  if (!payload) {
+    return null;
+  }
+  if (Array.isArray(payload)) {
+    return payload[0] || null;
+  }
+  if (Array.isArray(payload?.resp)) {
+    return payload.resp[0] || null;
+  }
+  if (Array.isArray(payload?.records)) {
+    return payload.records[0] || null;
+  }
+  return payload?.resp || payload?.record || payload || null;
+};
+
+const fetchAppointmentDetails = async (appointmentId) => {
+  const plugin = await getVitalStatsPlugin();
+  const appointmentModel = plugin.switchTo("PeterpmAppointment");
+  const idValue = appointmentId;
+  const isNumericId =
+    typeof idValue === "number" ||
+    (typeof idValue === "string" && /^\d+$/.test(idValue.trim()));
+
+  let query = appointmentModel.query();
+  query = query.where(isNumericId ? "id" : "unique_id", idValue);
+  query = query.deSelectAll().select([
+    "id",
+    "type",
+    "title",
+    "job_id",
+    "status",
+    "host_id",
+    "end_time",
+    "owner_id",
+    "last_note",
+    "unique_id",
+    "created_at",
+    "inquiry_id",
+    "ip_address",
+    "start_time",
+    "description",
+    "location_id",
+    "api_response",
+    "event_colour",
+    "last_activity",
+    "last_sms_sent",
+    "profile_image",
+    "duration_hours",
+    "last_email_sent",
+    "duration_minutes",
+    "last_call_logged",
+    "last_modified_at",
+    "primary_guest_id",
+    "calendar_event_id",
+    "last_sms_received",
+    "last_email_received",
+    "externalRawDataStatus",
+    "appointment_edit_page_url",
+    "appointment_edit_page_visits",
+    "appointment_edit_page_published",
+    "appointment_edit_page_unique_visits",
+  ]);
+
+  if (typeof query.include === "function") {
+    query.include("Primary_Guest", (q) => {
+      if (q && typeof q.select === "function") {
+        q.select(["id", "first_name", "last_name", "email", "sms_number"]);
+      }
+    });
+    query.include("Inquiry", (q) => {
+      if (q && typeof q.select === "function") {
+        q.select(["admin_notes", "how_can_we_help", "service_type"]);
+      }
+    });
+    query.include("Location", (q) => {
+      if (q && typeof q.select === "function") {
+        q.select([
+          "property_name",
+          "address_1",
+          "address_2",
+          "lot_number",
+          "unit_number",
+          "suburb_town",
+          "postal_code",
+          "state",
+          "owner_type",
+          "property_type",
+          "building_type",
+          "building_type_other",
+          "foundation_type",
+          "bedrooms",
+          "stories",
+          "manhole",
+        ]);
+      }
+      if (q && typeof q.include === "function") {
+        q.include("Owner_Company", (oc) => {
+          if (oc && typeof oc.select === "function") {
+            oc.select(["name"]);
+          }
+        });
+        q.include("Primary_Resident_Contact_for_Property", (pc) => {
+          if (pc && typeof pc.include === "function") {
+            pc.include("Contact", (c) => {
+              if (c && typeof c.select === "function") {
+                c.select(["first_name", "last_name", "sms_number", "email"]);
+              }
+            });
+          }
+        });
+      }
+    });
+  }
+
+  query.getOrInitQueryCalc?.();
+  const result = await query.fetchDirect().toPromise();
+  return extractFirstRecord(result);
+};
+
+const handleAppointmentSelect = async (row) => {
   if (!row) {
     return;
   }
-
-  const appointmentData = normalizeAppointmentData(row);
-  const alpineData = getAlpineData();
-  if (alpineData) {
-    alpineData.appointmentData = appointmentData;
-  } else {
-    window.appointmentData = appointmentData;
+  const appointmentId =
+    row.ID ||
+    row.id ||
+    row.Appointment_ID ||
+    row.appointment_id ||
+    row.Unique_ID ||
+    row.unique_id ||
+    "";
+  if (!appointmentId) {
+    alert("Appointment ID is missing.");
+    return;
   }
 
-  const jobData = document.querySelectorAll(".jobData");
-  const inquiryData = document.querySelectorAll(".inquiryData");
-  if (appointmentData.type === "Job") {
-    jobData.forEach((element) => {
-      element.classList.remove("hidden");
-    });
-    inquiryData.forEach((element) => {
-      element.classList.add("hidden");
-    });
-  } else {
-    jobData.forEach((element) => {
-      element.classList.add("hidden");
-    });
-    inquiryData.forEach((element) => {
-      element.classList.remove("hidden");
-    });
-  }
+  try {
+    const record = await fetchAppointmentDetails(appointmentId);
+    if (!record) {
+      alert("Appointment details not found.");
+      return;
+    }
+    const appointmentData = mapAppointmentRecord(record);
+    const alpineData = getAlpineData();
+    if (alpineData) {
+      alpineData.appointmentData = appointmentData;
+    } else {
+      window.appointmentData = appointmentData;
+    }
 
-  if (alpineData) {
-    alpineData.modalIsOpen = true;
-  } else {
-    window.modalIsOpen = true;
+    const jobData = document.querySelectorAll(".jobData");
+    const inquiryData = document.querySelectorAll(".inquiryData");
+    if (appointmentData.Type === "Job" || appointmentData.type === "Job") {
+      jobData.forEach((element) => {
+        element.classList.remove("hidden");
+      });
+      inquiryData.forEach((element) => {
+        element.classList.add("hidden");
+      });
+    } else {
+      jobData.forEach((element) => {
+        element.classList.add("hidden");
+      });
+      inquiryData.forEach((element) => {
+        element.classList.remove("hidden");
+      });
+    }
+
+    if (alpineData) {
+      alpineData.modalIsOpen = true;
+    } else {
+      window.modalIsOpen = true;
+    }
+  } catch (error) {
+    console.error("Failed to load appointment details:", error);
+    alert("Failed to load appointment details.");
   }
 };
 
