@@ -1,6 +1,8 @@
 import { renderDynamicTable } from "../../shared/dynamicTable.js";
 import { getDashboardTableElement } from "../../shared/dom.js";
 import { formatDisplayDate, formatUnixDate } from "../../shared/dateFormat.js";
+import { DASHBOARD_TABS } from "./config.js";
+import { tableState } from "./dashboardState.js";
 
 export class DashboardView {
   constructor() {}
@@ -137,5 +139,114 @@ export class DashboardView {
     return () => {
       tabsContainer.removeEventListener("click", onClick);
     };
+  }
+
+  setActiveTab(tab, context, links, panels) {
+    const relatedFilters = document.getElementById("related-filters");
+    const paymentRelated = document.getElementById("payment-related-filter");
+    if (tab === "urgent-calls") relatedFilters?.classList.add("hidden");
+    else relatedFilters?.classList.remove("hidden");
+
+    if (paymentRelated) {
+      const showPaymentFilters = [
+        DASHBOARD_TABS.payment,
+        DASHBOARD_TABS.quote,
+        DASHBOARD_TABS.jobs,
+        DASHBOARD_TABS["active-jobs"],
+      ].includes(tab);
+      paymentRelated.classList.toggle("hidden", !showPaymentFilters);
+    }
+
+    const previousTab = context.previousTab;
+    if (previousTab) {
+      context.filtersConfig[previousTab]?.forEach((id) => {
+        document.getElementById(id)?.classList.add("hidden");
+      });
+    }
+
+    context.filtersConfig[tab]?.forEach((id) => {
+      document.getElementById(id)?.classList.remove("hidden");
+    });
+
+    links.forEach((a) => {
+      const isActive = a.getAttribute("data-tab") === tab;
+      a.setAttribute("data-active", isActive ? "true" : "false");
+      a.classList.toggle("!text-sky-900", isActive);
+      a.classList.toggle("!text-neutral-700", !isActive);
+      a.classList.toggle("!border-sky-900", isActive);
+      a.classList.toggle("!border-b-2", true);
+      a.classList.toggle("!border-transparent", !isActive);
+    });
+
+    if (panels.length) {
+      panels.forEach((p) => {
+        const show = p.getAttribute("data-panel") === tab;
+        p.classList.toggle("hidden", !show);
+      });
+    }
+
+    if (previousTab !== tab) {
+      context.previousTab = tab;
+      tableState.previousTab = tab;
+      if (typeof context.onTabChange === "function") {
+        context.onTabChange(tab);
+      }
+    } else {
+      context.previousTab = tab;
+      tableState.previousTab = tab;
+    }
+  }
+
+  renderStatusOptionsForTab(statuses, handler) {
+    const card = document.getElementById("status-filter-card");
+    const list = document.getElementById("status-filter-list");
+    if (!card || !list) return;
+    // Remove previous dynamic items (keep the first All item)
+    Array.from(list.querySelectorAll('li[data-dynamic="true"]')).forEach((n) =>
+      n.remove()
+    );
+    statuses.sort((a, b) => a.localeCompare(b));
+    const frag = document.createDocumentFragment();
+    const applied = Array.isArray(this.filters?.statuses)
+      ? this.filters.statuses.map((x) => String(x).toLowerCase())
+      : [];
+    statuses.forEach((s) => {
+      const id = `status-${s.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+      const li = document.createElement("li");
+      li.className = "px-2 py-1 flex items-center gap-2";
+      li.setAttribute("data-dynamic", "true");
+      const checkedAttr = applied.includes(s.toLowerCase()) ? "checked" : "";
+      li.innerHTML =
+        `<input id="${id}" data-status value="${s}" ${checkedAttr} type="checkbox" class="h-4 w-4 accent-[#003882]">` +
+        `<label for="${id}">${s}</label>`;
+      frag.appendChild(li);
+    });
+    list.appendChild(frag);
+    // Re-bind dropdown interactions since we replaced checkboxes
+    handler();
+  }
+
+  renderSourceOptions(sources) {
+    const list = document.getElementById("source-filter-list");
+    if (!list) return;
+    Array.from(list.querySelectorAll('li[data-dynamic="true"]')).forEach((n) =>
+      n.remove()
+    );
+    const applied = Array.isArray(this.filters?.sources)
+      ? this.filters.sources.map((x) => String(x).toLowerCase())
+      : [];
+    const frag = document.createDocumentFragment();
+    Array.from(new Set(sources || []))
+      .sort((a, b) => a.localeCompare(b))
+      .forEach((s) => {
+        const id = `source-${s.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+        const li = document.createElement("li");
+        li.className = "px-2 py-1 flex items-center gap-2";
+        li.setAttribute("data-dynamic", "true");
+        const checked = applied.includes(s) ? "checked" : "";
+        li.innerHTML = `<input id="${id}" data-source value="${s}" ${checked} type="checkbox" class="h-4 w-4 accent-[#003882]"><label for="${id}">${s}</label>`;
+        frag.appendChild(li);
+      });
+    list.appendChild(frag);
   }
 }

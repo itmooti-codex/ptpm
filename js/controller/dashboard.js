@@ -116,6 +116,9 @@ export class DashboardController {
   }
 
   initServiceProviderDropdown() {
+    // NAV: Service provider dropdown handlers
+    // Quick note: toggles #service-provider-filter-card and handles "sp-all" checkbox
+    // Search token: "NAV: Service provider dropdown handlers"
     const btn = document.getElementById("service-provider-filter-btn");
     const card = document.getElementById("service-provider-filter-card");
     if (!btn || !card) return;
@@ -148,6 +151,9 @@ export class DashboardController {
   }
 
   initSourceDropdown() {
+    // NAV: Source dropdown handlers
+    // Quick note: toggles #source-filter-card, syncs "source-none" and stores handlers in _sourceHandlers
+    // Search token: "NAV: Source dropdown handlers"
     const btn = document.getElementById("source-filter-btn");
     const card = document.getElementById("source-filter-card");
     if (!btn || !card) return;
@@ -856,6 +862,9 @@ export class DashboardController {
   }
 
   bindApplyFilters() {
+    // NAV: Apply filters button binding
+    // Quick note: "apply-filters-btn" collects UI state and refreshes current tab
+    // Search token: "NAV: Apply filters button binding"
     const applyBtn = document.getElementById("apply-filters-btn");
     if (!applyBtn) return;
     applyBtn.addEventListener("click", () => {
@@ -1340,6 +1349,9 @@ export class DashboardController {
   }
 
   initStatusDropdown() {
+    // NAV: Status dropdown handlers
+    // Quick note: toggles #status-filter-card, keeps "status-all" in sync and updates this.filters.statuses
+    // Search token: "NAV: Status dropdown handlers"
     const btn = document.getElementById("status-filter-btn");
     const card = document.getElementById("status-filter-card");
     if (!btn || !card) return;
@@ -1425,6 +1437,9 @@ export class DashboardController {
   }
 
   initAccountTypeDropdown() {
+    // NAV: Account type dropdown handlers
+    // Quick note: toggles #account-type-filter-card, manages #account-type-all and the type checkboxes
+    // Search token: "NAV: Account type dropdown handlers"
     const btn = document.getElementById("account-type-filter");
     const card = document.getElementById("account-type-filter-card");
     if (!btn || !card) return;
