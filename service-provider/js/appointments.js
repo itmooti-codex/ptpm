@@ -240,6 +240,54 @@ const getAlpineData = () => {
   return null;
 };
 
+const normalizeCalcAppointmentsRow = (row) => {
+  const startTime = row.Start_Time || row.Start || row.start_time || "";
+  const endTime = row.End_Time || row.End || row.end_time || "";
+  const description = row.Description || row.description || "";
+  const title = row.Title || row.title || "";
+  const status = row.Status || row.status || "";
+  const type = row.Type || row.type || "";
+  const uniqueId = row.Unique_ID || row.unique_id || row.ID || row.id || "";
+  const inquiryId = row.Inquiry_ID || row.inquiry_id || "";
+  const jobId = row.Job_ID || row.job_id || "";
+  const locationId = row.Location_ID || row.location_id || "";
+  const primaryGuestId =
+    row.Primary_Guest_ID || row.primary_guest_id || row.Primary_Guest_Contact_ID || "";
+
+  return {
+    ...row,
+    formattedDateAndTime: formatDateAndTime(startTime),
+    descriptions: description,
+    description,
+    title,
+    status,
+    type,
+    unique_id: uniqueId,
+    inquiry_id: inquiryId,
+    job_id: jobId,
+    start_time: startTime,
+    end_time: endTime,
+    duration_hours: row.Duration_Hours || row.duration_hours || 0,
+    duration_minutes: row.Duration_Minutes || row.duration_minutes || 0,
+    location_id: locationId,
+    Primary_Guest_Contact_ID: row.Primary_Guest_Contact_ID || primaryGuestId,
+    primary_guest_contact_id: row.Primary_Guest_Contact_ID || primaryGuestId,
+    primary_guest_id: primaryGuestId,
+    Primary_GuestEmail:
+      row.Primary_Guest_Email ||
+      row.Primary_GuestEmail ||
+      row.primary_guest_email ||
+      "",
+    Primary_Guest_SMS_Number:
+      row.Primary_Guest_SMS_Number || row.primary_guest_sms_number || "",
+    Inquiry_Unique_ID: inquiryId,
+    Job_Unique_ID: jobId,
+    PeterpmJob_Unique_ID: jobId,
+    Primary_Guest_Unique_ID: primaryGuestId,
+    PeterpmProperty_Unique_ID: locationId,
+  };
+};
+
 const mapAppointmentRecord = (record) => {
   const location = record?.Location || {};
   const primaryGuest = record?.Primary_Guest || {};
@@ -485,26 +533,37 @@ const handleAppointmentSelect = async (row) => {
   if (!row) {
     return;
   }
-  const appointmentId =
-    row.ID ||
-    row.id ||
-    row.Appointment_ID ||
-    row.appointment_id ||
-    row.Unique_ID ||
-    row.unique_id ||
-    "";
-  if (!appointmentId) {
-    alert("Appointment ID is missing.");
-    return;
-  }
-
   try {
-    const record = await fetchAppointmentDetails(appointmentId);
-    if (!record) {
-      alert("Appointment details not found.");
-      return;
+    const hasExpandedFields =
+      row.Location_Property_Name ||
+      row.Primary_Guest_First_Name ||
+      row.Inquiry_Admin_Notes ||
+      row.Location_Address_1;
+
+    let appointmentData = null;
+    if (hasExpandedFields) {
+      appointmentData = normalizeCalcAppointmentsRow(row);
+    } else {
+      const appointmentId =
+        row.ID ||
+        row.id ||
+        row.Appointment_ID ||
+        row.appointment_id ||
+        row.Unique_ID ||
+        row.unique_id ||
+        "";
+      if (!appointmentId) {
+        alert("Appointment ID is missing.");
+        return;
+      }
+      const record = await fetchAppointmentDetails(appointmentId);
+      if (!record) {
+        alert("Appointment details not found.");
+        return;
+      }
+      appointmentData = mapAppointmentRecord(record);
     }
-    const appointmentData = mapAppointmentRecord(record);
+
     const alpineData = getAlpineData();
     if (alpineData) {
       alpineData.appointmentData = appointmentData;
