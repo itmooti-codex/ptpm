@@ -630,35 +630,81 @@ const extractCreateJobRecord = (payload) => {
     return null;
   }
 
-  const direct =
-    payload.createJob ||
-    payload.data?.createJob ||
-    payload.resp?.createJob ||
-    payload.resp?.data?.createJob ||
-    payload.data?.resp?.createJob ||
-    payload.data?.data?.createJob ||
-    null;
-  if (direct) {
-    return direct;
-  }
+  const directCandidates = [
+    payload.createJob,
+    payload.data?.createJob,
+    payload.resp?.createJob,
+    payload.resp?.data?.createJob,
+    payload.data?.resp?.createJob,
+    payload.data?.data?.createJob,
+  ];
 
-  const queue = [payload];
-  while (queue.length) {
-    const current = queue.shift();
-    if (!current || typeof current !== "object") {
-      continue;
+  for (const candidate of directCandidates) {
+    if (looksLikeRecord(candidate)) {
+      return candidate;
     }
-    if (current.createJob) {
-      return current.createJob;
+    if (candidate && typeof candidate === "object" && !Array.isArray(candidate)) {
+      return candidate;
     }
-    Object.values(current).forEach((value) => {
-      if (value && typeof value === "object") {
-        queue.push(value);
-      }
-    });
   }
 
   return null;
+};
+
+const extractRecords = (payload) => {
+  if (!payload) {
+    return [];
+  }
+  if (Array.isArray(payload)) {
+    return payload;
+  }
+  const candidates = [
+    payload?.resp,
+    payload?.records,
+    payload?.data,
+    payload?.resp?.data,
+    payload?.resp?.records,
+    payload?.data?.records,
+  ];
+  for (const candidate of candidates) {
+    if (Array.isArray(candidate)) {
+      return candidate;
+    }
+  }
+  return [];
+};
+
+const getLatestRecordByCreatedAt = (records) => {
+  if (!records.length) {
+    return null;
+  }
+  return records.reduce((best, record) => {
+    const bestTime = getTimestampSeconds(best?.created_at) || 0;
+    const recordTime = getTimestampSeconds(record?.created_at) || 0;
+    if (recordTime > bestTime) {
+      return record;
+    }
+    if (recordTime === bestTime) {
+      const bestId = Number(best?.id || best?.ID || 0);
+      const recordId = Number(record?.id || record?.ID || 0);
+      if (recordId > bestId) {
+        return record;
+      }
+    }
+    return best;
+  }, records[0]);
+};
+
+const fetchLatestJobForProperty = async (propertyId) => {
+  const plugin = await getVitalStatsPlugin();
+  const jobModel = plugin.switchTo("PeterpmJob");
+  let query = jobModel.query();
+  query = query.where("property_id", propertyId);
+  query = query.deSelectAll().select(["id", "unique_id", "job_id", "created_at"]);
+  query.getOrInitQueryCalc?.();
+  const result = await query.fetchDirect().toPromise();
+  const records = extractRecords(result);
+  return getLatestRecordByCreatedAt(records);
 };
 
 const fetchAppointmentDetails = async (appointmentId) => {
@@ -1113,10 +1159,12 @@ const createQuoteFromModal = async () => {
       return;
     }
 
+    const propertyValue = Number.isFinite(Number(propertyId))
+      ? Number(propertyId)
+      : propertyId;
+
     const payload = {
-      property_id: Number.isFinite(Number(propertyId))
-        ? Number(propertyId)
-        : propertyId,
+      property_id: propertyValue,
     };
 
     const plugin = await getVitalStatsPlugin();
@@ -1134,7 +1182,7 @@ const createQuoteFromModal = async () => {
     const createdJobRecord =
       extractCreateJobRecord(jobResponse) || extractFirstRecord(jobResponse);
     console.log("create job record", createdJobRecord);
-    const createdJobId =
+    let createdJobId =
       createdJobRecord?.id ||
       createdJobRecord?.ID ||
       createdJobRecord?.job_id ||
@@ -1142,6 +1190,18 @@ const createQuoteFromModal = async () => {
       createdJobRecord?.unique_id ||
       createdJobRecord?.Unique_ID ||
       "";
+
+    if (!createdJobId) {
+      const fallbackRecord = await fetchLatestJobForProperty(propertyValue);
+      createdJobId =
+        fallbackRecord?.id ||
+        fallbackRecord?.ID ||
+        fallbackRecord?.job_id ||
+        fallbackRecord?.Job_ID ||
+        fallbackRecord?.unique_id ||
+        fallbackRecord?.Unique_ID ||
+        "";
+    }
 
     if (!createdJobId) {
       alert("Quote was created but no job id was returned.");
