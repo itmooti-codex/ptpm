@@ -1130,8 +1130,10 @@ const createQuoteFromModal = async () => {
     }
     jobMutation.createOne(payload);
     const jobResponse = await jobMutation.execute(true).toPromise();
+    console.log("create job response", jobResponse);
     const createdJobRecord =
       extractCreateJobRecord(jobResponse) || extractFirstRecord(jobResponse);
+    console.log("create job record", createdJobRecord);
     const createdJobId =
       createdJobRecord?.id ||
       createdJobRecord?.ID ||
