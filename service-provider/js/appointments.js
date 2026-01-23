@@ -625,6 +625,42 @@ const extractFirstRecord = (payload) => {
   return looksLikeRecord(payload) ? payload : null;
 };
 
+const extractCreateJobRecord = (payload) => {
+  if (!payload || typeof payload !== "object") {
+    return null;
+  }
+
+  const direct =
+    payload.createJob ||
+    payload.data?.createJob ||
+    payload.resp?.createJob ||
+    payload.resp?.data?.createJob ||
+    payload.data?.resp?.createJob ||
+    payload.data?.data?.createJob ||
+    null;
+  if (direct) {
+    return direct;
+  }
+
+  const queue = [payload];
+  while (queue.length) {
+    const current = queue.shift();
+    if (!current || typeof current !== "object") {
+      continue;
+    }
+    if (current.createJob) {
+      return current.createJob;
+    }
+    Object.values(current).forEach((value) => {
+      if (value && typeof value === "object") {
+        queue.push(value);
+      }
+    });
+  }
+
+  return null;
+};
+
 const fetchAppointmentDetails = async (appointmentId) => {
   const plugin = await getVitalStatsPlugin();
   const appointmentModel = plugin.switchTo("PeterpmAppointment");
@@ -1095,11 +1131,7 @@ const createQuoteFromModal = async () => {
     jobMutation.createOne(payload);
     const jobResponse = await jobMutation.execute(true).toPromise();
     const createdJobRecord =
-      extractFirstRecord(jobResponse) ||
-      jobResponse?.createJob ||
-      jobResponse?.data?.createJob ||
-      jobResponse?.resp?.createJob ||
-      null;
+      extractCreateJobRecord(jobResponse) || extractFirstRecord(jobResponse);
     const createdJobId =
       createdJobRecord?.id ||
       createdJobRecord?.ID ||
