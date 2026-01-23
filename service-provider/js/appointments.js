@@ -1075,12 +1075,20 @@ const createQuoteFromModal = async () => {
     }
 
     const payload = {
-      property_id: propertyId,
+      property_id: Number.isFinite(Number(propertyId))
+        ? Number(propertyId)
+        : propertyId,
     };
 
     const plugin = await getVitalStatsPlugin();
     const jobModel = plugin.switchTo("PeterpmJob");
     const jobMutation = jobModel.mutation();
+    if (typeof jobMutation.deSelectAll === "function") {
+      jobMutation.deSelectAll();
+    }
+    if (typeof jobMutation.select === "function") {
+      jobMutation.select(["id", "unique_id", "job_id"]);
+    }
     jobMutation.createOne(payload);
     const jobResponse = await jobMutation.execute(true).toPromise();
     const createdJobRecord = extractFirstRecord(jobResponse);
