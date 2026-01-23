@@ -587,9 +587,12 @@ const extractFirstRecord = (payload) => {
     payload?.resp,
     payload?.records,
     payload?.data,
+    payload?.createJob,
     payload?.resp?.data,
     payload?.resp?.records,
     payload?.data?.records,
+    payload?.data?.createJob,
+    payload?.resp?.createJob,
   ];
 
   for (const candidate of candidates) {
@@ -1091,7 +1094,12 @@ const createQuoteFromModal = async () => {
     }
     jobMutation.createOne(payload);
     const jobResponse = await jobMutation.execute(true).toPromise();
-    const createdJobRecord = extractFirstRecord(jobResponse);
+    const createdJobRecord =
+      extractFirstRecord(jobResponse) ||
+      jobResponse?.createJob ||
+      jobResponse?.data?.createJob ||
+      jobResponse?.resp?.createJob ||
+      null;
     const createdJobId =
       createdJobRecord?.id ||
       createdJobRecord?.ID ||
