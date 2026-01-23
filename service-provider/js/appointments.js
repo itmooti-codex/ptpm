@@ -1136,18 +1136,6 @@ const createQuoteFromModal = async () => {
       return;
     }
 
-    const existingJobId =
-      appointmentData.PeterpmJob_Unique_ID ||
-      appointmentData.Job_Unique_ID ||
-      appointmentData.Job_ID ||
-      appointmentData.job_id ||
-      "";
-
-    if (existingJobId) {
-      window.location.href = `/edit-quote/${existingJobId}`;
-      return;
-    }
-
     const propertyId =
       appointmentData.PeterpmProperty_Unique_ID ||
       appointmentData.Location_ID ||
@@ -1204,11 +1192,8 @@ const createQuoteFromModal = async () => {
     }
 
     if (!createdJobId) {
-      alert("Quote was created but no job id was returned.");
-      return;
+      console.warn("Quote created but no job id was returned.");
     }
-
-    window.location.href = `/edit-quote/${createdJobId}`;
   } catch (error) {
     console.error("Quote creation failed:", error);
     alert("Failed to create quote. Check console for details.");
