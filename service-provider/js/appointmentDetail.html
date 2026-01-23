@@ -1230,65 +1230,10 @@
       </div>
       <button
         class="quoteButton button-primary"
+        data-appointment-action="create-quote"
         data-appointment-text="Quote_Button_Label"
       ></button>
     </div>
     <!--Footer Buttons -->
   </div>
 </div>
-
-<script>
-  const buttonDiv = document.querySelector(".quoteButton");
-  if (buttonDiv) {
-    buttonDiv.addEventListener("click", () => {
-      const data = window.appointmentData || {};
-      const inquiryUniqueID =
-        data.Inquiry_Unique_ID || data.Inquiry_ID || data.inquiry_id || "";
-      const guestID =
-        data.Primary_Guest_Unique_ID ||
-        data.Primary_Guest_ID ||
-        data.primary_guest_id ||
-        data.Primary_Guest_Contact_ID ||
-        "";
-      const propertyId =
-        data.PeterpmProperty_Unique_ID ||
-        data.Location_ID ||
-        data.location_id ||
-        "";
-      const jobId =
-        data.PeterpmJob_Unique_ID ||
-        data.Job_Unique_ID ||
-        data.job_id ||
-        "";
-
-      if (!jobId) {
-        const inquiryInput = document.querySelector(
-          ".inquiryRecordUniqueID input",
-        );
-        const contactInput = document.querySelector(
-          ".clientContactUniqueID input",
-        );
-        const propertyInput = document.querySelector(
-          ".propertyUniqueID input",
-        );
-
-        if (inquiryInput) {
-          inquiryInput.value = inquiryUniqueID || "";
-        }
-        if (contactInput) {
-          contactInput.value = guestID || "";
-        }
-        if (propertyInput) {
-          propertyInput.value = propertyId || "";
-        }
-
-        const createQuoteBtn = document.querySelector(".createQuoteBtn");
-        if (createQuoteBtn) {
-          createQuoteBtn.click();
-        }
-      } else {
-        window.location.href = `/edit-quote/${jobId}`;
-      }
-    });
-  }
-</script>

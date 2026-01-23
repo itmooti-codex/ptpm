@@ -1040,6 +1040,131 @@ const prefillRescheduleModal = () => {
   }
 };
 
+const createQuoteFromModal = async () => {
+  try {
+    const alpineData = getAlpineData();
+    const appointmentData = buildAppointmentDisplayData(
+      (alpineData && alpineData.appointmentData) || window.appointmentData || {},
+    );
+    if (!appointmentData || Object.keys(appointmentData).length === 0) {
+      alert("Appointment data is missing.");
+      return;
+    }
+
+    const existingJobId =
+      appointmentData.PeterpmJob_Unique_ID ||
+      appointmentData.Job_Unique_ID ||
+      appointmentData.Job_ID ||
+      appointmentData.job_id ||
+      "";
+
+    if (existingJobId) {
+      window.location.href = `/edit-quote/${existingJobId}`;
+      return;
+    }
+
+    const inquiryId =
+      appointmentData.Inquiry_Unique_ID ||
+      appointmentData.Inquiry_ID ||
+      appointmentData.inquiry_id ||
+      "";
+    const propertyId =
+      appointmentData.PeterpmProperty_Unique_ID ||
+      appointmentData.Location_ID ||
+      appointmentData.location_id ||
+      "";
+    const contactId =
+      appointmentData.Primary_Guest_Unique_ID ||
+      appointmentData.Primary_Guest_ID ||
+      appointmentData.primary_guest_id ||
+      appointmentData.Primary_Guest_Contact_ID ||
+      appointmentData.primary_guest_contact_id ||
+      "";
+
+    if (!inquiryId || !propertyId || !contactId) {
+      alert("Missing inquiry, property, or contact details.");
+      return;
+    }
+
+    const hasCompany =
+      Boolean(appointmentData.CompanyName) ||
+      Boolean(appointmentData.client_entity_id) ||
+      Boolean(appointmentData.Client_Entity_ID);
+    const accountType =
+      appointmentData.account_type ||
+      appointmentData.Account_Type ||
+      (hasCompany ? "Company" : "Contact");
+
+    const payload = {
+      inquiry_record_id: inquiryId,
+      quote_date: new Date().toISOString(),
+      quote_status: "New",
+      primary_service_provider_id:
+        typeof loggedInUserIdOp !== "undefined" && loggedInUserIdOp !== null
+          ? loggedInUserIdOp
+          : appointmentData.Host_ID || appointmentData.host_id || null,
+      property_id: propertyId,
+      account_type: accountType,
+      client_individual_id:
+        accountType === "Contact" ? contactId : contactId || null,
+      client_entity_id:
+        accountType === "Company"
+          ? appointmentData.client_entity_id ||
+            appointmentData.Client_Entity_ID ||
+            null
+          : appointmentData.client_entity_id ||
+            appointmentData.Client_Entity_ID ||
+            null,
+      accounts_contact_id:
+        appointmentData.accounts_contact_id ||
+        appointmentData.Accounts_Contact_ID ||
+        null,
+    };
+
+    const plugin = await getVitalStatsPlugin();
+    const jobModel = plugin.switchTo("PeterpmJob");
+    const jobMutation = jobModel.mutation();
+    jobMutation.createOne(payload);
+    const jobResponse = await jobMutation.execute(true).toPromise();
+    const createdJobRecord = extractFirstRecord(jobResponse);
+    const createdJobId =
+      createdJobRecord?.id ||
+      createdJobRecord?.ID ||
+      createdJobRecord?.job_id ||
+      createdJobRecord?.Job_ID ||
+      createdJobRecord?.unique_id ||
+      createdJobRecord?.Unique_ID ||
+      "";
+
+    if (!createdJobId) {
+      alert("Quote was created but no job id was returned.");
+      return;
+    }
+
+    const dealModel = plugin.switchTo("PeterpmDeal");
+    const dealMutation = dealModel.mutation();
+    const inquiryField =
+      typeof inquiryId === "string" && inquiryId.trim().length
+        ? Number.isFinite(Number(inquiryId))
+          ? "id"
+          : "unique_id"
+        : "id";
+    dealMutation.update((q) =>
+      q.where(inquiryField, inquiryId).set({
+        inquiry_status: "Quote Created",
+        quote_record_id: createdJobId,
+        inquiry_for_job_id: createdJobId,
+      }),
+    );
+    await dealMutation.execute(true).toPromise();
+
+    window.location.href = `/edit-quote/${createdJobId}`;
+  } catch (error) {
+    console.error("Quote creation failed:", error);
+    alert("Failed to create quote. Check console for details.");
+  }
+};
+
 const scheduleAppointmentFromModal = async () => {
   try {
     const alpineData = getAlpineData();
@@ -1156,3 +1281,15 @@ const scheduleAppointmentFromModal = async () => {
 
 window.scheduleAppointmentFromModal = scheduleAppointmentFromModal;
 window.prefillRescheduleModal = prefillRescheduleModal;
+window.createQuoteFromModal = createQuoteFromModal;
+
+document.addEventListener("click", (event) => {
+  const button = event.target.closest(
+    '[data-appointment-action="create-quote"]',
+  );
+  if (!button) {
+    return;
+  }
+  event.preventDefault();
+  createQuoteFromModal();
+});
