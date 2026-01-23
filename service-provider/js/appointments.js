@@ -1103,7 +1103,9 @@ const scheduleAppointmentFromModal = async () => {
     const hostId =
       typeof loggedInUserIdOp !== "undefined" && loggedInUserIdOp !== null
         ? loggedInUserIdOp
-        : appointmentData.contact_contact_id ||
+        : appointmentData.Host_ID ||
+          appointmentData.host_id ||
+          appointmentData.contact_contact_id ||
           appointmentData.Contact_Contact_ID ||
           "";
 
