@@ -1063,62 +1063,19 @@ const createQuoteFromModal = async () => {
       return;
     }
 
-    const inquiryId =
-      appointmentData.Inquiry_Unique_ID ||
-      appointmentData.Inquiry_ID ||
-      appointmentData.inquiry_id ||
-      "";
     const propertyId =
       appointmentData.PeterpmProperty_Unique_ID ||
       appointmentData.Location_ID ||
       appointmentData.location_id ||
       "";
-    const contactId =
-      appointmentData.Primary_Guest_Unique_ID ||
-      appointmentData.Primary_Guest_ID ||
-      appointmentData.primary_guest_id ||
-      appointmentData.Primary_Guest_Contact_ID ||
-      appointmentData.primary_guest_contact_id ||
-      "";
 
-    if (!inquiryId || !propertyId || !contactId) {
-      alert("Missing inquiry, property, or contact details.");
+    if (!propertyId) {
+      alert("Missing property details.");
       return;
     }
 
-    const hasCompany =
-      Boolean(appointmentData.CompanyName) ||
-      Boolean(appointmentData.client_entity_id) ||
-      Boolean(appointmentData.Client_Entity_ID);
-    const accountType =
-      appointmentData.account_type ||
-      appointmentData.Account_Type ||
-      (hasCompany ? "Company" : "Contact");
-
     const payload = {
-      inquiry_record_id: inquiryId,
-      quote_date: new Date().toISOString(),
-      quote_status: "New",
-      primary_service_provider_id:
-        typeof loggedInUserIdOp !== "undefined" && loggedInUserIdOp !== null
-          ? loggedInUserIdOp
-          : appointmentData.Host_ID || appointmentData.host_id || null,
       property_id: propertyId,
-      account_type: accountType,
-      client_individual_id:
-        accountType === "Contact" ? contactId : contactId || null,
-      client_entity_id:
-        accountType === "Company"
-          ? appointmentData.client_entity_id ||
-            appointmentData.Client_Entity_ID ||
-            null
-          : appointmentData.client_entity_id ||
-            appointmentData.Client_Entity_ID ||
-            null,
-      accounts_contact_id:
-        appointmentData.accounts_contact_id ||
-        appointmentData.Accounts_Contact_ID ||
-        null,
     };
 
     const plugin = await getVitalStatsPlugin();
@@ -1140,23 +1097,6 @@ const createQuoteFromModal = async () => {
       alert("Quote was created but no job id was returned.");
       return;
     }
-
-    const dealModel = plugin.switchTo("PeterpmDeal");
-    const dealMutation = dealModel.mutation();
-    const inquiryField =
-      typeof inquiryId === "string" && inquiryId.trim().length
-        ? Number.isFinite(Number(inquiryId))
-          ? "id"
-          : "unique_id"
-        : "id";
-    dealMutation.update((q) =>
-      q.where(inquiryField, inquiryId).set({
-        inquiry_status: "Quote Created",
-        quote_record_id: createdJobId,
-        inquiry_for_job_id: createdJobId,
-      }),
-    );
-    await dealMutation.execute(true).toPromise();
 
     window.location.href = `/edit-quote/${createdJobId}`;
   } catch (error) {
