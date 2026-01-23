@@ -30,6 +30,53 @@ const STATUS_STYLES = {
 };
 const STATUS_FALLBACK = "bg-gray-200 text-gray-500";
 const APPOINTMENT_MODAL_SELECTOR = "[data-appointment-detail-modal]";
+const toast = document.getElementById("toast");
+let toastTimer = null;
+let isQuoteCreating = false;
+
+const showToast = (message, type = "info") => {
+  if (!toast) {
+    return;
+  }
+  const classes = {
+    success: "bg-green-600 text-white",
+    error: "bg-red-600 text-white",
+    info: "bg-gray-900 text-white",
+  };
+  toast.className = `pointer-events-none fixed right-4 top-4 z-50 max-w-xs rounded-md px-4 py-3 text-sm shadow-lg ${
+    classes[type] || classes.info
+  }`;
+  toast.textContent = message;
+  toast.classList.remove("hidden");
+  if (toastTimer) {
+    clearTimeout(toastTimer);
+  }
+  toastTimer = setTimeout(() => {
+    toast.classList.add("hidden");
+  }, 3000);
+};
+
+const setButtonLoading = (button, isLoading, label = "Creating...") => {
+  if (!button) {
+    return;
+  }
+  if (isLoading) {
+    if (!button.dataset.originalText) {
+      button.dataset.originalText = button.textContent.trim();
+    }
+    button.disabled = true;
+    button.classList.add("opacity-60", "cursor-not-allowed");
+    button.setAttribute("aria-busy", "true");
+    button.textContent = label;
+    return;
+  }
+  button.disabled = false;
+  button.classList.remove("opacity-60", "cursor-not-allowed");
+  button.removeAttribute("aria-busy");
+  if (button.dataset.originalText) {
+    button.textContent = button.dataset.originalText;
+  }
+};
 
 let currentTab = "all";
 let currentRange = "all";
@@ -1125,14 +1172,22 @@ const prefillRescheduleModal = () => {
   }
 };
 
-const createQuoteFromModal = async () => {
+const createQuoteFromModal = async (triggerButton) => {
+  if (isQuoteCreating) {
+    return;
+  }
+  isQuoteCreating = true;
+  const activeButton =
+    triggerButton ||
+    document.querySelector('[data-appointment-action="create-quote"]');
+  setButtonLoading(activeButton, true, "Creating quote...");
   try {
     const alpineData = getAlpineData();
     const appointmentData = buildAppointmentDisplayData(
       (alpineData && alpineData.appointmentData) || window.appointmentData || {},
     );
     if (!appointmentData || Object.keys(appointmentData).length === 0) {
-      alert("Appointment data is missing.");
+      showToast("Appointment data is missing.", "error");
       return;
     }
 
@@ -1143,7 +1198,7 @@ const createQuoteFromModal = async () => {
       "";
 
     if (!propertyId) {
-      alert("Missing property details.");
+      showToast("Missing property details.", "error");
       return;
     }
 
@@ -1166,10 +1221,8 @@ const createQuoteFromModal = async () => {
     }
     jobMutation.createOne(payload);
     const jobResponse = await jobMutation.execute(true).toPromise();
-    console.log("create job response", jobResponse);
     const createdJobRecord =
       extractCreateJobRecord(jobResponse) || extractFirstRecord(jobResponse);
-    console.log("create job record", createdJobRecord);
     let createdJobId =
       createdJobRecord?.id ||
       createdJobRecord?.ID ||
@@ -1192,11 +1245,17 @@ const createQuoteFromModal = async () => {
     }
 
     if (!createdJobId) {
-      console.warn("Quote created but no job id was returned.");
+      showToast("Quote created, but no job id was returned.", "info");
+      return;
     }
+
+    showToast("Quote created successfully.", "success");
   } catch (error) {
     console.error("Quote creation failed:", error);
-    alert("Failed to create quote. Check console for details.");
+    showToast("Failed to create quote.", "error");
+  } finally {
+    isQuoteCreating = false;
+    setButtonLoading(activeButton, false);
   }
 };
 
@@ -1326,5 +1385,5 @@ document.addEventListener("click", (event) => {
     return;
   }
   event.preventDefault();
-  createQuoteFromModal();
+  createQuoteFromModal(button);
 });
