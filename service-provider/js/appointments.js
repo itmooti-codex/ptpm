@@ -424,6 +424,16 @@ const populateAppointmentDetailModal = (appointmentData) => {
   applyAppointmentLinks(root, data);
 };
 
+const isFlattenedAppointmentRecord = (record) =>
+  Boolean(
+    record &&
+      (record.Title ||
+        record.Start_Time ||
+        record.Location_Property_Name ||
+        record.Primary_Guest_First_Name ||
+        record.Inquiry_Admin_Notes),
+  );
+
 const getAlpineData = () => {
   const root = document.body;
   if (root && root.__x && root.__x.$data) {
@@ -553,6 +563,18 @@ const mapAppointmentRecord = (record) => {
   };
 };
 
+const looksLikeRecord = (value) => {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return false;
+  }
+  return (
+    "id" in value ||
+    "unique_id" in value ||
+    "title" in value ||
+    "start_time" in value
+  );
+};
+
 const extractFirstRecord = (payload) => {
   if (!payload) {
     return null;
@@ -560,13 +582,44 @@ const extractFirstRecord = (payload) => {
   if (Array.isArray(payload)) {
     return payload[0] || null;
   }
-  if (Array.isArray(payload?.resp)) {
-    return payload.resp[0] || null;
+
+  const candidates = [
+    payload?.resp,
+    payload?.records,
+    payload?.data,
+    payload?.resp?.data,
+    payload?.resp?.records,
+    payload?.data?.records,
+  ];
+
+  for (const candidate of candidates) {
+    if (Array.isArray(candidate)) {
+      return candidate[0] || null;
+    }
+    if (looksLikeRecord(candidate)) {
+      return candidate;
+    }
   }
-  if (Array.isArray(payload?.records)) {
-    return payload.records[0] || null;
+
+  if (looksLikeRecord(payload?.record)) {
+    return payload.record;
   }
-  return payload?.resp || payload?.record || payload || null;
+  if (looksLikeRecord(payload?.resp)) {
+    return payload.resp;
+  }
+
+  if (payload && typeof payload === "object") {
+    for (const value of Object.values(payload)) {
+      if (Array.isArray(value)) {
+        return value[0] || null;
+      }
+      if (looksLikeRecord(value)) {
+        return value;
+      }
+    }
+  }
+
+  return looksLikeRecord(payload) ? payload : null;
 };
 
 const fetchAppointmentDetails = async (appointmentId) => {
@@ -695,9 +748,10 @@ const handleAppointmentSelect = async (row) => {
       alert("Appointment details not found.");
       return;
     }
-    const appointmentData = buildAppointmentDisplayData(
-      mapAppointmentRecord(record),
-    );
+    const mappedRecord = isFlattenedAppointmentRecord(record)
+      ? record
+      : mapAppointmentRecord(record);
+    const appointmentData = buildAppointmentDisplayData(mappedRecord);
     const alpineData = getAlpineData();
     if (alpineData) {
       alpineData.appointmentData = appointmentData;

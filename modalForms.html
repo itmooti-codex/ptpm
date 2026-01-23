@@ -1,3 +1,9 @@
+<style>
+  #of3f95356322c {
+    z-index: 10 !important;
+  }
+</style>
+
 <div
   x-cloak
   x-show="modalIsOpen"
@@ -5,6 +11,7 @@
   x-trap.inert.noscroll="modalIsOpen"
   @keydown.esc.window="modalIsOpen = false"
   @click.self="modalIsOpen = false"
+  data-appointment-detail-modal
   class="fixed inset-0 z-30 flex items-end justify-center bg-black/20 p-4 pb-8 backdrop-blur-md max-[1100px]:bg-[#f6f6f6] max-[1100px]:p-0 sm:items-center lg:p-8"
   role="dialog"
   aria-modal="true"
@@ -71,7 +78,8 @@
           >Date Added :
         </span>
         <span
-          x-text="appointmentData.formattedDateAndTime"
+          data-appointment-text="formattedDateAndTime"
+          data-appointment-empty=""
           class="text-button max-[1100px]:text-[14px] max-[1100px]:font-[400] max-[1100px]:leading-[20px]"
         ></span>
       </div>
@@ -114,7 +122,8 @@
             </div>
             <div
               class="label text-dark"
-              x-text="appointmentData.formattedDateAndTime"
+              data-appointment-text="formattedDateAndTime"
+              data-appointment-empty=""
             ></div>
           </div>
           <div class="flex items-center justify-start gap-2">
@@ -133,8 +142,17 @@
               </svg>
             </div>
             <div class="label text-dark">
-              For <span x-text="appointmentData.duration_hours"></span> hr
-              <span x-text="appointmentData.duration_minutes"></span> min.
+              For
+              <span
+                data-appointment-text="duration_hours"
+                data-appointment-empty="0"
+              ></span>
+              hr
+              <span
+                data-appointment-text="duration_minutes"
+                data-appointment-empty="0"
+              ></span>
+              min.
             </div>
           </div>
           <div class="flex items-center justify-start gap-2">
@@ -155,15 +173,19 @@
             <div class="label" style="color: #0052cc">
               <a
                 href="https://www.google.com/maps?q="
-                x-bind:href="'https://www.google.com/maps?q=' + appointmentData.Location_Property_Name"
-                x-text="appointmentData.Location_Property_Name"
+                data-appointment-text="Location_Display"
+                data-appointment-empty="N/A"
+                data-appointment-href="Location_Map_Query"
+                data-appointment-href-prefix="https://www.google.com/maps?q="
+                data-appointment-href-encode="true"
               ></a>
             </div>
           </div>
         </div>
         <div
           class="body-text text-dark"
-          x-text="appointmentData.descriptions || 'N/A'"
+          data-appointment-text="descriptions"
+          data-appointment-empty="N/A"
         ></div>
       </div>
       <div class="dividerLine block max-[1100px]:hidden"></div>
@@ -185,7 +207,8 @@
                   <div class="text-button text-dark">Client Name</div>
                   <div
                     class="text-h3 text-dark"
-                    x-text="appointmentData.Primary_Guest_First_Name + appointmentData.Primary_Guest_Last_Name"
+                    data-appointment-text="Primary_Guest_Full_Name"
+                    data-appointment-empty="N/A"
                   ></div>
                 </div>
                 <div class="relative h-4 w-4">
@@ -225,7 +248,8 @@
                 </div>
                 <div
                   class="h3 text-dark block max-[1100px]:hidden"
-                  x-text="appointmentData.Primary_Guest_First_Name + ' ' + appointmentData.Primary_Guest_Last_Name"
+                  data-appointment-text="Primary_Guest_Full_Name"
+                  data-appointment-empty="N/A"
                 ></div>
               </div>
             </div>
@@ -239,11 +263,13 @@
                   <div class="text-button text-dark">Client Contact Number</div>
                   <a
                     href="mailto:"
-                    x-bind:href="'mailto:' + appointmentData.Primary_GuestEmail"
-                    x-text="appointmentData.Primary_GuestEmail || 'N/A'"
                     class="label"
                     style="color: #0052cc"
-                    x-text="appointmentData.Primary_GuestEmail"
+                    data-appointment-text="Primary_GuestEmail"
+                    data-appointment-empty="N/A"
+                    data-appointment-href="Primary_GuestEmail"
+                    data-appointment-href-prefix="mailto:"
+                    data-appointment-href-encode="false"
                   ></a>
                 </div>
                 <div class="relative h-4 w-4">
@@ -283,8 +309,11 @@
                   class="label block max-[1100px]:hidden"
                   style="color: #0052cc"
                   href="mailto:"
-                  x-bind:href="'mailto:' + appointmentData.Primary_GuestEmail"
-                  x-text="appointmentData.Primary_GuestEmail || 'N/A'"
+                  data-appointment-text="Primary_GuestEmail"
+                  data-appointment-empty="N/A"
+                  data-appointment-href="Primary_GuestEmail"
+                  data-appointment-href-prefix="mailto:"
+                  data-appointment-href-encode="false"
                 ></a>
               </div>
             </div>
@@ -300,8 +329,11 @@
                     class="label"
                     style="color: #0052cc"
                     href="tel:"
-                    x-bind:href="'tel:' + appointmentData.Primary_Guest_SMS_Number"
-                    x-text="appointmentData.Primary_Guest_SMS_Number || 'N/A'"
+                    data-appointment-text="Primary_Guest_SMS_Number"
+                    data-appointment-empty="N/A"
+                    data-appointment-href="Primary_Guest_SMS_Number"
+                    data-appointment-href-prefix="tel:"
+                    data-appointment-href-encode="false"
                   ></a>
                 </div>
                 <div class="relative h-4 w-4">
@@ -341,8 +373,11 @@
                   class="label"
                   style="color: #0052cc"
                   href="tel:"
-                  x-bind:href="'tel:' + appointmentData.Primary_Guest_SMS_Number"
-                  x-text="appointmentData.Primary_Guest_SMS_Number || 'N/A'"
+                  data-appointment-text="Primary_Guest_SMS_Number"
+                  data-appointment-empty="N/A"
+                  data-appointment-href="Primary_Guest_SMS_Number"
+                  data-appointment-href-prefix="tel:"
+                  data-appointment-href-encode="false"
                 ></a>
               </div>
             </div>
@@ -415,7 +450,8 @@
                     class="text-[#0052cc] text-base font-normal font-['Inter'] leading-tight"
                   >
                     #<span
-                      x-text="appointmentData.Inquiry_Unique_ID || 'N/A'"
+                      data-appointment-text="Inquiry_Unique_ID"
+                      data-appointment-empty="N/A"
                     ></span>
                   </div>
                 </div>
@@ -429,14 +465,17 @@
                     class="text-[#0052cc] text-base font-normal font-['Inter'] leading-tight"
                   >
                     #<span
-                      x-text="appointmentData.Job_Unique_ID || 'N/A'"
+                      data-appointment-text="Job_Unique_ID"
+                      data-appointment-empty="N/A"
                     ></span>
                   </div>
                 </div>
                 <div class="inquiryData">
                   <a
                     href="https://my.awesomate.pro/inquiry/"
-                    x-bind:href="'https://my.awesomate.pro/inquiry/' + appointmentData.Inquiry_Unique_ID"
+                    data-appointment-href="Inquiry_Unique_ID"
+                    data-appointment-href-prefix="https://my.awesomate.pro/inquiry/"
+                    data-appointment-href-encode="false"
                     class="px-3 py-2 bg-neutral-100 rounded justify-start items-center gap-2 flex"
                   >
                     <div
@@ -465,7 +504,9 @@
                 <div class="jobData">
                   <a
                     href="https://my.awesomate.pro/edit-job/"
-                    x-bind:href="'https://my.awesomate.pro/edit-job/' + appointmentData.Job_Unique_ID"
+                    data-appointment-href="Job_Unique_ID"
+                    data-appointment-href-prefix="https://my.awesomate.pro/edit-job/"
+                    data-appointment-href-encode="false"
                     class="px-3 py-2 bg-neutral-100 rounded justify-start items-center gap-2 flex"
                   >
                     <div
@@ -495,7 +536,8 @@
               <div class="flex-col justify-start items-start gap-2 flex">
                 <div
                   class="text-[#414042] text-sm font-medium font-['Inter'] leading-[14px] line-clamp-1"
-                  x-text="appointmentData.title"
+                  data-appointment-text="title"
+                  data-appointment-empty="N/A"
                 ></div>
               </div>
               <div class="justify-start items-center gap-3 flex">
@@ -508,7 +550,8 @@
                     </div>
                     <div
                       class="text-[#414042] text-sm font-normal font-['Inter'] leading-tight"
-                      x-text="appointmentData.PeterpmService_Service_Name || 'N/A'"
+                      data-appointment-text="PeterpmService_Service_Name"
+                      data-appointment-empty="N/A"
                     ></div>
                   </div>
                 </div>
@@ -547,7 +590,8 @@
                       </div>
                       <div
                         class="text-[#414042] text-sm font-medium font-['Inter'] leading-[14px]"
-                        x-text="appointmentData.Primary_Guest_First_Name + appointmentData.Primary_Guest_Last_Name"
+                        data-appointment-text="Primary_Guest_Full_Name"
+                        data-appointment-empty="N/A"
                       ></div>
                     </div>
                     <div class="justify-start items-center gap-2 flex">
@@ -570,8 +614,11 @@
                       >
                         <a
                           href="mailto:"
-                          x-bind:href="'mailto:' + appointmentData.Primary_GuestEmail"
-                          x-text="appointmentData.Primary_GuestEmail || 'N/A'"
+                          data-appointment-text="Primary_GuestEmail"
+                          data-appointment-empty="N/A"
+                          data-appointment-href="Primary_GuestEmail"
+                          data-appointment-href-prefix="mailto:"
+                          data-appointment-href-encode="false"
                         ></a>
                       </div>
                     </div>
@@ -595,8 +642,11 @@
                       >
                         <a
                           href="tel:"
-                          x-bind:href="'tel:' + appointmentData.Primary_Guest_SMS_Number"
-                          x-text="appointmentData.Primary_Guest_SMS_Number || 'N/A'"
+                          data-appointment-text="Primary_Guest_SMS_Number"
+                          data-appointment-empty="N/A"
+                          data-appointment-href="Primary_Guest_SMS_Number"
+                          data-appointment-href-prefix="tel:"
+                          data-appointment-href-encode="false"
                         ></a>
                       </div>
                     </div>
@@ -646,7 +696,8 @@
                 <div class="flex flex-1 flex-col gap-6">
                   <div
                     class="text-[#414042] text-sm font-medium font-['Inter'] leading-[14px] line-clamp-1"
-                    x-text="appointmentData.Inquiry_Admin_Notes"
+                    data-appointment-text="Inquiry_Admin_Notes"
+                    data-appointment-empty="N/A"
                   ></div>
                 </div>
               </div>
@@ -691,7 +742,8 @@
                 <div class="flex flex-1 flex-col gap-6">
                   <div
                     class="text-[#414042] text-sm font-medium font-['Inter'] leading-[14px] line-clamp-1"
-                    x-text="appointmentData.Inquiry_How_can_we_help"
+                    data-appointment-text="Inquiry_How_can_we_help"
+                    data-appointment-empty="N/A"
                   ></div>
                 </div>
               </div>
@@ -760,8 +812,11 @@
                     >
                       <a
                         href="https://www.google.com/maps?q="
-                        x-bind:href="'https://www.google.com/maps?q=' + appointmentData.Location_Property_Name"
-                        x-text="appointmentData.Location_Property_Name"
+                        data-appointment-text="Location_Display"
+                        data-appointment-empty="N/A"
+                        data-appointment-href="Location_Map_Query"
+                        data-appointment-href-prefix="https://www.google.com/maps?q="
+                        data-appointment-href-encode="true"
                       ></a>
                     </div>
                   </div>
@@ -781,7 +836,8 @@
                         </div>
                         <div
                           class="text-[#414042] text-base font-medium font-['Inter'] leading-none"
-                          x-text="appointmentData.Location_Lot_Number || 'N/A'"
+                          data-appointment-text="Location_Lot_Number"
+                          data-appointment-empty="N/A"
                         ></div>
                       </div>
                       <div
@@ -794,7 +850,8 @@
                         </div>
                         <div
                           class="text-[#414042] text-base font-medium font-['Inter'] leading-none"
-                          x-text="appointmentData.Location_Unit_Number || 'N/A'"
+                          data-appointment-text="Location_Unit_Number"
+                          data-appointment-empty="N/A"
                         ></div>
                       </div>
                       <div
@@ -807,7 +864,8 @@
                         </div>
                         <div
                           class="text-[#414042] text-base font-medium font-['Inter'] leading-none"
-                          x-text="appointmentData.Location_Address_1 || 'N/A'"
+                          data-appointment-text="Location_Address_1"
+                          data-appointment-empty="N/A"
                         ></div>
                       </div>
                     </div>
@@ -824,7 +882,8 @@
                         </div>
                         <div
                           class="text-[#414042] text-base font-medium font-['Inter'] leading-none"
-                          x-text="appointmentData.Location_Suburb_Town || 'N/A'"
+                          data-appointment-text="Location_Suburb_Town"
+                          data-appointment-empty="N/A"
                         ></div>
                       </div>
                       <div
@@ -837,7 +896,8 @@
                         </div>
                         <div
                           class="text-[#414042] text-base font-medium font-['Inter'] leading-none"
-                          x-text="appointmentData.Location_Postal_Code || 'N/A'"
+                          data-appointment-text="Location_Postal_Code"
+                          data-appointment-empty="N/A"
                         ></div>
                       </div>
                       <div
@@ -850,7 +910,8 @@
                         </div>
                         <div
                           class="text-[#414042] text-base font-medium font-['Inter'] leading-none"
-                          x-text="appointmentData.LocationState || 'N/A'"
+                          data-appointment-text="LocationState"
+                          data-appointment-empty="N/A"
                         ></div>
                       </div>
                     </div>
@@ -910,7 +971,8 @@
                       </div>
                       <div
                         class="text-[#414042] text-base font-medium font-['Inter'] leading-none"
-                        x-text="appointmentData.Location_Owner_Type || 'N/A'"
+                        data-appointment-text="Location_Owner_Type"
+                        data-appointment-empty="N/A"
                       ></div>
                     </div>
                     <div class="flex-col justify-center items-start gap-3 flex">
@@ -921,7 +983,8 @@
                       </div>
                       <div
                         class="text-[#414042] text-base font-medium font-['Inter'] leading-none"
-                        x-text="appointmentData.CompanyName || 'N/A'"
+                        data-appointment-text="CompanyName"
+                        data-appointment-empty="N/A"
                       ></div>
                     </div>
                   </div>
@@ -936,7 +999,8 @@
                       </div>
                       <div
                         class="text-[#414042] text-base font-medium font-['Inter'] leading-none"
-                        x-text="appointmentData.Location_Resident_s_Name || 'N/A'"
+                        data-appointment-text="Location_Resident_s_Name"
+                        data-appointment-empty="N/A"
                       ></div>
                     </div>
                     <div class="flex-col justify-center items-start gap-3 flex">
@@ -947,7 +1011,8 @@
                       </div>
                       <div
                         class="text-[#0052cc] text-base font-medium font-['Inter'] leading-none"
-                        x-text="appointmentData.Location_Resident_s_Mobile || 'N/A'"
+                        data-appointment-text="Location_Resident_s_Mobile"
+                        data-appointment-empty="N/A"
                       ></div>
                     </div>
                     <div class="flex-col justify-center items-start gap-3 flex">
@@ -958,7 +1023,8 @@
                       </div>
                       <div
                         class="text-[#0052cc] text-base font-medium font-['Inter'] leading-none"
-                        x-text="appointmentData.Location_Resident_s_Email || 'N/A'"
+                        data-appointment-text="Location_Resident_s_Email"
+                        data-appointment-empty="N/A"
                       ></div>
                     </div>
                   </div>
@@ -1017,7 +1083,8 @@
                       </div>
                       <div
                         class="text-[#414042] text-base font-medium font-['Inter'] leading-none"
-                        x-text="appointmentData.Location_Property_Type || 'N/A'"
+                        data-appointment-text="Location_Property_Type"
+                        data-appointment-empty="N/A"
                       ></div>
                     </div>
                     <div class="flex-col justify-center items-start gap-3 flex">
@@ -1028,7 +1095,8 @@
                       </div>
                       <div
                         class="text-[#414042] text-base font-medium font-['Inter'] leading-none"
-                        x-text="appointmentData.Location_Building_Type || 'N/A'"
+                        data-appointment-text="Location_Building_Type"
+                        data-appointment-empty="N/A"
                       ></div>
                     </div>
                     <div class="flex-col justify-center items-start gap-3 flex">
@@ -1039,7 +1107,8 @@
                       </div>
                       <div
                         class="text-[#414042] text-base font-medium font-['Inter'] leading-none"
-                        x-text="appointmentData.Location_Building_Type_Other || 'N/A'"
+                        data-appointment-text="Location_Building_Type_Other"
+                        data-appointment-empty="N/A"
                       ></div>
                     </div>
                   </div>
@@ -1054,7 +1123,8 @@
                       </div>
                       <div
                         class="text-[#414042] text-base font-medium font-['Inter'] leading-none"
-                        x-text="appointmentData.Location_Foundation_Type || 'N/A'"
+                        data-appointment-text="Location_Foundation_Type"
+                        data-appointment-empty="N/A"
                       ></div>
                     </div>
                     <div class="flex-col justify-center items-start gap-3 flex">
@@ -1065,7 +1135,8 @@
                       </div>
                       <div
                         class="text-[#414042] text-base font-medium font-['Inter'] leading-none"
-                        x-text="appointmentData.LocationBedrooms || 'N/A'"
+                        data-appointment-text="LocationBedrooms"
+                        data-appointment-empty="N/A"
                       ></div>
                     </div>
                     <div class="flex-col justify-center items-start gap-3 flex">
@@ -1076,7 +1147,8 @@
                       </div>
                       <div
                         class="text-[#414042] text-base font-medium font-['Inter'] leading-none"
-                        x-text="appointmentData.LocationStories || 'N/A'"
+                        data-appointment-text="LocationStories"
+                        data-appointment-empty="N/A"
                       ></div>
                     </div>
                     <div class="flex-col justify-center items-start gap-3 flex">
@@ -1087,7 +1159,8 @@
                       </div>
                       <div
                         class="text-[#414042] text-base font-medium font-['Inter'] leading-none"
-                        x-text="appointmentData.LocationManhole || 'N/A'"
+                        data-appointment-text="LocationManholeLabel"
+                        data-appointment-empty="N/A"
                       ></div>
                     </div>
                   </div>
@@ -1112,7 +1185,7 @@
         Return Inquiry
       </button>
       <button
-        @click="const appointmentTitleInput = document.getElementById('appointmentTitle'); appointmentTitleInput.value = appointmentData.title + ' - ' + appointmentData.unique_id; const firstName = document.querySelector('.customFirstName'); firstName.value = appointmentData.Primary_Guest_First_Name; const lasttName = document.querySelector('.customLastName'); lasttName.value = appointmentData.Primary_Guest_Last_Name; const email = document.querySelector('.customEmail'); email.value = appointmentData.Primary_GuestEmail; const sms = document.querySelector('.customSms'); sms.value = appointmentData.Primary_Guest_SMS_Number; const property = document.querySelector('.scheduleProperty'); document.querySelector('#durationHour').value = appointmentData.duration_hours; document.querySelector('#durationMinute').value = appointmentData.duration_minutes; property.value = appointmentData.Location_Property_Name || appointmentData.location_property_name || appointmentData.Address || appointmentData.Location_Address_1 || ''; scheduleSiteVisitModal = true; modalIsOpen = false"
+        @click="window.prefillRescheduleModal && window.prefillRescheduleModal(); scheduleSiteVisitModal = true; modalIsOpen = false"
         class="button-outline group flex items-center gap-2"
       >
         <svg
@@ -1140,30 +1213,85 @@
       <div class="hidden">
         <div
           class="jobUniqueID"
-          x-text="appointmentData.PeterpmJob_Unique_ID"
+          data-appointment-text="PeterpmJob_Unique_ID"
         ></div>
         <div
           class="inquiryUniqueID"
-          x-text="appointmentData.Inquiry_Unique_ID"
+          data-appointment-text="Inquiry_Unique_ID"
         ></div>
         <div
           class="guestID"
-          x-text="appointmentData.Primary_Guest_Unique_ID"
+          data-appointment-text="Primary_Guest_Unique_ID"
         ></div>
         <div
           class="propertyId"
-          x-text="appointmentData.PeterpmProperty_Unique_ID"
+          data-appointment-text="PeterpmProperty_Unique_ID"
         ></div>
       </div>
       <button
         class="quoteButton button-primary"
-        x-text="appointmentData.PeterpmJob_Unique_ID ? 'Open Quote': 'Create Quote'"
+        data-appointment-text="Quote_Button_Label"
       ></button>
     </div>
     <!--Footer Buttons -->
   </div>
 </div>
 
+<script>
+  const buttonDiv = document.querySelector(".quoteButton");
+  if (buttonDiv) {
+    buttonDiv.addEventListener("click", () => {
+      const data = window.appointmentData || {};
+      const inquiryUniqueID =
+        data.Inquiry_Unique_ID || data.Inquiry_ID || data.inquiry_id || "";
+      const guestID =
+        data.Primary_Guest_Unique_ID ||
+        data.Primary_Guest_ID ||
+        data.primary_guest_id ||
+        data.Primary_Guest_Contact_ID ||
+        "";
+      const propertyId =
+        data.PeterpmProperty_Unique_ID ||
+        data.Location_ID ||
+        data.location_id ||
+        "";
+      const jobId =
+        data.PeterpmJob_Unique_ID ||
+        data.Job_Unique_ID ||
+        data.job_id ||
+        "";
+
+      if (!jobId) {
+        const inquiryInput = document.querySelector(
+          ".inquiryRecordUniqueID input",
+        );
+        const contactInput = document.querySelector(
+          ".clientContactUniqueID input",
+        );
+        const propertyInput = document.querySelector(
+          ".propertyUniqueID input",
+        );
+
+        if (inquiryInput) {
+          inquiryInput.value = inquiryUniqueID || "";
+        }
+        if (contactInput) {
+          contactInput.value = guestID || "";
+        }
+        if (propertyInput) {
+          propertyInput.value = propertyId || "";
+        }
+
+        const createQuoteBtn = document.querySelector(".createQuoteBtn");
+        if (createQuoteBtn) {
+          createQuoteBtn.click();
+        }
+      } else {
+        window.location.href = `/edit-quote/${jobId}`;
+      }
+    });
+  }
+</script>
 <div
   x-cloak
   x-show="returnInquiryModal"
