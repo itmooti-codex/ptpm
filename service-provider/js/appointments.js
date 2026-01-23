@@ -402,9 +402,7 @@ const buildAppointmentDisplayData = (raw) => {
   data.PeterpmService_Service_Name =
     data.PeterpmService_Service_Name || data.Inquiry_Service_Type || "";
 
-  data.Quote_Button_Label = data.PeterpmJob_Unique_ID
-    ? "Open Quote"
-    : "Create Quote";
+  data.Quote_Button_Label = "Create Quote";
 
   return data;
 };
