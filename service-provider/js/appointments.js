@@ -30,6 +30,8 @@ const STATUS_STYLES = {
 };
 const STATUS_FALLBACK = "bg-gray-200 text-gray-500";
 const APPOINTMENT_MODAL_SELECTOR = "[data-appointment-detail-modal]";
+const START_FIELD_RE = /^start(_time)?$/i;
+const END_FIELD_RE = /^end(_time)?$/i;
 const toast = document.getElementById("toast");
 let toastTimer = null;
 let isQuoteCreating = false;
@@ -78,6 +80,13 @@ const setButtonLoading = (button, isLoading, label = "Creating...") => {
   if (button.dataset.originalText) {
     button.textContent = button.dataset.originalText;
   }
+};
+
+const getCellText = (value) => {
+  if (isNullValue(value)) {
+    return "-";
+  }
+  return String(value);
 };
 
 const returnInquiryFromModal = async (triggerButton) => {
@@ -1019,7 +1028,14 @@ window.initAppointmentTable = (dynamicList) => {
   });
 
   dynamicList.tableCtx.setFinalizeColumns((cols) => {
-    const mapped = cols.map((col) => {
+    const mapped = cols
+      .map((col) => {
+        const fieldName = col.field || "";
+        const isStart = START_FIELD_RE.test(fieldName);
+        const isEnd = END_FIELD_RE.test(fieldName);
+        if (isEnd) {
+          return null;
+        }
       const isId = ID_FIELD_RE.test(col.field || "");
       const isStatus = STATUS_FIELD_RE.test(col.field || "");
       if (col.field === ACTIONS_FIELD) {
@@ -1028,10 +1044,24 @@ window.initAppointmentTable = (dynamicList) => {
       const baseRender = col.renderCell;
       return {
         ...col,
+        headerName: isStart ? "Start - End" : col.headerName,
         minWidth: isId ? 100 : 160,
         width: isId ? 120 : col.width,
         flex: isId ? 0 : col.flex,
         renderCell: (params) => {
+          if (isStart) {
+            const startText = getCellText(params.value);
+            const row = params.row || {};
+            const endValue =
+              row.End ||
+              row.End_Time ||
+              row.end_time ||
+              row.end ||
+              row.EndTime ||
+              row.endTime;
+            const endText = getCellText(endValue);
+            return `${startText} - ${endText}`;
+          }
           const rawValue = params.value;
           if (isNullValue(rawValue)) {
             return "-";
@@ -1060,7 +1090,8 @@ window.initAppointmentTable = (dynamicList) => {
           return rawValue;
         },
       };
-    });
+      })
+      .filter(Boolean);
 
     if (mapped.some((col) => col.field === ACTIONS_FIELD)) {
       return mapped;
