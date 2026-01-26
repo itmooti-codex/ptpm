@@ -140,7 +140,7 @@ document
     const selectedStatus = selectStatus.value;
     const durationWrapper = document.getElementById("durationWrapper");
     const selectDuration = document.getElementById("durationSelect");
-    const IDService = "[Visitor//Service Provider ID]";
+    const IDService = SERVICE_PROVIDER_ID;
 
     if (!selectedStatus || selectedStatus === "") {
       showToast("Please select a valid status.", "error");
