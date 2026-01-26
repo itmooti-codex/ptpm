@@ -445,30 +445,123 @@ window.initMaterialsTable = (dynamicList) => {
   });
 
   dynamicList.tableCtx.setFinalizeColumns((cols) => {
-    const mapped = cols
-      .filter((col) => {
-        const field = col.field || "";
-        const header = col.headerName || "";
-        if (field === ACTIONS_FIELD || /^action$/i.test(header)) {
-          return false;
-        }
-        if (RECEIPT_FIELD_RE.test(field) || RECEIPT_FIELD_RE.test(header)) {
-          return false;
-        }
-        if (
-          SERVICE_PROVIDER_FIELD_RE.test(field) ||
-          SERVICE_PROVIDER_FIELD_RE.test(header)
-        ) {
-          return false;
-        }
-        return true;
-      })
-      .map((col) => {
-      const isId = ID_FIELD_RE.test(col.field || "");
-      const isStatus = STATUS_FIELD_RE.test(col.field || "");
-      if (col.field === ACTIONS_FIELD) {
-        return col;
+    let hasActionsColumn = false;
+    const renderActionsCell = (params) => {
+      const receiptLink = getReceiptLink(params.row);
+      return React.createElement(
+        "div",
+        { className: "flex items-center gap-2" },
+        React.createElement(
+          "a",
+          {
+            href: receiptLink || undefined,
+            target: receiptLink ? "_blank" : undefined,
+            rel: receiptLink ? "noopener noreferrer" : undefined,
+            onClick: (event) => {
+              if (!receiptLink) {
+                event.preventDefault();
+                event.stopPropagation();
+              }
+            },
+            className: receiptLink
+              ? "text-[#0052CC] hover:text-[#003882]"
+              : "text-gray-300 cursor-not-allowed",
+            "aria-label": "Open receipt",
+            title: receiptLink ? "Open receipt" : "No receipt available",
+          },
+          React.createElement("svg", {
+            viewBox: "0 0 24 24",
+            width: 18,
+            height: 18,
+            "aria-hidden": "true",
+            fill: "currentColor",
+            children: React.createElement("path", {
+              d: "M6 2h9l5 5v15a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm8 1.5V8h4.5L14 3.5zM7 11h10v2H7v-2zm0 4h10v2H7v-2z",
+            }),
+          }),
+        ),
+        React.createElement(
+          "button",
+          {
+            type: "button",
+            onClick: (event) => {
+              event.stopPropagation();
+              openEditMaterialModal(params.row);
+            },
+            className: "text-[#0052CC] hover:text-[#003882]",
+            "aria-label": "Edit material",
+            title: "Edit material",
+          },
+          React.createElement("svg", {
+            viewBox: "0 0 24 24",
+            width: 18,
+            height: 18,
+            "aria-hidden": "true",
+            fill: "currentColor",
+            children: React.createElement("path", {
+              d: "M3 17.25V21h3.75l11-11.03-3.75-3.75L3 17.25zm18-10.5a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75L21 6.75z",
+            }),
+          }),
+        ),
+        React.createElement(
+          "button",
+          {
+            type: "button",
+            onClick: (event) => {
+              event.stopPropagation();
+              deleteMaterial(params.row, event.currentTarget);
+            },
+            className: "text-red-600 hover:text-red-700",
+            "aria-label": "Delete material",
+            title: "Delete material",
+          },
+          React.createElement("svg", {
+            viewBox: "0 0 24 24",
+            width: 18,
+            height: 18,
+            "aria-hidden": "true",
+            fill: "currentColor",
+            children: React.createElement("path", {
+              d: "M9 3h6l1 2h5v2H3V5h5l1-2zm1 6h2v9h-2V9zm4 0h2v9h-2V9zM6 9h2v9H6V9z",
+            }),
+          }),
+        ),
+      );
+    };
+
+    const mapped = cols.map((col) => {
+      const field = col.field || "";
+      const header = col.headerName || "";
+      const isAction = field === ACTIONS_FIELD || /^action$/i.test(header);
+      const isReceipt =
+        RECEIPT_FIELD_RE.test(field) || RECEIPT_FIELD_RE.test(header);
+      const isServiceProvider =
+        SERVICE_PROVIDER_FIELD_RE.test(field) ||
+        SERVICE_PROVIDER_FIELD_RE.test(header);
+
+      if (isAction) {
+        hasActionsColumn = true;
+        return {
+          ...col,
+          field: ACTIONS_FIELD,
+          headerName: "Action",
+          sortable: false,
+          filterable: false,
+          hide: false,
+          width: 120,
+          renderCell: renderActionsCell,
+        };
       }
+
+      if (isReceipt || isServiceProvider) {
+        return {
+          ...col,
+          hide: true,
+        };
+      }
+
+      const isId = ID_FIELD_RE.test(field);
+      const isStatus = STATUS_FIELD_RE.test(field);
       const baseRender = col.renderCell;
       return {
         ...col,
@@ -506,6 +599,10 @@ window.initMaterialsTable = (dynamicList) => {
       };
     });
 
+    if (hasActionsColumn) {
+      return mapped;
+    }
+
     return [
       ...mapped,
       {
@@ -515,88 +612,7 @@ window.initMaterialsTable = (dynamicList) => {
         filterable: false,
         flex: 0,
         width: 120,
-        renderCell: (params) => {
-          const receiptLink = getReceiptLink(params.row);
-          return React.createElement(
-            "div",
-            { className: "flex items-center gap-2" },
-            React.createElement(
-              "a",
-              {
-                href: receiptLink || undefined,
-                target: receiptLink ? "_blank" : undefined,
-                rel: receiptLink ? "noopener noreferrer" : undefined,
-                onClick: (event) => {
-                  if (!receiptLink) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                  }
-                },
-                className: receiptLink
-                  ? "text-[#0052CC] hover:text-[#003882]"
-                  : "text-gray-300 cursor-not-allowed",
-                "aria-label": "Open receipt",
-                title: receiptLink ? "Open receipt" : "No receipt available",
-              },
-              React.createElement("svg", {
-                viewBox: "0 0 24 24",
-                width: 18,
-                height: 18,
-                "aria-hidden": "true",
-                fill: "currentColor",
-                children: React.createElement("path", {
-                  d: "M6 2h9l5 5v15a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm8 1.5V8h4.5L14 3.5zM7 11h10v2H7v-2zm0 4h10v2H7v-2z",
-                }),
-              }),
-            ),
-            React.createElement(
-              "button",
-              {
-                type: "button",
-                onClick: (event) => {
-                  event.stopPropagation();
-                  openEditMaterialModal(params.row);
-                },
-                className: "text-[#0052CC] hover:text-[#003882]",
-                "aria-label": "Edit material",
-                title: "Edit material",
-              },
-              React.createElement("svg", {
-                viewBox: "0 0 24 24",
-                width: 18,
-                height: 18,
-                "aria-hidden": "true",
-                fill: "currentColor",
-                children: React.createElement("path", {
-                  d: "M3 17.25V21h3.75l11-11.03-3.75-3.75L3 17.25zm18-10.5a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75L21 6.75z",
-                }),
-              }),
-            ),
-            React.createElement(
-              "button",
-              {
-                type: "button",
-                onClick: (event) => {
-                  event.stopPropagation();
-                  deleteMaterial(params.row, event.currentTarget);
-                },
-                className: "text-red-600 hover:text-red-700",
-                "aria-label": "Delete material",
-                title: "Delete material",
-              },
-              React.createElement("svg", {
-                viewBox: "0 0 24 24",
-                width: 18,
-                height: 18,
-                "aria-hidden": "true",
-                fill: "currentColor",
-                children: React.createElement("path", {
-                  d: "M9 3h6l1 2h5v2H3V5h5l1-2zm1 6h2v9h-2V9zm4 0h2v9h-2V9zM6 9h2v9H6V9z",
-                }),
-              }),
-            ),
-          );
-        },
+        renderCell: renderActionsCell,
       },
     ];
   });
