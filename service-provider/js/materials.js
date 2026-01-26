@@ -8,17 +8,37 @@ const SERVICE_PROVIDER_FIELD_RE = /service[_\s]*provider[_\s]*id/i;
 const ACTIONS_FIELD = "__actions";
 
 const LIST_CONFIG = {
-  all: allMaterials,
-  new: newMaterials,
-  inProgress:inProgressMaterials,
-  assignedToJob:assignedToJobMaterials,
-  paid: paidMaterials,
+  all:
+    typeof allMaterials !== "undefined"
+      ? allMaterials
+      : "MATERIALS_ALL_LIST_ID",
+  new:
+    typeof newMaterials !== "undefined"
+      ? newMaterials
+      : "MATERIALS_NEW_LIST_ID",
+  inProgress:
+    typeof inProgressMaterials !== "undefined"
+      ? inProgressMaterials
+      : "MATERIALS_IN_PROGRESS_LIST_ID",
+  assignedToJob:
+    typeof assignedToJobMaterials !== "undefined"
+      ? assignedToJobMaterials
+      : "MATERIALS_ASSIGNED_TO_JOB_LIST_ID",
+  paid:
+    typeof paidMaterials !== "undefined"
+      ? paidMaterials
+      : "MATERIALS_PAID_LIST_ID",
 };
 
 const TABLE_ATTRS = {
   entity: "peterpm",
   entityKey: "1rBR-jpR3yE3HE1VhFD0j",
-  varServiceproviderid:loggedInUserIdOp,
+  varServiceproviderid:
+    typeof loggedInUserIdOp !== "undefined"
+      ? loggedInUserIdOp
+      : typeof SERVICE_PROVIDER_ID !== "undefined"
+        ? SERVICE_PROVIDER_ID
+        : "",
   table: "true",
   op: "subscribe",
   initCbName: "initMaterialsTable",
@@ -529,7 +549,7 @@ window.initMaterialsTable = (dynamicList) => {
       );
     };
 
-    const mapped = cols.map((col) => {
+    const mapped = cols.flatMap((col) => {
       const field = col.field || "";
       const header = col.headerName || "";
       const isAction = field === ACTIONS_FIELD || /^action$/i.test(header);
@@ -541,62 +561,62 @@ window.initMaterialsTable = (dynamicList) => {
 
       if (isAction) {
         hasActionsColumn = true;
-        return {
+        return [
+          {
           ...col,
           field: ACTIONS_FIELD,
           headerName: "Action",
           sortable: false,
           filterable: false,
-          hide: false,
           width: 120,
           renderCell: renderActionsCell,
-        };
+          },
+        ];
       }
 
       if (isReceipt || isServiceProvider) {
-        return {
-          ...col,
-          hide: true,
-        };
+        return [];
       }
 
       const isId = ID_FIELD_RE.test(field);
       const isStatus = STATUS_FIELD_RE.test(field);
       const baseRender = col.renderCell;
-      return {
-        ...col,
-        minWidth: isId ? 100 : 160,
-        width: isId ? 120 : col.width,
-        flex: isId ? 0 : col.flex,
-        renderCell: (params) => {
-          const rawValue = params.value;
-          if (isNullValue(rawValue)) {
-            return "-";
-          }
-          if (isStatus) {
-            const statusText = String(rawValue || "");
-            const statusClass = STATUS_STYLES[statusText] || STATUS_FALLBACK;
-            return React.createElement(
-              "span",
-              {
-                className: `inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${statusClass}`,
-              },
-              statusText || "-",
-            );
-          }
-          if (baseRender) {
-            const rendered = baseRender(params);
-            if (
-              typeof rendered === "string" &&
-              NULL_TEXT_RE.test(rendered.trim())
-            ) {
+      return [
+        {
+          ...col,
+          minWidth: isId ? 100 : 160,
+          width: isId ? 120 : col.width,
+          flex: isId ? 0 : col.flex,
+          renderCell: (params) => {
+            const rawValue = params.value;
+            if (isNullValue(rawValue)) {
               return "-";
             }
-            return rendered;
-          }
-          return rawValue;
+            if (isStatus) {
+              const statusText = String(rawValue || "");
+              const statusClass = STATUS_STYLES[statusText] || STATUS_FALLBACK;
+              return React.createElement(
+                "span",
+                {
+                  className: `inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${statusClass}`,
+                },
+                statusText || "-",
+              );
+            }
+            if (baseRender) {
+              const rendered = baseRender(params);
+              if (
+                typeof rendered === "string" &&
+                NULL_TEXT_RE.test(rendered.trim())
+              ) {
+                return "-";
+              }
+              return rendered;
+            }
+            return rawValue;
+          },
         },
-      };
+      ];
     });
 
     if (hasActionsColumn) {
