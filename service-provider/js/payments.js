@@ -21,10 +21,6 @@ const TABLE_ATTRS = {
   op: "subscribe",
   initCbName: "initInquiryTable",
 };
-const GRAPHQL_ENDPOINT = API_URL;
-const GRAPHQL_API_KEY = API_KEY;
-const DELETE_DEAL_MUTATION =
-  "mutation deleteJob($id: StringScalar_0_8!) { deleteJob(query: [{ where: { unique_id: $id } }]) { id } }";
 const STATUS_STYLES = {
   Quote: "bg-[#e8d3ee] text-[#8e24aa]",
   "On Hold": "bg-[#ececec] text-[#9e9e9e]",
@@ -72,6 +68,25 @@ const isNullValue = (value) => {
     return NULL_TEXT_RE.test(value.trim());
   }
   return false;
+};
+
+const getAlpineData = () => {
+  const root = document.body;
+  if (root && root.__x && root.__x.$data) {
+    return root.__x.$data;
+  }
+  return null;
+};
+
+const openPaymentModal = (row) => {
+  const alpineData = getAlpineData();
+  if (alpineData) {
+    alpineData.paymentsData = row || {};
+    alpineData.modalIsOpen = true;
+    return;
+  }
+  window.paymentsData = row || {};
+  window.modalIsOpen = true;
 };
 
 const tableRoot = document.getElementById("inquiry-table-root");
@@ -129,67 +144,6 @@ tabs.forEach((tab) => {
   });
 });
 
-const deleteModal = document.getElementById("delete-modal");
-const deleteModalTitle = document.getElementById("delete-modal-title");
-const deleteModalMessage = document.getElementById("delete-modal-message");
-const deleteModalClose = document.getElementById("delete-modal-close");
-const deleteModalCancel = document.getElementById("delete-modal-cancel");
-const deleteModalConfirm = document.getElementById("delete-modal-confirm");
-const toast = document.getElementById("toast");
-let pendingDeleteId = "";
-let isDeleting = false;
-let toastTimer = null;
-
-const showToast = (message, type = "info") => {
-  if (!toast) {
-    return;
-  }
-  const classes = {
-    success: "bg-green-600 text-white",
-    error: "bg-red-600 text-white",
-    info: "bg-gray-900 text-white",
-  };
-  toast.className = `pointer-events-none fixed right-4 top-4 z-50 max-w-xs rounded-md px-4 py-3 text-sm shadow-lg ${
-    classes[type] || classes.info
-  }`;
-  toast.textContent = message;
-  toast.classList.remove("hidden");
-  if (toastTimer) {
-    clearTimeout(toastTimer);
-  }
-  toastTimer = setTimeout(() => {
-    toast.classList.add("hidden");
-  }, 3000);
-};
-
-const openDeleteModal = (id) => {
-  if (!deleteModal) {
-    return;
-  }
-  pendingDeleteId = id || "";
-  if (deleteModalTitle) {
-    deleteModalTitle.textContent = "Delete inquiry";
-  }
-  if (deleteModalMessage) {
-    deleteModalMessage.textContent = pendingDeleteId
-      ? `Are you sure you want to delete inquiry ${pendingDeleteId}?`
-      : "Are you sure you want to delete this inquiry?";
-  }
-  deleteModal.classList.remove("hidden");
-  deleteModal.classList.add("flex");
-  deleteModal.setAttribute("aria-hidden", "false");
-};
-
-const closeDeleteModal = () => {
-  if (!deleteModal) {
-    return;
-  }
-  pendingDeleteId = "";
-  deleteModal.classList.add("hidden");
-  deleteModal.classList.remove("flex");
-  deleteModal.setAttribute("aria-hidden", "true");
-};
-
 const refreshCurrentList = () => {
   if (!tableRoot) {
     return;
@@ -214,72 +168,6 @@ const refreshCurrentList = () => {
     instance.refresh();
   }
 };
-
-const graphqlRequest = async (query, variables = {}) => {
-  const response = await fetch(GRAPHQL_ENDPOINT, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Api-Key": GRAPHQL_API_KEY,
-    },
-    body: JSON.stringify({ query, variables }),
-  });
-  const payload = await response.json().catch(() => null);
-  if (!response.ok) {
-    const message =
-      payload?.errors?.[0]?.message ||
-      payload?.message ||
-      `Request failed (${response.status})`;
-    throw new Error(message);
-  }
-  if (Array.isArray(payload?.errors) && payload.errors.length) {
-    throw new Error(payload.errors[0]?.message || "GraphQL error");
-  }
-  return payload?.data ?? null;
-};
-
-const confirmDeleteModal = async () => {
-  if (!pendingDeleteId || isDeleting) {
-    return;
-  }
-  isDeleting = true;
-  if (deleteModalConfirm) {
-    deleteModalConfirm.disabled = true;
-    deleteModalConfirm.textContent = "Deleting...";
-  }
-  try {
-    await graphqlRequest(DELETE_DEAL_MUTATION, { id: pendingDeleteId });
-    closeDeleteModal();
-    refreshCurrentList();
-    showToast(`Deleted inquiry ${pendingDeleteId}`, "success");
-  } catch (error) {
-    console.error(error);
-    showToast(error?.message || "Delete failed", "error");
-  } finally {
-    isDeleting = false;
-    if (deleteModalConfirm) {
-      deleteModalConfirm.disabled = false;
-      deleteModalConfirm.textContent = "Delete";
-    }
-  }
-};
-
-if (deleteModalClose) {
-  deleteModalClose.addEventListener("click", closeDeleteModal);
-}
-if (deleteModalCancel) {
-  deleteModalCancel.addEventListener("click", closeDeleteModal);
-}
-if (deleteModalConfirm) {
-  deleteModalConfirm.addEventListener("click", confirmDeleteModal);
-}
-if (deleteModal) {
-  deleteModal.addEventListener("click", (event) => {
-    if (event.target === deleteModal) {
-      closeDeleteModal();
-    }
-  });
-}
 
 window.initInquiryTable = (dynamicList) => {
   const React = window.vitalStatsReact || window.React;
@@ -397,31 +285,30 @@ window.initInquiryTable = (dynamicList) => {
         filterable: false,
         flex: 0,
         width: 80,
-        renderCell: (params) => {
-          const id = params.row?.ID || params.value || "";
-          return React.createElement(
+        renderCell: (params) =>
+          React.createElement(
             "button",
             {
               type: "button",
               onClick: (event) => {
                 event.stopPropagation();
-                openDeleteModal(id);
+                openPaymentModal(params.row);
               },
-              className: "text-red-600 hover:text-red-700",
-              "aria-label": id ? `Delete inquiry ${id}` : "Delete inquiry",
+              className: "text-[#0052CC] hover:text-[#003882]",
+              "aria-label": "View payment",
+              title: "View payment",
             },
             React.createElement("svg", {
               viewBox: "0 0 24 24",
               width: 18,
               height: 18,
               "aria-hidden": "true",
+              fill: "currentColor",
               children: React.createElement("path", {
-                fill: "currentColor",
-                d: "M9 3h6l1 2h5v2H3V5h5l1-2zm1 6h2v9h-2V9zm4 0h2v9h-2V9zM6 9h2v9H6V9z",
+                d: "M12 5c-5 0-9 5-9 7s4 7 9 7 9-5 9-7-4-7-9-7zm0 12c-2.8 0-5-2.2-5-5s2.2-5 5-5 5 2.2 5 5-2.2 5-5 5zm0-8a3 3 0 100 6 3 3 0 000-6z",
               }),
             }),
-          );
-        },
+          ),
       },
     ];
   });
