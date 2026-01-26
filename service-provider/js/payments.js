@@ -267,8 +267,6 @@ const PAYMENT_FIELDS = [
   "xero_invoice_status",
 ];
 
-const makeInquiryLink = (id) =>
-  `https://my.awesomate.pro/inquiry/${encodeURIComponent(id)}`;
 
 const isNullValue = (value) => {
   if (value === null || value === undefined) {
@@ -934,8 +932,12 @@ const setupPaymentApprovalSection = (root, data) => {
   }
   const checkboxRow = root.querySelector("[data-payment-approval-checkbox]");
   const approvalTimeRow = root.querySelector("[data-payment-approval-time]");
-  const checkbox = root.querySelector("[data-payment-approve-checkbox]");
-  const approveButton = root.querySelector("[data-payment-approve]");
+  const checkbox =
+    root.querySelector("[data-payment-approve-checkbox]") ||
+    root.querySelector(".confirmCheckbox");
+  const approveButton =
+    root.querySelector("[data-payment-approve]") ||
+    root.querySelector(".approveButton");
 
   const xeroStatusRaw = data.Xero_Bill_Status || data.xero_bill_status || "";
   const xeroStatus = String(xeroStatusRaw || "").trim();
@@ -966,11 +968,21 @@ const setupPaymentApprovalSection = (root, data) => {
   if (checkbox) {
     checkbox.checked = Boolean(spApproved);
     checkbox.disabled = Boolean(spApproved);
+    const alpineData = getAlpineData();
+    if (alpineData) {
+      alpineData.isChecked = checkbox.checked;
+    }
     updateApprovalButtonState(checkbox, approveButton);
     if (!checkbox.dataset.bound) {
-      checkbox.addEventListener("change", () =>
-        updateApprovalButtonState(checkbox, approveButton),
-      );
+      const onToggle = () => {
+        const alpine = getAlpineData();
+        if (alpine) {
+          alpine.isChecked = checkbox.checked;
+        }
+        updateApprovalButtonState(checkbox, approveButton);
+      };
+      checkbox.addEventListener("change", onToggle);
+      checkbox.addEventListener("input", onToggle);
       checkbox.dataset.bound = "true";
     }
   } else {
@@ -1245,19 +1257,6 @@ window.initInquiryTable = (dynamicList) => {
           const rawValue = params.value;
           if (isNullValue(rawValue)) {
             return "-";
-          }
-          if (isId) {
-            if (rawValue === "-") {
-              return "-";
-            }
-            return React.createElement(
-              "a",
-              {
-                href: makeInquiryLink(rawValue),
-                className: "text-blue-600 underline",
-              },
-              String(rawValue),
-            );
           }
           const isPaymentStatus = PAYMENT_STATUS_FIELD_RE.test(col.field || "");
           const isPriority = PRIORITY_FIELD_RE.test(col.field || "");
