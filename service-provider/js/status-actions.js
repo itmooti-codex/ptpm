@@ -1,5 +1,35 @@
+const getVitalStatsPlugin = async () => {
+  if (typeof window.getVitalStatsPlugin !== "function") {
+    throw new Error("SDK not initialized. Ensure sdk.js is loaded first.");
+  }
+  return window.getVitalStatsPlugin();
+};
+
+const normalizeServiceProviderId = (value) => {
+  if (value === null || value === undefined) {
+    return null;
+  }
+  const trimmed = String(value).trim();
+  if (!trimmed) {
+    return null;
+  }
+  const numeric = Number(trimmed);
+  return Number.isNaN(numeric) ? trimmed : numeric;
+};
+
+const updateServiceProvider = async (id, payload) => {
+  const providerId = normalizeServiceProviderId(id);
+  if (!providerId) {
+    throw new Error("Service provider id is missing.");
+  }
+  const plugin = await getVitalStatsPlugin();
+  const model = plugin.switchTo("PeterpmServiceProvider");
+  const mutation = model.mutation();
+  mutation.update((q) => q.where("id", providerId).set(payload));
+  await mutation.execute(true).toPromise();
+};
+
 document.addEventListener("DOMContentLoaded", () => {
-  const myUrlProfile = API_URL;
   const IDServi = SERVICE_PROVIDER_ID;
 
   // Listen for clicks on buttons with class 'setStatus'
@@ -15,42 +45,10 @@ document.addEventListener("DOMContentLoaded", () => {
       const optonSelect = document.getElementById("optonSelect");
       optonSelect.style.display = "hidden";
 
-      const mutation = `
-        mutation updateServiceProvider($payload: ServiceProviderUpdateInput = null) {
-        updateServiceProvider(
-        query: [{ where: { id: ${IDServi} } }]
-        payload: $payload
-        ) {
-        workload_capacity   
-        }
-        }`;
-
-      const variables = {
-        payload: {
-          workload_capacity: workloadCapacity,
-        },
-      };
-
       try {
-        const response = await fetch(myUrlProfile, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Api-key": API_KEY,
-          },
-          body: JSON.stringify({
-            query: mutation,
-            variables: variables,
-          }),
+        await updateServiceProvider(IDServi, {
+          workload_capacity: workloadCapacity,
         });
-
-        const result = await response.json();
-
-        if (!response.ok || result.errors) {
-          throw new Error(
-            result.errors?.[0]?.message || "Failed to update status."
-          );
-        }
         location.reload();
       } catch (error) {
         console.error("Error updating profile status:", error);
@@ -58,8 +56,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
-
-const updateProfileURL = API_URL;
 
 document.getElementById("profileStatus").addEventListener("change", () => {
   const status = document.getElementById("profileStatus").value;
@@ -110,45 +106,11 @@ document
       }
     }
 
-    const mutation = `
-mutation updateServiceProvider($payload: ServiceProviderUpdateInput = null) {
-updateServiceProvider(
-query: [{ where: { id: ${IDService} } }]
-payload: $payload
-) {
-remove_status_after  
-workload_capacity   
-}
-}
-`;
-
-    const variables = {
-      payload: {
+    try {
+      await updateServiceProvider(IDService, {
         workload_capacity: selectedStatus,
         ...(selectedDuration && { remove_status_after: selectedDuration }),
-      },
-    };
-
-    try {
-      const response = await fetch(updateProfileURL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Api-key": API_KEY,
-        },
-        body: JSON.stringify({
-          query: mutation,
-          variables: variables,
-        }),
       });
-
-      const result = await response.json();
-
-      if (!response.ok || result.errors) {
-        throw new Error(
-          result.errors?.[0]?.message || "Failed to update status."
-        );
-      }
       location.reload();
     } catch (error) {
       console.error("Error updating profile status:", error);
