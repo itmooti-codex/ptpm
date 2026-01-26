@@ -59,6 +59,7 @@ let isCreating = false;
 let isUpdating = false;
 let isDeleting = false;
 let toastTimer = null;
+let pendingDeleteId = "";
 
 const getToastElement = () => {
   let toast = document.getElementById("toast");
@@ -118,6 +119,13 @@ const setButtonLoading = (button, isLoading, label = "Saving...") => {
   }
 };
 
+const deleteModal = document.getElementById("delete-modal");
+const deleteModalTitle = document.getElementById("delete-modal-title");
+const deleteModalMessage = document.getElementById("delete-modal-message");
+const deleteModalClose = document.getElementById("delete-modal-close");
+const deleteModalCancel = document.getElementById("delete-modal-cancel");
+const deleteModalConfirm = document.getElementById("delete-modal-confirm");
+
 const isNullValue = (value) => {
   if (value === null || value === undefined) {
     return true;
@@ -149,11 +157,6 @@ const getVitalStatsPlugin = async () => {
     throw new Error("SDK not initialized. Ensure sdk.js is loaded first.");
   }
   return window.getVitalStatsPlugin();
-};
-
-const maybeNumber = (value) => {
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : value;
 };
 
 const pickValue = (...values) =>
@@ -398,10 +401,7 @@ const updateMaterial = async (triggerButton) => {
   }
 };
 
-const deleteMaterial = async (row, triggerButton) => {
-  if (isDeleting) {
-    return;
-  }
+const openDeleteModal = (row) => {
   const material = normalizeMaterialRow(row);
   const materialId = material.id;
   if (!materialId) {
@@ -409,18 +409,50 @@ const deleteMaterial = async (row, triggerButton) => {
     showToast("Missing material id.", "error");
     return;
   }
-  if (!window.confirm("Delete this material?")) {
+  if (!deleteModal) {
+    showToast("Delete modal not found.", "error");
+    return;
+  }
+  pendingDeleteId = materialId;
+  if (deleteModalTitle) {
+    deleteModalTitle.textContent = "Delete material";
+  }
+  if (deleteModalMessage) {
+    deleteModalMessage.textContent = pendingDeleteId
+      ? `Are you sure you want to delete material ${pendingDeleteId}?`
+      : "Are you sure you want to delete this material?";
+  }
+  deleteModal.classList.remove("hidden");
+  deleteModal.classList.add("flex");
+  deleteModal.setAttribute("aria-hidden", "false");
+};
+
+const closeDeleteModal = () => {
+  if (!deleteModal) {
+    return;
+  }
+  pendingDeleteId = "";
+  deleteModal.classList.add("hidden");
+  deleteModal.classList.remove("flex");
+  deleteModal.setAttribute("aria-hidden", "true");
+};
+
+const confirmDeleteModal = async () => {
+  if (!pendingDeleteId || isDeleting) {
     return;
   }
   isDeleting = true;
-  const activeButton = triggerButton;
-  setButtonLoading(activeButton, true, null);
+  if (deleteModalConfirm) {
+    deleteModalConfirm.disabled = true;
+    deleteModalConfirm.textContent = "Deleting...";
+  }
   try {
     const plugin = await getVitalStatsPlugin();
     const materialModel = plugin.switchTo("PeterpmMaterial");
     const mutation = materialModel.mutation();
-    mutation.delete((q) => q.where("id", maybeNumber(materialId)));
+    mutation.delete((q) => q.where("unique_id", pendingDeleteId));
     await mutation.execute(true).toPromise();
+    closeDeleteModal();
     refreshCurrentList();
     showToast("Material deleted.", "success");
   } catch (error) {
@@ -428,7 +460,10 @@ const deleteMaterial = async (row, triggerButton) => {
     showToast("Failed to delete material.", "error");
   } finally {
     isDeleting = false;
-    setButtonLoading(activeButton, false);
+    if (deleteModalConfirm) {
+      deleteModalConfirm.disabled = false;
+      deleteModalConfirm.textContent = "Delete";
+    }
   }
 };
 
@@ -523,29 +558,29 @@ window.initMaterialsTable = (dynamicList) => {
             }),
           }),
         ),
-        React.createElement(
-          "button",
-          {
-            type: "button",
-            onClick: (event) => {
-              event.stopPropagation();
-              deleteMaterial(params.row, event.currentTarget);
-            },
-            className: "text-red-600 hover:text-red-700",
-            "aria-label": "Delete material",
-            title: "Delete material",
-          },
-          React.createElement("svg", {
-            viewBox: "0 0 24 24",
-            width: 18,
-            height: 18,
-            "aria-hidden": "true",
-            fill: "currentColor",
-            children: React.createElement("path", {
-              d: "M9 3h6l1 2h5v2H3V5h5l1-2zm1 6h2v9h-2V9zm4 0h2v9h-2V9zM6 9h2v9H6V9z",
-            }),
-          }),
-        ),
+            React.createElement(
+              "button",
+              {
+                type: "button",
+                onClick: (event) => {
+                  event.stopPropagation();
+                  openDeleteModal(params.row);
+                },
+                className: "text-red-600 hover:text-red-700",
+                "aria-label": "Delete material",
+                title: "Delete material",
+              },
+              React.createElement("svg", {
+                viewBox: "0 0 24 24",
+                width: 18,
+                height: 18,
+                "aria-hidden": "true",
+                fill: "currentColor",
+                children: React.createElement("path", {
+                  d: "M9 3h6l1 2h5v2H3V5h5l1-2zm1 6h2v9h-2V9zm4 0h2v9h-2V9zM6 9h2v9H6V9z",
+                }),
+              }),
+            ),
       );
     };
 
@@ -670,3 +705,20 @@ document.addEventListener("submit", (event) => {
     updateMaterial(event.submitter);
   }
 });
+
+if (deleteModalClose) {
+  deleteModalClose.addEventListener("click", closeDeleteModal);
+}
+if (deleteModalCancel) {
+  deleteModalCancel.addEventListener("click", closeDeleteModal);
+}
+if (deleteModalConfirm) {
+  deleteModalConfirm.addEventListener("click", confirmDeleteModal);
+}
+if (deleteModal) {
+  deleteModal.addEventListener("click", (event) => {
+    if (event.target === deleteModal) {
+      closeDeleteModal();
+    }
+  });
+}
