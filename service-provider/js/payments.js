@@ -105,8 +105,28 @@ const fetchDirectOnce = (query) => {
   }
   if (typeof result.subscribe === "function") {
     return new Promise((resolve, reject) => {
+      let lastValue = null;
+      const shouldResolve = (value) => {
+        if (!value) {
+          return false;
+        }
+        if (extractFirstRecord(value)) {
+          return true;
+        }
+        if (value?.resp || value?.data) {
+          return true;
+        }
+        if (value?.payload?.resp || value?.payload?.data) {
+          return true;
+        }
+        return false;
+      };
       const sub = result.subscribe({
         next: (value) => {
+          lastValue = value;
+          if (!shouldResolve(value)) {
+            return;
+          }
           resolve(value);
           if (sub && typeof sub.unsubscribe === "function") {
             sub.unsubscribe();
@@ -119,6 +139,12 @@ const fetchDirectOnce = (query) => {
           }
         },
       });
+      setTimeout(() => {
+        if (sub && typeof sub.unsubscribe === "function") {
+          sub.unsubscribe();
+        }
+        resolve(lastValue);
+      }, 12000);
     });
   }
   if (typeof result.toPromise === "function") {
@@ -198,6 +224,9 @@ const extractFirstRecord = (payload) => {
     payload?.resp,
     payload?.records,
     payload?.data,
+    payload?.payload,
+    payload?.payload?.data,
+    payload?.payload?.records,
     payload?.resp?.data,
     payload?.resp?.records,
     payload?.data?.records,
