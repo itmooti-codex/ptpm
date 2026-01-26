@@ -1275,6 +1275,7 @@ const createQuoteFromModal = async (triggerButton) => {
         inquiry_status: "Quote Created",
       },
     };
+    console.log("create job payload", payload, SERVICE_PROVIDER_ID);
 
     const plugin = await getVitalStatsPlugin();
     const jobModel = plugin.switchTo("PeterpmJob");

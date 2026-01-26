@@ -1,0 +1,232 @@
+<div
+  id="modal"
+  x-cloak
+  x-show="editMaterialModal"
+  x-transition.opacity.duration.200ms
+  x-trap.inert.noscroll="editMaterialModal"
+  @keydown.esc.window="editMaterialModal = false"
+  @click.self="editMaterialModal = false"
+  class="max-[1100px]:!p-0 fixed inset-0 z-30 flex items-center justify-center bg-black/20 px-4 pb-8 backdrop-blur-md sm:items-center lg:p-8 max-[1100px]:h-screen"
+>
+  <div
+    x-show="editMaterialModal"
+    x-transition:enter="transition ease-out duration-200 delay-100"
+    x-transition:enter-start="opacity-0 scale-50"
+    x-transition:enter-end="opacity-100 scale-100"
+    class="flex max-[1100px]:!size-full xlg:max-w-lg flex-col gap-4 overflow-hidden rounded-md border border-neutral-300 bg-[#f6f6f6] xlg:bg-white text-dark w-full modal-content max-[1100px]:h-screen"
+  >
+    <form id="materialForm" class="space-y-5 xlg:bg-white" data-material-form="edit">
+      <div
+        class="flex items-center justify-between border-b border-neutral-300 xlg:bg-white p-4 max-[1100px]:flex-row-reverse max-[1100px]:gap-4 max-[1100px]:justify-end"
+      >
+        <div
+          id="createQuoteModalTitle"
+          class="font-semibold text-h3 tracking-wide text-dark"
+        >
+          Edit Material
+        </div>
+        <button
+          type="button"
+          @click="editMaterialModal = false"
+          aria-label="close modal"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+            stroke="currentColor"
+            fill="none"
+            stroke-width="1.4"
+            class="w-5 h-5"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      </div>
+
+      <div class="px-4 flex flex-col gap-4">
+        <div>
+          <h1 class="text-sm font-medium mb-1">Material Name</h1>
+          <input id="material" type="text" required />
+        </div>
+        <div>
+          <h1 class="text-sm font-medium mb-1">
+            Description <span class="italic">(Optional)</span>
+          </h1>
+          <textarea id="description" rows="4"></textarea>
+        </div>
+        <div>
+          <h1 class="text-sm font-medium mb-1">Price</h1>
+          <input id="price" type="text" required />
+        </div>
+        <div>
+          <h1 class="text-sm font-medium mb-1">Transaction Type</h1>
+          <select
+            id="transaction"
+            class="block w-full border border-gray-300 rounded-md px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          >
+            <option value="Reimburse">Reimburse</option>
+            <option value="Deduct">Deduct</option>
+          </select>
+        </div>
+        <div>
+          <h1 class="text-sm font-medium mb-1">Tax</h1>
+          <select
+            id="tax"
+            class="block w-full border border-gray-300 rounded-md px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          >
+            <option value="EXEMPTEXPENSES">Exempt Expenses</option>
+            <option value="INPUT">Input</option>
+          </select>
+        </div>
+      </div>
+    </form>
+
+    <div
+      class="flex items-center xlg:justify-end gap-2 border-t border-neutral-300 bg-white p-4 max-[1100px]:w-full max-[1100px]:fixed max-[1100px]:bottom-0 max-[1100px]:shadow-[0px_0px_4px_0px_rgba(0,0,0,0.10)] max-[1100px]:pb-6"
+    >
+      <button
+        @click="editMaterialModal = false"
+        class="max-[1100px]:w-full button-plain cancellAcctivityModal max-[1100px]:border max-[1100px]:border-primary max-[1100px]:rounded-[4px]"
+      >
+        Cancel
+      </button>
+      <button
+        type="button"
+        class="max-[1100px]:w-full button-primary text-h3 cursor-pointer"
+        data-material-action="update"
+      >
+        Edit
+      </button>
+    </div>
+  </div>
+</div>
+
+<!--Page title-->
+<div class="text-blockquote text-dark p-6 max-[1100px]:p-4">Materials</div>
+<!--Page title-->
+
+<div class="px-6 max-[1100px]:p-0">
+  <div class="border-line relative overflow-hidden rounded-lg border bg-white max-[1100px]:border-none max-[1100px]:bg-transparent">
+    <div class="flex gap-2 py-4 px-6 max-[1100px]:px-4" role="tablist" aria-label="tab options">
+      <div class="flex items-center xlg:flex-row flex-col justify-between gap-6 w-full">
+        <div class="flex items-center overflow-x-auto [scrollbar-width:none] w-full flex-1 max-w-full">
+          <div class="tab activeTab text-h3" id="all" data-status="all">All</div>
+          <div class="tab text-h3" id="new" data-status="new">New</div>
+          <div class="tab text-h3" id="inProgress" data-status="inProgress">In Progress</div>
+          <div class="tab text-h3" id="assignedToJob" data-status="assignedToJob">Assigned to Job</div>
+          <div class="tab text-h3" id="paid" data-status="paid">Paid</div>
+        </div>
+        <button
+          class="z-[9999] button-primary max-[1100px]:fixed max-[1100px]:bottom-[1rem] max-[1100px]:right-[1rem]"
+          @click="modalIsOpen= true;"
+        >
+          Add Material
+        </button>
+      </div>
+    </div>
+    <div class="p-4" id="materials-table-root">
+      <div
+        data-material-type="all"
+        data-dynamic-list="MATERIALS_ALL_LIST_ID"
+        data-entity="peterpm"
+        data-entity-key="1rBR-jpR3yE3HE1VhFD0j"
+        data-var-serviceproviderid="[Visitor//Service Provider ID]"
+        data-table="true"
+        data-op="subscribe"
+        data-init-cb-name="initMaterialsTable"
+      ></div>
+    </div>
+  </div>
+</div>
+
+<style>
+  #od222d911e096,
+  #o0a24449092d7 {
+    z-index: 100 !important;
+  }
+
+  .disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+</style>
+
+<div
+  id="modal"
+  x-cloak
+  x-show="modalIsOpen"
+  x-transition.opacity.duration.200ms
+  x-trap.inert.noscroll="modalIsOpen"
+  @keydown.esc.window="modalIsOpen = false"
+  @click.self="modalIsOpen = false"
+  class="max-[1100px]:!p-0 fixed inset-0 z-30 flex items-center justify-center bg-black/20 xlg:px-4 xlg:pb-8 backdrop-blur-md sm:items-center lg:p-8 max-[1100px]:h-screen"
+>
+  <div
+    x-show="modalIsOpen"
+    x-transition:enter="transition ease-out duration-200 delay-100"
+    x-transition:enter-start="opacity-0 scale-50"
+    x-transition:enter-end="opacity-100 scale-100"
+    class="flex max-w-lg max-[1100px]:!size-full flex-col gap-4 overflow-hidden rounded-md border border-neutral-300 bg-[#f6f6f6] xlg:bg-white text-dark w-full modal-content max-[1100px]:h-screen"
+  >
+    <form id="materialForm" class="xlg:bg-white" data-material-form="create">
+      <div class="flex items-center justify-between border-b border-neutral-300 xlg:bg-white p-4 max-[1100px]:flex-row-reverse max-[1100px]:gap-4 max-[1100px]:justify-end">
+        <div id="createQuoteModalTitle" class="text-h3 font-semibold tracking-wide text-dark">
+          Add Material
+        </div>
+        <button type="button" @click="modalIsOpen = false" aria-label="close modal">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true" stroke="currentColor" fill="none"
+               stroke-width="1.4" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="p-4 flex flex-col gap-4">
+        <div class="flex flex-col gap-2">
+          <div class="text-h3 text-dark">Material Name</div>
+          <input id="addmaterial" type="text" required/>
+        </div>
+        <div class="flex flex-col gap-2">
+          <div class="text-h3 text-dark">Description</div>
+          <textarea id="adddescription" rows="4"></textarea>
+        </div>
+        <div class="flex flex-col gap-2">
+          <div class="text-h3 text-dark">Price</div>
+          <input id="addprice" type="text" required/>
+        </div>
+        <div class="flex flex-col gap-2">
+          <div class="text-h3 text-dark">Transaction Type</div>
+          <select id="addtransaction" class="block w-full border border-gray-300 rounded-md px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+            <option value="Reimburse">Reimburse</option>
+            <option value="Deduct">Deduct</option>
+          </select>
+        </div>
+        <div class="flex flex-col gap-2">
+          <div class="text-h3 text-dark">Tax</div>
+          <select id="addtax" class="block w-full border border-gray-300 rounded-md px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+            <option value="EXEMPTEXPENSES">Exempt Expenses</option>
+            <option value="INPUT">Input</option>
+          </select>
+        </div>
+      </div>
+      <div class="flex items-center bg-white xlg:justify-end gap-2 border-t border-neutral-300 bg-white p-4 max-[1100px]:w-full max-[1100px]:fixed max-[1100px]:bottom-0 max-[1100px]:shadow-[0px_0px_4px_0px_rgba(0,0,0,0.10)] max-[1100px]:pb-6">
+        <button @click="modalIsOpen = false" class="max-[1100px]:w-full button-plain cancellAcctivityModal max-[1100px]:border max-[1100px]:border-primary max-[1100px]:rounded-[4px]">Cancel</button>
+        <button
+          type="button"
+          class="max-[1100px]:w-full button-primary text-h3 cursor-pointer"
+          data-material-action="create"
+        >
+          Add
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

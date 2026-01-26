@@ -42,6 +42,11 @@ body.setAttribute(
     scheduledRreturnInquiryModal: false,
     rescheduleVisitOpenModal: false,
     selectedTab: "overview",
+    deleteMaterialMoodal: false,
+    deleteMaterialId: {},
+    editMaterialModal: false,
+    viewMaterialModal: false,
+    actionIconModal: false,
   }),
 );
 window.addEventListener("resize", () => {
