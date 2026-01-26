@@ -410,42 +410,34 @@
 
 
       <div class="flex gap-4 justify-end w-full max-[1100px]:p-4 max-[1100px]:bg-white">
-        <template x-if="paymentsData.Xero_Bill_Status === 'Waiting Approval' && paymentsData.Bill_Approved_Service_Provider === 'false'">
-          <div class="flex items-center space-x-3 mr-auto">
-            <input type="checkbox" id=""
-                   class="confirmCheckbox form-checkbox !h-4 !w-4 text-primary border-gray-300 rounded focus:ring focus:ring-primary"
-                   x-model="isChecked">
-            <label for="confirmCheckbox" class="text-gray-700 text-h3">
-              I confirm and accept the details of this bill.
-            </label>
-          </div>
-        </template>
+        <div class="flex items-center space-x-3 mr-auto hidden" data-payment-approval-checkbox>
+          <input
+            type="checkbox"
+            class="confirmCheckbox form-checkbox !h-4 !w-4 text-primary border-gray-300 rounded focus:ring focus:ring-primary"
+            data-payment-approve-checkbox
+          />
+          <label class="text-gray-700 text-h3">
+            I confirm and accept the details of this bill.
+          </label>
+        </div>
 
-        <template x-if="paymentsData.Xero_Bill_Status === 'Waiting Approval' && paymentsData.Bill_Approved_Service_Provider === 'true' && paymentsData.Bill_Approved_Admin === 'true'">
-          <div class="flex items-center space-x-3 mr-auto">
-            <div class="text-[#626c87] text-sm font-normal font-['Inter'] leading-tight">Bill Approval Time :</div>
-            <div class="text-[#414042] text-sm font-medium font-['Inter'] leading-[14px]" data-payment-text="Bill_Approval_Time"></div>
-          </div>
-        </template>
+        <div class="flex items-center space-x-3 mr-auto hidden" data-payment-approval-time>
+          <div class="text-[#626c87] text-sm font-normal font-['Inter'] leading-tight">Bill Approval Time :</div>
+          <div class="text-[#414042] text-sm font-medium font-['Inter'] leading-[14px]" data-payment-text="Bill_Approval_Time"></div>
+        </div>
         <!-- Close Button -->
         <button class="hideInPDF closeApproval button-primary text-h3 cursor-pointer" @click = "modalIsOpen = false;">
           Close
         </button>
 
-        <template x-if="paymentsData.Xero_Bill_Status === 'Waiting Approval' && paymentsData.Bill_Approved_Service_Provider === 'false'">
-          <button
-                  x-bind:data-payment-id="paymentsData.ID"
-                  x-bind:disabled="!isChecked || !paymentsData.ID"
-                  x-bind:class="{ 'cursor-not-allowed opacity-50': !isChecked || !paymentsData.ID, 'cursor-pointer opacity-100': isChecked && paymentsData.ID }"
-                  class="hideInPDF approveButton button-primary text-h3 cursor-pointer"
-                  @click="
-                          const paymentId = paymentsData.ID; 
-                          const approveBillBtn = document.querySelector('.approveButton');
-                          const closeApprovalBtn = document.querySelector('.closeApproval');
-                          approveBill(paymentId, approveBillBtn, closeApprovalBtn)">
-            Approve Bill
-          </button>
-        </template>
+        <button
+          type="button"
+          class="hideInPDF approveButton button-primary text-h3 cursor-pointer hidden"
+          data-payment-approve
+          disabled
+        >
+          Approve Bill
+        </button>
       </div>
     </div>
   </div>
@@ -453,69 +445,3 @@
     
     
 
-
-<script>
-
-  
-  const apiUrl = 'https://peterpm.vitalstats.app/api/v1/graphql';
-  
-
-
-async function approveBill(paymentId, approveBillBtn, closeApprovalBtn) {
-  
-  const paymentIdInt = parseInt(paymentId, 10);
-  const payload = {
-    bill_approved_service_provider: true,
-  };
-  
-  approveBillBtn.disabled = true;
-  closeApprovalBtn.disabled = true;
-  approveBillBtn.textContent = "Approving...";
-  
-  const APPROVE_BILL_MUTATION = `
-mutation updateJob(
-$id: PeterpmJobID
-$payload: JobUpdateInput = null
-) {
-updateJob(
-query: [{ where: { id: $id } }]
-payload: $payload
-) {
-bill_approved_service_provider 
-}
-}
-`;
-  
-
-
-  try {
-    const response = await fetch(apiUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Api-key": "1rBR-jpR3yE3HE1VhFD0j",
-      },
-      body: JSON.stringify({
-        query: APPROVE_BILL_MUTATION,
-        variables: { 
-          id: paymentIdInt,
-          payload,
-        },
-      }),
-    });
-
-    const result = await response.json();
-
-    if (result.errors) {
-    } else {
-      console.log("Bill approved successfully", result.data);
-    }
-    location.reload();
-    approveBillBtn.disabled = false;
-    closeApprovalBtn.disabled = false;
-    approveBillBtn.textContent = "Approve";
-  } catch (error) {
-    console.error("Error approving bill:", error);
-  }
-}
-</script>

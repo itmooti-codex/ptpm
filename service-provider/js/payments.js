@@ -103,6 +103,24 @@ const getAlpineData = () => {
   return null;
 };
 
+const setPaymentModalOpen = (isOpen) => {
+  const modal = document.querySelector("[data-payment-modal]");
+  if (!modal) {
+    return;
+  }
+  const alpineData = getAlpineData();
+  if (alpineData) {
+    alpineData.modalIsOpen = isOpen;
+    return;
+  }
+  if (isOpen) {
+    modal.classList.remove("hidden");
+    modal.style.display = "flex";
+  } else {
+    modal.style.display = "none";
+  }
+};
+
 const looksLikeRecord = (value) => {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     return false;
@@ -353,6 +371,130 @@ const applyPaymentStatusBadges = (root, data) => {
   });
 };
 
+const isTruthyValue = (value) =>
+  value === true ||
+  value === "true" ||
+  value === 1 ||
+  value === "1" ||
+  value === "yes";
+
+const updateApprovalButtonState = (checkbox, button) => {
+  if (!button) {
+    return;
+  }
+  const canApprove = button.dataset.canApprove === "true";
+  const isChecked = checkbox ? checkbox.checked : false;
+  const shouldEnable = Boolean(canApprove && isChecked);
+  button.disabled = !shouldEnable;
+  button.classList.toggle("cursor-not-allowed", !shouldEnable);
+  button.classList.toggle("opacity-50", !shouldEnable);
+};
+
+const setupPaymentApprovalSection = (root, data) => {
+  if (!root) {
+    return;
+  }
+  const checkboxRow = root.querySelector("[data-payment-approval-checkbox]");
+  const approvalTimeRow = root.querySelector("[data-payment-approval-time]");
+  const checkbox = root.querySelector("[data-payment-approve-checkbox]");
+  const approveButton = root.querySelector("[data-payment-approve]");
+
+  const xeroStatus = data.Xero_Bill_Status || data.xero_bill_status || "";
+  const spApproved = isTruthyValue(
+    data.Bill_Approved_Service_Provider ?? data.bill_approved_service_provider,
+  );
+  const adminApproved = isTruthyValue(
+    data.Bill_Approved_Admin ?? data.bill_approved_admin,
+  );
+
+  const shouldShowApprove = xeroStatus === "Waiting Approval" && !spApproved;
+  const shouldShowApprovalTime =
+    xeroStatus === "Waiting Approval" && spApproved && adminApproved;
+
+  if (checkboxRow) {
+    checkboxRow.classList.toggle("hidden", !shouldShowApprove);
+  }
+  if (approvalTimeRow) {
+    approvalTimeRow.classList.toggle("hidden", !shouldShowApprovalTime);
+  }
+  if (approveButton) {
+    approveButton.classList.toggle("hidden", !shouldShowApprove);
+    approveButton.dataset.paymentUniqueId =
+      data.Unique_ID || data.unique_id || data.ID || data.id || "";
+    approveButton.dataset.canApprove = shouldShowApprove ? "true" : "false";
+  }
+  if (checkbox) {
+    checkbox.checked = false;
+    updateApprovalButtonState(checkbox, approveButton);
+    if (!checkbox.dataset.bound) {
+      checkbox.addEventListener("change", () =>
+        updateApprovalButtonState(checkbox, approveButton),
+      );
+      checkbox.dataset.bound = "true";
+    }
+  } else {
+    updateApprovalButtonState(null, approveButton);
+  }
+};
+
+const approveBillByUniqueId = async (uniqueId, triggerButton) => {
+  if (!uniqueId) {
+    return null;
+  }
+  if (triggerButton) {
+    triggerButton.disabled = true;
+    triggerButton.textContent = "Approving...";
+  }
+  try {
+    const plugin = await getVitalStatsPlugin();
+    const jobModel = plugin.switchTo("PeterpmJob");
+    const mutation = jobModel.mutation();
+    mutation.update((q) =>
+      q.where("unique_id", uniqueId).set({
+        bill_approved_service_provider: true,
+      }),
+    );
+    await mutation.execute(true).toPromise();
+    const updated = await fetchPaymentDetails(uniqueId);
+    return updated;
+  } catch (error) {
+    console.error("Error approving bill:", error);
+    return null;
+  } finally {
+    if (triggerButton) {
+      triggerButton.textContent = "Approve Bill";
+      triggerButton.disabled = false;
+    }
+  }
+};
+
+const bindPaymentApproval = (root) => {
+  if (!root) {
+    return;
+  }
+  const approveButton = root.querySelector("[data-payment-approve]");
+  if (!approveButton || approveButton.dataset.bound) {
+    return;
+  }
+  approveButton.addEventListener("click", async () => {
+    const uniqueId = approveButton.dataset.paymentUniqueId;
+    if (!uniqueId) {
+      return;
+    }
+    const updated = await approveBillByUniqueId(uniqueId, approveButton);
+    if (updated) {
+      const normalized = normalizePaymentData(updated);
+      populatePaymentModal(normalized);
+      window.paymentsData = normalized;
+      const alpineData = getAlpineData();
+      if (alpineData) {
+        alpineData.paymentsData = normalized;
+      }
+    }
+  });
+  approveButton.dataset.bound = "true";
+};
+
 const populatePaymentModal = (data) => {
   const root = document.querySelector("[data-payment-modal]");
   if (!root) {
@@ -369,6 +511,8 @@ const populatePaymentModal = (data) => {
   applyPaymentStatusBadges(root, data);
   renderPaymentActivities(root, data);
   renderPaymentMaterials(root, data);
+  setupPaymentApprovalSection(root, data);
+  bindPaymentApproval(root);
 };
 
 const fetchPaymentDetails = async (uniqueId) => {
@@ -578,6 +722,10 @@ const openPaymentModal = async (row) => {
     row?.Id ||
     row?.id ||
     "";
+  setPaymentModalOpen(true);
+  if (row) {
+    populatePaymentModal(normalizePaymentData(row));
+  }
   if (!uniqueId) {
     console.warn("Payment id missing.");
     return;
@@ -595,11 +743,6 @@ const openPaymentModal = async (row) => {
     if (alpineData) {
       alpineData.paymentsData = data;
       alpineData.modalIsOpen = true;
-    } else {
-      const modal = document.querySelector("[data-payment-modal]");
-      if (modal) {
-        modal.classList.remove("hidden");
-      }
     }
   } catch (error) {
     console.error("Failed to load payment details:", error);
