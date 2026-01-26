@@ -1,8 +1,5 @@
 (() => {
-  const getServiceProviderId = () => {
-    if (typeof SERVICE_PROVIDER_ID !== "undefined") {
-      return SERVICE_PROVIDER_ID;
-    }
+  const getLoggedInUserId = () => {
     if (typeof loggedInUserIdOp !== "undefined") {
       return loggedInUserIdOp;
     }
@@ -24,8 +21,8 @@
     return Number.isNaN(numeric) ? trimmed : numeric;
   };
 
-  const serviceProviderId = normalizeId(getServiceProviderId());
-  if (!serviceProviderId) {
+  const loggedInUserId = normalizeId(getLoggedInUserId());
+  if (!loggedInUserId) {
     return;
   }
 
@@ -388,7 +385,7 @@
     const model = plugin.switchTo("PeterpmAnnouncement");
     announcementQuery = model
       .query()
-      .where("notified_contact_id", serviceProviderId)
+      .where("notified_contact_id", loggedInUserId)
       .deSelectAll()
       .select([
         "id",
@@ -420,5 +417,4 @@
     fetchNotifications();
   });
 })();
-
 
