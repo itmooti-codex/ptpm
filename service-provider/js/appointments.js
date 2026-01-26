@@ -1265,6 +1265,15 @@ const createQuoteFromModal = async (triggerButton) => {
 
     const payload = {
       property_id: propertyValue,
+      quote_status: "Requested",
+      job_status: "Quote",
+      primary_service_provider_id:
+        typeof SERVICE_PROVIDER_ID !== "undefined" && SERVICE_PROVIDER_ID !== null
+          ? SERVICE_PROVIDER_ID
+          : null,
+      Inquiry_Record: {
+        inquiry_status: "Quote Created",
+      },
     };
 
     const plugin = await getVitalStatsPlugin();
@@ -1414,6 +1423,7 @@ const scheduleAppointmentFromModal = async (triggerButton) => {
     const appointmentMutation = appointmentModel.mutation();
     appointmentMutation.createOne(payload);
     await appointmentMutation.execute(true).toPromise();
+console.log("create job payload", payload, SERVICE_PROVIDER_ID);
 
     const dealModel = plugin.switchTo("PeterpmDeal");
     const dealMutation = dealModel.mutation();
