@@ -139,8 +139,8 @@
         announcementEl.dataset.announcementId = ann.uniqueId || "";
         announcementEl.innerHTML = `
           <div class="flex-col justify-start items-start gap-2 flex flex-1">
-            <span class="text-h3 text-dark">${ann.text}</span>
-            <div class="text-h3 text-dark">${ann.when || ""}</div>
+            <span class="text-sm text-dark">${ann.text}</span>
+            <div class="text-sm text-dark">${ann.when || ""}</div>
           </div>
           ${
             ann.read
