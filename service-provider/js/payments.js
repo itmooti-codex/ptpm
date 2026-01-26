@@ -218,6 +218,10 @@ const normalizePaymentData = (record) => {
     const alias = toAliasKey(key);
     data[alias] = value;
   });
+  if (data.Unique_ID === undefined && data.unique_id === undefined && data.ID) {
+    data.Unique_ID = data.ID;
+    data.unique_id = data.ID;
+  }
   return data;
 };
 
@@ -362,7 +366,9 @@ const applyPaymentStatusBadges = (root, data) => {
         ? elem.dataset.paymentDefault
         : "N/A";
     const rawValue = key ? data[key] : "";
-    const text = isNullValue(rawValue) ? defaultValue : String(rawValue);
+    const text = isNullValue(rawValue)
+      ? defaultValue
+      : String(rawValue).trim();
     const styleMap =
       type === "xero" ? XERO_BILL_STATUS_STYLES : PAYMENT_BADGE_STYLES;
     const badgeClass = styleMap[text] || STATUS_FALLBACK;
@@ -371,12 +377,16 @@ const applyPaymentStatusBadges = (root, data) => {
   });
 };
 
-const isTruthyValue = (value) =>
-  value === true ||
-  value === "true" ||
-  value === 1 ||
-  value === "1" ||
-  value === "yes";
+const isTruthyValue = (value) => {
+  if (value === true || value === 1) {
+    return true;
+  }
+  if (typeof value === "string") {
+    const normalized = value.trim().toLowerCase();
+    return normalized === "true" || normalized === "1" || normalized === "yes";
+  }
+  return false;
+};
 
 const updateApprovalButtonState = (checkbox, button) => {
   if (!button) {
@@ -399,7 +409,9 @@ const setupPaymentApprovalSection = (root, data) => {
   const checkbox = root.querySelector("[data-payment-approve-checkbox]");
   const approveButton = root.querySelector("[data-payment-approve]");
 
-  const xeroStatus = data.Xero_Bill_Status || data.xero_bill_status || "";
+  const xeroStatusRaw = data.Xero_Bill_Status || data.xero_bill_status || "";
+  const xeroStatus = String(xeroStatusRaw || "").trim();
+  const isWaitingApproval = xeroStatus.toLowerCase() === "waiting approval";
   const spApproved = isTruthyValue(
     data.Bill_Approved_Service_Provider ?? data.bill_approved_service_provider,
   );
@@ -407,9 +419,9 @@ const setupPaymentApprovalSection = (root, data) => {
     data.Bill_Approved_Admin ?? data.bill_approved_admin,
   );
 
-  const shouldShowApprove = xeroStatus === "Waiting Approval" && !spApproved;
+  const shouldShowApprove = isWaitingApproval && !spApproved;
   const shouldShowApprovalTime =
-    xeroStatus === "Waiting Approval" && spApproved && adminApproved;
+    isWaitingApproval && spApproved && adminApproved;
 
   if (checkboxRow) {
     checkboxRow.classList.toggle("hidden", !shouldShowApprove);
@@ -518,8 +530,12 @@ const populatePaymentModal = (data) => {
 const fetchPaymentDetails = async (uniqueId) => {
   const plugin = await getVitalStatsPlugin();
   const jobModel = plugin.switchTo("PeterpmJob");
+  const idValue = uniqueId;
+  const isNumericId =
+    typeof idValue === "number" ||
+    (typeof idValue === "string" && /^\d+$/.test(idValue.trim()));
   let query = jobModel.query();
-  query = query.where("unique_id", uniqueId);
+  query = query.where(isNumericId ? "id" : "unique_id", idValue);
   query = query.deSelectAll().select([
     "accepted_quote_activity_price",
     "account_type",
@@ -716,9 +732,9 @@ const fetchPaymentDetails = async (uniqueId) => {
 
 const openPaymentModal = async (row) => {
   const uniqueId =
-    row?.ID ||
     row?.Unique_ID ||
     row?.unique_id ||
+    row?.ID ||
     row?.Id ||
     row?.id ||
     "";
