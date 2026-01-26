@@ -258,11 +258,6 @@ const PAYMENT_FIELDS = [
   "xero_bill_status",
   "xero_invoice_pdf",
   "xero_invoice_status",
-  "_ts_",
-  "_tsAction_",
-  "_tsCreate_",
-  "_tsSessionId_",
-  "_tsUpdateCount_",
 ];
 
 const makeInquiryLink = (id) =>
