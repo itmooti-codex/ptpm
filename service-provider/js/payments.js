@@ -217,6 +217,12 @@ const extractFirstRecord = (payload) => {
     return null;
   }
   if (Array.isArray(payload)) {
+    for (const item of payload) {
+      const record = getRecordFromCandidate(item);
+      if (record) {
+        return record;
+      }
+    }
     return payload[0] || null;
   }
 
