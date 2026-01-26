@@ -18,10 +18,12 @@ const TABLE_ATTRS = {
   op: "subscribe",
   initCbName: "initInquiryTable",
 };
-const GRAPHQL_ENDPOINT = API_URL;
-const GRAPHQL_API_KEY = API_KEY;
-const DELETE_DEAL_MUTATION =
-  "mutation deleteDeal($id: StringScalar_0_8!) { deleteDeal(query: [{ where: { unique_id: $id } }]) { id } }";
+const getVitalStatsPlugin = async () => {
+  if (typeof window.getVitalStatsPlugin !== "function") {
+    throw new Error("SDK not initialized. Ensure sdk.js is loaded first.");
+  }
+  return window.getVitalStatsPlugin();
+};
 const STATUS_STYLES = {
   "New Inquiry": "bg-[#f7d1df] text-[#d81b60]",
   "Contact Client": "bg-[#eedaf2] text-[#ab47bc]",
@@ -189,29 +191,6 @@ const refreshCurrentList = () => {
   }
 };
 
-const graphqlRequest = async (query, variables = {}) => {
-  const response = await fetch(GRAPHQL_ENDPOINT, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Api-Key": GRAPHQL_API_KEY,
-    },
-    body: JSON.stringify({ query, variables }),
-  });
-  const payload = await response.json().catch(() => null);
-  if (!response.ok) {
-    const message =
-      payload?.errors?.[0]?.message ||
-      payload?.message ||
-      `Request failed (${response.status})`;
-    throw new Error(message);
-  }
-  if (Array.isArray(payload?.errors) && payload.errors.length) {
-    throw new Error(payload.errors[0]?.message || "GraphQL error");
-  }
-  return payload?.data ?? null;
-};
-
 const confirmDeleteModal = async () => {
   if (!pendingDeleteId || isDeleting) {
     return;
@@ -222,7 +201,11 @@ const confirmDeleteModal = async () => {
     deleteModalConfirm.textContent = "Deleting...";
   }
   try {
-    await graphqlRequest(DELETE_DEAL_MUTATION, { id: pendingDeleteId });
+    const plugin = await getVitalStatsPlugin();
+    const dealModel = plugin.switchTo("PeterpmDeal");
+    const mutation = dealModel.mutation();
+    mutation.delete((q) => q.where("unique_id", pendingDeleteId));
+    await mutation.execute(true).toPromise();
     closeDeleteModal();
     refreshCurrentList();
     showToast(`Deleted inquiry ${pendingDeleteId}`, "success");
