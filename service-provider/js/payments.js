@@ -947,24 +947,25 @@ const setupPaymentApprovalSection = (root, data) => {
     data.Bill_Approved_Admin ?? data.bill_approved_admin,
   );
 
-  const shouldShowApprove = isWaitingApproval && !spApproved;
+  const canApprove = isWaitingApproval && !spApproved;
   const shouldShowApprovalTime =
     isWaitingApproval && spApproved && adminApproved;
 
   if (checkboxRow) {
-    checkboxRow.classList.toggle("hidden", !shouldShowApprove);
+    checkboxRow.classList.toggle("hidden", !isWaitingApproval);
   }
   if (approvalTimeRow) {
     approvalTimeRow.classList.toggle("hidden", !shouldShowApprovalTime);
   }
   if (approveButton) {
-    approveButton.classList.toggle("hidden", !shouldShowApprove);
+    approveButton.classList.toggle("hidden", !canApprove);
     approveButton.dataset.paymentUniqueId =
       data.Unique_ID || data.unique_id || data.ID || data.id || "";
-    approveButton.dataset.canApprove = shouldShowApprove ? "true" : "false";
+    approveButton.dataset.canApprove = canApprove ? "true" : "false";
   }
   if (checkbox) {
-    checkbox.checked = false;
+    checkbox.checked = Boolean(spApproved);
+    checkbox.disabled = Boolean(spApproved);
     updateApprovalButtonState(checkbox, approveButton);
     if (!checkbox.dataset.bound) {
       checkbox.addEventListener("change", () =>
@@ -986,17 +987,16 @@ const approveBillByUniqueId = async (uniqueId, triggerButton) => {
     triggerButton.textContent = "Approving...";
   }
   try {
-    const plugin = await getVitalStatsPlugin();
-    const jobModel = plugin.switchTo("PeterpmJob");
-    const mutation = jobModel.mutation();
-    mutation.update((q) =>
-      q.where("unique_id", uniqueId).set({
-        bill_approved_service_provider: true,
-      }),
-    );
-    await mutation.execute(true).toPromise();
-    const updated = await fetchPaymentDetails(uniqueId);
-    return updated;
+    const mutation = `mutation updateJob($uniqueId: StringScalar_0_8!, $payload: JobUpdateInput = null) {
+  updateJob(query: [{ where: { unique_id: $uniqueId } }], payload: $payload) {
+    bill_approved_service_provider
+  }
+}`;
+    await graphqlRequest(mutation, {
+      uniqueId,
+      payload: { bill_approved_service_provider: true },
+    });
+    return await fetchPaymentDetails(uniqueId);
   } catch (error) {
     console.error("Error approving bill:", error);
     return null;
