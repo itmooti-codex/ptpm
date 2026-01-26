@@ -75,6 +75,196 @@ const PAYMENT_BADGE_STYLES = {
   Cancelled: "bg-[#dfdfdf] text-[#616161]",
 };
 
+const PAYMENT_FIELDS = [
+  "accepted_quote_activity_price",
+  "account_type",
+  "accounts_contact_id",
+  "activities_on_job",
+  "activities_to_complete",
+  "admin_recommendation",
+  "all_files_submitted",
+  "all_forms_submitted",
+  "all_photos_submitted",
+  "bill_approval_time",
+  "bill_approved_admin",
+  "bill_approved_service_provider",
+  "bill_batch_date",
+  "bill_batch_id",
+  "bill_batch_week",
+  "bill_date",
+  "bill_due_date",
+  "bill_gst",
+  "bill_time_paid",
+  "bill_total",
+  "bill_xero_id",
+  "calculate_job_price",
+  "calculate_quote_price",
+  "client_entity_id",
+  "client_individual_id",
+  "create_a_callback",
+  "created_at",
+  "date_booked",
+  "date_cancelled",
+  "date_completed",
+  "date_feedback_requested",
+  "date_feedback_submitted",
+  "date_quote_requested",
+  "date_quote_sent",
+  "date_quoted_accepted",
+  "date_scheduled",
+  "date_started",
+  "deduct_total",
+  "del_activities_to_complete",
+  "due_date",
+  "duplicate_job",
+  "email_bc_quote_fu",
+  "email_customer_job_email",
+  "email_electronic_quote",
+  "email_manual_quote",
+  "email_o_quote_fu",
+  "email_re_quote_fu",
+  "email_tenant_job_email",
+  "externalRawDataErrors",
+  "externalRawDataStatus",
+  "feedback_form_job_published",
+  "feedback_form_job_unique_visits",
+  "feedback_form_job_url",
+  "feedback_form_job_visits",
+  "feedback_number",
+  "feedback_status",
+  "feedback_text",
+  "follow_up_comment",
+  "follow_up_date",
+  "form_pest_control_advice_published",
+  "form_pest_control_advice_unique_visits",
+  "form_pest_control_advice_url",
+  "form_pest_control_advice_visits",
+  "form_prestart_published",
+  "form_prestart_unique_visits",
+  "form_prestart_url",
+  "form_prestart_visits",
+  "id",
+  "inquiry_record_id",
+  "invoice_date",
+  "invoice_id",
+  "invoice_number",
+  "invoice_total",
+  "invoice_url_admin",
+  "invoice_url_client",
+  "ip_address",
+  "job_activity_subtotal",
+  "job_call_backs",
+  "job_gst",
+  "job_sheet_published",
+  "job_sheet_unique_visits",
+  "job_sheet_url",
+  "job_sheet_visits",
+  "job_status",
+  "job_status_old",
+  "job_total",
+  "job_type",
+  "job_variation_price",
+  "job_variation_text",
+  "job_variation_type",
+  "last_activity",
+  "last_call_logged",
+  "last_email_received",
+  "last_email_sent",
+  "last_modified_at",
+  "last_note",
+  "last_sms_received",
+  "last_sms_sent",
+  "location_name",
+  "mark_complete",
+  "materials_total",
+  "new_direct_job_published",
+  "new_direct_job_unique_visits",
+  "new_direct_job_url",
+  "new_direct_job_visits",
+  "noise_signs_options_as_text",
+  "options_on_quote",
+  "owner_id",
+  "past_job_id",
+  "payment_id",
+  "payment_method",
+  "payment_status",
+  "pca_done",
+  "possum_comment",
+  "possum_number",
+  "prestart_done",
+  "prestart_form_submitted",
+  "primary_service_provider_id",
+  "priority",
+  "profile_image",
+  "property_id",
+  "ptpm_edit_job_published",
+  "ptpm_edit_job_unique_visits",
+  "ptpm_edit_job_url",
+  "ptpm_edit_job_visits",
+  "ptpm_edit_quote_admin_published",
+  "ptpm_edit_quote_admin_unique_visits",
+  "ptpm_edit_quote_admin_url",
+  "ptpm_edit_quote_admin_visits",
+  "ptpm_edit_quote_published",
+  "ptpm_edit_quote_unique_visits",
+  "ptpm_edit_quote_url",
+  "ptpm_edit_quote_visits",
+  "ptpm_memos_published",
+  "ptpm_memos_unique_visits",
+  "ptpm_memos_url",
+  "ptpm_memos_visits",
+  "ptpm_view_quote_published",
+  "ptpm_view_quote_unique_visits",
+  "ptpm_view_quote_url",
+  "ptpm_view_quote_visits",
+  "quote_creator_published",
+  "quote_creator_unique_visits",
+  "quote_creator_url",
+  "quote_creator_visits",
+  "quote_date",
+  "quote_gst",
+  "quote_note",
+  "quote_status",
+  "quote_template_client_view_published",
+  "quote_template_client_view_unique_visits",
+  "quote_template_client_view_url",
+  "quote_template_client_view_visits",
+  "quote_total",
+  "quote_valid_until",
+  "quote_variation_price",
+  "quote_variation_text",
+  "quote_variation_type",
+  "quoted_activities_subtotal",
+  "rating",
+  "referrer_id",
+  "reimburse_total",
+  "request_review",
+  "reset_batch_id",
+  "return_job_to_admin",
+  "send_job_update_to_service_provider",
+  "signature",
+  "tasks_on_quote",
+  "terms_and_conditions_accepted",
+  "time_terms_and_conditions_agreed",
+  "turkey_comment",
+  "turkey_number",
+  "turkey_release_site",
+  "unique_id",
+  "view_job_photos_published",
+  "view_job_photos_unique_visits",
+  "view_job_photos_url",
+  "view_job_photos_visits",
+  "xero_api_response",
+  "xero_bill_status",
+  "xero_invoice_pdf",
+  "xero_invoice_status",
+  "_ts_",
+  "_tsAction_",
+  "_tsCreate_",
+  "_tsSessionId_",
+  "_tsUpdateCount_",
+];
+
 const makeInquiryLink = (id) =>
   `https://my.awesomate.pro/inquiry/${encodeURIComponent(id)}`;
 
@@ -291,6 +481,11 @@ const toAliasKey = (key) => {
     .join("_");
 };
 
+const buildCalcJobsSelection = () =>
+  PAYMENT_FIELDS.map(
+    (field) => `${toAliasKey(field)}: field(arg: ["${field}"])`,
+  ).join("\n");
+
 const normalizePaymentData = (record) => {
   const data = {};
   if (!record || typeof record !== "object") {
@@ -306,6 +501,63 @@ const normalizePaymentData = (record) => {
     data.unique_id = data.ID;
   }
   return data;
+};
+
+const getGraphqlConfig = () => {
+  const slug = window.SDK_CONFIG?.slug || TABLE_ATTRS.entity;
+  const apiKey = window.SDK_CONFIG?.apiKey || TABLE_ATTRS.entityKey;
+  if (!slug || !apiKey) {
+    return null;
+  }
+  return {
+    endpoint: `https://${slug}.vitalstats.app/api/v1/graphql`,
+    apiKey,
+  };
+};
+
+const graphqlRequest = async (query, variables = {}) => {
+  const config = getGraphqlConfig();
+  if (!config) {
+    return null;
+  }
+  const response = await fetch(config.endpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Api-Key": config.apiKey,
+    },
+    body: JSON.stringify({ query, variables }),
+  });
+  const payload = await response.json().catch(() => null);
+  if (!response.ok) {
+    const message =
+      payload?.errors?.[0]?.message ||
+      payload?.message ||
+      `Request failed (${response.status})`;
+    throw new Error(message);
+  }
+  if (Array.isArray(payload?.errors) && payload.errors.length) {
+    throw new Error(payload.errors[0]?.message || "GraphQL error");
+  }
+  return payload?.data ?? null;
+};
+
+const fetchPaymentDetailsViaHttp = async (uniqueId) => {
+  if (!uniqueId) {
+    return null;
+  }
+  const selection = buildCalcJobsSelection();
+  const query = `query calcJobs($uniqueId: StringScalar_0_8!) {
+  calcJobs(query: [{ where: { unique_id: $uniqueId } }]) {
+    ${selection}
+  }
+}`;
+  const data = await graphqlRequest(query, { uniqueId });
+  const records = data?.calcJobs;
+  if (Array.isArray(records)) {
+    return records[0] || null;
+  }
+  return records || null;
 };
 
 const parseDelimitedList = (value) => {
@@ -619,202 +871,23 @@ const fetchPaymentDetails = async (uniqueId) => {
     (typeof idValue === "string" && /^\d+$/.test(idValue.trim()));
   let query = jobModel.query();
   query = query.where(isNumericId ? "id" : "unique_id", idValue);
-  query = query.deSelectAll().select([
-    "accepted_quote_activity_price",
-    "account_type",
-    "accounts_contact_id",
-    "activities_on_job",
-    "activities_to_complete",
-    "admin_recommendation",
-    "all_files_submitted",
-    "all_forms_submitted",
-    "all_photos_submitted",
-    "bill_approval_time",
-    "bill_approved_admin",
-    "bill_approved_service_provider",
-    "bill_batch_date",
-    "bill_batch_id",
-    "bill_batch_week",
-    "bill_date",
-    "bill_due_date",
-    "bill_gst",
-    "bill_time_paid",
-    "bill_total",
-    "bill_xero_id",
-    "calculate_job_price",
-    "calculate_quote_price",
-    "client_entity_id",
-    "client_individual_id",
-    "create_a_callback",
-    "created_at",
-    "date_booked",
-    "date_cancelled",
-    "date_completed",
-    "date_feedback_requested",
-    "date_feedback_submitted",
-    "date_quote_requested",
-    "date_quote_sent",
-    "date_quoted_accepted",
-    "date_scheduled",
-    "date_started",
-    "deduct_total",
-    "del_activities_to_complete",
-    "due_date",
-    "duplicate_job",
-    "email_bc_quote_fu",
-    "email_customer_job_email",
-    "email_electronic_quote",
-    "email_manual_quote",
-    "email_o_quote_fu",
-    "email_re_quote_fu",
-    "email_tenant_job_email",
-    "externalRawDataErrors",
-    "externalRawDataStatus",
-    "feedback_form_job_published",
-    "feedback_form_job_unique_visits",
-    "feedback_form_job_url",
-    "feedback_form_job_visits",
-    "feedback_number",
-    "feedback_status",
-    "feedback_text",
-    "follow_up_comment",
-    "follow_up_date",
-    "form_pest_control_advice_published",
-    "form_pest_control_advice_unique_visits",
-    "form_pest_control_advice_url",
-    "form_pest_control_advice_visits",
-    "form_prestart_published",
-    "form_prestart_unique_visits",
-    "form_prestart_url",
-    "form_prestart_visits",
-    "id",
-    "inquiry_record_id",
-    "invoice_date",
-    "invoice_id",
-    "invoice_number",
-    "invoice_total",
-    "invoice_url_admin",
-    "invoice_url_client",
-    "ip_address",
-    "job_activity_subtotal",
-    "job_call_backs",
-    "job_gst",
-    "job_sheet_published",
-    "job_sheet_unique_visits",
-    "job_sheet_url",
-    "job_sheet_visits",
-    "job_status",
-    "job_status_old",
-    "job_total",
-    "job_type",
-    "job_variation_price",
-    "job_variation_text",
-    "job_variation_type",
-    "last_activity",
-    "last_call_logged",
-    "last_email_received",
-    "last_email_sent",
-    "last_modified_at",
-    "last_note",
-    "last_sms_received",
-    "last_sms_sent",
-    "location_name",
-    "mark_complete",
-    "materials_total",
-    "new_direct_job_published",
-    "new_direct_job_unique_visits",
-    "new_direct_job_url",
-    "new_direct_job_visits",
-    "noise_signs_options_as_text",
-    "options_on_quote",
-    "owner_id",
-    "past_job_id",
-    "payment_id",
-    "payment_method",
-    "payment_status",
-    "pca_done",
-    "possum_comment",
-    "possum_number",
-    "prestart_done",
-    "prestart_form_submitted",
-    "primary_service_provider_id",
-    "priority",
-    "profile_image",
-    "property_id",
-    "ptpm_edit_job_published",
-    "ptpm_edit_job_unique_visits",
-    "ptpm_edit_job_url",
-    "ptpm_edit_job_visits",
-    "ptpm_edit_quote_admin_published",
-    "ptpm_edit_quote_admin_unique_visits",
-    "ptpm_edit_quote_admin_url",
-    "ptpm_edit_quote_admin_visits",
-    "ptpm_edit_quote_published",
-    "ptpm_edit_quote_unique_visits",
-    "ptpm_edit_quote_url",
-    "ptpm_edit_quote_visits",
-    "ptpm_memos_published",
-    "ptpm_memos_unique_visits",
-    "ptpm_memos_url",
-    "ptpm_memos_visits",
-    "ptpm_view_quote_published",
-    "ptpm_view_quote_unique_visits",
-    "ptpm_view_quote_url",
-    "ptpm_view_quote_visits",
-    "quote_creator_published",
-    "quote_creator_unique_visits",
-    "quote_creator_url",
-    "quote_creator_visits",
-    "quote_date",
-    "quote_gst",
-    "quote_note",
-    "quote_status",
-    "quote_template_client_view_published",
-    "quote_template_client_view_unique_visits",
-    "quote_template_client_view_url",
-    "quote_template_client_view_visits",
-    "quote_total",
-    "quote_valid_until",
-    "quote_variation_price",
-    "quote_variation_text",
-    "quote_variation_type",
-    "quoted_activities_subtotal",
-    "rating",
-    "referrer_id",
-    "reimburse_total",
-    "request_review",
-    "reset_batch_id",
-    "return_job_to_admin",
-    "send_job_update_to_service_provider",
-    "signature",
-    "tasks_on_quote",
-    "terms_and_conditions_accepted",
-    "time_terms_and_conditions_agreed",
-    "turkey_comment",
-    "turkey_number",
-    "turkey_release_site",
-    "unique_id",
-    "view_job_photos_published",
-    "view_job_photos_unique_visits",
-    "view_job_photos_url",
-    "view_job_photos_visits",
-    "xero_api_response",
-    "xero_bill_status",
-    "xero_invoice_pdf",
-    "xero_invoice_status",
-    "_ts_",
-    "_tsAction_",
-    "_tsCreate_",
-    "_tsSessionId_",
-    "_tsUpdateCount_",
-  ]);
+  query = query.deSelectAll().select(PAYMENT_FIELDS);
   query.getOrInitQueryCalc?.();
   const result = await fetchDirectOnce(query);
   const record = extractFirstRecord(result);
-  if (!record) {
-    console.warn("Payment fetch returned no records.", result);
+  if (record) {
+    return record;
   }
-  return record;
+  console.warn("Payment fetch returned no records.", result);
+  try {
+    const httpRecord = await fetchPaymentDetailsViaHttp(idValue);
+    if (httpRecord) {
+      return httpRecord;
+    }
+  } catch (error) {
+    console.error("Payment HTTP fallback failed:", error);
+  }
+  return null;
 };
 
 const openPaymentModal = async (row) => {
