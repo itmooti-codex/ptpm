@@ -6,34 +6,28 @@ const STATUS_FIELD_RE = /^status$/i;
 const ACTIONS_FIELD = "__actions";
 
 const LIST_CONFIG = {
-  all: typeof allMaterials !== "undefined" ? allMaterials : "MATERIALS_ALL_LIST_ID",
-  new: typeof newMaterials !== "undefined" ? newMaterials : "MATERIALS_NEW_LIST_ID",
-  inProgress:
-    typeof inProgressMaterials !== "undefined"
-      ? inProgressMaterials
-      : "MATERIALS_IN_PROGRESS_LIST_ID",
-  assignedToJob:
-    typeof assignedToJobMaterials !== "undefined"
-      ? assignedToJobMaterials
-      : "MATERIALS_ASSIGNED_TO_JOB_LIST_ID",
-  paid: typeof paidMaterials !== "undefined" ? paidMaterials : "MATERIALS_PAID_LIST_ID",
+  all: allMaterials,
+  new: newMaterials,
+  inProgress:inProgressMaterials,
+  assignedToJob:assignedToJobMaterials,
+  paid: paidMaterials,
 };
 
 const TABLE_ATTRS = {
   entity: "peterpm",
   entityKey: "1rBR-jpR3yE3HE1VhFD0j",
-  varServiceproviderid:
-    typeof SERVICE_PROVIDER_ID !== "undefined" ? SERVICE_PROVIDER_ID : "",
+  varServiceproviderid:loggedInUserIdOp,
   table: "true",
   op: "subscribe",
   initCbName: "initMaterialsTable",
 };
 
 const STATUS_STYLES = {
-  New: "bg-[#E8D3EE] text-[#8E24AA]",
-  "In Progress": "bg-[#CCE7F6] text-[#0288D1]",
+  "Pending Payment": "bg-[#FEE8CC] text-[#757575]",
+  Paid: "bg-[#E3E3E3] text-[#f57c00]",
   "Assigned to Job": "bg-[#D9ECDA] text-[#43A047]",
-  Paid: "bg-[#D9ECDA] text-[#43A047]",
+  New: "bg-[#CDEBFA] text-[#039BE5]",
+  "In Progress": "bg-[#CCEEF3] text-[#00ACC1]",
 };
 const STATUS_FALLBACK = "bg-gray-200 text-gray-500";
 
