@@ -1,9 +1,4 @@
-const getVitalStatsPlugin = async () => {
-  if (typeof window.getVitalStatsPlugin !== "function") {
-    throw new Error("SDK not initialized. Ensure sdk.js is loaded first.");
-  }
-  return window.getVitalStatsPlugin();
-};
+
 
 const normalizeServiceProviderId = (value) => {
   if (value === null || value === undefined) {
