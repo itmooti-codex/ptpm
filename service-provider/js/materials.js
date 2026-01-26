@@ -3,6 +3,8 @@ const tableRoot = document.getElementById("materials-table-root");
 const NULL_TEXT_RE = /^null$/i;
 const ID_FIELD_RE = /(^id$|_id$)/i;
 const STATUS_FIELD_RE = /^status$/i;
+const RECEIPT_FIELD_RE = /receipt/i;
+const SERVICE_PROVIDER_FIELD_RE = /service[_\s]*provider[_\s]*id/i;
 const ACTIONS_FIELD = "__actions";
 
 const LIST_CONFIG = {
@@ -36,6 +38,65 @@ let currentMaterialId = "";
 let isCreating = false;
 let isUpdating = false;
 let isDeleting = false;
+let toastTimer = null;
+
+const getToastElement = () => {
+  let toast = document.getElementById("toast");
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.id = "toast";
+    toast.className =
+      "pointer-events-none fixed right-4 top-4 z-50 hidden max-w-xs rounded-md px-4 py-3 text-sm shadow-lg";
+    toast.setAttribute("role", "status");
+    toast.setAttribute("aria-live", "polite");
+    document.body.appendChild(toast);
+  }
+  return toast;
+};
+
+const showToast = (message, type = "info") => {
+  const toast = getToastElement();
+  const classes = {
+    success: "bg-green-600 text-white",
+    error: "bg-red-600 text-white",
+    info: "bg-gray-900 text-white",
+  };
+  toast.className = `pointer-events-none fixed right-4 top-4 z-50 max-w-xs rounded-md px-4 py-3 text-sm shadow-lg ${
+    classes[type] || classes.info
+  }`;
+  toast.textContent = message;
+  toast.classList.remove("hidden");
+  if (toastTimer) {
+    clearTimeout(toastTimer);
+  }
+  toastTimer = setTimeout(() => {
+    toast.classList.add("hidden");
+  }, 3000);
+};
+
+const setButtonLoading = (button, isLoading, label = "Saving...") => {
+  if (!button) {
+    return;
+  }
+  if (isLoading) {
+    if (!button.dataset.originalHtml) {
+      button.dataset.originalHtml = button.innerHTML;
+    }
+    button.disabled = true;
+    button.classList.add("opacity-60", "cursor-not-allowed");
+    button.setAttribute("aria-busy", "true");
+    if (label !== null && label !== undefined && label !== "") {
+      button.innerHTML = label;
+    }
+    return;
+  }
+  button.disabled = false;
+  button.classList.remove("opacity-60", "cursor-not-allowed");
+  button.removeAttribute("aria-busy");
+  if (button.dataset.originalHtml) {
+    button.innerHTML = button.dataset.originalHtml;
+  }
+};
 
 const isNullValue = (value) => {
   if (value === null || value === undefined) {
@@ -115,6 +176,16 @@ const setInputValue = (selector, value) => {
   }
   input.value = value ?? "";
 };
+
+const getReceiptLink = (row = {}) =>
+  pickValue(
+    row.Receipt,
+    row.receipt,
+    row.receipt_url,
+    row.Receipt_URL,
+    row.receipt_link,
+    row.Receipt_Link,
+  );
 
 const openEditMaterialModal = (row) => {
   const material = normalizeMaterialRow(row);
@@ -249,11 +320,14 @@ const getUpdateMaterialPayload = () => {
   };
 };
 
-const createMaterial = async () => {
+const createMaterial = async (triggerButton) => {
   if (isCreating) {
     return;
   }
   isCreating = true;
+  const activeButton =
+    triggerButton || document.querySelector('[data-material-action="create"]');
+  setButtonLoading(activeButton, true, "Adding...");
   try {
     const payload = getCreateMaterialPayload();
     const plugin = await getVitalStatsPlugin();
@@ -264,18 +338,27 @@ const createMaterial = async () => {
     document.querySelector('[data-material-form="create"]')?.reset();
     setAlpineFlag("modalIsOpen", false);
     refreshCurrentList();
+    showToast("Material added successfully.", "success");
   } catch (error) {
     console.error("Failed to create material:", error);
+    showToast("Failed to add material.", "error");
   } finally {
     isCreating = false;
+    setButtonLoading(activeButton, false);
   }
 };
 
-const updateMaterial = async () => {
+const updateMaterial = async (triggerButton) => {
   if (isUpdating || !currentMaterialId) {
+    if (!currentMaterialId) {
+      showToast("Missing material id.", "error");
+    }
     return;
   }
   isUpdating = true;
+  const activeButton =
+    triggerButton || document.querySelector('[data-material-action="update"]');
+  setButtonLoading(activeButton, true, "Saving...");
   try {
     const payload = getUpdateMaterialPayload();
     const plugin = await getVitalStatsPlugin();
@@ -285,14 +368,17 @@ const updateMaterial = async () => {
     await mutation.execute(true).toPromise();
     setAlpineFlag("editMaterialModal", false);
     refreshCurrentList();
+    showToast("Material updated successfully.", "success");
   } catch (error) {
     console.error("Failed to update material:", error);
+    showToast("Failed to update material.", "error");
   } finally {
     isUpdating = false;
+    setButtonLoading(activeButton, false);
   }
 };
 
-const deleteMaterial = async (row) => {
+const deleteMaterial = async (row, triggerButton) => {
   if (isDeleting) {
     return;
   }
@@ -300,12 +386,15 @@ const deleteMaterial = async (row) => {
   const materialId = material.id;
   if (!materialId) {
     console.warn("Material id missing.");
+    showToast("Missing material id.", "error");
     return;
   }
   if (!window.confirm("Delete this material?")) {
     return;
   }
   isDeleting = true;
+  const activeButton = triggerButton;
+  setButtonLoading(activeButton, true, null);
   try {
     const plugin = await getVitalStatsPlugin();
     const materialModel = plugin.switchTo("PeterpmMaterial");
@@ -313,10 +402,13 @@ const deleteMaterial = async (row) => {
     mutation.delete((q) => q.where("id", maybeNumber(materialId)));
     await mutation.execute(true).toPromise();
     refreshCurrentList();
+    showToast("Material deleted.", "success");
   } catch (error) {
     console.error("Failed to delete material:", error);
+    showToast("Failed to delete material.", "error");
   } finally {
     isDeleting = false;
+    setButtonLoading(activeButton, false);
   }
 };
 
@@ -353,7 +445,22 @@ window.initMaterialsTable = (dynamicList) => {
   });
 
   dynamicList.tableCtx.setFinalizeColumns((cols) => {
-    const mapped = cols.map((col) => {
+    const mapped = cols
+      .filter((col) => {
+        const field = col.field || "";
+        const header = col.headerName || "";
+        if (RECEIPT_FIELD_RE.test(field) || RECEIPT_FIELD_RE.test(header)) {
+          return false;
+        }
+        if (
+          SERVICE_PROVIDER_FIELD_RE.test(field) ||
+          SERVICE_PROVIDER_FIELD_RE.test(header)
+        ) {
+          return false;
+        }
+        return true;
+      })
+      .map((col) => {
       const isId = ID_FIELD_RE.test(col.field || "");
       const isStatus = STATUS_FIELD_RE.test(col.field || "");
       if (col.field === ACTIONS_FIELD) {
@@ -408,11 +515,41 @@ window.initMaterialsTable = (dynamicList) => {
         sortable: false,
         filterable: false,
         flex: 0,
-        width: 100,
-        renderCell: (params) =>
-          React.createElement(
+        width: 120,
+        renderCell: (params) => {
+          const receiptLink = getReceiptLink(params.row);
+          return React.createElement(
             "div",
             { className: "flex items-center gap-2" },
+            React.createElement(
+              "a",
+              {
+                href: receiptLink || undefined,
+                target: receiptLink ? "_blank" : undefined,
+                rel: receiptLink ? "noopener noreferrer" : undefined,
+                onClick: (event) => {
+                  if (!receiptLink) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                  }
+                },
+                className: receiptLink
+                  ? "text-[#0052CC] hover:text-[#003882]"
+                  : "text-gray-300 cursor-not-allowed",
+                "aria-label": "Open receipt",
+                title: receiptLink ? "Open receipt" : "No receipt available",
+              },
+              React.createElement("svg", {
+                viewBox: "0 0 24 24",
+                width: 18,
+                height: 18,
+                "aria-hidden": "true",
+                fill: "currentColor",
+                children: React.createElement("path", {
+                  d: "M6 2h9l5 5v15a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm8 1.5V8h4.5L14 3.5zM7 11h10v2H7v-2zm0 4h10v2H7v-2z",
+                }),
+              }),
+            ),
             React.createElement(
               "button",
               {
@@ -442,7 +579,7 @@ window.initMaterialsTable = (dynamicList) => {
                 type: "button",
                 onClick: (event) => {
                   event.stopPropagation();
-                  deleteMaterial(params.row);
+                  deleteMaterial(params.row, event.currentTarget);
                 },
                 className: "text-red-600 hover:text-red-700",
                 "aria-label": "Delete material",
@@ -459,7 +596,8 @@ window.initMaterialsTable = (dynamicList) => {
                 }),
               }),
             ),
-          ),
+          );
+        },
       },
     ];
   });
@@ -471,7 +609,7 @@ document.addEventListener("click", (event) => {
     return;
   }
   event.preventDefault();
-  createMaterial();
+  createMaterial(button);
 });
 
 document.addEventListener("click", (event) => {
@@ -480,7 +618,7 @@ document.addEventListener("click", (event) => {
     return;
   }
   event.preventDefault();
-  updateMaterial();
+  updateMaterial(button);
 });
 
 document.addEventListener("submit", (event) => {
@@ -490,10 +628,10 @@ document.addEventListener("submit", (event) => {
   }
   if (form.matches('[data-material-form="create"]')) {
     event.preventDefault();
-    createMaterial();
+    createMaterial(event.submitter);
   }
   if (form.matches('[data-material-form="edit"]')) {
     event.preventDefault();
-    updateMaterial();
+    updateMaterial(event.submitter);
   }
 });
