@@ -367,6 +367,21 @@ const setPaymentModalOpen = (isOpen) => {
   }
 };
 
+const setPaymentLoading = (isLoading) => {
+  const modal = document.querySelector("[data-payment-modal]");
+  if (!modal) {
+    return;
+  }
+  const loader = modal.querySelector("[data-payment-loading]");
+  const content = modal.querySelector("[data-payment-content]");
+  if (loader) {
+    loader.classList.toggle("hidden", !isLoading);
+  }
+  if (content) {
+    content.classList.toggle("hidden", isLoading);
+  }
+};
+
 const looksLikeRecord = (value) => {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     return false;
@@ -858,31 +873,16 @@ const populatePaymentModal = (data) => {
 };
 
 const fetchPaymentDetails = async (uniqueId) => {
-  const plugin = await getVitalStatsPlugin();
-  const jobModel = plugin.switchTo("PeterpmJob");
-  const idValue = uniqueId;
-  const isNumericId =
-    typeof idValue === "number" ||
-    (typeof idValue === "string" && /^\d+$/.test(idValue.trim()));
-  let query = jobModel.query();
-  query = query.where(isNumericId ? "id" : "unique_id", idValue);
-  query = query.deSelectAll().select(PAYMENT_FIELDS);
-  query.getOrInitQueryCalc?.();
-  const result = await fetchDirectOnce(query);
-  const record = extractFirstRecord(result);
-  if (record) {
-    return record;
+  if (!uniqueId) {
+    return null;
   }
-  console.warn("Payment fetch returned no records.", result);
+  const idValue = String(uniqueId).trim();
   try {
-    const httpRecord = await fetchPaymentDetailsViaHttp(idValue);
-    if (httpRecord) {
-      return httpRecord;
-    }
+    return await fetchPaymentDetailsViaHttp(idValue);
   } catch (error) {
-    console.error("Payment HTTP fallback failed:", error);
+    console.error("Payment HTTP fetch failed:", error);
+    return null;
   }
-  return null;
 };
 
 const openPaymentModal = async (row) => {
@@ -894,21 +894,25 @@ const openPaymentModal = async (row) => {
     row?.id ||
     "";
   setPaymentModalOpen(true);
+  setPaymentLoading(true);
   if (row) {
     populatePaymentModal(normalizePaymentData(row));
   }
   if (!uniqueId) {
     console.warn("Payment id missing.");
+    setPaymentLoading(false);
     return;
   }
   try {
     const record = await fetchPaymentDetails(uniqueId);
     if (!record) {
       console.warn("Payment record not found for", uniqueId);
+      setPaymentLoading(false);
       return;
     }
     const data = normalizePaymentData(record);
     populatePaymentModal(data);
+    setPaymentLoading(false);
     window.paymentsData = data;
     const alpineData = getAlpineData();
     if (alpineData) {
@@ -917,6 +921,7 @@ const openPaymentModal = async (row) => {
     }
   } catch (error) {
     console.error("Failed to load payment details:", error);
+    setPaymentLoading(false);
   }
 };
 

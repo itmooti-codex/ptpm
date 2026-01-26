@@ -47,7 +47,14 @@
        x-transition:enter-start="opacity-0 scale-50" x-transition:enter-end=" opacity-100 scale-100"
        class="mainModalWraspper flex flex-col gap-4 bg-white h-[95vh] w-[900px] !overflow-y-auto max-[1100px]:bg-[#f6f6f6] max-[1100px]:h-screen max-[1100px]:w-screen">
 
-    <div class="fullPaymentWrapper flex flex-col items-center justify-end bg-white p-[40px] gap-[24px] max-[1100px]:p-4 max-[1100px]:gap-[16px]" data-payment-id="" id="paymentContent">
+    <div class="flex items-center justify-center py-12 text-h3 text-dark hidden" data-payment-loading>
+      <div class="flex items-center gap-3">
+        <span class="inline-block h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-primary"></span>
+        <span>Loading payment...</span>
+      </div>
+    </div>
+
+    <div class="fullPaymentWrapper flex flex-col items-center justify-end bg-white p-[40px] gap-[24px] max-[1100px]:p-4 max-[1100px]:gap-[16px]" data-payment-id="" data-payment-content id="paymentContent">
 
 
       <!-- Billing Header Desktop -->
@@ -444,4 +451,3 @@
 </div>
     
     
-
