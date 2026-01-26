@@ -75,6 +75,13 @@ const PAYMENT_BADGE_STYLES = {
   Cancelled: "bg-[#dfdfdf] text-[#616161]",
 };
 
+const PAYMENT_FIELD_EXTRAS = [
+  {
+    alias: "Primary_Service_Provider_Job_Rate_Percentage",
+    arg: ["Primary_Service_Provider", "job_rate_percentage"],
+  },
+];
+
 const PAYMENT_FIELDS = [
   "accepted_quote_activity_price",
   "account_type",
@@ -491,10 +498,16 @@ const toAliasKey = (key) => {
     .join("_");
 };
 
-const buildCalcJobsSelection = () =>
-  PAYMENT_FIELDS.map(
+const buildCalcJobsSelection = () => {
+  const fieldSelections = PAYMENT_FIELDS.map(
     (field) => `${toAliasKey(field)}: field(arg: ["${field}"])`,
-  ).join("\n");
+  );
+  const extraSelections = PAYMENT_FIELD_EXTRAS.map((extra) => {
+    const args = extra.arg.map((part) => `"${part}"`).join(", ");
+    return `${extra.alias}: field(arg: [${args}])`;
+  });
+  return [...fieldSelections, ...extraSelections].join("\n");
+};
 
 const normalizePaymentData = (record) => {
   const data = {};
@@ -570,6 +583,43 @@ const fetchPaymentDetailsViaHttp = async (uniqueId) => {
   return records || null;
 };
 
+const fetchPaymentActivities = async (jobId) => {
+  if (!jobId) {
+    return [];
+  }
+  const query = `query calcActivities($jobId: PeterpmJobID!) {
+  calcActivities(query: [{ where: { job_id: $jobId } }]) {
+    Service_Service_Name: field(arg: ["Service", "service_name"])
+    Activity_Price: field(arg: ["activity_price"])
+  }
+}`;
+  const data = await graphqlRequest(query, { jobId });
+  const records = data?.calcActivities;
+  if (Array.isArray(records)) {
+    return records;
+  }
+  return records ? [records] : [];
+};
+
+const fetchPaymentMaterials = async (jobId) => {
+  if (!jobId) {
+    return [];
+  }
+  const query = `query calcMaterials($jobId: PeterpmJobID!) {
+  calcMaterials(query: [{ where: { job_id: $jobId } }]) {
+    Material_Name: field(arg: ["material_name"])
+    Transaction_Type: field(arg: ["transaction_type"])
+    Total: field(arg: ["total"])
+  }
+}`;
+  const data = await graphqlRequest(query, { jobId });
+  const records = data?.calcMaterials;
+  if (Array.isArray(records)) {
+    return records;
+  }
+  return records ? [records] : [];
+};
+
 const parseDelimitedList = (value) => {
   if (!value) {
     return [];
@@ -586,6 +636,53 @@ const parseDelimitedList = (value) => {
   return [];
 };
 
+const normalizeActivityRows = (rows) =>
+  rows
+    .map((row) => {
+      if (!row || typeof row !== "object") {
+        return null;
+      }
+      return {
+        name:
+          row.Service_Service_Name ||
+          row.service_service_name ||
+          row.Service_Name ||
+          row.service_name ||
+          "",
+        price:
+          row.Activity_Price ||
+          row.activity_price ||
+          row.Price ||
+          row.price ||
+          "",
+      };
+    })
+    .filter((row) => row && (row.name || row.price));
+
+const normalizeMaterialRows = (rows) =>
+  rows
+    .map((row) => {
+      if (!row || typeof row !== "object") {
+        return null;
+      }
+      return {
+        name:
+          row.Material_Name ||
+          row.material_name ||
+          row.Name ||
+          row.name ||
+          "",
+        type:
+          row.Transaction_Type ||
+          row.transaction_type ||
+          row.Type ||
+          row.type ||
+          "",
+        total: row.Total || row.total || "",
+      };
+    })
+    .filter((row) => row && (row.name || row.type || row.total));
+
 const renderPaymentActivities = (root, data) => {
   const container = root.querySelector("[data-payment-activities]");
   if (!container) {
@@ -595,23 +692,37 @@ const renderPaymentActivities = (root, data) => {
     data.Activities_on_Job ||
     data.activities_on_job ||
     data.activityData ||
-    data.activities;
-  const activities = parseDelimitedList(raw).filter((item) => {
-    const parts = String(item).split("#");
-    return parts[2] === "Completed";
-  });
+    data.activities ||
+    data.Activity_Data;
+  let activities = [];
+  if (Array.isArray(raw)) {
+    activities = normalizeActivityRows(raw);
+  } else {
+    activities = parseDelimitedList(raw)
+      .map((item) => {
+        const parts = String(item).split("#");
+        if (!parts.length) {
+          return null;
+        }
+        return {
+          name: parts[0] || "",
+          price: parts[1] || "",
+          status: parts[2] || "",
+        };
+      })
+      .filter((item) => item && item.status === "Completed");
+  }
   container.innerHTML = "";
   activities.forEach((item) => {
-    const parts = String(item).split("#");
     const row = document.createElement("div");
     row.className =
       "flex items-center justify-between border-b border-[#d3d7e2] py-4 pl-6 pr-3 w-full max-[1100px]:px-0";
     const name = document.createElement("div");
     name.className = "text-bodyText text-[#414042]";
-    name.textContent = parts[0] || "";
+    name.textContent = item?.name || "";
     const total = document.createElement("div");
     total.className = "text-bodyText text-[#414042]";
-    total.textContent = parts[1] || "";
+    total.textContent = item?.price || "";
     row.appendChild(name);
     row.appendChild(total);
     container.appendChild(row);
@@ -629,35 +740,96 @@ const renderPaymentMaterials = (root, data) => {
     data.Materials_Data ||
     data.materialData ||
     data.materials;
-  const materials = parseDelimitedList(raw).filter((item) => {
-    const parts = String(item).split("#");
-    const status = parts[3];
-    return (
-      status === "Assigned to Job" ||
-      status === "Pending Payment" ||
-      status === "Paid"
-    );
-  });
+  let materials = [];
+  if (Array.isArray(raw)) {
+    materials = normalizeMaterialRows(raw);
+  } else {
+    materials = parseDelimitedList(raw)
+      .map((item) => {
+        const parts = String(item).split("#");
+        if (!parts.length) {
+          return null;
+        }
+        return {
+          name: parts[0] || "",
+          total: parts[1] || "",
+          type: parts[2] || "",
+          status: parts[3] || "",
+        };
+      })
+      .filter((item) => {
+        if (!item) {
+          return false;
+        }
+        return (
+          item.status === "Assigned to Job" ||
+          item.status === "Pending Payment" ||
+          item.status === "Paid"
+        );
+      });
+  }
   container.innerHTML = "";
   materials.forEach((item) => {
-    const parts = String(item).split("#");
     const row = document.createElement("div");
     row.className =
       "flex items-center justify-between border-b border-[#d3d7e2] py-4 pl-6 pr-3 w-full max-[1100px]:px-0";
     const name = document.createElement("div");
     name.className = "text-bodyText text-[#414042] flex-1";
-    name.textContent = parts[0] || "";
+    name.textContent = item?.name || "";
     const type = document.createElement("div");
     type.className = "text-bodyText text-[#414042] flex-1";
-    type.textContent = parts[2] || "";
+    type.textContent = item?.type || "";
     const total = document.createElement("div");
     total.className = "text-bodyText text-[#414042] flex-1 text-right";
-    total.textContent = parts[1] || "";
+    total.textContent = item?.total || "";
     row.appendChild(name);
     row.appendChild(type);
     row.appendChild(total);
     container.appendChild(row);
   });
+};
+
+const DATE_FIELD_KEYS = new Set([
+  "Bill_Approval_Time",
+  "Bill_Date",
+  "Bill_Due_Date",
+  "Bill_Time_Paid",
+  "Date_Added",
+  "Date_Booked",
+  "Date_Cancelled",
+  "Date_Completed",
+  "Date_Feedback_Requested",
+  "Date_Feedback_Submitted",
+  "Date_Modified",
+  "Date_Quote_Requested",
+  "Date_Quote_Sent",
+  "Date_Quoted_Accepted",
+  "Date_Scheduled",
+  "Date_Started",
+  "Due_Date",
+  "Invoice_Date",
+  "Quote_Date",
+  "Quote_Valid_Until",
+]);
+
+const formatUnixDate = (value) => {
+  if (value === null || value === undefined || value === "") {
+    return value;
+  }
+  const numeric =
+    typeof value === "number" ? value : Number.parseInt(value, 10);
+  if (Number.isNaN(numeric)) {
+    return value;
+  }
+  const ms = numeric < 1e12 ? numeric * 1000 : numeric;
+  const date = new Date(ms);
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
 };
 
 const applyPaymentText = (root, data) => {
@@ -670,7 +842,10 @@ const applyPaymentText = (root, data) => {
         : "-";
     const prefix = elem.dataset.paymentPrefix || "";
     const suffix = elem.dataset.paymentSuffix || "";
-    const rawValue = key ? data[key] : "";
+    let rawValue = key ? data[key] : "";
+    if (key && DATE_FIELD_KEYS.has(key) && !isNullValue(rawValue)) {
+      rawValue = formatUnixDate(rawValue);
+    }
     const displayValue = isNullValue(rawValue) ? defaultValue : rawValue;
     const text =
       displayValue === undefined || displayValue === null || displayValue === ""
@@ -911,6 +1086,13 @@ const openPaymentModal = async (row) => {
       return;
     }
     const data = normalizePaymentData(record);
+    const jobId = data.ID || data.id || data.Job_ID || data.job_id || null;
+    const [activities, materials] = await Promise.all([
+      fetchPaymentActivities(jobId),
+      fetchPaymentMaterials(jobId),
+    ]);
+    data.activityData = activities;
+    data.materialData = materials;
     populatePaymentModal(data);
     setPaymentLoading(false);
     window.paymentsData = data;
