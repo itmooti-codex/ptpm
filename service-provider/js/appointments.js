@@ -436,6 +436,12 @@ const buildAppointmentDisplayData = (raw) => {
     data.Job_ID ||
     data.job_id ||
     "";
+  data.Job_Unique_ID =
+    data.Job_Unique_ID ||
+    data.Job_ID ||
+    data.job_id ||
+    data.PeterpmJob_Unique_ID ||
+    "";
   data.Inquiry_Unique_ID =
     data.Inquiry_Unique_ID || data.Inquiry_ID || data.inquiry_id || "";
   data.Primary_Guest_Unique_ID =
