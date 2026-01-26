@@ -519,6 +519,14 @@ const normalizePaymentData = (record) => {
     const alias = toAliasKey(key);
     data[alias] = value;
   });
+  if (typeof data.Bill_Approved_Service_Provider === "boolean") {
+    data.Bill_Approved_Service_Provider = data.Bill_Approved_Service_Provider
+      ? "true"
+      : "false";
+  }
+  if (typeof data.Bill_Approved_Admin === "boolean") {
+    data.Bill_Approved_Admin = data.Bill_Approved_Admin ? "true" : "false";
+  }
   if (data.Unique_ID === undefined && data.unique_id === undefined && data.ID) {
     data.Unique_ID = data.ID;
     data.unique_id = data.ID;
