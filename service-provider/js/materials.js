@@ -384,7 +384,7 @@ const updateMaterial = async (triggerButton) => {
     const plugin = await getVitalStatsPlugin();
     const materialModel = plugin.switchTo("PeterpmMaterial");
     const mutation = materialModel.mutation();
-    mutation.update((q) => q.where("id", maybeNumber(currentMaterialId)).set(payload));
+    mutation.update((q) => q.where("unique_id", currentMaterialId).set(payload));
     await mutation.execute(true).toPromise();
     setAlpineFlag("editMaterialModal", false);
     refreshCurrentList();
