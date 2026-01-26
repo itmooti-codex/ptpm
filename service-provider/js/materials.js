@@ -449,6 +449,9 @@ window.initMaterialsTable = (dynamicList) => {
       .filter((col) => {
         const field = col.field || "";
         const header = col.headerName || "";
+        if (field === ACTIONS_FIELD || /^action$/i.test(header)) {
+          return false;
+        }
         if (RECEIPT_FIELD_RE.test(field) || RECEIPT_FIELD_RE.test(header)) {
           return false;
         }
@@ -502,10 +505,6 @@ window.initMaterialsTable = (dynamicList) => {
         },
       };
     });
-
-    if (mapped.some((col) => col.field === ACTIONS_FIELD)) {
-      return mapped;
-    }
 
     return [
       ...mapped,
