@@ -56,6 +56,24 @@ const PRIORITY_STYLES = {
 };
 
 const STATUS_FALLBACK = "bg-gray-200 text-gray-500";
+const XERO_BILL_STATUS_STYLES = {
+  "Create Bill Line Item": "bg-[#e8d3ee] text-[#8e24aa]",
+  "Update Bill Line Item": "bg-[#e8d3ee] text-[#8e24aa]",
+  "Waiting Approval": "bg-[#cdebfa] text-[#039be5]",
+  Scheduled: "bg-[#fee8cc] text-[#fb8c00]",
+  "Awaiting Payment": "bg-[#fddcd2] text-[#f4511e]",
+  Paid: "bg-[#d9ecda] text-[#43a047]",
+  Cancelled: "bg-[#cccccc] text-[#000000]",
+};
+
+const PAYMENT_BADGE_STYLES = {
+  "Invoice Required": "bg-[#e8d3ee] text-[#8e24aa]",
+  "Invoice Sent": "bg-[#d7dbee] text-[#3949ab]",
+  Paid: "bg-[#d9ecda] text-[#43a047]",
+  Overdue: "bg-[#fddcd2] text-[#f4511e]",
+  "Written Off": "bg-[#fee8cc] text-[#fb8c00]",
+  Cancelled: "bg-[#dfdfdf] text-[#616161]",
+};
 
 const makeInquiryLink = (id) =>
   `https://my.awesomate.pro/inquiry/${encodeURIComponent(id)}`;
@@ -70,6 +88,13 @@ const isNullValue = (value) => {
   return false;
 };
 
+const getVitalStatsPlugin = async () => {
+  if (typeof window.getVitalStatsPlugin !== "function") {
+    throw new Error("SDK not initialized. Ensure sdk.js is loaded first.");
+  }
+  return window.getVitalStatsPlugin();
+};
+
 const getAlpineData = () => {
   const root = document.body;
   if (root && root.__x && root.__x.$data) {
@@ -78,16 +103,509 @@ const getAlpineData = () => {
   return null;
 };
 
-const openPaymentModal = (row) => {
-  const alpineData = getAlpineData();
-  if (alpineData) {
-    alpineData.paymentsData = row || {};
-    alpineData.modalIsOpen = true;
+const looksLikeRecord = (value) => {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return false;
+  }
+  return "id" in value || "unique_id" in value || "job_status" in value;
+};
+
+const extractFirstRecord = (payload) => {
+  if (!payload) {
+    return null;
+  }
+  if (Array.isArray(payload)) {
+    return payload[0] || null;
+  }
+
+  const candidates = [
+    payload?.resp,
+    payload?.records,
+    payload?.data,
+    payload?.resp?.data,
+    payload?.resp?.records,
+    payload?.data?.records,
+  ];
+
+  for (const candidate of candidates) {
+    if (Array.isArray(candidate)) {
+      return candidate[0] || null;
+    }
+    if (looksLikeRecord(candidate)) {
+      return candidate;
+    }
+  }
+
+  if (looksLikeRecord(payload?.record)) {
+    return payload.record;
+  }
+  if (looksLikeRecord(payload?.resp)) {
+    return payload.resp;
+  }
+
+  if (payload && typeof payload === "object") {
+    for (const value of Object.values(payload)) {
+      if (Array.isArray(value)) {
+        return value[0] || null;
+      }
+      if (looksLikeRecord(value)) {
+        return value;
+      }
+    }
+  }
+
+  return looksLikeRecord(payload) ? payload : null;
+};
+
+const TITLE_PART_OVERRIDES = {
+  id: "ID",
+  url: "URL",
+  gst: "GST",
+  sms: "SMS",
+  ip: "IP",
+  xero: "Xero",
+  ptpm: "PTPM",
+  ts: "ts",
+};
+
+const toAliasKey = (key) => {
+  if (!key || typeof key !== "string") {
+    return key;
+  }
+  if (!key.includes("_")) {
+    return key;
+  }
+  return key
+    .split("_")
+    .map((part) => {
+      if (!part) {
+        return part;
+      }
+      const lower = part.toLowerCase();
+      if (TITLE_PART_OVERRIDES[lower]) {
+        return TITLE_PART_OVERRIDES[lower];
+      }
+      return lower.charAt(0).toUpperCase() + lower.slice(1);
+    })
+    .join("_");
+};
+
+const normalizePaymentData = (record) => {
+  const data = {};
+  if (!record || typeof record !== "object") {
+    return data;
+  }
+  Object.entries(record).forEach(([key, value]) => {
+    data[key] = value;
+    const alias = toAliasKey(key);
+    data[alias] = value;
+  });
+  return data;
+};
+
+const parseDelimitedList = (value) => {
+  if (!value) {
+    return [];
+  }
+  if (Array.isArray(value)) {
+    return value.filter(Boolean);
+  }
+  if (typeof value === "string") {
+    return value
+      .split(",")
+      .map((item) => item.trim())
+      .filter(Boolean);
+  }
+  return [];
+};
+
+const renderPaymentActivities = (root, data) => {
+  const container = root.querySelector("[data-payment-activities]");
+  if (!container) {
     return;
   }
-  window.paymentsData = row || {};
-  window.modalIsOpen = true;
+  const raw =
+    data.Activities_on_Job ||
+    data.activities_on_job ||
+    data.activityData ||
+    data.activities;
+  const activities = parseDelimitedList(raw).filter((item) => {
+    const parts = String(item).split("#");
+    return parts[2] === "Completed";
+  });
+  container.innerHTML = "";
+  activities.forEach((item) => {
+    const parts = String(item).split("#");
+    const row = document.createElement("div");
+    row.className =
+      "flex items-center justify-between border-b border-[#d3d7e2] py-4 pl-6 pr-3 w-full max-[1100px]:px-0";
+    const name = document.createElement("div");
+    name.className = "text-bodyText text-[#414042]";
+    name.textContent = parts[0] || "";
+    const total = document.createElement("div");
+    total.className = "text-bodyText text-[#414042]";
+    total.textContent = parts[1] || "";
+    row.appendChild(name);
+    row.appendChild(total);
+    container.appendChild(row);
+  });
 };
+
+const renderPaymentMaterials = (root, data) => {
+  const container = root.querySelector("[data-payment-materials]");
+  if (!container) {
+    return;
+  }
+  const raw =
+    data.Materials_on_Job ||
+    data.materials_on_job ||
+    data.Materials_Data ||
+    data.materialData ||
+    data.materials;
+  const materials = parseDelimitedList(raw).filter((item) => {
+    const parts = String(item).split("#");
+    const status = parts[3];
+    return (
+      status === "Assigned to Job" ||
+      status === "Pending Payment" ||
+      status === "Paid"
+    );
+  });
+  container.innerHTML = "";
+  materials.forEach((item) => {
+    const parts = String(item).split("#");
+    const row = document.createElement("div");
+    row.className =
+      "flex items-center justify-between border-b border-[#d3d7e2] py-4 pl-6 pr-3 w-full max-[1100px]:px-0";
+    const name = document.createElement("div");
+    name.className = "text-bodyText text-[#414042] flex-1";
+    name.textContent = parts[0] || "";
+    const type = document.createElement("div");
+    type.className = "text-bodyText text-[#414042] flex-1";
+    type.textContent = parts[2] || "";
+    const total = document.createElement("div");
+    total.className = "text-bodyText text-[#414042] flex-1 text-right";
+    total.textContent = parts[1] || "";
+    row.appendChild(name);
+    row.appendChild(type);
+    row.appendChild(total);
+    container.appendChild(row);
+  });
+};
+
+const applyPaymentText = (root, data) => {
+  const targets = root.querySelectorAll("[data-payment-text]");
+  targets.forEach((elem) => {
+    const key = elem.dataset.paymentText || "";
+    const defaultValue =
+      elem.dataset.paymentDefault !== undefined
+        ? elem.dataset.paymentDefault
+        : "-";
+    const prefix = elem.dataset.paymentPrefix || "";
+    const suffix = elem.dataset.paymentSuffix || "";
+    const rawValue = key ? data[key] : "";
+    const displayValue = isNullValue(rawValue) ? defaultValue : rawValue;
+    const text =
+      displayValue === undefined || displayValue === null || displayValue === ""
+        ? defaultValue
+        : String(displayValue);
+    elem.textContent = `${prefix}${text}${suffix}`;
+  });
+};
+
+const applyPaymentLinks = (root, data) => {
+  const links = root.querySelectorAll("[data-payment-href]");
+  links.forEach((elem) => {
+    const key = elem.dataset.paymentHref || "";
+    const rawValue = key ? data[key] : "";
+    if (isNullValue(rawValue)) {
+      elem.removeAttribute("href");
+      return;
+    }
+    const href = String(rawValue).trim();
+    if (!href) {
+      elem.removeAttribute("href");
+      return;
+    }
+    elem.setAttribute("href", href);
+  });
+};
+
+const applyPaymentStatusBadges = (root, data) => {
+  const badges = root.querySelectorAll("[data-payment-status]");
+  badges.forEach((elem) => {
+    if (!elem.dataset.paymentBaseClass) {
+      elem.dataset.paymentBaseClass = elem.className;
+    }
+    const key = elem.dataset.paymentStatus || "";
+    const type = elem.dataset.paymentStatusType || "";
+    const defaultValue =
+      elem.dataset.paymentDefault !== undefined
+        ? elem.dataset.paymentDefault
+        : "N/A";
+    const rawValue = key ? data[key] : "";
+    const text = isNullValue(rawValue) ? defaultValue : String(rawValue);
+    const styleMap =
+      type === "xero" ? XERO_BILL_STATUS_STYLES : PAYMENT_BADGE_STYLES;
+    const badgeClass = styleMap[text] || STATUS_FALLBACK;
+    elem.className = `${elem.dataset.paymentBaseClass} ${badgeClass}`.trim();
+    elem.textContent = text;
+  });
+};
+
+const populatePaymentModal = (data) => {
+  const root = document.querySelector("[data-payment-modal]");
+  if (!root) {
+    return;
+  }
+  const content = root.querySelector("[data-payment-id]");
+  if (content) {
+    const paymentId =
+      data.ID || data.id || data.Unique_ID || data.unique_id || "";
+    content.dataset.paymentId = paymentId;
+  }
+  applyPaymentText(root, data);
+  applyPaymentLinks(root, data);
+  applyPaymentStatusBadges(root, data);
+  renderPaymentActivities(root, data);
+  renderPaymentMaterials(root, data);
+};
+
+const fetchPaymentDetails = async (uniqueId) => {
+  const plugin = await getVitalStatsPlugin();
+  const jobModel = plugin.switchTo("PeterpmJob");
+  let query = jobModel.query();
+  query = query.where("unique_id", uniqueId);
+  query = query.deSelectAll().select([
+    "accepted_quote_activity_price",
+    "account_type",
+    "accounts_contact_id",
+    "activities_on_job",
+    "activities_to_complete",
+    "admin_recommendation",
+    "all_files_submitted",
+    "all_forms_submitted",
+    "all_photos_submitted",
+    "bill_approval_time",
+    "bill_approved_admin",
+    "bill_approved_service_provider",
+    "bill_batch_date",
+    "bill_batch_id",
+    "bill_batch_week",
+    "bill_date",
+    "bill_due_date",
+    "bill_gst",
+    "bill_time_paid",
+    "bill_total",
+    "bill_xero_id",
+    "calculate_job_price",
+    "calculate_quote_price",
+    "client_entity_id",
+    "client_individual_id",
+    "create_a_callback",
+    "created_at",
+    "date_booked",
+    "date_cancelled",
+    "date_completed",
+    "date_feedback_requested",
+    "date_feedback_submitted",
+    "date_quote_requested",
+    "date_quote_sent",
+    "date_quoted_accepted",
+    "date_scheduled",
+    "date_started",
+    "deduct_total",
+    "del_activities_to_complete",
+    "due_date",
+    "duplicate_job",
+    "email_bc_quote_fu",
+    "email_customer_job_email",
+    "email_electronic_quote",
+    "email_manual_quote",
+    "email_o_quote_fu",
+    "email_re_quote_fu",
+    "email_tenant_job_email",
+    "externalRawDataErrors",
+    "externalRawDataStatus",
+    "feedback_form_job_published",
+    "feedback_form_job_unique_visits",
+    "feedback_form_job_url",
+    "feedback_form_job_visits",
+    "feedback_number",
+    "feedback_status",
+    "feedback_text",
+    "follow_up_comment",
+    "follow_up_date",
+    "form_pest_control_advice_published",
+    "form_pest_control_advice_unique_visits",
+    "form_pest_control_advice_url",
+    "form_pest_control_advice_visits",
+    "form_prestart_published",
+    "form_prestart_unique_visits",
+    "form_prestart_url",
+    "form_prestart_visits",
+    "id",
+    "inquiry_record_id",
+    "invoice_date",
+    "invoice_id",
+    "invoice_number",
+    "invoice_total",
+    "invoice_url_admin",
+    "invoice_url_client",
+    "ip_address",
+    "job_activity_subtotal",
+    "job_call_backs",
+    "job_gst",
+    "job_sheet_published",
+    "job_sheet_unique_visits",
+    "job_sheet_url",
+    "job_sheet_visits",
+    "job_status",
+    "job_status_old",
+    "job_total",
+    "job_type",
+    "job_variation_price",
+    "job_variation_text",
+    "job_variation_type",
+    "last_activity",
+    "last_call_logged",
+    "last_email_received",
+    "last_email_sent",
+    "last_modified_at",
+    "last_note",
+    "last_sms_received",
+    "last_sms_sent",
+    "location_name",
+    "mark_complete",
+    "materials_total",
+    "new_direct_job_published",
+    "new_direct_job_unique_visits",
+    "new_direct_job_url",
+    "new_direct_job_visits",
+    "noise_signs_options_as_text",
+    "options_on_quote",
+    "owner_id",
+    "past_job_id",
+    "payment_id",
+    "payment_method",
+    "payment_status",
+    "pca_done",
+    "possum_comment",
+    "possum_number",
+    "prestart_done",
+    "prestart_form_submitted",
+    "primary_service_provider_id",
+    "priority",
+    "profile_image",
+    "property_id",
+    "ptpm_edit_job_published",
+    "ptpm_edit_job_unique_visits",
+    "ptpm_edit_job_url",
+    "ptpm_edit_job_visits",
+    "ptpm_edit_quote_admin_published",
+    "ptpm_edit_quote_admin_unique_visits",
+    "ptpm_edit_quote_admin_url",
+    "ptpm_edit_quote_admin_visits",
+    "ptpm_edit_quote_published",
+    "ptpm_edit_quote_unique_visits",
+    "ptpm_edit_quote_url",
+    "ptpm_edit_quote_visits",
+    "ptpm_memos_published",
+    "ptpm_memos_unique_visits",
+    "ptpm_memos_url",
+    "ptpm_memos_visits",
+    "ptpm_view_quote_published",
+    "ptpm_view_quote_unique_visits",
+    "ptpm_view_quote_url",
+    "ptpm_view_quote_visits",
+    "quote_creator_published",
+    "quote_creator_unique_visits",
+    "quote_creator_url",
+    "quote_creator_visits",
+    "quote_date",
+    "quote_gst",
+    "quote_note",
+    "quote_status",
+    "quote_template_client_view_published",
+    "quote_template_client_view_unique_visits",
+    "quote_template_client_view_url",
+    "quote_template_client_view_visits",
+    "quote_total",
+    "quote_valid_until",
+    "quote_variation_price",
+    "quote_variation_text",
+    "quote_variation_type",
+    "quoted_activities_subtotal",
+    "rating",
+    "referrer_id",
+    "reimburse_total",
+    "request_review",
+    "reset_batch_id",
+    "return_job_to_admin",
+    "send_job_update_to_service_provider",
+    "signature",
+    "tasks_on_quote",
+    "terms_and_conditions_accepted",
+    "time_terms_and_conditions_agreed",
+    "turkey_comment",
+    "turkey_number",
+    "turkey_release_site",
+    "unique_id",
+    "view_job_photos_published",
+    "view_job_photos_unique_visits",
+    "view_job_photos_url",
+    "view_job_photos_visits",
+    "xero_api_response",
+    "xero_bill_status",
+    "xero_invoice_pdf",
+    "xero_invoice_status",
+    "_ts_",
+    "_tsAction_",
+    "_tsCreate_",
+    "_tsSessionId_",
+    "_tsUpdateCount_",
+  ]);
+  query.getOrInitQueryCalc?.();
+  const result = await query.fetchDirect().toPromise();
+  return extractFirstRecord(result);
+};
+
+const openPaymentModal = async (row) => {
+  const uniqueId =
+    row?.ID ||
+    row?.Unique_ID ||
+    row?.unique_id ||
+    row?.Id ||
+    row?.id ||
+    "";
+  if (!uniqueId) {
+    console.warn("Payment id missing.");
+    return;
+  }
+  try {
+    const record = await fetchPaymentDetails(uniqueId);
+    if (!record) {
+      console.warn("Payment record not found for", uniqueId);
+      return;
+    }
+    const data = normalizePaymentData(record);
+    populatePaymentModal(data);
+    window.paymentsData = data;
+    const alpineData = getAlpineData();
+    if (alpineData) {
+      alpineData.paymentsData = data;
+      alpineData.modalIsOpen = true;
+    } else {
+      const modal = document.querySelector("[data-payment-modal]");
+      if (modal) {
+        modal.classList.remove("hidden");
+      }
+    }
+  } catch (error) {
+    console.error("Failed to load payment details:", error);
+  }
+};
+
 
 const tableRoot = document.getElementById("inquiry-table-root");
 

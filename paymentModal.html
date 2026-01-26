@@ -1,7 +1,7 @@
 <div x-cloak x-show="modalIsOpen" x-transition.opacity.duration.200ms x-trap.inert.noscroll="modalIsOpen"
      @keydown.esc.window="modalIsOpen = false" @click.self="modalIsOpen = false"
      class="fixed inset-0 z-30 flex items-end justify-center bg-black/20 p-4 pb-8 backdrop-blur-md max-[1100px]:bg-[#f6f6f6] max-[1100px]:p-0 sm:items-center lg:p-8  max-[1100px]:p-0 max-[1100px]:h-screen max-[1100px]:w-screen"
-     role="dialog" aria-modal="true" aria-labelledby="defaultModalTitle">
+     role="dialog" aria-modal="true" aria-labelledby="defaultModalTitle" data-payment-modal>
   <div class = "fixed top-[24px] right-4 xlg:right-[40px] flex items-center gap-[32px]">
     <svg  @click="
                   body.setAttribute('x-data', `{ isExpandedClientSection: true, isExpandedMaterialsSection: true }`);
@@ -47,7 +47,7 @@
        x-transition:enter-start="opacity-0 scale-50" x-transition:enter-end=" opacity-100 scale-100"
        class="mainModalWraspper flex flex-col gap-4 bg-white h-[95vh] w-[900px] !overflow-y-auto max-[1100px]:bg-[#f6f6f6] max-[1100px]:h-screen max-[1100px]:w-screen">
 
-    <div class="fullPaymentWrapper flex flex-col items-center justify-end bg-white p-[40px] gap-[24px] max-[1100px]:p-4 max-[1100px]:gap-[16px]" x-bind:data-payment-id="paymentsData.ID" id="paymentContent">
+    <div class="fullPaymentWrapper flex flex-col items-center justify-end bg-white p-[40px] gap-[24px] max-[1100px]:p-4 max-[1100px]:gap-[16px]" data-payment-id="" id="paymentContent">
 
 
       <!-- Billing Header Desktop -->
@@ -105,17 +105,17 @@
       <!-- General Bill Info-->
       <div class="w-full justify-between items-start flex max-[1100px]:flex-col max-[1100px]:gap-[12px]">
         <div class="flex-col justify-start items-start gap-3 flex  max-[1100px]:gap-[12px]">
-          <div class="text-center"><span style="font-normal font-['Inter'] leading-none">Job ID: </span><span style="font-normal font-['Inter']" class = "text-primary">#<span x-text="paymentsData.Unique_ID"></span></span></div>
-          <div class="text-center text-[#414042] text-base font-normal font-['Inter'] leading-none">Job Completed on :<span x-text="paymentsData.Date_Completed"></span></div>
+          <div class="text-center"><span style="font-normal font-['Inter'] leading-none">Job ID: </span><span style="font-normal font-['Inter']" class = "text-primary">#<span data-payment-text="Unique_ID"></span></span></div>
+          <div class="text-center text-[#414042] text-base font-normal font-['Inter'] leading-none">Job Completed on :<span data-payment-text="Date_Completed"></span></div>
         </div>
         <div class="flex-col justify-start items-start gap-3 flex  max-[1100px]:gap-[12px]">
           <div class="justify-start items-center gap-1.5 flex">
             <div class="text-[#626c87] text-sm font-medium font-['Inter'] leading-[14px]">Xero Bill Status :</div>
-            <div class="flex h-5 items-center justify-start gap-2 rounded"><div class="px-2 py-1 rounded-[12px] w-fit text-button" :class="{'bg-[#e8d3ee] text-[#8e24aa]': paymentsData.Xero_Bill_Status === 'Create Bill Line Item' || paymentsData.Xero_Bill_Status === 'Update Bill Line Item','bg-[#cdebfa] text-[#039be5]': paymentsData.Xero_Bill_Status === 'Waiting Approval','bg-[#fee8cc] text-[#fb8c00]': paymentsData.Xero_Bill_Status === 'Scheduled','bg-[#fddcd2] text-[#f4511e]': paymentsData.Xero_Bill_Status === 'Awaiting Payment','bg-[#d9ecda] text-[#43a047]': paymentsData.Xero_Bill_Status === 'Paid','bg-[#cccccc] text-[#000000]': paymentsData.Xero_Bill_Status === 'Cancelled','bg-gray-200 text-gray-500': !paymentsData.Xero_Bill_Status}" x-text="paymentsData.Xero_Bill_Status || 'N/A'"></div></div>
+            <div class="flex h-5 items-center justify-start gap-2 rounded"><div class="px-2 py-1 rounded-[12px] w-fit text-button" data-payment-status="Xero_Bill_Status" data-payment-status-type="xero" data-payment-default="N/A"></div></div>
           </div>
           <div class="justify-start items-center gap-1.5 flex">
             <div class="text-[#626c87] text-sm font-normal font-['Inter'] leading-tight">Bill Xero ID :</div>
-            <div class="text-[#414042] text-sm font-medium font-['Inter'] leading-[14px]" x-text="paymentsData.Bill_Xero_ID"></div>
+            <div class="text-[#414042] text-sm font-medium font-['Inter'] leading-[14px]" data-payment-text="Bill_Xero_ID"></div>
           </div>
         </div>
       </div>
@@ -274,7 +274,7 @@
         <div class = "flex items-center justify-between cursor-pointer" @click="isExpandedClientSection = ! isExpandedClientSection">
           <div class="text-h1 text-complementary">Client Invoice</div>
           <div class = "flex gap-4 items-center">
-            <div class="text-[#36916a] text-base font-medium font-['Inter'] leading-none">Total : <span x-text = "paymentsData.Job_Total"></span></div>
+            <div class="text-[#36916a] text-base font-medium font-['Inter'] leading-none">Total : <span data-payment-text="Job_Total" data-payment-default="0"></span></div>
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M14.4878 5.70213L8.42746 11.7624C8.37118 11.8188 8.30434 11.8635 8.23077 11.894C8.1572 11.9245 8.07834 11.9402 7.9987 11.9402C7.91906 11.9402 7.84019 11.9245 7.76662 11.894C7.69305 11.8635 7.62621 11.8188 7.56993 11.7624L1.50963 5.70213C1.39592 5.58841 1.33203 5.43418 1.33203 5.27336C1.33203 5.11254 1.39592 4.95831 1.50963 4.84459C1.62335 4.73088 1.77758 4.66699 1.9384 4.66699C2.09922 4.66699 2.25345 4.73088 2.36716 4.84459L7.9987 10.4769L13.6302 4.84459C13.6865 4.78829 13.7534 4.74362 13.827 4.71315C13.9005 4.68268 13.9794 4.66699 14.059 4.66699C14.1386 4.66699 14.2175 4.68268 14.291 4.71315C14.3646 4.74362 14.4315 4.78829 14.4878 4.84459C14.5441 4.9009 14.5887 4.96774 14.6192 5.04131C14.6497 5.11488 14.6654 5.19373 14.6654 5.27336C14.6654 5.35299 14.6497 5.43184 14.6192 5.50541C14.5887 5.57897 14.5441 5.64582 14.4878 5.70213Z" fill="#636D88"/>
             </svg>
@@ -287,37 +287,25 @@
               <div class="font-['Inter'] text-base font-medium leading-none text-[#414042]">Activity</div>
               <div class="font-['Inter'] text-base font-medium leading-none text-[#414042]">Total Price</div>
             </div>
-            <template x-for="(activity, index) in (paymentsData.activityData 
-                             ? paymentsData.activityData
-                             .toString()
-                             .split(',')
-                             .filter(a => a.split('#')[2] === 'Completed') 
-                             : [])" :key="index">
-              <div class="flex items-center justify-between border-b border-[#d3d7e2] py-4 pl-6 pr-3 w-full max-[1100px]:px-0">
-                <div class="text-bodyText text-[#414042]"
-                     x-text="activity.split('#')[0] || ''"></div>
-                <div class="text-bodyText text-[#414042]"
-                     x-text="activity.split('#')[1] || ''"></div>
-              </div>
-            </template>
+            <div data-payment-activities></div>
           </div>
           <div class="flex-col items-center justify-center gap-6 rounded-lg bg-white px-4 pb-6 pt-4 w-full">
             <div class="flex flex-col gap-4">
               <div class="flex items-center justify-between">
                 <div class="font-['Inter'] text-base font-normal leading-tight text-[#414042]">Payment Status</div>
-                <div class="px-2 py-1 rounded-[12px] w-fit text-button" :class="{'bg-[#e8d3ee] text-[#8e24aa]': paymentsData.Payment_Status === 'Invoice Required','bg-[#d7dbee] text-[#3949ab]': paymentsData.Payment_Status === 'Invoice Sent','bg-[#d9ecda] text-[#43a047]': paymentsData.Payment_Status === 'Paid','bg-[#fddcd2] text-[#f4511e]': paymentsData.Payment_Status === 'Overdue','bg-[#fee8cc] text-[#fb8c00]': paymentsData.Payment_Status === 'Written Off','bg-[#dfdfdf] text-[#616161]': paymentsData.Payment_Status === 'Cancelled','bg-gray-200 text-gray-500': !paymentsData.Payment_Status}" x-text="paymentsData.Payment_Status || 'N/A'"></div>
+                <div class="px-2 py-1 rounded-[12px] w-fit text-button" data-payment-status="Payment_Status" data-payment-status-type="payment" data-payment-default="N/A"></div>
               </div>
               <div class="flex items-center justify-between">
                 <div class="font-['Inter'] text-base font-normal leading-tight text-[#414042]">Invoice Number</div>
-                <a :href="paymentsData.Invoice_URL" class="font-['Inter'] text-base font-normal leading-tight text-primary text-underline"><div x-text="paymentsData.Invoice_Number"></div></a>
+                <a data-payment-href="Invoice_URL" class="font-['Inter'] text-base font-normal leading-tight text-primary text-underline"><div data-payment-text="Invoice_Number"></div></a>
               </div>
               <div class="flex items-center justify-between">
                 <div class="font-['Inter'] text-base font-normal leading-tight text-[#414042]">Job SubTotal</div>
-                <div class="font-['Inter'] text-base font-normal leading-tight text-[#414042]" x-text="paymentsData.Job_Activity_Subtotal"></div>
+                <div class="font-['Inter'] text-base font-normal leading-tight text-[#414042]" data-payment-text="Job_Activity_Subtotal"></div>
               </div>
               <div class="flex items-center justify-between">
                 <div class="font-['Inter'] text-base font-normal leading-tight text-[#414042]">GST</div>
-                <div class="font-['Inter'] text-base font-normal leading-tight text-[#414042]" x-text="paymentsData.Job_GST"></div>
+                <div class="font-['Inter'] text-base font-normal leading-tight text-[#414042]" data-payment-text="Job_GST"></div>
               </div>
             </div>
           </div>
@@ -333,7 +321,7 @@
         <div class = "flex items-center justify-between cursor-pointer" @click="isExpandedMaterialsSection = ! isExpandedMaterialsSection">
           <div class="text-h1 text-complementary">Materials</div>
           <div class = "flex gap-4 items-center">
-            <div class="text-[#36916a] text-base font-medium font-['Inter'] leading-none">Total : <span x-text = "paymentsData.Materials_Total"></span></div>
+            <div class="text-[#36916a] text-base font-medium font-['Inter'] leading-none">Total : <span data-payment-text="Materials_Total" data-payment-default="0"></span></div>
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M14.4878 5.70213L8.42746 11.7624C8.37118 11.8188 8.30434 11.8635 8.23077 11.894C8.1572 11.9245 8.07834 11.9402 7.9987 11.9402C7.91906 11.9402 7.84019 11.9245 7.76662 11.894C7.69305 11.8635 7.62621 11.8188 7.56993 11.7624L1.50963 5.70213C1.39592 5.58841 1.33203 5.43418 1.33203 5.27336C1.33203 5.11254 1.39592 4.95831 1.50963 4.84459C1.62335 4.73088 1.77758 4.66699 1.9384 4.66699C2.09922 4.66699 2.25345 4.73088 2.36716 4.84459L7.9987 10.4769L13.6302 4.84459C13.6865 4.78829 13.7534 4.74362 13.827 4.71315C13.9005 4.68268 13.9794 4.66699 14.059 4.66699C14.1386 4.66699 14.2175 4.68268 14.291 4.71315C14.3646 4.74362 14.4315 4.78829 14.4878 4.84459C14.5441 4.9009 14.5887 4.96774 14.6192 5.04131C14.6497 5.11488 14.6654 5.19373 14.6654 5.27336C14.6654 5.35299 14.6497 5.43184 14.6192 5.50541C14.5887 5.57897 14.5441 5.64582 14.4878 5.70213Z" fill="#636D88"/>
             </svg>
@@ -346,35 +334,21 @@
               <div class="font-['Inter'] text-base font-medium leading-none text-[#414042] flex-1">Transaction Type</div>
               <div class="font-['Inter'] text-base font-medium leading-none text-[#414042] flex-1 text-right">Total</div>
             </div>
-            <template x-for="(material, index) in (paymentsData.materialData 
-                             ? paymentsData.materialData
-                             .toString()
-                             .split(',')
-                             .filter(a => {
-                             const status = a.split('#')[3]; // Extract the status
-                             return status === 'Assigned to Job' || status === 'Pending Payment' || status === 'Paid';
-                             })
-                             : [])" :key="index">
-              <div class="flex items-center justify-between border-b border-[#d3d7e2] py-4 pl-6 pr-3 w-full max-[1100px]:px-0">
-                <div class="text-bodyText text-[#414042] flex-1" x-text="material.split('#')[0] || ''"></div>
-                <div class="text-bodyText text-[#414042] flex-1" x-text="material.split('#')[2] || ''"></div>
-                <div class="text-bodyText text-[#414042] flex-1 text-right" x-text="material.split('#')[1] || ''"></div>
-              </div>
-            </template>
+            <div data-payment-materials></div>
           </div>
           <div class="flex-col items-center justify-center gap-6 rounded-lg bg-white px-4 pb-6 pt-4 w-full">
             <div class="flex flex-col gap-4">
               <div class="flex items-center justify-between">
                 <div class="font-['Inter'] text-base font-normal leading-tight text-[#414042]">Deduct Total</div>
-                <div class="font-['Inter'] text-base font-normal leading-tight text-[#414042]"x-text="paymentsData.Deduct_Total || 0"></div>
+                <div class="font-['Inter'] text-base font-normal leading-tight text-[#414042]" data-payment-text="Deduct_Total" data-payment-default="0"></div>
               </div>
               <div class="flex items-center justify-between">
                 <div class="font-['Inter'] text-base font-normal leading-tight text-[#414042]">Reimburse Total</div>
-                <div class="font-['Inter'] text-base font-normal leading-tight text-[#414042]" x-text="paymentsData.Reimburse_Total || 0"></div>
+                <div class="font-['Inter'] text-base font-normal leading-tight text-[#414042]" data-payment-text="Reimburse_Total" data-payment-default="0"></div>
               </div>
               <div class="flex items-center justify-between">
                 <div class="font-['Inter'] text-base font-normal leading-tight text-[#414042]">Materials Total</div>
-                <div class="font-['Inter'] text-lg font-semibold leading-tight text-[#414042]" x-text="paymentsData.Materials_Total || 0"></div>
+                <div class="font-['Inter'] text-lg font-semibold leading-tight text-[#414042]" data-payment-text="Materials_Total" data-payment-default="0"></div>
               </div>
             </div>
           </div>
@@ -391,19 +365,19 @@
           <div class="justify-between w-full gap-3 flex max-[1100px]:flex-col max-[1100px]:gap-[12px]">
             <div class="flex-col justify-center items-start gap-1.5 flex">
               <div class="text-[#626c87] text-sm font-normal font-['Inter'] leading-tight">Batch ID</div>
-              <div class="text-[#414042] text-sm font-medium font-['Inter'] leading-[14px]" x-text="paymentsData.Bill_Batch_ID"></div>
+              <div class="text-[#414042] text-sm font-medium font-['Inter'] leading-[14px]" data-payment-text="Bill_Batch_ID"></div>
             </div>
             <div class="flex-col justify-center items-start gap-1.5 flex">
               <div class="text-[#626c87] text-sm font-normal font-['Inter'] leading-tight">Batch Week</div>
-              <div class="text-[#414042] text-sm font-medium font-['Inter'] leading-[14px]" x-text = "paymentsData.Bill_Batch_Week"></div>
+              <div class="text-[#414042] text-sm font-medium font-['Inter'] leading-[14px]" data-payment-text="Bill_Batch_Week"></div>
             </div>
             <div class="flex-col justify-center items-start gap-1 flex">
               <div class="text-[#626c87] text-sm font-normal font-['Inter'] leading-tight">Bill Date</div>
-              <div class="text-[#414042] text-sm font-medium font-['Inter'] leading-[14px]" x-text = "paymentsData.Bill_Date"></div>
+              <div class="text-[#414042] text-sm font-medium font-['Inter'] leading-[14px]" data-payment-text="Bill_Date"></div>
             </div>
             <div class="flex-col justify-center items-start gap-1 flex">
               <div class="text-[#626c87] text-sm font-normal font-['Inter'] leading-tight">Bill Due Date</div>
-              <div class="text-[#414042] text-sm font-medium font-['Inter'] leading-[14px]" x-text = "paymentsData.Bill_Due_Date"></div>
+              <div class="text-[#414042] text-sm font-medium font-['Inter'] leading-[14px]" data-payment-text="Bill_Due_Date"></div>
             </div>
           </div>
 
@@ -413,18 +387,21 @@
           <div class="flex flex-col gap-4">
             <div class="flex items-center justify-between">
               <div class="font-['Inter'] text-base font-normal leading-tight text-[#414042]">GST</div>
-              <div class="font-['Inter'] text-base font-normal leading-tight text-[#414042]" x-text="paymentsData.Bill_GST || 0"></div>
+              <div class="font-['Inter'] text-base font-normal leading-tight text-[#414042]" data-payment-text="Bill_GST" data-payment-default="0"></div>
             </div>
             <div class="flex items-center justify-between">
               <div class="font-['Inter'] text-base font-normal leading-tight text-[#414042]">Commission Rate</div>
-              <div class="font-['Inter'] text-base font-normal leading-tight text-[#414042]" 
-                   x-text="(paymentsData.Primary_Service_Provider_Job_Rate_Percentage || 0) + '%'">
-              </div>
+              <div
+                class="font-['Inter'] text-base font-normal leading-tight text-[#414042]"
+                data-payment-text="Primary_Service_Provider_Job_Rate_Percentage"
+                data-payment-default="0"
+                data-payment-suffix="%"
+              ></div>
 
             </div>
             <div class="flex items-center justify-between">
               <div class="font-['Inter'] text-base font-normal leading-tight text-[#414042]">Bill Total (Including GST)</div>
-              <div class="font-['Inter'] text-lg font-semibold leading-tight text-[#36916a]" x-text="paymentsData.Bill_Total || 0"></div>
+              <div class="font-['Inter'] text-lg font-semibold leading-tight text-[#36916a]" data-payment-text="Bill_Total" data-payment-default="0"></div>
             </div>
           </div>
         </div>
@@ -447,7 +424,7 @@
         <template x-if="paymentsData.Xero_Bill_Status === 'Waiting Approval' && paymentsData.Bill_Approved_Service_Provider === 'true' && paymentsData.Bill_Approved_Admin === 'true'">
           <div class="flex items-center space-x-3 mr-auto">
             <div class="text-[#626c87] text-sm font-normal font-['Inter'] leading-tight">Bill Approval Time :</div>
-            <div class="text-[#414042] text-sm font-medium font-['Inter'] leading-[14px]" x-text = "paymentsData.Bill_Approval_Time"></div>
+            <div class="text-[#414042] text-sm font-medium font-['Inter'] leading-[14px]" data-payment-text="Bill_Approval_Time"></div>
           </div>
         </template>
         <!-- Close Button -->
@@ -542,5 +519,3 @@ bill_approved_service_provider
   }
 }
 </script>
-
-
