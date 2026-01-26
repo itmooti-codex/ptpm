@@ -33,6 +33,8 @@ const APPOINTMENT_MODAL_SELECTOR = "[data-appointment-detail-modal]";
 const toast = document.getElementById("toast");
 let toastTimer = null;
 let isQuoteCreating = false;
+let isRescheduling = false;
+let isReturningInquiry = false;
 
 const showToast = (message, type = "info") => {
   if (!toast) {
@@ -75,6 +77,63 @@ const setButtonLoading = (button, isLoading, label = "Creating...") => {
   button.removeAttribute("aria-busy");
   if (button.dataset.originalText) {
     button.textContent = button.dataset.originalText;
+  }
+};
+
+const returnInquiryFromModal = async (triggerButton) => {
+  if (isReturningInquiry) {
+    return;
+  }
+  isReturningInquiry = true;
+  const activeButton =
+    triggerButton ||
+    document.querySelector('[data-appointment-action="return-inquiry"]');
+  setButtonLoading(activeButton, true, "Returning...");
+  try {
+    const alpineData = getAlpineData();
+    const appointmentData = buildAppointmentDisplayData(
+      (alpineData && alpineData.appointmentData) || window.appointmentData || {},
+    );
+    if (!appointmentData || Object.keys(appointmentData).length === 0) {
+      showToast("Appointment data is missing.", "error");
+      return;
+    }
+
+    const inquiryId =
+      appointmentData.Inquiry_ID ||
+      appointmentData.inquiry_id ||
+      appointmentData.Inquiry_Unique_ID ||
+      "";
+    if (!inquiryId) {
+      showToast("Missing inquiry id.", "error");
+      return;
+    }
+
+    const reasonInput = document.querySelector(".returnText");
+    const reason = reasonInput ? reasonInput.value.trim() : "";
+
+    const plugin = await getVitalStatsPlugin();
+    const dealModel = plugin.switchTo("PeterpmDeal");
+    const dealMutation = dealModel.mutation();
+    const isNumericId =
+      typeof inquiryId === "number" ||
+      (typeof inquiryId === "string" && /^\d+$/.test(inquiryId.trim()));
+    const idValue = isNumericId ? Number(inquiryId) : inquiryId;
+    dealMutation.update((q) =>
+      q.where(isNumericId ? "id" : "unique_id", idValue).set({
+        inquiry_return_reason: reason,
+        inquiry_status: "Cancelled",
+      }),
+    );
+    await dealMutation.execute(true).toPromise();
+
+    showToast("Inquiry returned successfully.", "success");
+  } catch (error) {
+    console.error("Return inquiry failed:", error);
+    showToast("Failed to return inquiry.", "error");
+  } finally {
+    isReturningInquiry = false;
+    setButtonLoading(activeButton, false);
   }
 };
 
@@ -1257,13 +1316,21 @@ const createQuoteFromModal = async (triggerButton) => {
   }
 };
 
-const scheduleAppointmentFromModal = async () => {
+const scheduleAppointmentFromModal = async (triggerButton) => {
+  if (isRescheduling) {
+    return;
+  }
+  isRescheduling = true;
+  const activeButton =
+    triggerButton ||
+    document.querySelector('[data-appointment-action="reschedule-appointment"]');
+  setButtonLoading(activeButton, true, "Scheduling...");
   try {
     const alpineData = getAlpineData();
     const appointmentData =
       (alpineData && alpineData.appointmentData) || window.appointmentData;
     if (!appointmentData) {
-      alert("Appointment data is missing.");
+      showToast("Appointment data is missing.", "error");
       return;
     }
 
@@ -1286,13 +1353,13 @@ const scheduleAppointmentFromModal = async () => {
     const durationMinute = durationMinuteEl ? durationMinuteEl.value : "0";
 
     if (!dateTimeInput) {
-      alert("Please select a date and time.");
+      showToast("Please select a date and time.", "error");
       return;
     }
 
     const dateObj = new Date(dateTimeInput);
     if (Number.isNaN(dateObj.getTime())) {
-      alert("Invalid date/time selected.");
+      showToast("Invalid date/time selected.", "error");
       return;
     }
 
@@ -1313,7 +1380,7 @@ const scheduleAppointmentFromModal = async () => {
       "";
 
     if (!propertyID || !inquiryId || !contactID) {
-      alert("Missing property, inquiry, or contact details.");
+      showToast("Missing property, inquiry, or contact details.", "error");
       return;
     }
 
@@ -1363,11 +1430,16 @@ const scheduleAppointmentFromModal = async () => {
     );
     await dealMutation.execute(true).toPromise();
 
-    alert("Appointment scheduled successfully.");
-    location.reload();
+    showToast("Appointment scheduled successfully.", "success");
+    setTimeout(() => {
+      location.reload();
+    }, 800);
   } catch (error) {
     console.error("Reschedule appointment failed:", error);
-    alert("Failed to schedule appointment. Check console for details.");
+    showToast("Failed to schedule appointment.", "error");
+  } finally {
+    isRescheduling = false;
+    setButtonLoading(activeButton, false);
   }
 };
 
@@ -1384,4 +1456,26 @@ document.addEventListener("click", (event) => {
   }
   event.preventDefault();
   createQuoteFromModal(button);
+});
+
+document.addEventListener("click", (event) => {
+  const button = event.target.closest(
+    '[data-appointment-action="reschedule-appointment"]',
+  );
+  if (!button) {
+    return;
+  }
+  event.preventDefault();
+  scheduleAppointmentFromModal(button);
+});
+
+document.addEventListener("click", (event) => {
+  const button = event.target.closest(
+    '[data-appointment-action="return-inquiry"]',
+  );
+  if (!button) {
+    return;
+  }
+  event.preventDefault();
+  returnInquiryFromModal(button);
 });
