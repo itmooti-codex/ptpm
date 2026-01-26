@@ -95,6 +95,41 @@ const getVitalStatsPlugin = async () => {
   return window.getVitalStatsPlugin();
 };
 
+const fetchDirectOnce = (query) => {
+  if (!query || typeof query.fetchDirect !== "function") {
+    return Promise.resolve(null);
+  }
+  const result = query.fetchDirect();
+  if (!result) {
+    return Promise.resolve(null);
+  }
+  if (typeof result.subscribe === "function") {
+    return new Promise((resolve, reject) => {
+      const sub = result.subscribe({
+        next: (value) => {
+          resolve(value);
+          if (sub && typeof sub.unsubscribe === "function") {
+            sub.unsubscribe();
+          }
+        },
+        error: (error) => {
+          reject(error);
+          if (sub && typeof sub.unsubscribe === "function") {
+            sub.unsubscribe();
+          }
+        },
+      });
+    });
+  }
+  if (typeof result.toPromise === "function") {
+    return result.toPromise();
+  }
+  if (typeof result.then === "function") {
+    return result;
+  }
+  return Promise.resolve(result);
+};
+
 const getAlpineData = () => {
   const root = document.body;
   if (root && root.__x && root.__x.$data) {
@@ -129,6 +164,29 @@ const looksLikeRecord = (value) => {
 };
 
 const extractFirstRecord = (payload) => {
+  const getRecordFromCandidate = (candidate) => {
+    if (!candidate) {
+      return null;
+    }
+    if (Array.isArray(candidate)) {
+      return candidate[0] || null;
+    }
+    if (looksLikeRecord(candidate)) {
+      return candidate;
+    }
+    if (typeof candidate === "object") {
+      for (const value of Object.values(candidate)) {
+        if (Array.isArray(value)) {
+          return value[0] || null;
+        }
+        if (looksLikeRecord(value)) {
+          return value;
+        }
+      }
+    }
+    return null;
+  };
+
   if (!payload) {
     return null;
   }
@@ -146,33 +204,23 @@ const extractFirstRecord = (payload) => {
   ];
 
   for (const candidate of candidates) {
-    if (Array.isArray(candidate)) {
-      return candidate[0] || null;
-    }
-    if (looksLikeRecord(candidate)) {
-      return candidate;
+    const record = getRecordFromCandidate(candidate);
+    if (record) {
+      return record;
     }
   }
 
-  if (looksLikeRecord(payload?.record)) {
-    return payload.record;
+  const directRecord = getRecordFromCandidate(payload?.record);
+  if (directRecord) {
+    return directRecord;
   }
-  if (looksLikeRecord(payload?.resp)) {
-    return payload.resp;
-  }
-
-  if (payload && typeof payload === "object") {
-    for (const value of Object.values(payload)) {
-      if (Array.isArray(value)) {
-        return value[0] || null;
-      }
-      if (looksLikeRecord(value)) {
-        return value;
-      }
-    }
+  const respRecord = getRecordFromCandidate(payload?.resp);
+  if (respRecord) {
+    return respRecord;
   }
 
-  return looksLikeRecord(payload) ? payload : null;
+  const rootRecord = getRecordFromCandidate(payload);
+  return rootRecord || null;
 };
 
 const TITLE_PART_OVERRIDES = {
@@ -726,8 +774,12 @@ const fetchPaymentDetails = async (uniqueId) => {
     "_tsUpdateCount_",
   ]);
   query.getOrInitQueryCalc?.();
-  const result = await query.fetchDirect().toPromise();
-  return extractFirstRecord(result);
+  const result = await fetchDirectOnce(query);
+  const record = extractFirstRecord(result);
+  if (!record) {
+    console.warn("Payment fetch returned no records.", result);
+  }
+  return record;
 };
 
 const openPaymentModal = async (row) => {
