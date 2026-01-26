@@ -32,6 +32,12 @@ const STATUS_FALLBACK = "bg-gray-200 text-gray-500";
 const APPOINTMENT_MODAL_SELECTOR = "[data-appointment-detail-modal]";
 const START_FIELD_RE = /^start(_time)?$/i;
 const END_FIELD_RE = /^end(_time)?$/i;
+const getVitalStatsPlugin = async () => {
+  if (typeof window.getVitalStatsPlugin !== "function") {
+    throw new Error("VitalStats SDK init function missing");
+  }
+  return window.getVitalStatsPlugin();
+};
 const toast = document.getElementById("toast");
 let toastTimer = null;
 let isQuoteCreating = false;
@@ -1169,49 +1175,6 @@ if (monthFilter) {
 }
 
 setRange(currentRange, { refresh: true });
-
-const SDK_CONFIG = {
-  slug: "peterpm",
-  apiKey: "1rBR-jpR3yE3HE1VhFD0j",
-};
-
-const loadVitalStatsSdk = () => {
-  if (window.initVitalStats || window.initVitalStatsSDK) {
-    return Promise.resolve();
-  }
-  return new Promise((resolve, reject) => {
-    const script = document.createElement("script");
-    script.src = "https://static-au03.vitalstats.app/static/sdk/v1/latest.js";
-    script.async = true;
-    script.crossOrigin = "anonymous";
-    script.onload = resolve;
-    script.onerror = reject;
-    document.head.appendChild(script);
-  });
-};
-
-const getVitalStatsPlugin = async () => {
-  if (window.vitalStatsPlugin) {
-    return window.vitalStatsPlugin;
-  }
-  if (!window.vitalStatsPluginPromise) {
-    window.vitalStatsPluginPromise = (async () => {
-      await loadVitalStatsSdk();
-      const initFn = window.initVitalStats || window.initVitalStatsSDK;
-      if (!initFn) {
-        throw new Error("VitalStats SDK init function missing");
-      }
-      const { plugin } = await initFn({
-        slug: SDK_CONFIG.slug,
-        apiKey: SDK_CONFIG.apiKey,
-        isDefault: true,
-      }).toPromise();
-      window.vitalStatsPlugin = plugin;
-      return plugin;
-    })();
-  }
-  return window.vitalStatsPluginPromise;
-};
 
 const prefillRescheduleModal = () => {
   const alpineData = getAlpineData();
