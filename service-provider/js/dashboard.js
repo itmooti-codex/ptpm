@@ -1,15 +1,8 @@
 (() => {
   const ENTITY = "peterpm";
   const ENTITY_KEY = "1rBR-jpR3yE3HE1VhFD0j";
-  const JOB_LIST_ID =
-    (typeof notStartedJobs !== "undefined" && notStartedJobs) ||
-    (typeof allJobs !== "undefined" && allJobs) ||
-    window.dashboardJobsListId ||
-    "";
-  const APPOINTMENTS_LIST_ID =
-    (typeof allAppointments !== "undefined" && allAppointments) ||
-    window.dashboardAppointmentsListId ||
-    "k4wkv7J8fLefA_cZRMt1e";
+  const JOB_LIST_ID =allJobs;
+  const APPOINTMENTS_LIST_ID =allAppointments;
 
   const getServiceProviderId = () => {
     if (typeof loggedInUserIdOp !== "undefined") {
@@ -29,6 +22,15 @@
     }
     return false;
   };
+
+  const STATUS_STYLES = {
+    New: "bg-[#E8D3EE] text-[#8E24AA]",
+    "To Be Scheduled": "bg-[#FEE8CC] text-[#FB8C00]",
+    Scheduled: "bg-[#CCE7F6] text-[#0288D1]",
+    Completed: "bg-[#D9ECDA] text-[#43A047]",
+    Cancelled: "bg-[#ECECEC] text-[#9E9E9E]",
+  };
+  const STATUS_FALLBACK = "bg-gray-200 text-gray-500";
 
   const getJobsRoot = () =>
     document.getElementById("inquiry-table-root") ||
@@ -57,10 +59,7 @@
     elem.dataset.dynamicList = JOB_LIST_ID;
     elem.dataset.entity = ENTITY;
     elem.dataset.entityKey = ENTITY_KEY;
-    const spId = getServiceProviderId();
-    if (spId) {
-      elem.dataset.varServiceproviderid = spId;
-    }
+    elem.dataset.varServiceproviderid = getServiceProviderId();
     elem.dataset.table = "true";
     elem.dataset.op = "subscribe";
     elem.dataset.initCbName = "initInquiryTable";
@@ -109,7 +108,10 @@
       <div class="flex flex-col gap-3 rounded-[8px] border border-[#d3d7e2] bg-white p-4">
         <div class="flex items-center justify-between">
           <div class="text-h3 text-dark">[Title]</div>
-          <div class="text-label text-[#636d88]">[Status]</div>
+          <span
+            class="dashboard-appointment-status"
+            data-appointment-status="[Status]"
+          >[Status]</span>
         </div>
         <div class="text-label text-dark">[Start_Time] - [End_Time]</div>
         <div class="text-label text-[#636d88]">[Type]</div>
@@ -139,6 +141,37 @@
     }
     mgr.renderNew().subscribe(() => {});
     return nextElem;
+  };
+
+  const applyAppointmentStatusStyles = (root) => {
+    if (!root) {
+      return;
+    }
+    const nodes = root.querySelectorAll("[data-appointment-status]");
+    nodes.forEach((node) => {
+      const raw =
+        node.dataset.appointmentStatus ||
+        node.textContent ||
+        node.getAttribute("data-appointment-status") ||
+        "";
+      const statusText = String(raw).trim();
+      const displayText = isNullValue(statusText) ? "-" : statusText;
+      const statusClass = STATUS_STYLES[displayText] || STATUS_FALLBACK;
+      node.textContent = displayText;
+      node.className = `inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${statusClass}`;
+    });
+  };
+
+  const observeAppointmentStatuses = (root) => {
+    if (!root || typeof MutationObserver === "undefined") {
+      return null;
+    }
+    const observer = new MutationObserver(() => {
+      applyAppointmentStatusStyles(root);
+    });
+    observer.observe(root, { childList: true, subtree: true });
+    applyAppointmentStatusStyles(root);
+    return observer;
   };
 
   const refreshDynamicList = (elem) => {
@@ -204,10 +237,12 @@
       const nextElem = replaceAppointmentsList(startSec, endSec);
       if (nextElem) {
         activeElem = nextElem;
+        applyAppointmentStatusStyles(activeElem);
       } else {
         activeElem.dataset.varSttime = String(startSec);
         activeElem.dataset.varEndtime = String(endSec);
         refreshDynamicList(activeElem);
+        applyAppointmentStatusStyles(activeElem);
       }
     };
 
@@ -412,6 +447,9 @@
     if (window.vitalStatsDynamicListsMgr?.renderNew) {
       window.vitalStatsDynamicListsMgr.renderNew().subscribe(() => {});
     }
+    observeAppointmentStatuses(
+      document.getElementById("dashboard-appointments-root"),
+    );
     setupCalendar(appointmentsElem);
     if (jobsElem) {
       refreshDynamicList(jobsElem);
