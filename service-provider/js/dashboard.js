@@ -283,8 +283,7 @@
         1,
       );
       selectedDate = clampDateToMonth(selectedDate);
-      renderDays();
-      updateRange();
+      setActiveDay(selectedDate);
     });
 
     nextMonthBtn?.addEventListener("click", () => {
@@ -294,16 +293,21 @@
         1,
       );
       selectedDate = clampDateToMonth(selectedDate);
-      renderDays();
-      updateRange();
+      setActiveDay(selectedDate);
     });
 
     prevDayBtn?.addEventListener("click", () => {
-      daysContainer.scrollBy({ left: -300, behavior: "smooth" });
+      const prev = new Date(selectedDate);
+      prev.setDate(prev.getDate() - 1);
+      monthCursor = new Date(prev.getFullYear(), prev.getMonth(), 1);
+      setActiveDay(prev);
     });
 
     nextDayBtn?.addEventListener("click", () => {
-      daysContainer.scrollBy({ left: 300, behavior: "smooth" });
+      const next = new Date(selectedDate);
+      next.setDate(next.getDate() + 1);
+      monthCursor = new Date(next.getFullYear(), next.getMonth(), 1);
+      setActiveDay(next);
     });
   };
 
