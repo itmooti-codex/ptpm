@@ -30,9 +30,27 @@
     return false;
   };
 
+  const getJobsRoot = () =>
+    document.getElementById("inquiry-table-root") ||
+    document.getElementById("dashboard-jobs-root");
+
   const createJobsList = () => {
-    const root = document.getElementById("dashboard-jobs-root");
-    if (!root || !JOB_LIST_ID) {
+    const root = getJobsRoot();
+    if (!root) {
+      return null;
+    }
+    const existing = root.querySelector("[data-dynamic-list]");
+    if (existing) {
+      const spId = getServiceProviderId();
+      if (spId && !existing.dataset.varServiceproviderid) {
+        existing.dataset.varServiceproviderid = spId;
+      }
+      if (!existing.dataset.initCbName) {
+        existing.dataset.initCbName = "initInquiryTable";
+      }
+      return existing;
+    }
+    if (!JOB_LIST_ID) {
       return null;
     }
     const elem = document.createElement("div");
@@ -45,7 +63,7 @@
     }
     elem.dataset.table = "true";
     elem.dataset.op = "subscribe";
-    elem.dataset.initCbName = "initDashboardJobsTable";
+    elem.dataset.initCbName = "initInquiryTable";
     root.appendChild(elem);
     return elem;
   };
@@ -346,6 +364,10 @@
       }),
     );
   };
+
+  if (typeof window.initInquiryTable !== "function") {
+    window.initInquiryTable = window.initDashboardJobsTable;
+  }
 
   document.addEventListener("DOMContentLoaded", () => {
     const jobsElem = createJobsList();
