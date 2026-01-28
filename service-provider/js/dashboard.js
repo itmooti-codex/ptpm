@@ -119,6 +119,28 @@
     return elem;
   };
 
+  const replaceAppointmentsList = (startSec, endSec) => {
+    const root = document.getElementById("dashboard-appointments-root");
+    const mgr = window.vitalStatsDynamicListsMgr;
+    if (!root || !mgr || typeof mgr.renderNew !== "function") {
+      return null;
+    }
+    const oldElem = root.querySelector("[data-dynamic-list]");
+    if (oldElem) {
+      const instance = mgr.get ? mgr.get(oldElem) : null;
+      if (instance && typeof instance.destroy === "function") {
+        instance.destroy();
+      }
+      oldElem.remove();
+    }
+    const nextElem = createAppointmentsList(startSec, endSec);
+    if (!nextElem) {
+      return null;
+    }
+    mgr.renderNew().subscribe(() => {});
+    return nextElem;
+  };
+
   const refreshDynamicList = (elem) => {
     if (!elem || !window.vitalStatsDynamicListsMgr) {
       return;
@@ -172,14 +194,21 @@
 
     const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
+    let activeElem = appointmentsElem;
+
     const updateRange = () => {
-      if (!appointmentsElem) {
+      if (!activeElem) {
         return;
       }
       const { startSec, endSec } = getDayRange(selectedDate);
-      appointmentsElem.dataset.varSttime = String(startSec);
-      appointmentsElem.dataset.varEndtime = String(endSec);
-      refreshDynamicList(appointmentsElem);
+      const nextElem = replaceAppointmentsList(startSec, endSec);
+      if (nextElem) {
+        activeElem = nextElem;
+      } else {
+        activeElem.dataset.varSttime = String(startSec);
+        activeElem.dataset.varEndtime = String(endSec);
+        refreshDynamicList(activeElem);
+      }
     };
 
     const setActiveDay = (targetDate) => {
