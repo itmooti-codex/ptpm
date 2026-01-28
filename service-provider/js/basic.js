@@ -17,6 +17,7 @@ body.setAttribute(
     deleteQuoteId: {},
     deleting: false,
     isSidebarExpanded: true,
+    jobData: {},
     deleteQuoteModal: false,
     createQuoteModal: false,
     paymentsData: {
@@ -25,6 +26,8 @@ body.setAttribute(
       Xero_Bill_Status: [],
     },
     modalIsOpen: false,
+    modalIsOpen2: false,
+    modalIsOpen3: false,
     isChecked: false,
     isExpandedClientSection: false,
     isExpandedMaterialsSection: false,
@@ -297,3 +300,36 @@ tailwind.config = {
     },
   },
 };
+
+function checkUrlForParam(url, paramKey, paramValue) {
+  const [baseUrl, queryString] = url.split("?");
+  if (!queryString) return false;
+  const queryParams = queryString.split("&");
+  for (let param of queryParams) {
+    const [key, value] = param.split("=");
+    if (key === paramKey && value === paramValue) {
+      return true;
+    }
+  }
+  return false;
+}
+
+window.addEventListener("load", () => {
+  const currentUrl = window.location.href;
+  const paramKey = "ns";
+  const paramValue = "true";
+  console.log(
+    "current Url, paramKey, paramValue",
+    currentUrl,
+    paramKey,
+    paramValue,
+  );
+  if (checkUrlForParam(currentUrl, paramKey, paramValue)) {
+    const notificationTab = document.querySelectorAll(".myProfileTab");
+    notificationTab[3].click();
+  } else {
+    console.log(
+      `The URL does NOT contain the parameter ${paramKey}=${paramValue}.`,
+    );
+  }
+});

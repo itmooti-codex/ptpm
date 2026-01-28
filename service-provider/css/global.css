@@ -508,3 +508,85 @@ body {
     display: none;
   }
 }
+
+select option {
+  padding: 8px 16px;
+  margin: 8px;
+  transition: transform 0.3s;
+  transform: scale(1);
+}
+
+select option:hover {
+  transform: scale(1.02);
+}
+
+.cursor-not-allowed-here {
+  cursor: not-allowed;
+}
+
+.hideScrollbarDiv::-webkit-scrollbar {
+  display: none;
+}
+
+.hideScrollbarDiv {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+select {
+  display: block !important;
+}
+
+#serviceFormID {
+  scroll-behavior: smooth;
+}
+
+.adding-animation {
+  color: #00275b;
+  font-style: italic;
+  cursor: wait;
+}
+
+.hidden {
+  display: none;
+}
+
+.deleteButtonOptions {
+  cursor: pointer;
+  fill: #414042;
+  transition: fill 5s;
+}
+
+.deleteButtonOptions.deleting {
+  fill: red;
+}
+
+.displayContainerChosenServices {
+  margin-top: 20px;
+}
+
+.chosen-service-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.chosen-service-item .ratRoofTxt {
+  flex: 1;
+  padding-right: 10px;
+}
+
+@media (max-width: 1100px) {
+  .desktopBlockContainerProfileBankDtlsPwd {
+    display: none;
+  }
+
+  .mobileViewOnlyBlock {
+    display: block;
+  }
+
+  .mobileBlockFlexCol {
+    flex-direction: column;
+    gap: 24px;
+  }
+}
