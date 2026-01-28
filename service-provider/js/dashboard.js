@@ -113,7 +113,7 @@
             data-appointment-status="[Status]"
           >[Status]</span>
         </div>
-        <div class="text-label text-dark">[Start_Time] - [End_Time]</div>
+        <div class="text-label text-dark">[Start] - [End]</div>
         <div class="text-label text-[#636d88]">[Type]</div>
       </div>
     `;
