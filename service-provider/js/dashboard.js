@@ -166,8 +166,18 @@
     if (!root || typeof MutationObserver === "undefined") {
       return null;
     }
+    let isApplying = false;
     const observer = new MutationObserver(() => {
-      applyAppointmentStatusStyles(root);
+      if (isApplying) {
+        return;
+      }
+      isApplying = true;
+      requestAnimationFrame(() => {
+        observer.disconnect();
+        applyAppointmentStatusStyles(root);
+        observer.observe(root, { childList: true, subtree: true });
+        isApplying = false;
+      });
     });
     observer.observe(root, { childList: true, subtree: true });
     applyAppointmentStatusStyles(root);
