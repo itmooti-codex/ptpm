@@ -174,6 +174,34 @@
       renderDays();
     };
 
+    const setDayStyles = (dayEl, isActive) => {
+      if (!dayEl) {
+        return;
+      }
+      const parts = dayEl.querySelectorAll("div");
+      const dayLabel = parts[0];
+      const dayNumber = parts[1];
+      if (isActive) {
+        dayEl.style.backgroundColor = "#003882";
+        if (dayLabel) dayLabel.style.color = "#ffffff";
+        if (dayNumber) dayNumber.style.color = "#ffffff";
+        return;
+      }
+      dayEl.style.backgroundColor = "#ffffff";
+      if (dayLabel) dayLabel.style.color = "#636d88";
+      if (dayNumber) dayNumber.style.color = "#414042";
+    };
+
+    const clampDateToMonth = (date) => {
+      const daysInMonth = new Date(
+        monthCursor.getFullYear(),
+        monthCursor.getMonth() + 1,
+        0,
+      ).getDate();
+      const day = Math.min(date.getDate(), daysInMonth);
+      return new Date(monthCursor.getFullYear(), monthCursor.getMonth(), day);
+    };
+
     const renderDays = () => {
       monthLabel.textContent = `${monthNames[monthCursor.getMonth()]}, ${monthCursor.getFullYear()}`;
       daysContainer.innerHTML = "";
@@ -182,6 +210,7 @@
         monthCursor.getMonth() + 1,
         0,
       ).getDate();
+      let activeNode = null;
 
       for (let day = 1; day <= daysInMonth; day += 1) {
         const current = new Date(
@@ -190,6 +219,7 @@
           day,
         );
         const dayEl = template.cloneNode(true);
+        dayEl.classList.add("whitespace-nowrap");
         const parts = dayEl.querySelectorAll("div");
         const dayLabel = parts[0];
         const dayNumber = parts[1];
@@ -203,11 +233,20 @@
           current.getFullYear() === selectedDate.getFullYear() &&
           current.getMonth() === selectedDate.getMonth() &&
           current.getDate() === selectedDate.getDate();
-        dayEl.classList.toggle("bg-[#eaf1ff]", isActive);
-        dayEl.classList.toggle("border", isActive);
-        dayEl.classList.toggle("border-[#c7d6f5]", isActive);
+        setDayStyles(dayEl, isActive);
+        if (isActive) {
+          activeNode = dayEl;
+        }
         dayEl.addEventListener("click", () => setActiveDay(current));
         daysContainer.appendChild(dayEl);
+      }
+
+      if (activeNode) {
+        activeNode.scrollIntoView({
+          behavior: "smooth",
+          inline: "center",
+          block: "nearest",
+        });
       }
     };
 
@@ -225,16 +264,7 @@
         monthCursor.getMonth() - 1,
         1,
       );
-      if (
-        selectedDate.getMonth() !== monthCursor.getMonth() ||
-        selectedDate.getFullYear() !== monthCursor.getFullYear()
-      ) {
-        selectedDate = new Date(
-          monthCursor.getFullYear(),
-          monthCursor.getMonth(),
-          1,
-        );
-      }
+      selectedDate = clampDateToMonth(selectedDate);
       renderDays();
       updateRange();
     });
@@ -245,32 +275,17 @@
         monthCursor.getMonth() + 1,
         1,
       );
-      if (
-        selectedDate.getMonth() !== monthCursor.getMonth() ||
-        selectedDate.getFullYear() !== monthCursor.getFullYear()
-      ) {
-        selectedDate = new Date(
-          monthCursor.getFullYear(),
-          monthCursor.getMonth(),
-          1,
-        );
-      }
+      selectedDate = clampDateToMonth(selectedDate);
       renderDays();
       updateRange();
     });
 
     prevDayBtn?.addEventListener("click", () => {
-      const next = new Date(selectedDate);
-      next.setDate(next.getDate() - 1);
-      monthCursor = new Date(next.getFullYear(), next.getMonth(), 1);
-      setActiveDay(next);
+      daysContainer.scrollBy({ left: -300, behavior: "smooth" });
     });
 
     nextDayBtn?.addEventListener("click", () => {
-      const next = new Date(selectedDate);
-      next.setDate(next.getDate() + 1);
-      monthCursor = new Date(next.getFullYear(), next.getMonth(), 1);
-      setActiveDay(next);
+      daysContainer.scrollBy({ left: 300, behavior: "smooth" });
     });
   };
 
