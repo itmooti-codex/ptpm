@@ -66,20 +66,57 @@ window.addEventListener("resize", () => {
 sliders.forEach((slider) => {
   slider.setAttribute(":class", "isSidebarExpanded ? 'pl-64px' : 'pl-20px'");
 });
-const urlClassMap = {
-  "https://my.awesomate.pro/components": ".bgDashboard",
-  "https://my.awesomate.pro/inquire": ".bgInquiries",
-  "https://my.awesomate.pro/quotes": ".bgQuotes",
-  "https://my.awesomate.pro/jobs": ".bgJob",
-  "https://my.awesomate.pro/payments": ".bgPayments",
-  "https://my.awesomate.pro/calender": ".bgCalendar",
-  "https://my.awesomate.pro/appointments": ".bgAppointments",
-};
+const navItems = [
+  {
+    selector: ".bgDashboard",
+    match: (path, url) =>
+      /\/dashboard\/home/.test(path) || /\/components/.test(url),
+  },
+  {
+    selector: ".bgInquiries",
+    match: (path) => /\/list\/inquiries/.test(path),
+  },
+  {
+    selector: ".bgQuotes",
+    match: (path) => /\/list\/quotes/.test(path),
+  },
+  {
+    selector: ".bgJob",
+    match: (path) => /\/list\/jobs/.test(path) || /\/job\b/.test(path),
+  },
+  {
+    selector: ".bgPayments",
+    match: (path) => /\/list\/payments/.test(path),
+  },
+  {
+    selector: ".bgCalendar",
+    match: (path) => /\/calender/.test(path) || /\/calendar/.test(path),
+  },
+  {
+    selector: ".bgAppointments",
+    match: (path) => /\/list\/appointments/.test(path),
+  },
+  {
+    selector: ".bgMaterial",
+    match: (path) => /\/list\/materials/.test(path),
+  },
+];
+
+const currentPath = window.location.pathname;
 const currentUrl = window.location.href;
-if (urlClassMap[currentUrl]) {
-  const targetElement = document.querySelector(urlClassMap[currentUrl]);
+
+navItems.forEach(({ selector }) => {
+  const el = document.querySelector(selector);
+  if (el) {
+    el.classList.remove("bg-secondary");
+  }
+});
+
+const activeItem = navItems.find(({ match }) => match(currentPath, currentUrl));
+if (activeItem) {
+  const targetElement = document.querySelector(activeItem.selector);
   if (targetElement) {
-    targetElement.style.backgroundColor = "#0052CC";
+    targetElement.classList.add("bg-secondary");
   }
 }
 
