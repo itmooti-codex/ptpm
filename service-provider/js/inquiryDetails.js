@@ -1,5 +1,5 @@
 (() => {
-  const DUMMY_INQUIRY_ID = 1;
+  const DUMMY_INQUIRY_ID = jobId;
   const PROPERTY_MODEL = "PeterpmProperty";
   const CONTACT_MODEL = "PeterpmContact";
   const COMPANY_MODEL = "PeterpmCompany";
@@ -1277,7 +1277,379 @@
     }
   };
 
+  // Memo section (moved from memos.html)
+  const formatTime = (timestamp) => {
+    const now = Date.now() / 1000;
+    const diffInSeconds = now - timestamp;
+    const intervals = [
+      { label: "second", seconds: 1 },
+      { label: "minute", seconds: 60 },
+      { label: "hour", seconds: 3600 },
+      { label: "day", seconds: 86400 },
+      { label: "month", seconds: 2592000 },
+      { label: "year", seconds: 31536000 },
+    ];
+    for (let i = intervals.length - 1; i >= 0; i--) {
+      const interval = intervals[i];
+      const intervalCount = Math.floor(diffInSeconds / interval.seconds);
+      if (intervalCount >= 1) {
+        const plural = intervalCount > 1 ? "s" : "";
+        return `${intervalCount} ${interval.label}${plural} ago`;
+      }
+    }
+    return "Just now";
+  };
+
+  const formatRelativeTime = (timestamp) => {
+    const now = new Date();
+    const past = new Date(timestamp);
+    const diffMs = now - past;
+    const seconds = Math.floor(diffMs / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+    if (seconds < 60) return `${seconds} sec ago`;
+    if (minutes < 60) return `${minutes} min ago`;
+    if (hours < 24) return `${hours} hr ago`;
+    return `${days} days ago`;
+  };
+
+  const memoAuthorId = "[Visitor//Contact ID]";
+  const memoAuthorFirstName = "[Visitor//First Name]";
+  const memoAuthorLastName = "[Visitor//Last Name]";
+  const memoAuthorProfileImage = "[Visitor//Profile Image ##link]";
+  let memoJobId = "[Page//ID]";
+  let commentQueue = [];
+  let isProcessingCommentQueue = false;
+  const DEFAULT_AUTHOR_PHOTO =
+    "https://file.ontraport.com/media/41ca85f5cdde4c12bf72c2c73747633f.phpkeya0n?Expires=4884400377&Signature=SnfrlziQIcYSbZ98OrH2guVWpO4BRcxatgk3lM~-mKaAencWy7e1yIuxDT4hQjz0hFn-fJ118InfvymhaoqgGxn63rJXeqJKB4JTkYauub5Jh5UO3z6S0o~RVMj8AMzoiImsvQoPuRK7KnuOAsGiVEmSsMHEiM69IWzi4dW~6pryIMSHQ9lztg1powm8b~iXUNG8gajRaQWxlTiSyhh-CV-7zkF-MCP5hf-3FAKtGEo79TySr5SsZApLjfOo-8W~F8aeXK8BGD3bX6T0U16HsVeu~y9gDCZ1lBbLZFh8ezPL~4gktRbgP59Us8XLyV2EKn6rVcQCsVVUk5tUVnaCJw__&Key-Pair-Id=APKAJVAAMVW6XQYWSTNA";
+
+  const fetchPosts = async () => {
+    if (!memoJobId) {
+      console.error("Job ID is not set.");
+      return [];
+    }
+    try {
+      const plugin = await window.getVitalStatsPlugin();
+      const model = plugin.switchTo("PeterpmForumPost");
+      let query = model.query();
+      query = query.where("related_inquiry_id", memoJobId);
+      query = query.deSelectAll().select([
+        "id",
+        "post_title",
+        "post_copy",
+        "created_at",
+        "number_of_replies",
+        "post_image",
+      ]);
+      if (typeof query.include === "function") {
+        query.include("Author", (q) => {
+          q?.select?.(["first_name", "last_name", "profile_image"]);
+        });
+      }
+      query.getOrInitQueryCalc?.();
+      const data = await query.fetchDirect().toPromise();
+      const posts = extractRecords(data);
+      posts.sort((a, b) => b.created_at - a.created_at);
+      return posts.map((post) => ({
+        id: post.id,
+        post_title: post.post_title || "Untitled Post",
+        description: post.post_copy || "No description available.",
+        authorName: `${post.Author?.first_name || "Unknown"} ${post.Author?.last_name || "Author"}`,
+        image: post.Author?.profile_image || DEFAULT_AUTHOR_PHOTO,
+        createdDate: formatTime(post.created_at) || "Unknown Date",
+        number_of_replies: post.number_of_replies ?? 0,
+      }));
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  };
+
+  const buttonFunctionalityInitialization = async (postsContainer) => {
+    postsContainer.querySelectorAll(".commentBtn").forEach((btn) => {
+      btn.addEventListener("click", async (event) => {
+        const postId = event.currentTarget.dataset.postid;
+        const commentsContainer = document.querySelector(
+          `[data-comments-container="${postId}"]`,
+        );
+        const commentTitle = commentsContainer?.querySelector(".commentTitle");
+        const commentForm = commentsContainer?.querySelector(
+          `[data-comment-form="${postId}"]`,
+        );
+        if (!commentsContainer) {
+          return;
+        }
+        if (!commentsContainer.classList.contains("hidden")) {
+          commentsContainer.classList.add("hidden");
+          if (commentTitle) commentTitle.classList.add("hidden");
+          if (commentForm) commentForm.classList.add("hidden");
+          return;
+        }
+        commentsContainer.classList.remove("hidden");
+        if (commentTitle) commentTitle.classList.remove("hidden");
+        if (commentForm) commentForm.classList.remove("hidden");
+        const comments = await fetchComments(postId);
+        renderComments(comments, postId);
+      });
+    });
+  };
+
+  const renderPosts = async (posts) => {
+    const postTemplate = $.templates("#postTemplate");
+    const postsContainer = document.getElementById("postsContainer");
+    if (!postsContainer) {
+      return;
+    }
+    postsContainer.innerHTML = postTemplate.render(posts);
+    await buttonFunctionalityInitialization(postsContainer);
+    posts.forEach(async (post) => {
+      const comments = await fetchComments(post.id);
+      const commentsCountDiv = document.querySelector(
+        `[data-comments-count="${post.id}"]`,
+      );
+      if (commentsCountDiv) {
+        commentsCountDiv.textContent = comments.length;
+      }
+    });
+  };
+
+  const displayErrorMessage = (message) => {
+    const postsContainer = document.getElementById("postsContainer");
+    if (postsContainer) {
+      postsContainer.innerHTML = "";
+    }
+  };
+
+  const toggleLoadingSpinner = (isLoading) => {
+    const spinner = document.getElementById("loadingSpinner");
+    if (spinner) {
+      spinner.classList.toggle("hidden", !isLoading);
+    }
+  };
+
+  const initializePosts = async () => {
+    toggleLoadingSpinner(true);
+    try {
+      const posts = await fetchPosts();
+      const postCount = posts.length || 0;
+      if (posts.length) {
+        await renderPosts(posts);
+        const postNumbers = document.getElementById("postNumbers");
+        if (postNumbers) {
+          postNumbers.textContent = `(${postCount})`;
+        }
+      } else {
+        displayErrorMessage("No posts found.");
+      }
+    } finally {
+      toggleLoadingSpinner(false);
+    }
+  };
+  window.initializePosts = initializePosts;
+
+  const fetchComments = async (postId) => {
+    try {
+      const plugin = await window.getVitalStatsPlugin();
+      const model = plugin.switchTo("PeterpmForumComment");
+      let query = model.query();
+      query = query.where("forum_post_id", postId);
+      query = query.deSelectAll().select([
+        "id",
+        "comment",
+        "created_at",
+        "forum_post_id",
+        "reply_to_comment_id",
+      ]);
+      if (typeof query.include === "function") {
+        query.include("Author", (q) => {
+          q?.select?.(["first_name", "last_name", "profile_image"]);
+        });
+      }
+      query.getOrInitQueryCalc?.();
+      const data = await query.fetchDirect().toPromise();
+      let comments = extractRecords(data);
+      comments.sort((a, b) => b.created_at - a.created_at);
+      const commentsCountDiv = document.querySelector(
+        `[data-comments-count="${postId}"]`,
+      );
+      if (commentsCountDiv) {
+        commentsCountDiv.textContent = comments.length || 0;
+      }
+      return comments;
+    } catch (error) {
+      return {};
+    }
+  };
+
+  const renderComments = (comments, postId) => {
+    const commentTemplate = $.templates("#commentTemplate");
+    const commentsContainer = document.querySelector(
+      `[data-comments-container="${postId}"]`,
+    );
+    if (!commentsContainer) return;
+    const commentTitle = commentsContainer.querySelector(".commentTitle");
+    const commentForm = commentsContainer.querySelector(
+      `[data-comment-form="${postId}"]`,
+    );
+    commentsContainer.innerHTML = "";
+    if (commentTitle) {
+      commentsContainer.appendChild(commentTitle);
+      commentTitle.classList.remove("hidden");
+    }
+    if (commentForm) {
+      commentsContainer.appendChild(commentForm);
+    }
+    comments.forEach((comment) => {
+      const htmlOutput = commentTemplate.render({
+        id: comment.id,
+        comment: comment.comment,
+        postid: postId,
+        authorName:
+          `${comment.Author?.first_name || ""} ${comment.Author?.last_name || ""}`.trim() ||
+          "Unknown Author",
+        authorProfileImage: comment.Author?.profile_image || DEFAULT_AUTHOR_PHOTO,
+        createdAt: formatTime(comment.created_at) || "Unknown Date",
+        parentId: comment.reply_to_comment_id || null,
+        isReply: false,
+      });
+      const commentDiv = document.createElement("div");
+      commentDiv.innerHTML = htmlOutput;
+      commentsContainer.appendChild(commentDiv.firstElementChild);
+    });
+    commentsContainer.classList.remove("hidden");
+  };
+
+  const addCommentToDOM = (comment, postId) => {
+    const commentsContainer = document.querySelector(
+      `[data-comments-container="${postId}"]`,
+    );
+    if (!commentsContainer) {
+      return;
+    }
+    const template = $.templates("#commentTemplate");
+    const htmlOutput = template.render(comment);
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = htmlOutput;
+    const processing = tempDiv.querySelector(".processingText");
+    if (processing) {
+      processing.innerText = "Posting...";
+    }
+    const authorName = tempDiv.querySelector(".authorName");
+    if (authorName) {
+      authorName.innerText = `${memoAuthorFirstName} ${memoAuthorLastName}`;
+    }
+    const authorImage = tempDiv.querySelector(".authorImage");
+    if (authorImage) {
+      authorImage.src = memoAuthorProfileImage || DEFAULT_AUTHOR_PHOTO;
+    }
+    const thirdChild = commentsContainer.children[2];
+    if (thirdChild) {
+      commentsContainer.insertBefore(tempDiv, thirdChild);
+    } else {
+      commentsContainer.appendChild(tempDiv);
+    }
+    commentsContainer.classList.remove("hidden");
+    return tempDiv;
+  };
+
+  const processCommentQueue = async () => {
+    if (isProcessingCommentQueue) return;
+    isProcessingCommentQueue = true;
+    while (commentQueue.length > 0) {
+      const { postId, commentText, target } = commentQueue.shift();
+      try {
+        const payload = {
+          comment: commentText,
+          author_id: memoAuthorId,
+          forum_post_id: postId,
+        };
+        const plugin = await window.getVitalStatsPlugin();
+        const model = plugin.switchTo("PeterpmForumComment");
+        const mutation = model.mutation();
+        mutation.createOne(payload);
+        await mutation.execute(true).toPromise();
+        target.querySelector(".processingText").innerText = "";
+      } catch (error) {
+        target.querySelector(".processingText").innerText = "Failed";
+      }
+    }
+    isProcessingCommentQueue = false;
+  };
+
   document.addEventListener("DOMContentLoaded", () => {
+    const submitMemo = document.getElementById("submitMemo");
+    if (submitMemo) {
+      submitMemo.addEventListener("click", async () => {
+        const submitButton = submitMemo;
+        const memoInput = document.querySelector("#memoInput");
+        if (!memoInput) {
+          return;
+        }
+        const postCopy = memoInput.value;
+        memoInput.setAttribute("disabled", true);
+        memoInput.classList.add("opacity-50", "cursor-not-allowed");
+        if (!postCopy || postCopy === "Write a memo...") {
+          memoInput.removeAttribute("disabled");
+          memoInput.classList.remove("opacity-50", "cursor-not-allowed");
+          return;
+        }
+        const payload = {
+          author_id: memoAuthorId,
+          post_copy: postCopy,
+          created_at: new Date().toISOString(),
+          related_inquiry_id: memoJobId,
+        };
+        try {
+          submitButton.innerHTML = "Posting...";
+          submitButton.classList.add("opacity-50", "cursor-not-allowed");
+          const plugin = await window.getVitalStatsPlugin();
+          const model = plugin.switchTo("PeterpmForumPost");
+          const mutation = model.mutation();
+          mutation.createOne(payload);
+          await mutation.execute(true).toPromise();
+          location.reload();
+        } catch (error) {
+          console.error(error);
+        } finally {
+          submitButton.innerHTML = "Post New Memo";
+          submitButton.style.pointerEvents = "auto";
+        }
+      });
+    }
+
+    document.addEventListener("submit", async (event) => {
+      if (event.target.classList.contains("comment-form")) {
+        event.preventDefault();
+        const form = event.target;
+        const postId = form.dataset.commentForm;
+        const textarea = form.querySelector(".mention-textarea");
+        const commentText = textarea.value.trim();
+        if (!commentText) {
+          return;
+        }
+        const comment = {
+          id: `temp_${Date.now()}`,
+          comment: commentText,
+          author_id: memoAuthorId,
+          profilePhoto: memoAuthorProfileImage,
+          forum_post_id: postId,
+          createdAt: formatRelativeTime(new Date()),
+        };
+        const commentEl = addCommentToDOM(comment, postId);
+        textarea.value = "";
+        commentQueue.push({ postId, commentText, target: commentEl });
+        processCommentQueue();
+      }
+    });
+
+    const callMemo = document.getElementById("callMemo");
+    if (callMemo) {
+      callMemo.addEventListener("click", () => {
+        initializePosts();
+      });
+    }
+
     const inputs = document.querySelectorAll(".addUIDOnLoad");
     inputs.forEach((input) => {
       input.value = "[Page//Property//Unique ID]";
