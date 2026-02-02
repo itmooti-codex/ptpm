@@ -584,3 +584,64 @@ select {
   text-align: center;
   border-radius: 4px;
 }
+
+  #ofbd8133b824a {
+    z-index: 15 !important;
+  }
+
+  .inputStyle{
+    margin: 0 !important;
+    border-bottom: 0!important;
+    height: unset !important;
+  }
+
+  input{
+    -webkit-box-shadow: none !important; 
+    box-shadow: none !important;
+  }
+
+  .scheduleDescription::placeholder {
+    position: absolute !important;
+    top: 4px !important;
+    left: 10px !important;
+  }
+
+  .disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none; /* Prevent clicks */
+  }
+
+  .scheduleBtn {
+    transition: opacity 0.3s ease, background-color 0.3s ease;
+  }
+
+  .scheduleCancelBtn {
+    opacity: 1; /* Default */
+    cursor: pointer;
+  }
+
+  .scheduleCancelBtn.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .dropdownIndSearch {
+    position: absolute;
+    width: 100%;
+    max-height: 300px;
+    overflow-y: auto;
+    background-color: white;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    z-index: 1000;
+  }
+
+  .dropdown-item {
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+  }
+
+  .dropdown-item:hover {
+    background-color: #f3f4f6;
+  }

@@ -45,6 +45,12 @@ body.setAttribute(
     scheduledRreturnInquiryModal: false,
     rescheduleVisitOpenModal: false,
     selectedTab: "overview",
+    newClientModal: false,
+    addnewCompanyModal: false,
+    editPropertyInfoModal: false,
+    propertyOwnerAndResidentModal: false,
+    propertyDescriptionModal: false,
+    combinedPropertyEditModal: false,
     deleteMaterialMoodal: false,
     deleteMaterialId: {},
     editMaterialModal: false,
@@ -142,6 +148,53 @@ function addSidebarOverlay() {
   }
 }
 setInterval(addSidebarOverlay, 100);
+
+const urlParamsSelectedTab = new URL(window.location.href);
+const selectedTab =
+  urlParamsSelectedTab.searchParams.get("selectedTab") || "activities";
+console.log("Selected tab", selectedTab);
+try {
+  const xData = JSON.parse(document.body.getAttribute("x-data") || "{}");
+  xData.selectedTab = selectedTab;
+  document.body.setAttribute("x-data", JSON.stringify(xData));
+} catch (error) {
+  console.error("Failed to sync selected tab:", error);
+}
+if (selectedTab === "memo" && typeof initializePosts === "function") {
+  initializePosts();
+}
+
+function setAttributesForElements(selector, attributes) {
+  const elements = document.querySelectorAll(selector);
+  elements.forEach((element) => {
+    for (const [key, value] of Object.entries(attributes)) {
+      element.setAttribute(key, value);
+    }
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  setAttributesForElements(".memoBlock", {
+    "x-show": "selectedTab === 'memo'",
+    id: "tabpanelMemo",
+    role: "tabpanel",
+    "aria-label": "memo",
+  });
+
+  setAttributesForElements(".overviewBlock", {
+    "x-show": "selectedTab === 'overview'",
+    id: "tabpanelOverview",
+    role: "tabpanel",
+    "aria-label": "overview",
+  });
+
+  setAttributesForElements(".notesBlock", {
+    "x-show": "selectedTab === 'notes'",
+    id: "tabpanelNotes",
+    role: "tabpanel",
+    "aria-label": "notes",
+  });
+});
 
 document.addEventListener("DOMContentLoaded", () => {
   const tabContainers = document.querySelectorAll(".tab-container");

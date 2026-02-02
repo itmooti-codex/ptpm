@@ -1,0 +1,1294 @@
+(() => {
+  const DUMMY_INQUIRY_ID = 1;
+  const PROPERTY_MODEL = "PeterpmProperty";
+  const CONTACT_MODEL = "PeterpmContact";
+  const COMPANY_MODEL = "PeterpmCompany";
+
+  const getVitalStatsPlugin = async () => {
+    if (typeof window.getVitalStatsPlugin !== "function") {
+      throw new Error("SDK not initialized. Ensure sdk.js is loaded first.");
+    }
+    return window.getVitalStatsPlugin();
+  };
+
+  const getInquiryId = () => {
+    if (typeof window.INQUIRY_ID !== "undefined") {
+      const asNumber = Number(window.INQUIRY_ID);
+      if (Number.isFinite(asNumber)) {
+        return asNumber;
+      }
+    }
+    return DUMMY_INQUIRY_ID;
+  };
+
+  const getPropertyId = () => {
+    const placeholder = "[Page//Property//ID]";
+    const raw = typeof window.PROPERTY_ID !== "undefined"
+      ? window.PROPERTY_ID
+      : placeholder;
+    const parsed = Number(String(raw).trim());
+    if (Number.isFinite(parsed) && parsed > 0) {
+      return parsed;
+    }
+    return null;
+  };
+
+  const getInputValue = (selector, fallback = "") => {
+    const el = document.querySelector(selector);
+    if (!el) {
+      return fallback;
+    }
+    return (el.value || "").trim();
+  };
+
+  const extractRecords = (payload) => {
+    if (!payload) {
+      return [];
+    }
+    if (Array.isArray(payload)) {
+      return payload;
+    }
+    const candidates = [
+      payload?.resp,
+      payload?.records,
+      payload?.data,
+      payload?.resp?.data,
+      payload?.resp?.records,
+      payload?.data?.records,
+    ];
+    for (const candidate of candidates) {
+      if (Array.isArray(candidate)) {
+        return candidate;
+      }
+    }
+    return [];
+  };
+
+  const setAlpineFlag = (key, value) => {
+    const body = document.body;
+    if (!body) {
+      return;
+    }
+    const raw = body.getAttribute("x-data");
+    if (!raw) {
+      return;
+    }
+    let data;
+    try {
+      data = JSON.parse(raw);
+    } catch (error) {
+      return;
+    }
+    data[key] = value;
+    body.setAttribute("x-data", JSON.stringify(data));
+  };
+
+  const mapPropertyRecord = (record) => {
+    const owner = record?.Individual_Owner || {};
+    const ownerCompany = record?.Owner_Company || {};
+    const residentLink = record?.Primary_Resident_Contact_for_Property || {};
+    const residentContact = residentLink?.Contact || {};
+    return {
+      Address_1: record?.address_1 ?? record?.Address_1 ?? "",
+      Address_2: record?.address_2 ?? record?.Address_2 ?? "",
+      Bedrooms: record?.bedrooms ?? record?.Bedrooms ?? "",
+      Building_Age: record?.building_age ?? record?.Building_Age ?? "",
+      Building_Complex_ID:
+        record?.building_complex_id ?? record?.Building_Complex_ID ?? "",
+      Building_Features_Options_As_Text:
+        record?.building_features_options_as_text ??
+        record?.Building_Features_Options_As_Text ??
+        "",
+      Building_Type: record?.building_type ?? record?.Building_Type ?? "",
+      Building_Type_Other:
+        record?.building_type_other ?? record?.Building_Type_Other ?? "",
+      Building_Type_SQL_DB:
+        record?.building_type_sql_db ?? record?.Building_Type_SQL_DB ?? "",
+      Country: record?.country ?? record?.Country ?? "",
+      Date_Added: record?.created_at ?? record?.Date_Added ?? "",
+      externalRawDataErrors:
+        record?.externalRawDataErrors ?? record?.externalRawDataErrors ?? "",
+      externalRawDataStatus:
+        record?.externalRawDataStatus ?? record?.externalRawDataStatus ?? "",
+      Foundation_Type:
+        record?.foundation_type ?? record?.Foundation_Type ?? "",
+      ID: record?.id ?? record?.ID ?? "",
+      Individual_Owner_ID:
+        record?.individual_owner_id ?? record?.Individual_Owner_ID ?? "",
+      IP_Address: record?.ip_address ?? record?.IP_Address ?? "",
+      Last_Activity: record?.last_activity ?? record?.Last_Activity ?? "",
+      Last_Call_Logged:
+        record?.last_call_logged ?? record?.Last_Call_Logged ?? "",
+      Last_Email_Received:
+        record?.last_email_received ?? record?.Last_Email_Received ?? "",
+      Last_Email_Sent:
+        record?.last_email_sent ?? record?.Last_Email_Sent ?? "",
+      Last_Gutter_Job:
+        record?.last_gutter_job ?? record?.Last_Gutter_Job ?? "",
+      Last_Gutter_Job_Price:
+        record?.last_gutter_job_price ??
+        record?.Last_Gutter_Job_Price ??
+        "",
+      Date_Modified:
+        record?.last_modified_at ?? record?.Date_Modified ?? "",
+      Last_Note: record?.last_note ?? record?.Last_Note ?? "",
+      Last_Rodent_Job:
+        record?.last_rodent_job ?? record?.Last_Rodent_Job ?? "",
+      Last_Rodent_Job_Rate:
+        record?.last_rodent_job_rate ??
+        record?.Last_Rodent_Job_Rate ??
+        "",
+      Last_SMS_Received:
+        record?.last_sms_received ?? record?.Last_SMS_Received ?? "",
+      Last_SMS_Sent: record?.last_sms_sent ?? record?.Last_SMS_Sent ?? "",
+      Lot_Number: record?.lot_number ?? record?.Lot_Number ?? "",
+      Manhole: record?.manhole ?? record?.Manhole ?? "",
+      Owner_Company_ID:
+        record?.owner_company_id ?? record?.Owner_Company_ID ?? "",
+      Owner_ID: record?.owner_id ?? record?.Owner_ID ?? "",
+      Owner_Type: record?.owner_type ?? record?.Owner_Type ?? "",
+      Postal_Code: record?.postal_code ?? record?.Postal_Code ?? "",
+      Primary_Owner_Contact_for_Property_ID:
+        record?.primary_owner_contact_for_property_id ??
+        record?.Primary_Owner_Contact_for_Property_ID ??
+        "",
+      Primary_Property_Manager_Contact_for_Property_ID:
+        record?.primary_property_manager_contact_for_property_id ??
+        record?.Primary_Property_Manager_Contact_for_Property_ID ??
+        "",
+      Primary_Resident_Contact_for_Property_ID:
+        record?.primary_resident_contact_for_property_id ??
+        record?.Primary_Resident_Contact_for_Property_ID ??
+        "",
+      Profile_Image: record?.profile_image ?? record?.Profile_Image ?? "",
+      Property_Name: record?.property_name ?? record?.Property_Name ?? "",
+      Property_Type: record?.property_type ?? record?.Property_Type ?? "",
+      Quadrant: record?.quadrant ?? record?.Quadrant ?? "",
+      State: record?.state ?? record?.State ?? "",
+      Stories: record?.stories ?? record?.Stories ?? "",
+      Suburb_Town: record?.suburb_town ?? record?.Suburb_Town ?? "",
+      Unique_ID: record?.unique_id ?? record?.Unique_ID ?? "",
+      Unit_Number: record?.unit_number ?? record?.Unit_Number ?? "",
+      ts: record?._ts_ ?? record?.ts ?? "",
+      tsAction: record?._tsAction_ ?? record?.tsAction ?? "",
+      tsCreate: record?._tsCreate_ ?? record?.tsCreate ?? "",
+      tsSessionId: record?._tsSessionId_ ?? record?.tsSessionId ?? "",
+      tsUpdateCount: record?._tsUpdateCount_ ?? record?.tsUpdateCount ?? "",
+      Individual_Owner_First_Name:
+        owner?.first_name ?? record?.Individual_Owner_First_Name ?? "",
+      Individual_Owner_Last_Name:
+        owner?.last_name ?? record?.Individual_Owner_Last_Name ?? "",
+      Resident_Contact_First_Name:
+        residentContact?.first_name ??
+        record?.Resident_Contact_First_Name ??
+        "",
+      Resident_Contact_Last_Name:
+        residentContact?.last_name ??
+        record?.Resident_Contact_Last_Name ??
+        "",
+      Resident_Contact_SMS_Number:
+        residentContact?.sms_number ??
+        record?.Resident_Contact_SMS_Number ??
+        "",
+      Resident_ContactEmail:
+        residentContact?.email ?? record?.Resident_ContactEmail ?? "",
+      Owner_CompanyName: ownerCompany?.name ?? record?.Owner_CompanyName ?? "",
+    };
+  };
+
+  const fetchCalcProperties = async () => {
+    try {
+      const plugin = await getVitalStatsPlugin();
+      const model = plugin.switchTo(PROPERTY_MODEL);
+      const inquiryId = getInquiryId();
+      let query = model.query();
+      query = query.where("Deals.id", inquiryId);
+      query = query.deSelectAll().select([
+        "address_1",
+        "address_2",
+        "bedrooms",
+        "building_age",
+        "building_complex_id",
+        "building_features_options_as_text",
+        "building_type",
+        "building_type_other",
+        "building_type_sql_db",
+        "country",
+        "created_at",
+        "externalRawDataErrors",
+        "externalRawDataStatus",
+        "foundation_type",
+        "id",
+        "individual_owner_id",
+        "ip_address",
+        "last_activity",
+        "last_call_logged",
+        "last_email_received",
+        "last_email_sent",
+        "last_gutter_job",
+        "last_gutter_job_price",
+        "last_modified_at",
+        "last_note",
+        "last_rodent_job",
+        "last_rodent_job_rate",
+        "last_sms_received",
+        "last_sms_sent",
+        "lot_number",
+        "manhole",
+        "owner_company_id",
+        "owner_id",
+        "owner_type",
+        "postal_code",
+        "primary_owner_contact_for_property_id",
+        "primary_property_manager_contact_for_property_id",
+        "primary_resident_contact_for_property_id",
+        "profile_image",
+        "property_name",
+        "property_type",
+        "quadrant",
+        "state",
+        "stories",
+        "suburb_town",
+        "unique_id",
+        "unit_number",
+        "_ts_",
+        "_tsAction_",
+        "_tsCreate_",
+        "_tsSessionId_",
+        "_tsUpdateCount_",
+      ]);
+      if (typeof query.include === "function") {
+        query.include("Individual_Owner", (q) => {
+          q?.select?.(["first_name", "last_name"]);
+        });
+        query.include("Owner_Company", (q) => {
+          q?.select?.(["name"]);
+        });
+        query.include("Primary_Resident_Contact_for_Property", (q) => {
+          if (typeof q?.include === "function") {
+            q.include("Contact", (c) => {
+              c?.select?.(["first_name", "last_name", "sms_number", "email"]);
+            });
+          }
+        });
+      }
+      query.getOrInitQueryCalc?.();
+      const result = await query.fetchDirect().toPromise();
+      const records = extractRecords(result);
+      const mapped = records.map(mapPropertyRecord);
+      const hasProperty = mapped.length > 0;
+      if (hasProperty && mapped[0]?.ID) {
+        window.PROPERTY_ID = mapped[0].ID;
+      }
+      const titleEl = document.getElementById("editPropertyInfoModalTitle");
+      const editBtn = document.getElementById("editPropertyInfosss");
+      const addBtn = document.getElementById("addPropertyInfosss");
+      if (titleEl) {
+        titleEl.textContent = hasProperty
+          ? "Edit Property Information"
+          : "Add Property Information";
+      }
+      if (editBtn && addBtn) {
+        editBtn.classList.toggle("hidden", !hasProperty);
+        addBtn.classList.toggle("hidden", hasProperty);
+      }
+      if (typeof window.renderData === "function") {
+        window.renderData({ calcProperties: mapped });
+      }
+    } catch (error) {
+      console.error("Failed to fetch properties:", error);
+    }
+  };
+
+  const getPropertyInfoPayload = () => ({
+    property_name: document.getElementById("autocompleteSingle")?.value?.trim() || "",
+    lot_number: document.getElementById("lotNumber")?.value?.trim() || "",
+    unit_number: document.getElementById("unitNumber")?.value?.trim() || "",
+    address_1: document.getElementById("address")?.value?.trim() || "",
+    suburb_town: document.getElementById("suburbTown")?.value?.trim() || "",
+    state: document.getElementById("state")?.value || "",
+    postal_code: document.getElementById("postalCode")?.value?.trim() || "",
+  });
+
+  const createProperty = async () => {
+    setAlpineFlag("editPropertyInfoModal", false);
+    try {
+      const propId = getPropertyId();
+      if (!propId) {
+        return;
+      }
+      const plugin = await getVitalStatsPlugin();
+      const model = plugin.switchTo(PROPERTY_MODEL);
+      const mutation = model.mutation();
+      mutation.update((q) => q.where("id", propId).set(getPropertyInfoPayload()));
+      await mutation.execute(true).toPromise();
+      fetchCalcProperties();
+    } catch (error) {
+      console.error("Failed to update property info:", error);
+    }
+  };
+
+  const createNewProperty = async () => {
+    setAlpineFlag("editPropertyInfoModal", false);
+    try {
+      const payload = {
+        ...getPropertyInfoPayload(),
+        Deals: {
+          id: getInquiryId(),
+        },
+      };
+      const plugin = await getVitalStatsPlugin();
+      const model = plugin.switchTo(PROPERTY_MODEL);
+      const mutation = model.mutation();
+      mutation.createOne(payload);
+      await mutation.execute(true).toPromise();
+      fetchCalcProperties();
+    } catch (error) {
+      console.error("Failed to create property:", error);
+    }
+  };
+
+  const createContact = async () => {
+    setAlpineFlag("propertyOwnerAndResidentModal", false);
+    try {
+      const propId = getPropertyId();
+      if (!propId) {
+        return;
+      }
+      const payload = {
+        owner_type: document.getElementById("ownerType")?.value?.trim() || "",
+        resident_s_name:
+          document.getElementById("residentName")?.value?.trim() || "",
+        resident_s_mobile:
+          document.getElementById("residentMobile")?.value?.trim() || "",
+        resident_s_email:
+          document.getElementById("residentEmail")?.value?.trim() || "",
+        individual_owner_id:
+          document.querySelector(".hiddenIndOwnerId")?.value?.trim() || "",
+      };
+      const plugin = await getVitalStatsPlugin();
+      const model = plugin.switchTo(PROPERTY_MODEL);
+      const mutation = model.mutation();
+      mutation.update((q) => q.where("id", propId).set(payload));
+      await mutation.execute(true).toPromise();
+      fetchCalcProperties();
+    } catch (error) {
+      console.error("Failed to update property contact:", error);
+    }
+  };
+
+  const createCompany = async () => {
+    setAlpineFlag("propertyOwnerAndResidentModal", false);
+    try {
+      const propId = getPropertyId();
+      if (!propId) {
+        return;
+      }
+      const payload = {
+        owner_type: document.getElementById("ownerType")?.value?.trim() || "",
+        resident_s_name:
+          document.getElementById("residentName")?.value?.trim() || "",
+        resident_s_mobile:
+          document.getElementById("residentMobile")?.value?.trim() || "",
+        resident_s_email:
+          document.getElementById("residentEmail")?.value?.trim() || "",
+        owner_company_id:
+          document.querySelector(".hiddenCompanyId")?.value?.trim() || "",
+      };
+      const plugin = await getVitalStatsPlugin();
+      const model = plugin.switchTo(PROPERTY_MODEL);
+      const mutation = model.mutation();
+      mutation.update((q) => q.where("id", propId).set(payload));
+      await mutation.execute(true).toPromise();
+      fetchCalcProperties();
+    } catch (error) {
+      console.error("Failed to update property company:", error);
+    }
+  };
+
+  const editBuindingDesc = async () => {
+    setAlpineFlag("propertyDescriptionModal", false);
+    try {
+      const propId = getPropertyId();
+      if (!propId) {
+        return;
+      }
+      const manholeElement = document.getElementById("manholeUnchecked");
+      const manhole = manholeElement
+        ? manholeElement.classList.contains("hidden")
+        : false;
+      const payload = {
+        building_features:
+          document.getElementById("buildingFeatures")?.value?.trim() || "",
+        property_type:
+          document.getElementById("propertyType")?.value?.trim() || "",
+        foundation_type:
+          document.getElementById("foundationType")?.value?.trim() || "",
+        building_type:
+          document.getElementById("buildingType")?.value?.trim() || "",
+        building_type_other:
+          document.getElementById("otherBuildingType")?.value?.trim() || "",
+        bedrooms: document.getElementById("bedrooms")?.value?.trim() || "",
+        stories: document.getElementById("Stories")?.value?.trim() || "",
+        manhole,
+      };
+      const plugin = await getVitalStatsPlugin();
+      const model = plugin.switchTo(PROPERTY_MODEL);
+      const mutation = model.mutation();
+      mutation.update((q) => q.where("id", propId).set(payload));
+      await mutation.execute(true).toPromise();
+      fetchCalcProperties();
+    } catch (error) {
+      console.error("Failed to update property description:", error);
+    }
+  };
+
+  window.fetchCalcProperties = fetchCalcProperties;
+  window.createProperty = createProperty;
+  window.createNewProperty = createNewProperty;
+  window.createContact = createContact;
+  window.createCompany = createCompany;
+  window.editBuindingDesc = editBuindingDesc;
+
+  const addNewIndividual = async () => {
+    setAlpineFlag("newClientModal", false);
+    try {
+      const payload = {
+        sms_number: getInputValue("#newClientSms"),
+        first_name: getInputValue("#newClientFirstName"),
+        last_name: getInputValue("#newClientLastName"),
+        email: getInputValue("#newClientEmail"),
+        Properties: {
+          id: getPropertyId(),
+          owner_type: getInputValue("#newClietOwnerType"),
+        },
+      };
+      const plugin = await getVitalStatsPlugin();
+      const model = plugin.switchTo(CONTACT_MODEL);
+      const mutation = model.mutation();
+      mutation.createOne(payload);
+      await mutation.execute(true).toPromise();
+      fetchCalcProperties();
+    } catch (error) {
+      console.error("Failed to add contact:", error);
+    }
+  };
+
+  const addNewCompany = async () => {
+    setAlpineFlag("addnewCompanyModal", false);
+    setAlpineFlag("propertyOwnerAndResidentModal", true);
+    try {
+      const payload = {
+        name: getInputValue("#addNewCompanyName"),
+        Properties: {
+          id: getPropertyId(),
+          owner_type: "Business",
+        },
+      };
+      const plugin = await getVitalStatsPlugin();
+      const model = plugin.switchTo(COMPANY_MODEL);
+      const mutation = model.mutation();
+      mutation.createOne(payload);
+      await mutation.execute(true).toPromise();
+      fetchCalcProperties();
+    } catch (error) {
+      console.error("Failed to add company:", error);
+    }
+  };
+
+  window.addNewIndividual = addNewIndividual;
+  window.addNewCompany = addNewCompany;
+
+  const setInputValue = (selector, value) => {
+    const el = document.querySelector(selector);
+    if (el) {
+      el.value = value || "";
+    }
+  };
+
+  const clearFields = () => {
+    setInputValue("#propertyuniqueid", "");
+    setInputValue(".propertyname", "");
+    setInputValue(".address1", "");
+    setInputValue(".suburb", "");
+    setInputValue(".postcode", "");
+    const stateSelect = document.getElementById("stateCombined");
+    if (stateSelect) {
+      stateSelect.value = "";
+      stateSelect.dispatchEvent(new Event("change"));
+    }
+    setInputValue(".unitno", "");
+    setInputValue(".lotno", "");
+  };
+
+  const clearFieldsSingle = () => {
+    setInputValue("#propertyuniqueidSingle", "");
+    setInputValue(".propertynameSingle", "");
+    setInputValue("#address", "");
+    setInputValue("#suburbTown", "");
+    setInputValue("#postalCode", "");
+    const stateSelect = document.getElementById("state");
+    if (stateSelect) {
+      stateSelect.value = "";
+      stateSelect.dispatchEvent(new Event("change"));
+    }
+    setInputValue("#unitNumber", "");
+    setInputValue("#lotNumber", "");
+    setInputValue("#country", "");
+  };
+
+  window.initAutocomplete = function initAutocomplete() {
+    if (!window.google?.maps?.places?.Autocomplete) {
+      return;
+    }
+    const autocomplete = new google.maps.places.Autocomplete(
+      document.getElementById("autocomplete"),
+      {
+        types: ["geocode"],
+        componentRestrictions: { country: "au" },
+      },
+    );
+    autocomplete.addListener("place_changed", () => {
+      const place = autocomplete.getPlace();
+      if (!place.geometry) {
+        return;
+      }
+      clearFields();
+      let address1 = "";
+      let address2 = "";
+      let city = "";
+      let state = "";
+      let postcode = "";
+      let lotno = "";
+      let country = "";
+      place.address_components.forEach((component) => {
+        const types = component.types;
+        if (types.includes("street_number")) {
+          address1 = component.long_name;
+        }
+        if (types.includes("route")) {
+          address1 += ` ${component.long_name}`;
+        }
+        if (types.includes("subpremise")) {
+          address2 = component.long_name;
+        } else if (types.includes("neighborhood") && !address2) {
+          address2 = component.long_name;
+        } else if (types.includes("sublocality_level_1") && !address2) {
+          address2 = component.long_name;
+        }
+        if (types.includes("locality")) {
+          city = component.long_name;
+        }
+        if (types.includes("administrative_area_level_1")) {
+          state = component.short_name;
+        }
+        if (types.includes("postal_code")) {
+          postcode = component.long_name;
+        }
+        if (types.includes("country")) {
+          country = component.long_name;
+        }
+        if (types.includes("lot_number")) {
+          lotno = component.long_name;
+        }
+      });
+      const fullAddress = `${state}, ${postcode} ${city}, ${address1}, ${country}`;
+      setInputValue(".propertyname", fullAddress);
+      setInputValue(".address1", address1);
+      setInputValue(".suburb", city);
+      setInputValue(".postcode", postcode);
+      const stateSelect = document.getElementById("stateCombined");
+      if (stateSelect) {
+        const stateOption = Array.from(stateSelect.options).find(
+          (option) => option.text.toLowerCase() === state.toLowerCase(),
+        );
+        if (stateOption) {
+          stateSelect.value = stateOption.value;
+          stateSelect.dispatchEvent(new Event("change"));
+        } else {
+          stateSelect.value = "";
+        }
+      }
+      setInputValue(".unitno", address2 || "");
+      setInputValue(".lotno", lotno || "");
+      let addressFound = false;
+      const normalizedFullAddress = fullAddress.trim().toLowerCase();
+      document
+        .querySelectorAll(".property-list-wrapper .property-item")
+        .forEach((property) => {
+          const propertyName = property
+            .getAttribute("data-name")
+            .trim()
+            .toLowerCase();
+          if (propertyName === normalizedFullAddress) {
+            addressFound = true;
+            const uniqueId = property.getAttribute("data-id") || "";
+            setInputValue("#propertyuniqueid", uniqueId);
+          }
+        });
+      if (!addressFound) {
+        setInputValue("#propertyuniqueid", "");
+      }
+    });
+  };
+
+  window.initAutocompleteSingle = function initAutocompleteSingle() {
+    if (!window.google?.maps?.places?.Autocomplete) {
+      return;
+    }
+    const autocompleteSingle = new google.maps.places.Autocomplete(
+      document.getElementById("autocompleteSingle"),
+      {
+        types: ["geocode"],
+        componentRestrictions: { country: "au" },
+      },
+    );
+    autocompleteSingle.addListener("place_changed", () => {
+      const place = autocompleteSingle.getPlace();
+      if (!place.geometry) {
+        return;
+      }
+      clearFieldsSingle();
+      let address1 = "";
+      let address2 = "";
+      let city = "";
+      let state = "";
+      let postcode = "";
+      let lotno = "";
+      let country = "";
+      let unitno = "";
+      place.address_components.forEach((component) => {
+        const types = component.types;
+        if (types.includes("street_number")) {
+          address1 = component.long_name;
+        }
+        if (types.includes("route")) {
+          address1 += ` ${component.long_name}`;
+        }
+        if (types.includes("subpremise")) {
+          address2 = component.long_name;
+        } else if (types.includes("neighborhood") && !address2) {
+          address2 = component.long_name;
+        } else if (types.includes("sublocality_level_1") && !address2) {
+          address2 = component.long_name;
+        }
+        if (types.includes("locality")) {
+          city = component.long_name;
+        }
+        if (types.includes("administrative_area_level_1")) {
+          state = component.short_name;
+        }
+        if (types.includes("postal_code")) {
+          postcode = component.long_name;
+        }
+        if (types.includes("country")) {
+          country = component.long_name;
+        }
+        if (types.includes("unit_number")) {
+          unitno = component.long_name;
+        }
+        if (types.includes("lot_number")) {
+          lotno = component.long_name;
+        }
+      });
+      const fullAddress = `${lotno} ${unitno} ${state} ${postcode} ${city}, ${address1} ${address2}`;
+      setInputValue(".propertynameSingle", fullAddress);
+      setInputValue("#address", address1);
+      setInputValue("#suburbTown", city);
+      setInputValue("#postalCode", postcode);
+      const stateSelectSingle = document.getElementById("state");
+      if (stateSelectSingle) {
+        const stateOption = Array.from(stateSelectSingle.options).find(
+          (option) => option.text.toLowerCase() === state.toLowerCase(),
+        );
+        if (stateOption) {
+          stateSelectSingle.value = stateOption.value;
+          stateSelectSingle.dispatchEvent(new Event("change"));
+        } else {
+          stateSelectSingle.value = "";
+        }
+      }
+      setInputValue("#unitNumber", address2 || "");
+      setInputValue("#lotNumber", lotno || "");
+      setInputValue("#country", country || "");
+      let addressFound = false;
+      const normalizedFullAddressSingle = fullAddress.trim().toLowerCase();
+      document
+        .querySelectorAll(".property-list-wrapperSingle div[data-name]")
+        .forEach((property) => {
+          const propertyName = property
+            .getAttribute("data-name")
+            .trim()
+            .toLowerCase();
+          if (propertyName === normalizedFullAddressSingle) {
+            addressFound = true;
+            const uniqueId = property.getAttribute("data-id") || "";
+            setInputValue("#propertyuniqueidSingle", uniqueId);
+          }
+        });
+      if (!addressFound) {
+        setInputValue("#propertyuniqueidSingle", "");
+      }
+    });
+  };
+
+  const setupOwnerTypeToggles = () => {
+    const ownerTypeCombinedSelect =
+      document.getElementById("ownerTypeCombined");
+    const ownerCompanyCombinedWrapper = document.querySelector(
+      "#ownerCompanyCombinedWrapper",
+    );
+    const indOwnerCombinedWrapper = document.querySelector("#indOwnerWrapper");
+    if (ownerTypeCombinedSelect && ownerCompanyCombinedWrapper && indOwnerCombinedWrapper) {
+      const toggleCombinedOwnerFields = () => {
+        const selectedValue = ownerTypeCombinedSelect.value;
+        if (selectedValue === "Business") {
+          ownerCompanyCombinedWrapper.classList.remove("hidden");
+          indOwnerCombinedWrapper.classList.add("hidden");
+        } else if (
+          selectedValue === "Investor" ||
+          selectedValue === "Owner Occupier"
+        ) {
+          ownerCompanyCombinedWrapper.classList.add("hidden");
+          indOwnerCombinedWrapper.classList.remove("hidden");
+        } else {
+          ownerTypeCombinedSelect.value = "";
+          ownerCompanyCombinedWrapper.classList.add("hidden");
+          indOwnerCombinedWrapper.classList.add("hidden");
+        }
+      };
+      toggleCombinedOwnerFields();
+      ownerTypeCombinedSelect.addEventListener("change", toggleCombinedOwnerFields);
+    }
+
+    const ownerTypeSelect = document.getElementById("ownerType");
+    const ownerCompany = document.querySelector(".ownerCompanyss");
+    const individualOwners = document.querySelector(".individualOwnerss");
+    const createContactBtn = document.querySelector(".createContactBtn");
+    const createCompanyBtn = document.querySelector(".createCompanyBtn");
+    if (ownerTypeSelect && ownerCompany && individualOwners) {
+      const toggleOwnerFields = () => {
+        const selectedValue = ownerTypeSelect.value;
+        if (selectedValue === "Business") {
+          ownerCompany.classList.remove("hidden");
+          individualOwners.classList.add("hidden");
+          createContactBtn?.classList.add("hidden");
+          createCompanyBtn?.classList.remove("hidden");
+        } else if (
+          selectedValue === "Investor" ||
+          selectedValue === "Owner Occupier"
+        ) {
+          ownerCompany.classList.add("hidden");
+          individualOwners.classList.remove("hidden");
+          createContactBtn?.classList.remove("hidden");
+          createCompanyBtn?.classList.add("hidden");
+        } else {
+          ownerTypeSelect.value = "";
+          ownerCompany.classList.add("hidden");
+          individualOwners.classList.add("hidden");
+        }
+      };
+      toggleOwnerFields();
+      ownerTypeSelect.addEventListener("change", toggleOwnerFields);
+    }
+  };
+
+  const fetchCompanies = async () => {
+    const plugin = await getVitalStatsPlugin();
+    const model = plugin.switchTo(COMPANY_MODEL);
+    let query = model.query();
+    query = query.deSelectAll().select(["id", "unique_id", "name"]);
+    if (typeof query.include === "function") {
+      query.include("Primary_Person", (q) => {
+        q?.select?.(["email", "sms_number", "first_name", "last_name"]);
+      });
+    }
+    query.getOrInitQueryCalc?.();
+    const result = await query.fetchDirect().toPromise();
+    return extractRecords(result);
+  };
+
+  const fetchContacts = async () => {
+    const plugin = await getVitalStatsPlugin();
+    const model = plugin.switchTo(CONTACT_MODEL);
+    let query = model.query();
+    query = query.deSelectAll().select([
+      "id",
+      "unique_id",
+      "first_name",
+      "last_name",
+      "sms_number",
+      "email",
+    ]);
+    query.getOrInitQueryCalc?.();
+    const result = await query.fetchDirect().toPromise();
+    return extractRecords(result);
+  };
+
+  const setupCompanySearch = () => {
+    const companySearchInput = document.getElementById("ownerCompany");
+    const companyDropdown = document.getElementById("companyDropdown");
+    const createNewCompanyBtn = document.getElementById("createNewCompanyButton");
+    const companyPrimaryEmail = document.getElementById("residentEmail");
+    const companyPrimaryMobile = document.getElementById("residentMobile");
+    const companyPrimaryFirstName = document.getElementById("residentName");
+    const companyPrimaryLastName = document.getElementById("residentName");
+    const hiddenCompanyId = document.querySelector(".hiddenCompanyId");
+    const hiddenCompanyUId = document.querySelector(".hiddenCompanyUId");
+    if (!companySearchInput || !companyDropdown) {
+      return;
+    }
+    let companyDebounceTimeout = null;
+    let companyActiveIndex = -1;
+
+    const clearCompanySearchResults = () => {
+      while (companyDropdown.children.length > 1) {
+        companyDropdown.removeChild(companyDropdown.lastChild);
+      }
+    };
+
+    const renderCompanyDropdown = (companies, query) => {
+      clearCompanySearchResults();
+      const filteredCompanies = companies.filter((company) => {
+        const name = company?.name ? company.name.toLowerCase() : "";
+        return query ? name.includes(query.toLowerCase()) : false;
+      });
+      if (!filteredCompanies.length) {
+        const noResult = document.createElement("li");
+        noResult.classList.add(
+          "text-gray-500",
+          "px-4",
+          "py-2",
+          "cursor-default",
+        );
+        noResult.textContent = "No results found.";
+        companyDropdown.appendChild(noResult);
+        return;
+      }
+      filteredCompanies.forEach((company) => {
+        const item = document.createElement("li");
+        item.classList.add(
+          "text-dark",
+          "cursor-pointer",
+          "hover:bg-gray-100",
+          "px-4",
+          "py-2",
+        );
+        const regex = new RegExp(`(${query})`, "gi");
+        const highlightedName = (company.name || "").replace(
+          regex,
+          "<span class=\"font-semibold\">$1</span>",
+        );
+        const smsNumber = company?.Primary_Person?.sms_number || "N/A";
+        item.innerHTML = `${highlightedName} (${smsNumber})`;
+        item.addEventListener("click", () => {
+          companySearchInput.value = company.name || "";
+          if (companyPrimaryEmail) {
+            companyPrimaryEmail.value = company?.Primary_Person?.email || "";
+          }
+          if (companyPrimaryMobile) {
+            companyPrimaryMobile.value = company?.Primary_Person?.sms_number || "";
+          }
+          if (companyPrimaryFirstName) {
+            companyPrimaryFirstName.value =
+              company?.Primary_Person?.first_name || "";
+          }
+          if (companyPrimaryLastName) {
+            companyPrimaryLastName.value =
+              company?.Primary_Person?.last_name || "";
+          }
+          if (hiddenCompanyId) {
+            hiddenCompanyId.value = company.id || "";
+          }
+          if (hiddenCompanyUId) {
+            hiddenCompanyUId.value = company.unique_id || "";
+          }
+          companyDropdown.classList.add("hidden");
+          companyActiveIndex = -1;
+        });
+        companyDropdown.appendChild(item);
+      });
+    };
+
+    const updateCompanyActiveItem = (items) => {
+      items.forEach((item, index) => {
+        if (index === companyActiveIndex) {
+          item.classList.add("bg-gray-100");
+          item.scrollIntoView({ block: "nearest" });
+        } else {
+          item.classList.remove("bg-gray-100");
+        }
+      });
+    };
+
+    const handleCompanyInput = () => {
+      const query = companySearchInput.value.trim();
+      if (query === "") {
+        companyDropdown.classList.add("hidden");
+        clearCompanySearchResults();
+        companyActiveIndex = -1;
+        return;
+      }
+      clearTimeout(companyDebounceTimeout);
+      companyDebounceTimeout = setTimeout(async () => {
+        clearCompanySearchResults();
+        const loadingItem = document.createElement("li");
+        loadingItem.classList.add(
+          "text-gray-500",
+          "px-4",
+          "py-2",
+          "cursor-default",
+        );
+        loadingItem.textContent = "Loading...";
+        companyDropdown.appendChild(loadingItem);
+        companyDropdown.classList.remove("hidden");
+        const companies = await fetchCompanies();
+        renderCompanyDropdown(companies, query);
+      }, 300);
+    };
+
+    companySearchInput.addEventListener("input", handleCompanyInput);
+    document.addEventListener("click", (event) => {
+      if (!companyDropdown.contains(event.target) && event.target !== companySearchInput) {
+        companyDropdown.classList.add("hidden");
+        companyActiveIndex = -1;
+      }
+    });
+    createNewCompanyBtn?.addEventListener("click", (event) => {
+      event.stopPropagation();
+    });
+    companySearchInput.addEventListener("keydown", (event) => {
+      const items = companyDropdown.querySelectorAll(
+        "li:not(#createNewCompanyButton)",
+      );
+      if (companyDropdown.classList.contains("hidden") || !items.length) {
+        return;
+      }
+      if (event.key === "ArrowDown") {
+        event.preventDefault();
+        companyActiveIndex = (companyActiveIndex + 1) % items.length;
+        updateCompanyActiveItem(items);
+      } else if (event.key === "ArrowUp") {
+        event.preventDefault();
+        companyActiveIndex =
+          (companyActiveIndex - 1 + items.length) % items.length;
+        updateCompanyActiveItem(items);
+      } else if (event.key === "Enter") {
+        event.preventDefault();
+        if (companyActiveIndex >= 0 && companyActiveIndex < items.length) {
+          items[companyActiveIndex].click();
+        }
+      } else if (event.key === "Escape") {
+        event.preventDefault();
+        companyDropdown.classList.add("hidden");
+        companyActiveIndex = -1;
+      }
+    });
+    companySearchInput.addEventListener("blur", () => {
+      setTimeout(() => {
+        companyActiveIndex = -1;
+      }, 100);
+    });
+  };
+
+  const setupContactSearch = () => {
+    const searchInput = document.getElementById("individualOwners");
+    const dropdown = document.getElementById("clientIndDropdown");
+    const createNewBtn = document.getElementById("createIndButton");
+    const residentName = document.getElementById("residentName");
+    const residentMobile = document.getElementById("residentMobile");
+    const residentEmail = document.getElementById("residentEmail");
+    const hiddenIndOwnerId = document.querySelector(".hiddenIndOwnerId");
+    const hiddenIndOwnerUId = document.querySelector(".hiddenIndOwnerUId");
+    if (!searchInput || !dropdown) {
+      return;
+    }
+    let debounceTimeout = null;
+
+    const clearSearchResults = () => {
+      while (dropdown.children.length > 1) {
+        dropdown.removeChild(dropdown.lastChild);
+      }
+    };
+
+    const renderDropdown = (contacts, query) => {
+      clearSearchResults();
+      const filteredContacts = contacts.filter((contact) => {
+        const fullName = `${contact.first_name || ""} ${contact.last_name || ""}`
+          .toLowerCase();
+        return fullName.includes(query.toLowerCase());
+      });
+      if (!filteredContacts.length) {
+        const noResult = document.createElement("li");
+        noResult.classList.add(
+          "text-gray-500",
+          "px-4",
+          "py-2",
+          "cursor-default",
+        );
+        noResult.textContent = "No results found.";
+        dropdown.appendChild(noResult);
+        return;
+      }
+      filteredContacts.forEach((contact) => {
+        const item = document.createElement("li");
+        item.classList.add(
+          "text-dark",
+          "cursor-pointer",
+          "hover:bg-gray-100",
+          "px-4",
+          "py-2",
+        );
+        item.textContent = `${contact.first_name || ""} ${contact.last_name || ""}`.trim();
+        item.addEventListener("click", () => {
+          searchInput.value = item.textContent;
+          if (residentName) {
+            residentName.value = item.textContent;
+          }
+          if (residentMobile) {
+            residentMobile.value = contact.sms_number || "";
+          }
+          if (residentEmail) {
+            residentEmail.value = contact.email || "";
+          }
+          if (hiddenIndOwnerId) {
+            hiddenIndOwnerId.value = contact.id || "";
+          }
+          if (hiddenIndOwnerUId) {
+            hiddenIndOwnerUId.value = contact.unique_id || "";
+          }
+          dropdown.classList.add("hidden");
+        });
+        dropdown.appendChild(item);
+      });
+    };
+
+    const handleInput = () => {
+      const query = searchInput.value.trim();
+      if (query === "") {
+        dropdown.classList.add("hidden");
+        clearSearchResults();
+        return;
+      }
+      clearTimeout(debounceTimeout);
+      debounceTimeout = setTimeout(async () => {
+        const contacts = await fetchContacts();
+        renderDropdown(contacts, query);
+        dropdown.classList.remove("hidden");
+      }, 300);
+    };
+
+    searchInput.addEventListener("input", handleInput);
+    document.addEventListener("click", (event) => {
+      if (!dropdown.contains(event.target) && event.target !== searchInput) {
+        dropdown.classList.add("hidden");
+      }
+    });
+    createNewBtn?.addEventListener("click", (event) => {
+      event.stopPropagation();
+    });
+  };
+
+  const setupBuildingFeatures = () => {
+    const buildingFeatures = {
+      697: "Wood & Brick",
+      698: "Wood",
+      699: "Warehouse",
+      700: "Unit Block",
+      701: "Town house",
+      702: "Tile Roof",
+      703: "Super 6 / Fibro roof",
+      704: "Sloping Block",
+      705: "Raked Ceiling",
+      706: "Queenslander",
+      707: "PostWar",
+      708: "Lowset",
+      709: "Iron Roof",
+      710: "Highset",
+      711: "Flat Roof",
+      712: "Concrete",
+      713: "Brick",
+    };
+    const comboboxButton = document.getElementById("comboboxButton");
+    const featuresList = document.getElementById("featuresList");
+    const comboboxLabel = document.getElementById("comboboxLabel");
+    const hiddenInput = document.getElementById("buildingFeatures");
+    if (!comboboxButton || !featuresList || !comboboxLabel || !hiddenInput) {
+      return;
+    }
+    let isOpen = false;
+    let selectedOptions = [];
+    let isProgrammaticChange = false;
+
+    const toggleDropdown = () => {
+      isOpen = !isOpen;
+      featuresList.classList.toggle("hidden", !isOpen);
+      comboboxButton.setAttribute("aria-expanded", String(isOpen));
+    };
+    const closeDropdown = () => {
+      isOpen = false;
+      featuresList.classList.add("hidden");
+      comboboxButton.setAttribute("aria-expanded", "false");
+    };
+    const updateSelectedFeaturesDisplay = () => {
+      if (selectedOptions.length > 0) {
+        comboboxLabel.textContent = selectedOptions
+          .map((value) => `${buildingFeatures[value]}`)
+          .join(", ");
+        hiddenInput.value = `*/${selectedOptions.map((value) => `*${value}*`).join("/") }/*`;
+      } else {
+        comboboxLabel.textContent = "Please Select";
+        hiddenInput.value = "";
+      }
+    };
+    const handleOptionToggle = (event) => {
+      if (isProgrammaticChange) {
+        return;
+      }
+      const checkbox = event.target;
+      const value = checkbox.value;
+      if (checkbox.checked) {
+        if (!selectedOptions.includes(value)) {
+          selectedOptions.push(value);
+        }
+      } else {
+        selectedOptions = selectedOptions.filter((opt) => opt !== value);
+      }
+      updateSelectedFeaturesDisplay();
+    };
+    const createCheckboxOption = (value, label) => {
+      const li = document.createElement("li");
+      li.className =
+        "px-4 py-2 cursor-pointer hover:bg-gray-300 flex items-center gap-2";
+      li.setAttribute("role", "option");
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.id = `checkboxOption${value}`;
+      checkbox.value = value;
+      checkbox.className =
+        "!size-[16px] !opacity-100 !pointer-events-auto !relative text-primary focus:ring-primary border-[#D3D7E2] !rounded cursor-pointer";
+      checkbox.addEventListener("change", handleOptionToggle);
+      const labelElem = document.createElement("label");
+      labelElem.setAttribute("for", `checkboxOption${value}`);
+      labelElem.className = "text-bodyText text-dark size-full";
+      labelElem.textContent = `${label}`;
+      li.appendChild(checkbox);
+      li.appendChild(labelElem);
+      li.setAttribute("tabindex", "0");
+      li.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          checkbox.checked = !checkbox.checked;
+          handleOptionToggle({ target: checkbox });
+        }
+      });
+      return li;
+    };
+    const populateDropdown = () => {
+      Object.entries(buildingFeatures).forEach(([value, label]) => {
+        const optionElem = createCheckboxOption(value, label);
+        featuresList.appendChild(optionElem);
+      });
+    };
+
+    comboboxButton.addEventListener("click", toggleDropdown);
+    comboboxButton.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        toggleDropdown();
+        const firstCheckbox = featuresList.querySelector("input[type=\"checkbox\"]");
+        if (firstCheckbox) {
+          firstCheckbox.focus();
+        }
+      }
+    });
+    document.addEventListener("click", (event) => {
+      const isClickInside =
+        comboboxButton.contains(event.target) || featuresList.contains(event.target);
+      if (!isClickInside) {
+        closeDropdown();
+      }
+    });
+    featuresList.addEventListener("keydown", (e) => {
+      const focusableItems = Array.from(featuresList.querySelectorAll("li"));
+      const currentIndex = focusableItems.findIndex((li) =>
+        li.contains(document.activeElement),
+      );
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        const nextIndex = (currentIndex + 1) % focusableItems.length;
+        focusableItems[nextIndex].querySelector("input[type=\"checkbox\"]").focus();
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        const prevIndex = (currentIndex - 1 + focusableItems.length) % focusableItems.length;
+        focusableItems[prevIndex].querySelector("input[type=\"checkbox\"]").focus();
+      } else if (e.key === "Escape") {
+        closeDropdown();
+        comboboxButton.focus();
+      }
+    });
+    hiddenInput.addEventListener("change", () => {
+      let value = hiddenInput.value;
+      if (!value.startsWith("*/") || !value.endsWith("/*")) {
+        return;
+      }
+      value = value.slice(2, -2);
+      const parts = value.split("/");
+      const newSelectedValues = parts
+        .map((part) => (part.startsWith("*") && part.endsWith("*") ? part.slice(1, -1) : null))
+        .filter((val) => val !== null);
+      isProgrammaticChange = true;
+      selectedOptions = newSelectedValues;
+      featuresList.querySelectorAll("input[type=\"checkbox\"]").forEach((checkbox) => {
+        checkbox.checked = selectedOptions.includes(checkbox.value);
+      });
+      isProgrammaticChange = false;
+      updateSelectedFeaturesDisplay();
+    });
+    populateDropdown();
+  };
+
+  window.toggleBuildingIsTwoStoreyCombined = () => {
+    const unchecked = document.getElementById("buildingIsTwoStoreyUncheckedCombined");
+    const checked = document.getElementById("buildingIsTwoStoreyCheckedCombined");
+    if (!unchecked || !checked) {
+      return;
+    }
+    const isChecked = unchecked.classList.contains("hidden");
+    unchecked.classList.toggle("hidden", !isChecked);
+    checked.classList.toggle("hidden", isChecked);
+  };
+
+  window.toggleBuildingIsTwoStorey = () => {
+    const unchecked = document.getElementById("manholeUnchecked");
+    const checked = document.getElementById("manholeChecked");
+    if (!unchecked || !checked) {
+      return;
+    }
+    const isChecked = unchecked.classList.contains("hidden");
+    unchecked.classList.toggle("hidden", !isChecked);
+    checked.classList.toggle("hidden", isChecked);
+  };
+
+  window.updateHiddenInputAndTrigger = () => {
+    const hiddenInput2 = document.getElementById("buildingFeatures");
+    if (hiddenInput2) {
+      hiddenInput2.dispatchEvent(new Event("change"));
+    }
+  };
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const inputs = document.querySelectorAll(".addUIDOnLoad");
+    inputs.forEach((input) => {
+      input.value = "[Page//Property//Unique ID]";
+    });
+    if (typeof window.initAutocompleteSingle === "function") {
+      window.initAutocompleteSingle();
+    }
+    fetchCalcProperties();
+    setupOwnerTypeToggles();
+    setupCompanySearch();
+    setupContactSearch();
+    setupBuildingFeatures();
+  });
+})();
