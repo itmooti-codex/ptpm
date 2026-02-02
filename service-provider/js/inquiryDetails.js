@@ -1725,7 +1725,10 @@
           const mutation = model.mutation();
           mutation.createOne(payload);
           await mutation.execute(true).toPromise();
-          location.reload();
+          memoInput.value = "";
+          memoInput.removeAttribute("disabled");
+          memoInput.classList.remove("opacity-50", "cursor-not-allowed");
+          await initializePosts();
         } catch (error) {
           console.error(error);
         } finally {
