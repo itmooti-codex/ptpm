@@ -298,6 +298,7 @@
         window.renderData({ calcProperties: mapped });
       }
       window.propertyDetails = mapped;
+      togglePropertySections(hasProperty);
       if (hasProperty) {
         applyPropertyToForms(mapped[0]);
       }
@@ -628,6 +629,36 @@
       if (typeof window.updateHiddenInputAndTrigger === "function") {
         window.updateHiddenInputAndTrigger();
       }
+    }
+  };
+
+  const togglePropertySections = (hasProperty) => {
+    const propertySections = document.querySelectorAll(
+      ".properties-list-duplicate, [data-property-section]",
+    );
+    propertySections.forEach((section) => {
+      section.classList.toggle("hidden", !hasProperty);
+    });
+
+    const container =
+      document.getElementById("data-container") ||
+      document.querySelector("[data-property-container]");
+    let addButton = document.getElementById("addPropertyOnlyButton");
+    if (!hasProperty) {
+      if (!addButton && container) {
+        addButton = document.createElement("button");
+        addButton.type = "button";
+        addButton.id = "addPropertyOnlyButton";
+        addButton.className =
+          "button-primary text-h3 cursor-pointer w-max";
+        addButton.textContent = "Add Property";
+        addButton.addEventListener("click", () => {
+          setAlpineFlag("combinedPropertyEditModal", true);
+        });
+        container.prepend(addButton);
+      }
+    } else if (addButton) {
+      addButton.remove();
     }
   };
 
