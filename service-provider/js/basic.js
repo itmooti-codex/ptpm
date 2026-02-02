@@ -150,16 +150,22 @@ function addSidebarOverlay() {
 setInterval(addSidebarOverlay, 100);
 
 const urlParamsSelectedTab = new URL(window.location.href);
-const selectedTab =
-  urlParamsSelectedTab.searchParams.get("selectedTab") || "activities";
-console.log("Selected tab", selectedTab);
+const selectedTabFromUrl = urlParamsSelectedTab.searchParams.get("selectedTab");
+let selectedTab = selectedTabFromUrl;
 try {
   const xData = JSON.parse(document.body.getAttribute("x-data") || "{}");
+  if (!selectedTab) {
+    selectedTab = xData.selectedTab || "activities";
+  }
   xData.selectedTab = selectedTab;
   document.body.setAttribute("x-data", JSON.stringify(xData));
 } catch (error) {
+  if (!selectedTab) {
+    selectedTab = "activities";
+  }
   console.error("Failed to sync selected tab:", error);
 }
+console.log("Selected tab", selectedTab);
 if (selectedTab === "memo" && typeof initializePosts === "function") {
   initializePosts();
 }

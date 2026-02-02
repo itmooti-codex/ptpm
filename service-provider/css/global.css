@@ -4,6 +4,9 @@
 body {
   font-family: "Inter", serif !important;
 }
+[x-cloak] {
+  display: none !important;
+}
 .w-800 {
   width: 800px !important;
 }
