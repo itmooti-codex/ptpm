@@ -1395,13 +1395,101 @@
     });
   };
 
+  const createCommentsContainer = (postId) => {
+    const container = document.createElement("div");
+    container.className = "comments-container mb-4 mt-4 hidden w-full";
+    container.setAttribute("data-comments-container", postId);
+
+    const title = document.createElement("span");
+    title.className = "text-h2 text-complementary commentTitle hidden";
+    title.textContent = "Comments";
+    container.appendChild(title);
+
+    const form = document.createElement("form");
+    form.className = "comment-form mt-4 flex flex-col gap-4 hidden rounded";
+    form.setAttribute("data-comment-form", postId);
+    const textarea = document.createElement("textarea");
+    textarea.className =
+      "mention-textarea w-full rounded border border-[#d3d7e2] p-2";
+    textarea.placeholder = "Submit your comment...";
+    textarea.required = true;
+    const btn = document.createElement("button");
+    btn.type = "submit";
+    btn.className = "button-primary mr-auto w-min text-nowrap";
+    btn.textContent = "Post Comment";
+    form.appendChild(textarea);
+    form.appendChild(btn);
+    container.appendChild(form);
+
+    return container;
+  };
+
+  const createPostElement = (post) => {
+    const postEl = document.createElement("div");
+    postEl.className =
+      "post post-container flex gap-6 rounded-lg border border-[#d3d7e2] bg-white p-6";
+    postEl.setAttribute("data-post-id", post.id);
+
+    const avatar = document.createElement("img");
+    avatar.src = post.image || DEFAULT_AUTHOR_PHOTO;
+    avatar.alt = "Post Image";
+    avatar.className = "h-[40px] w-[40px] rounded-full";
+    postEl.appendChild(avatar);
+
+    const content = document.createElement("div");
+    content.className = "flex w-full flex-col items-start gap-[8px]";
+
+    const header = document.createElement("div");
+    header.className = "flex flex-col items-start gap-[10px]";
+    const authorRow = document.createElement("div");
+    authorRow.className = "flex items-center gap-2";
+    const authorName = document.createElement("div");
+    authorName.className =
+      "font-['Inter'] text-sm font-medium leading-[14px] text-[#414042]";
+    authorName.textContent = post.authorName || "Unknown Author";
+    const createdDate = document.createElement("div");
+    createdDate.className =
+      "font-['Inter'] text-xs font-normal leading-3 text-[#626c87]";
+    createdDate.textContent = post.createdDate || "Unknown Date";
+    authorRow.appendChild(authorName);
+    authorRow.appendChild(createdDate);
+
+    const description = document.createElement("div");
+    description.className =
+      "font-['Inter'] text-sm font-normal leading-tight text-[#626c87]";
+    description.textContent = post.description || "";
+
+    header.appendChild(authorRow);
+    header.appendChild(description);
+    content.appendChild(header);
+
+    const commentBtn = document.createElement("div");
+    commentBtn.className =
+      "commentBtn commentCount cursor-pointer font-['Inter'] text-xs font-normal leading-3 text-[#003882]";
+    commentBtn.dataset.postid = post.id;
+    const countWrap = document.createElement("span");
+    const count = document.createElement("span");
+    count.setAttribute("data-comments-count", post.id);
+    count.textContent = "0";
+    countWrap.appendChild(count);
+    countWrap.appendChild(document.createTextNode(" Comments"));
+    commentBtn.appendChild(countWrap);
+    content.appendChild(commentBtn);
+
+    content.appendChild(createCommentsContainer(post.id));
+    postEl.appendChild(content);
+    return postEl;
+  };
+
   const renderPosts = async (posts) => {
-    const postTemplate = $.templates("#postTemplate");
     const postsContainer = document.getElementById("postsContainer");
     if (!postsContainer) {
       return;
     }
-    postsContainer.innerHTML = postTemplate.render(posts);
+    postsContainer.innerHTML = "";
+    posts.forEach((post) => {
+      postsContainer.appendChild(createPostElement(post));
+    });
     await buttonFunctionalityInitialization(postsContainer);
     posts.forEach(async (post) => {
       const comments = await fetchComments(post.id);
@@ -1482,40 +1570,74 @@
     }
   };
 
+  const createCommentElement = (comment) => {
+    const row = document.createElement("div");
+    row.className = "comment mb-8 mt-4 flex gap-6";
+    row.setAttribute("data-comment-id", comment.id);
+
+    const avatar = document.createElement("img");
+    avatar.className = "authorImage h-[30px] w-[30px] rounded-full";
+    avatar.alt = "Post Image";
+    avatar.src = comment.authorProfileImage || DEFAULT_AUTHOR_PHOTO;
+    row.appendChild(avatar);
+
+    const content = document.createElement("div");
+    content.className = "flex flex-col items-start gap-[10px]";
+
+    const header = document.createElement("div");
+    header.className = "flex items-center gap-2";
+    const name = document.createElement("div");
+    name.className =
+      "authorName font-['Inter'] text-sm font-medium leading-[14px] text-[#414042]";
+    name.textContent = comment.authorName || "Unknown Author";
+    const created = document.createElement("div");
+    created.className =
+      "font-['Inter'] text-xs font-normal leading-3 text-[#626c87]";
+    created.textContent = comment.createdAt || "Unknown Date";
+    const processing = document.createElement("div");
+    processing.className = "processingText mr-auto";
+    header.appendChild(name);
+    header.appendChild(created);
+    header.appendChild(processing);
+
+    const body = document.createElement("div");
+    body.className =
+      "font-['Inter'] text-sm font-normal leading-tight text-[#626c87]";
+    body.textContent = comment.comment || "";
+
+    content.appendChild(header);
+    content.appendChild(body);
+    row.appendChild(content);
+    return row;
+  };
+
   const renderComments = (comments, postId) => {
-    const commentTemplate = $.templates("#commentTemplate");
     const commentsContainer = document.querySelector(
       `[data-comments-container="${postId}"]`,
     );
     if (!commentsContainer) return;
-    const commentTitle = commentsContainer.querySelector(".commentTitle");
-    const commentForm = commentsContainer.querySelector(
-      `[data-comment-form="${postId}"]`,
-    );
     commentsContainer.innerHTML = "";
-    if (commentTitle) {
-      commentsContainer.appendChild(commentTitle);
-      commentTitle.classList.remove("hidden");
-    }
-    if (commentForm) {
-      commentsContainer.appendChild(commentForm);
+    const title = document.createElement("span");
+    title.className = "text-h2 text-complementary commentTitle";
+    title.textContent = "Comments";
+    commentsContainer.appendChild(title);
+    const form = createCommentsContainer(postId).querySelector("form");
+    if (form) {
+      form.classList.remove("hidden");
+      commentsContainer.appendChild(form);
     }
     comments.forEach((comment) => {
-      const htmlOutput = commentTemplate.render({
-        id: comment.id,
-        comment: comment.comment,
-        postid: postId,
-        authorName:
-          `${comment.Author?.first_name || ""} ${comment.Author?.last_name || ""}`.trim() ||
-          "Unknown Author",
-        authorProfileImage: comment.Author?.profile_image || DEFAULT_AUTHOR_PHOTO,
-        createdAt: formatTime(comment.created_at) || "Unknown Date",
-        parentId: comment.reply_to_comment_id || null,
-        isReply: false,
-      });
-      const commentDiv = document.createElement("div");
-      commentDiv.innerHTML = htmlOutput;
-      commentsContainer.appendChild(commentDiv.firstElementChild);
+      commentsContainer.appendChild(
+        createCommentElement({
+          id: comment.id,
+          comment: comment.comment,
+          authorName:
+            `${comment.Author?.first_name || ""} ${comment.Author?.last_name || ""}`.trim() ||
+            "Unknown Author",
+          authorProfileImage: comment.Author?.profile_image || DEFAULT_AUTHOR_PHOTO,
+          createdAt: formatTime(comment.created_at) || "Unknown Date",
+        }),
+      );
     });
     commentsContainer.classList.remove("hidden");
   };
@@ -1527,30 +1649,25 @@
     if (!commentsContainer) {
       return;
     }
-    const template = $.templates("#commentTemplate");
-    const htmlOutput = template.render(comment);
-    const tempDiv = document.createElement("div");
-    tempDiv.innerHTML = htmlOutput;
-    const processing = tempDiv.querySelector(".processingText");
+    const el = createCommentElement({
+      id: comment.id,
+      comment: comment.comment,
+      authorName: `${memoAuthorFirstName} ${memoAuthorLastName}`,
+      authorProfileImage: memoAuthorProfileImage || DEFAULT_AUTHOR_PHOTO,
+      createdAt: comment.createdAt,
+    });
+    const processing = el.querySelector(".processingText");
     if (processing) {
       processing.innerText = "Posting...";
     }
-    const authorName = tempDiv.querySelector(".authorName");
-    if (authorName) {
-      authorName.innerText = `${memoAuthorFirstName} ${memoAuthorLastName}`;
-    }
-    const authorImage = tempDiv.querySelector(".authorImage");
-    if (authorImage) {
-      authorImage.src = memoAuthorProfileImage || DEFAULT_AUTHOR_PHOTO;
-    }
     const thirdChild = commentsContainer.children[2];
     if (thirdChild) {
-      commentsContainer.insertBefore(tempDiv, thirdChild);
+      commentsContainer.insertBefore(el, thirdChild);
     } else {
-      commentsContainer.appendChild(tempDiv);
+      commentsContainer.appendChild(el);
     }
     commentsContainer.classList.remove("hidden");
-    return tempDiv;
+    return el;
   };
 
   const processCommentQueue = async () => {
