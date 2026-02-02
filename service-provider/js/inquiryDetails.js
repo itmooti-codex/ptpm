@@ -22,7 +22,7 @@
   };
 
   const getPropertyId = () => {
-    const placeholder = "[Page//Property//ID]";
+    const placeholder = propertyID;
     const raw = typeof window.PROPERTY_ID !== "undefined"
       ? window.PROPERTY_ID
       : placeholder;
@@ -1314,11 +1314,11 @@
     return `${days} days ago`;
   };
 
-  const memoAuthorId = "[Visitor//Contact ID]";
-  const memoAuthorFirstName = "[Visitor//First Name]";
-  const memoAuthorLastName = "[Visitor//Last Name]";
-  const memoAuthorProfileImage = "[Visitor//Profile Image ##link]";
-  let memoJobId = "[Page//ID]";
+  const memoAuthorId = authorId;
+  const memoAuthorFirstName = authorFirstName;
+  const memoAuthorLastName = authorLastName;
+  const memoAuthorProfileImage = authorProfileImage;
+  let memoJobId = jobId;
   let commentQueue = [];
   let isProcessingCommentQueue = false;
   const DEFAULT_AUTHOR_PHOTO =
@@ -1769,7 +1769,7 @@
 
     const inputs = document.querySelectorAll(".addUIDOnLoad");
     inputs.forEach((input) => {
-      input.value = "[Page//Property//Unique ID]";
+      input.value = propertyUniqueID;
     });
     if (typeof window.initAutocompleteSingle === "function") {
       window.initAutocompleteSingle();
