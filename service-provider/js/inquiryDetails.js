@@ -83,6 +83,18 @@
     body.setAttribute("x-data", JSON.stringify(data));
   };
 
+  window.propertyModalReturnTarget = "owner";
+  window.setPropertyModalReturnTarget = (target) => {
+    window.propertyModalReturnTarget = target === "combined" ? "combined" : "owner";
+  };
+  window.closePropertySubModal = () => {
+    if (window.propertyModalReturnTarget === "combined") {
+      setAlpineFlag("combinedPropertyEditModal", true);
+    } else {
+      setAlpineFlag("propertyOwnerAndResidentModal", true);
+    }
+  };
+
   const mapPropertyRecord = (record) => {
     const owner = record?.Individual_Owner || {};
     const ownerCompany = record?.Owner_Company || {};
@@ -517,6 +529,7 @@
       mutation.createOne(payload);
       await mutation.execute(true).toPromise();
       fetchCalcProperties();
+      window.closePropertySubModal?.();
     } catch (error) {
       console.error("Failed to add contact:", error);
     }
@@ -524,7 +537,6 @@
 
   const addNewCompany = async () => {
     setAlpineFlag("addnewCompanyModal", false);
-    setAlpineFlag("propertyOwnerAndResidentModal", true);
     try {
       const payload = {
         name: getInputValue("#addNewCompanyName"),
@@ -539,6 +551,7 @@
       mutation.createOne(payload);
       await mutation.execute(true).toPromise();
       fetchCalcProperties();
+      window.closePropertySubModal?.();
     } catch (error) {
       console.error("Failed to add company:", error);
     }
@@ -1192,6 +1205,7 @@
       : null;
     createNewCompanyBtn?.addEventListener("click", (event) => {
       event.stopPropagation();
+      window.setPropertyModalReturnTarget?.("owner");
     });
     companySearchInput.addEventListener("keydown", (event) => {
       const items = companyDropdown.querySelectorAll(
@@ -1266,6 +1280,7 @@
       dropdownId: "companyDropdownCombined",
       createLabel: "Create New Company",
       onCreate: () => {
+        window.setPropertyModalReturnTarget?.("combined");
         setAlpineFlag("combinedPropertyEditModal", false);
         setAlpineFlag("addnewCompanyModal", true);
       },
@@ -1383,6 +1398,7 @@
       : null;
     createBtn?.addEventListener("click", (event) => {
       event.stopPropagation();
+      window.setPropertyModalReturnTarget?.("owner");
     });
   };
 
@@ -1423,6 +1439,7 @@
       dropdownId: "clientIndDropdownCombined",
       createLabel: "Create New Contact",
       onCreate: () => {
+        window.setPropertyModalReturnTarget?.("combined");
         setAlpineFlag("combinedPropertyEditModal", false);
         setAlpineFlag("newClientModal", true);
       },

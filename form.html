@@ -1487,7 +1487,7 @@
         Add Client Information
       </h3>
       <button
-        @click="newClientModal = false;propertyOwnerAndResidentModal=true;"
+        @click="newClientModal = false; closePropertySubModal();"
         aria-label="close modal"
       >
         <svg
@@ -1582,7 +1582,7 @@
     >
       <button
         class="button-plain"
-        @click="newClientModal = false;propertyOwnerAndResidentModal=true;"
+        @click="newClientModal = false; closePropertySubModal();"
       >
         Cancel
       </button>
@@ -1624,7 +1624,7 @@
         Add Company Information
       </h3>
       <button
-        @click="addnewCompanyModal = false;propertyOwnerAndResidentModal=true;"
+        @click="addnewCompanyModal = false; closePropertySubModal();"
         aria-label="close modal"
       >
         <svg
@@ -1662,7 +1662,7 @@
     >
       <button
         class="button-plain"
-        @click="addnewCompanyModal = false;propertyOwnerAndResidentModal=true;"
+        @click="addnewCompanyModal = false; closePropertySubModal();"
       >
         Cancel
       </button>
