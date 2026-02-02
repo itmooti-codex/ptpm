@@ -319,6 +319,27 @@
     postal_code: document.getElementById("postalCode")?.value?.trim() || "",
   });
 
+  const getFirstValue = (selectors) => {
+    for (const selector of selectors) {
+      const el = document.querySelector(selector);
+      const value = el?.value;
+      if (typeof value === "string" && value.trim() !== "") {
+        return value.trim();
+      }
+    }
+    return "";
+  };
+
+  const getFirstRawValue = (selectors) => {
+    for (const selector of selectors) {
+      const el = document.querySelector(selector);
+      if (el && el.value !== undefined && el.value !== null && `${el.value}`.trim() !== "") {
+        return el.value;
+      }
+    }
+    return "";
+  };
+
   const createProperty = async () => {
     setAlpineFlag("editPropertyInfoModal", false);
     try {
@@ -359,21 +380,30 @@
 
   const createContact = async () => {
     setAlpineFlag("propertyOwnerAndResidentModal", false);
+    setAlpineFlag("combinedPropertyEditModal", false);
     try {
       const propId = getPropertyId();
       if (!propId) {
         return;
       }
       const payload = {
-        owner_type: document.getElementById("ownerType")?.value?.trim() || "",
-        resident_s_name:
-          document.getElementById("residentName")?.value?.trim() || "",
-        resident_s_mobile:
-          document.getElementById("residentMobile")?.value?.trim() || "",
-        resident_s_email:
-          document.getElementById("residentEmail")?.value?.trim() || "",
-        individual_owner_id:
-          document.querySelector(".hiddenIndOwnerId")?.value?.trim() || "",
+        owner_type: getFirstRawValue(["#ownerTypeCombined", "#ownerType"]),
+        resident_s_name: getFirstValue([
+          "#residentNameCombined",
+          "#residentName",
+        ]),
+        resident_s_mobile: getFirstValue([
+          "#residentMobileCombined",
+          "#residentMobile",
+        ]),
+        resident_s_email: getFirstValue([
+          "#residentEmailCombined",
+          "#residentEmail",
+        ]),
+        individual_owner_id: getFirstValue([
+          ".hiddenIndOwnerIdCombined",
+          ".hiddenIndOwnerId",
+        ]),
       };
       const plugin = await getVitalStatsPlugin();
       const model = plugin.switchTo(PROPERTY_MODEL);
@@ -388,21 +418,30 @@
 
   const createCompany = async () => {
     setAlpineFlag("propertyOwnerAndResidentModal", false);
+    setAlpineFlag("combinedPropertyEditModal", false);
     try {
       const propId = getPropertyId();
       if (!propId) {
         return;
       }
       const payload = {
-        owner_type: document.getElementById("ownerType")?.value?.trim() || "",
-        resident_s_name:
-          document.getElementById("residentName")?.value?.trim() || "",
-        resident_s_mobile:
-          document.getElementById("residentMobile")?.value?.trim() || "",
-        resident_s_email:
-          document.getElementById("residentEmail")?.value?.trim() || "",
-        owner_company_id:
-          document.querySelector(".hiddenCompanyId")?.value?.trim() || "",
+        owner_type: getFirstRawValue(["#ownerTypeCombined", "#ownerType"]),
+        resident_s_name: getFirstValue([
+          "#residentNameCombined",
+          "#residentName",
+        ]),
+        resident_s_mobile: getFirstValue([
+          "#residentMobileCombined",
+          "#residentMobile",
+        ]),
+        resident_s_email: getFirstValue([
+          "#residentEmailCombined",
+          "#residentEmail",
+        ]),
+        owner_company_id: getFirstValue([
+          ".hiddenCompanyIdCombined",
+          ".hiddenCompanyId",
+        ]),
       };
       const plugin = await getVitalStatsPlugin();
       const model = plugin.switchTo(PROPERTY_MODEL);
@@ -983,16 +1022,52 @@
     return extractRecords(result);
   };
 
-  const setupCompanySearch = () => {
-    const companySearchInput = document.getElementById("ownerCompany");
-    const companyDropdown = document.getElementById("companyDropdown");
-    const createNewCompanyBtn = document.getElementById("createNewCompanyButton");
-    const companyPrimaryEmail = document.getElementById("residentEmail");
-    const companyPrimaryMobile = document.getElementById("residentMobile");
-    const companyPrimaryFirstName = document.getElementById("residentName");
-    const companyPrimaryLastName = document.getElementById("residentName");
-    const hiddenCompanyId = document.querySelector(".hiddenCompanyId");
-    const hiddenCompanyUId = document.querySelector(".hiddenCompanyUId");
+  const buildDropdownElement = ({
+    input,
+    dropdownId,
+    createLabel,
+    onCreate,
+  }) => {
+    if (!input || !input.parentElement) {
+      return null;
+    }
+    let dropdown = document.getElementById(dropdownId);
+    if (dropdown) {
+      return dropdown;
+    }
+    dropdown = document.createElement("ul");
+    dropdown.id = dropdownId;
+    dropdown.className =
+      "absolute z-10 mt-1 hidden max-h-60 w-full overflow-y-auto rounded-md border border-gray-300 bg-white shadow-md";
+    const createItem = document.createElement("li");
+    createItem.className =
+      "text-primary mx-auto flex w-full cursor-pointer items-center justify-center gap-3 text-nowrap p-3 text-center bg-primary text-white hover:bg-secondary";
+    createItem.innerHTML =
+      '<svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.5 1C6.07452 1 5.73077 1.34375 5.73077 1.76923V5.23077H1.76923C1.34375 5.23077 1 5.57452 1 6C1 6.42548 1.34375 6.76923 1.76923 6.76923H5.73077V10.2308C5.73077 10.6562 6.07452 11 6.5 11C6.92548 11 7.26923 10.6562 7.26923 10.2308V6.76923H11.2308C11.6562 6.76923 12 6.42548 12 6C12 5.57452 11.6562 5.23077 11.2308 5.23077H7.26923V1.76923C7.26923 1.34375 6.92548 1 6.5 1Z" fill="#FFFFFF"/></svg>';
+    const label = document.createElement("div");
+    label.textContent = createLabel;
+    createItem.appendChild(label);
+    createItem.addEventListener("click", (event) => {
+      event.stopPropagation();
+      onCreate?.();
+    });
+    dropdown.appendChild(createItem);
+    input.parentElement.appendChild(dropdown);
+    return dropdown;
+  };
+
+  const setupCompanySearchForElements = ({
+    companySearchInput,
+    companyDropdown,
+    createButtonSelector,
+    excludeSelector,
+    companyPrimaryEmail,
+    companyPrimaryMobile,
+    companyPrimaryFirstName,
+    companyPrimaryLastName,
+    hiddenCompanyId,
+    hiddenCompanyUId,
+  }) => {
     if (!companySearchInput || !companyDropdown) {
       return;
     }
@@ -1112,12 +1187,15 @@
         companyActiveIndex = -1;
       }
     });
+    const createNewCompanyBtn = createButtonSelector
+      ? document.querySelector(createButtonSelector)
+      : null;
     createNewCompanyBtn?.addEventListener("click", (event) => {
       event.stopPropagation();
     });
     companySearchInput.addEventListener("keydown", (event) => {
       const items = companyDropdown.querySelectorAll(
-        "li:not(#createNewCompanyButton)",
+        excludeSelector ? `li:not(${excludeSelector})` : "li",
       );
       if (companyDropdown.classList.contains("hidden") || !items.length) {
         return;
@@ -1149,15 +1227,73 @@
     });
   };
 
-  const setupContactSearch = () => {
-    const searchInput = document.getElementById("individualOwners");
-    const dropdown = document.getElementById("clientIndDropdown");
-    const createNewBtn = document.getElementById("createIndButton");
-    const residentName = document.getElementById("residentName");
-    const residentMobile = document.getElementById("residentMobile");
-    const residentEmail = document.getElementById("residentEmail");
-    const hiddenIndOwnerId = document.querySelector(".hiddenIndOwnerId");
-    const hiddenIndOwnerUId = document.querySelector(".hiddenIndOwnerUId");
+  const setupCompanySearch = () => {
+    setupCompanySearchForElements({
+      companySearchInput: document.getElementById("ownerCompany"),
+      companyDropdown: document.getElementById("companyDropdown"),
+      createButtonSelector: "#createNewCompanyButton",
+      excludeSelector: "#createNewCompanyButton",
+      companyPrimaryEmail: document.getElementById("residentEmail"),
+      companyPrimaryMobile: document.getElementById("residentMobile"),
+      companyPrimaryFirstName: document.getElementById("residentName"),
+      companyPrimaryLastName: document.getElementById("residentName"),
+      hiddenCompanyId: document.querySelector(".hiddenCompanyId"),
+      hiddenCompanyUId: document.querySelector(".hiddenCompanyUId"),
+    });
+
+    const combinedInput = document.getElementById("ownerCompanyCombined");
+    if (!combinedInput) {
+      return;
+    }
+    let hiddenCompanyIdCombined =
+      document.querySelector(".hiddenCompanyIdCombined");
+    if (!hiddenCompanyIdCombined) {
+      hiddenCompanyIdCombined = document.createElement("input");
+      hiddenCompanyIdCombined.type = "text";
+      hiddenCompanyIdCombined.className = "hidden hiddenCompanyIdCombined";
+      combinedInput.parentElement?.prepend(hiddenCompanyIdCombined);
+    }
+    let hiddenCompanyUIdCombined =
+      document.querySelector(".hiddenCompanyUIdCombined");
+    if (!hiddenCompanyUIdCombined) {
+      hiddenCompanyUIdCombined = document.createElement("input");
+      hiddenCompanyUIdCombined.type = "text";
+      hiddenCompanyUIdCombined.className = "hidden hiddenCompanyUIdCombined";
+      combinedInput.parentElement?.prepend(hiddenCompanyUIdCombined);
+    }
+    const combinedDropdown = buildDropdownElement({
+      input: combinedInput,
+      dropdownId: "companyDropdownCombined",
+      createLabel: "Create New Company",
+      onCreate: () => {
+        setAlpineFlag("combinedPropertyEditModal", false);
+        setAlpineFlag("addnewCompanyModal", true);
+      },
+    });
+    setupCompanySearchForElements({
+      companySearchInput: combinedInput,
+      companyDropdown: combinedDropdown,
+      createButtonSelector: "#companyDropdownCombined li:first-child",
+      excludeSelector: ":first-child",
+      companyPrimaryEmail: document.getElementById("residentEmailCombined"),
+      companyPrimaryMobile: document.getElementById("residentMobileCombined"),
+      companyPrimaryFirstName: document.getElementById("residentNameCombined"),
+      companyPrimaryLastName: document.getElementById("residentNameCombined"),
+      hiddenCompanyId: hiddenCompanyIdCombined,
+      hiddenCompanyUId: hiddenCompanyUIdCombined,
+    });
+  };
+
+  const setupContactSearchForElements = ({
+    searchInput,
+    dropdown,
+    residentName,
+    residentMobile,
+    residentEmail,
+    hiddenIndOwnerId,
+    hiddenIndOwnerUId,
+    createButtonSelector,
+  }) => {
     if (!searchInput || !dropdown) {
       return;
     }
@@ -1242,8 +1378,64 @@
         dropdown.classList.add("hidden");
       }
     });
-    createNewBtn?.addEventListener("click", (event) => {
+    const createBtn = createButtonSelector
+      ? document.querySelector(createButtonSelector)
+      : null;
+    createBtn?.addEventListener("click", (event) => {
       event.stopPropagation();
+    });
+  };
+
+  const setupContactSearch = () => {
+    setupContactSearchForElements({
+      searchInput: document.getElementById("individualOwners"),
+      dropdown: document.getElementById("clientIndDropdown"),
+      residentName: document.getElementById("residentName"),
+      residentMobile: document.getElementById("residentMobile"),
+      residentEmail: document.getElementById("residentEmail"),
+      hiddenIndOwnerId: document.querySelector(".hiddenIndOwnerId"),
+      hiddenIndOwnerUId: document.querySelector(".hiddenIndOwnerUId"),
+      createButtonSelector: "#createIndButton",
+    });
+
+    const combinedInput = document.getElementById("indOwner");
+    if (!combinedInput) {
+      return;
+    }
+    let hiddenIndOwnerIdCombined =
+      document.querySelector(".hiddenIndOwnerIdCombined");
+    if (!hiddenIndOwnerIdCombined) {
+      hiddenIndOwnerIdCombined = document.createElement("input");
+      hiddenIndOwnerIdCombined.type = "text";
+      hiddenIndOwnerIdCombined.className = "hidden hiddenIndOwnerIdCombined";
+      combinedInput.parentElement?.prepend(hiddenIndOwnerIdCombined);
+    }
+    let hiddenIndOwnerUIdCombined =
+      document.querySelector(".hiddenIndOwnerUIdCombined");
+    if (!hiddenIndOwnerUIdCombined) {
+      hiddenIndOwnerUIdCombined = document.createElement("input");
+      hiddenIndOwnerUIdCombined.type = "text";
+      hiddenIndOwnerUIdCombined.className = "hidden hiddenIndOwnerUIdCombined";
+      combinedInput.parentElement?.prepend(hiddenIndOwnerUIdCombined);
+    }
+    const combinedDropdown = buildDropdownElement({
+      input: combinedInput,
+      dropdownId: "clientIndDropdownCombined",
+      createLabel: "Create New Contact",
+      onCreate: () => {
+        setAlpineFlag("combinedPropertyEditModal", false);
+        setAlpineFlag("newClientModal", true);
+      },
+    });
+    setupContactSearchForElements({
+      searchInput: combinedInput,
+      dropdown: combinedDropdown,
+      residentName: document.getElementById("residentNameCombined"),
+      residentMobile: document.getElementById("residentMobileCombined"),
+      residentEmail: document.getElementById("residentEmailCombined"),
+      hiddenIndOwnerId: hiddenIndOwnerIdCombined,
+      hiddenIndOwnerUId: hiddenIndOwnerUIdCombined,
+      createButtonSelector: "#clientIndDropdownCombined li:first-child",
     });
   };
 
