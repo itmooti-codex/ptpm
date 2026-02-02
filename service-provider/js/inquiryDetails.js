@@ -1676,10 +1676,11 @@
           last_name: comment.Author_Last_Name,
           profile_image: comment.Author_Profile_Image,
         };
+      const commentText = comment.comment ?? comment.Comment ?? "";
       commentsContainer.appendChild(
         createCommentElement({
           id: comment.id ?? comment.ID ?? comment.unique_id ?? comment.Unique_ID,
-          comment: comment.comment,
+          comment: commentText,
           authorName:
             `${author?.first_name || ""} ${author?.last_name || ""}`.trim() ||
             "Unknown Author",
