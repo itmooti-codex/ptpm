@@ -202,7 +202,9 @@
       const model = plugin.switchTo(PROPERTY_MODEL);
       const inquiryId = getInquiryId();
       let query = model.query();
-      query = query.where("Deals.id", inquiryId);
+      if (typeof query.where === "function") {
+        query = query.where("Deals", (q) => q.where("id", inquiryId));
+      }
       query = query.deSelectAll().select([
         "address_1",
         "address_2",
