@@ -288,8 +288,10 @@
           ? "Edit Property Information"
           : "Add Property Information";
       }
-      if (editBtn && addBtn) {
+      if (editBtn) {
         editBtn.classList.toggle("hidden", !hasProperty);
+      }
+      if (addBtn) {
         addBtn.classList.toggle("hidden", hasProperty);
       }
       if (typeof window.renderData === "function") {
@@ -556,10 +558,15 @@
     setInputValue("#propertyuniqueid", property.Unique_ID || "");
     setInputValue("#country", property.Country || "");
     setInputValue("#lotNumberCombined", property.Lot_Number);
+    setInputValue(".lotno", property.Lot_Number);
     setInputValue("#unitNumberCombined", property.Unit_Number);
+    setInputValue(".unitno", property.Unit_Number);
     setInputValue("#addressCombined", property.Address_1);
+    setInputValue(".address1", property.Address_1);
     setInputValue("#suburbTownCombined", property.Suburb_Town);
+    setInputValue(".suburb", property.Suburb_Town);
     setInputValue("#postalCodeCombined", property.Postal_Code);
+    setInputValue(".postcode", property.Postal_Code);
     setSelectValue("#stateCombined", property.State);
 
     setSelectValue("#ownerTypeCombined", property.Owner_Type);
