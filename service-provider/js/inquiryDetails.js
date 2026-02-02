@@ -1371,6 +1371,11 @@
       const posts = extractRecords(data);
       posts.sort((a, b) => b.created_at - a.created_at);
       return posts.map((post) => {
+        const postId = post.id ?? post.ID ?? post.unique_id ?? post.Unique_ID;
+        const postCopy =
+          post.post_copy ??
+          post.Post_Copy ??
+          (post.post_copy === "" ? "" : null);
         const author =
           post.Author ||
           post.author ||
@@ -1380,13 +1385,20 @@
             profile_image: post.Author_Profile_Image,
           };
         return {
-          id: post.id,
-          post_title: post.post_title || "Untitled Post",
-          description: post.post_copy || post.post_copy === "" ? post.post_copy : "No description available.",
+          id: postId,
+          post_title: post.post_title || post.Post_Title || "Untitled Post",
+          description:
+            postCopy !== null && postCopy !== undefined
+              ? postCopy
+              : "No description available.",
           authorName: `${author?.first_name || "Unknown"} ${author?.last_name || "Author"}`,
           image: author?.profile_image || DEFAULT_AUTHOR_PHOTO,
-          createdDate: formatTime(post.created_at) || "Unknown Date",
-          number_of_replies: post.number_of_replies ?? 0,
+          createdDate:
+            formatTime(post.created_at ?? post.Date_Added) || "Unknown Date",
+          number_of_replies:
+            post.number_of_replies ??
+            post.Number_of_Replies ??
+            0,
         };
       });
     } catch (error) {
@@ -1666,13 +1678,15 @@
         };
       commentsContainer.appendChild(
         createCommentElement({
-          id: comment.id,
+          id: comment.id ?? comment.ID ?? comment.unique_id ?? comment.Unique_ID,
           comment: comment.comment,
           authorName:
             `${author?.first_name || ""} ${author?.last_name || ""}`.trim() ||
             "Unknown Author",
           authorProfileImage: author?.profile_image || DEFAULT_AUTHOR_PHOTO,
-          createdAt: formatTime(comment.created_at) || "Unknown Date",
+          createdAt:
+            formatTime(comment.created_at ?? comment.Date_Added) ||
+            "Unknown Date",
         }),
       );
     });
