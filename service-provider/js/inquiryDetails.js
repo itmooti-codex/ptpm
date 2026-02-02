@@ -295,6 +295,9 @@
       if (typeof window.renderData === "function") {
         window.renderData({ calcProperties: mapped });
       }
+      if (hasProperty) {
+        applyPropertyToForms(mapped[0]);
+      }
     } catch (error) {
       console.error("Failed to fetch properties:", error);
     }
@@ -503,6 +506,120 @@
     const el = document.querySelector(selector);
     if (el) {
       el.value = value || "";
+    }
+  };
+
+  const setSelectValue = (selector, value) => {
+    const el = document.querySelector(selector);
+    if (!el) {
+      return;
+    }
+    el.value = value || "";
+    el.dispatchEvent(new Event("change"));
+  };
+
+  const toBool = (value) => {
+    if (typeof value === "boolean") {
+      return value;
+    }
+    if (typeof value === "number") {
+      return value === 1;
+    }
+    if (typeof value === "string") {
+      const normalized = value.trim().toLowerCase();
+      return ["true", "yes", "1"].includes(normalized);
+    }
+    return false;
+  };
+
+  const applyManholeToggle = (isEnabled, uncheckedId, checkedId) => {
+    const unchecked = document.getElementById(uncheckedId);
+    const checked = document.getElementById(checkedId);
+    if (!unchecked || !checked) {
+      return;
+    }
+    unchecked.classList.toggle("hidden", isEnabled);
+    checked.classList.toggle("hidden", !isEnabled);
+  };
+
+  const applyPropertyToForms = (property) => {
+    if (!property) {
+      return;
+    }
+
+    const propertyName =
+      property.Property_Name || property.Address_1 || "";
+
+    setInputValue("#autocomplete", propertyName);
+    setInputValue(".propertyname", propertyName);
+    setInputValue("#addressUniqueID", property.Unique_ID || "");
+    setInputValue("#propertyuniqueid", property.Unique_ID || "");
+    setInputValue("#country", property.Country || "");
+    setInputValue("#lotNumberCombined", property.Lot_Number);
+    setInputValue("#unitNumberCombined", property.Unit_Number);
+    setInputValue("#addressCombined", property.Address_1);
+    setInputValue("#suburbTownCombined", property.Suburb_Town);
+    setInputValue("#postalCodeCombined", property.Postal_Code);
+    setSelectValue("#stateCombined", property.State);
+
+    setSelectValue("#ownerTypeCombined", property.Owner_Type);
+    setInputValue("#ownerCompanyCombined", property.Owner_CompanyName);
+    setInputValue(
+      "#indOwner",
+      `${property.Individual_Owner_First_Name || ""} ${property.Individual_Owner_Last_Name || ""}`.trim(),
+    );
+    setInputValue(
+      "#residentNameCombined",
+      `${property.Resident_Contact_First_Name || ""} ${property.Resident_Contact_Last_Name || ""}`.trim(),
+    );
+    setInputValue("#residentMobileCombined", property.Resident_Contact_SMS_Number);
+    setInputValue("#residentEmailCombined", property.Resident_ContactEmail);
+
+    setSelectValue("#propertyTypeCombined", property.Property_Type);
+    setSelectValue("#buildingTypeCombined", property.Building_Type);
+    setInputValue("#otherBuildingTypeCombined", property.Building_Type_Other);
+    setSelectValue("#foundationTypeCombined", property.Foundation_Type);
+    setInputValue("#bedroomsCombined", property.Bedrooms);
+    setInputValue("#StoriesCombined", property.Stories);
+    applyManholeToggle(
+      toBool(property.Manhole),
+      "buildingIsTwoStoreyUncheckedCombined",
+      "buildingIsTwoStoreyCheckedCombined",
+    );
+
+    setInputValue("#autocompleteSingle", propertyName);
+    setInputValue(".propertynameSingle", propertyName);
+    setInputValue("#propertyuniqueidSingle", property.Unique_ID || "");
+    setInputValue("#address", property.Address_1);
+    setInputValue("#suburbTown", property.Suburb_Town);
+    setInputValue("#postalCode", property.Postal_Code);
+    setSelectValue("#state", property.State);
+    setInputValue("#unitNumber", property.Unit_Number);
+    setInputValue("#lotNumber", property.Lot_Number);
+    setInputValue("#country", property.Country || "");
+
+    setSelectValue("#ownerType", property.Owner_Type);
+    setInputValue(
+      "#residentName",
+      `${property.Resident_Contact_First_Name || ""} ${property.Resident_Contact_Last_Name || ""}`.trim(),
+    );
+    setInputValue("#residentMobile", property.Resident_Contact_SMS_Number);
+    setInputValue("#residentEmail", property.Resident_ContactEmail);
+
+    setSelectValue("#propertyType", property.Property_Type);
+    setSelectValue("#buildingType", property.Building_Type);
+    setInputValue("#otherBuildingType", property.Building_Type_Other);
+    setSelectValue("#foundationType", property.Foundation_Type);
+    setInputValue("#bedrooms", property.Bedrooms);
+    setInputValue("#Stories", property.Stories);
+    applyManholeToggle(toBool(property.Manhole), "manholeUnchecked", "manholeChecked");
+
+    const buildingFeatures = document.getElementById("buildingFeatures");
+    if (buildingFeatures) {
+      buildingFeatures.value = property.Building_Features_Options_As_Text || "";
+      if (typeof window.updateHiddenInputAndTrigger === "function") {
+        window.updateHiddenInputAndTrigger();
+      }
     }
   };
 
