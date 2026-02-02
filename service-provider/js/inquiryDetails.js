@@ -297,6 +297,7 @@
       if (typeof window.renderData === "function") {
         window.renderData({ calcProperties: mapped });
       }
+      window.propertyDetails = mapped;
       if (hasProperty) {
         applyPropertyToForms(mapped[0]);
       }
