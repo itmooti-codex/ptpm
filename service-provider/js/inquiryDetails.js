@@ -1278,9 +1278,27 @@
   };
 
   // Memo section (moved from memos.html)
+  const toEpochSeconds = (value) => {
+    if (!value && value !== 0) {
+      return null;
+    }
+    if (typeof value === "number") {
+      return value > 1e12 ? Math.floor(value / 1000) : value;
+    }
+    const parsed = Date.parse(value);
+    if (!Number.isNaN(parsed)) {
+      return Math.floor(parsed / 1000);
+    }
+    return null;
+  };
+
   const formatTime = (timestamp) => {
-    const now = Date.now() / 1000;
-    const diffInSeconds = now - timestamp;
+    const now = Math.floor(Date.now() / 1000);
+    const timeValue = toEpochSeconds(timestamp);
+    if (!timeValue) {
+      return "Just now";
+    }
+    const diffInSeconds = now - timeValue;
     const intervals = [
       { label: "second", seconds: 1 },
       { label: "minute", seconds: 60 },
@@ -1301,8 +1319,9 @@
   };
 
   const formatRelativeTime = (timestamp) => {
-    const now = new Date();
-    const past = new Date(timestamp);
+    const now = Date.now();
+    const timeValue = toEpochSeconds(timestamp);
+    const past = timeValue ? timeValue * 1000 : now;
     const diffMs = now - past;
     const seconds = Math.floor(diffMs / 1000);
     const minutes = Math.floor(seconds / 60);
@@ -1351,15 +1370,25 @@
       const data = await query.fetchDirect().toPromise();
       const posts = extractRecords(data);
       posts.sort((a, b) => b.created_at - a.created_at);
-      return posts.map((post) => ({
-        id: post.id,
-        post_title: post.post_title || "Untitled Post",
-        description: post.post_copy || "No description available.",
-        authorName: `${post.Author?.first_name || "Unknown"} ${post.Author?.last_name || "Author"}`,
-        image: post.Author?.profile_image || DEFAULT_AUTHOR_PHOTO,
-        createdDate: formatTime(post.created_at) || "Unknown Date",
-        number_of_replies: post.number_of_replies ?? 0,
-      }));
+      return posts.map((post) => {
+        const author =
+          post.Author ||
+          post.author ||
+          {
+            first_name: post.Author_First_Name,
+            last_name: post.Author_Last_Name,
+            profile_image: post.Author_Profile_Image,
+          };
+        return {
+          id: post.id,
+          post_title: post.post_title || "Untitled Post",
+          description: post.post_copy || post.post_copy === "" ? post.post_copy : "No description available.",
+          authorName: `${author?.first_name || "Unknown"} ${author?.last_name || "Author"}`,
+          image: author?.profile_image || DEFAULT_AUTHOR_PHOTO,
+          createdDate: formatTime(post.created_at) || "Unknown Date",
+          number_of_replies: post.number_of_replies ?? 0,
+        };
+      });
     } catch (error) {
       console.error(error);
       return [];
@@ -1627,14 +1656,22 @@
       commentsContainer.appendChild(form);
     }
     comments.forEach((comment) => {
+      const author =
+        comment.Author ||
+        comment.author ||
+        {
+          first_name: comment.Author_First_Name,
+          last_name: comment.Author_Last_Name,
+          profile_image: comment.Author_Profile_Image,
+        };
       commentsContainer.appendChild(
         createCommentElement({
           id: comment.id,
           comment: comment.comment,
           authorName:
-            `${comment.Author?.first_name || ""} ${comment.Author?.last_name || ""}`.trim() ||
+            `${author?.first_name || ""} ${author?.last_name || ""}`.trim() ||
             "Unknown Author",
-          authorProfileImage: comment.Author?.profile_image || DEFAULT_AUTHOR_PHOTO,
+          authorProfileImage: author?.profile_image || DEFAULT_AUTHOR_PHOTO,
           createdAt: formatTime(comment.created_at) || "Unknown Date",
         }),
       );
