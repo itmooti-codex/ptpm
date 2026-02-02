@@ -1987,6 +1987,9 @@
     if (typeof window.initAutocompleteSingle === "function") {
       window.initAutocompleteSingle();
     }
+    if (typeof window.initAutocomplete === "function") {
+      window.initAutocomplete();
+    }
     fetchCalcProperties();
     setupOwnerTypeToggles();
     setupCompanySearch();
