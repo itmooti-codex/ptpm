@@ -1461,8 +1461,8 @@
   x-show="newClientModal"
   x-transition.opacity.duration.200ms
   x-trap.inert.noscroll="newClientModal"
-  @keydown.esc.window="newClientModal = false"
-  @click.self="newClientModal = false"
+  @keydown.esc.window="newClientModal = false; closePropertySubModal();"
+  @click.self="newClientModal = false; closePropertySubModal();"
   class="fixed inset-0 z-30 flex items-end justify-center bg-black/20 p-4 pb-8 backdrop-blur-md sm:items-center lg:p-8 max-[1100px]:p-0"
   role="dialog"
   aria-modal="true"
@@ -1598,8 +1598,8 @@
   x-show="addnewCompanyModal"
   x-transition.opacity.duration.200ms
   x-trap.inert.noscroll="addnewCompanyModal"
-  @keydown.esc.window="addnewCompanyModal = false"
-  @click.self="addnewCompanyModal = false"
+  @keydown.esc.window="addnewCompanyModal = false; closePropertySubModal();"
+  @click.self="addnewCompanyModal = false; closePropertySubModal();"
   class="fixed inset-0 z-30 flex items-end justify-center bg-black/20 p-4 pb-8 backdrop-blur-md sm:items-center lg:p-8 max-[1100px]:p-0"
   role="dialog"
   aria-modal="true"
