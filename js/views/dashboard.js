@@ -1581,13 +1581,16 @@ export class DashboardView {
       const svgIcon = e.target.closest("svg#view-icon");
       if (!svgIcon) return;
 
+      const currentTab = window.App?.controllers?.dashboard?.currentTab;
+      if (currentTab !== "inquiry") return;
+
       const row = svgIcon.closest("tr");
       if (!row) return;
 
-      const rowId = row.dataset.uniqueId?.slice(1);
-      if (!rowId) return;
-
-      window.location.href = `https://my.awesomate.pro/create-inquiry/${rowId}`;
+      const rowId = row.dataset.uniqueId?.replace(/^#/, "").trim();
+      const fallbackId = "973F045";
+      const targetId = rowId || fallbackId;
+      window.location.href = `https://my.awesomate.pro/inquiry-details/${targetId}`;
     });
   }
 
