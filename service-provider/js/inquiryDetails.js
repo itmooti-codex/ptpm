@@ -1292,7 +1292,7 @@
     setupCompanySearchForElements({
       companySearchInput: combinedInput,
       companyDropdown: combinedDropdown,
-      createButtonSelector: "#companyDropdownCombined li:first-child",
+      createButtonSelector: null,
       excludeSelector: ":first-child",
       companyPrimaryEmail: document.getElementById("residentEmailCombined"),
       companyPrimaryMobile: document.getElementById("residentMobileCombined"),
@@ -1456,7 +1456,7 @@
       residentEmail: document.getElementById("residentEmailCombined"),
       hiddenIndOwnerId: hiddenIndOwnerIdCombined,
       hiddenIndOwnerUId: hiddenIndOwnerUIdCombined,
-      createButtonSelector: "#clientIndDropdownCombined li:first-child",
+      createButtonSelector: null,
     });
   };
 
