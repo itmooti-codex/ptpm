@@ -620,6 +620,7 @@ export class DashboardController {
       return;
     }
 
+    
     const headerCells = Array.from(table.querySelectorAll("thead th"));
     const headers = headerCells.map((th) =>
       (th.dataset.col || th.textContent || "").toString().trim()
