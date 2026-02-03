@@ -1,0 +1,37 @@
+input {
+  font-size: 0.875rem !important;
+  border: none !important;
+}
+
+input[type="checkbox"] {
+  opacity: 1 !important;
+  position: relative !important;
+  appearance: auto !important;
+  -webkit-appearance: checkbox !important;
+  display: inline-block !important;
+  pointer-events: all !important;
+}
+
+button:focus {
+  background: transparent !important;
+}
+
+input:focus {
+  outline: none !important;
+  border: none;
+}
+body {
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+#create-btn:active,
+#create-btn:focus {
+  background-color: white !important;
+  color: #003882 !important;
+}
+
+:where(.op-reset[data-page])
+  :where(button:active, button:focus, button:focus-visible) {
+  background-color: inherit !important;
+  color: inherit !important;
+}
