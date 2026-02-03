@@ -1481,6 +1481,89 @@ export class DashboardView {
     };
   }
 
+  createBatchActionsPopup() {
+    let wrapper = document.getElementById("batch-actions-wrapper");
+    let modalBox = document.getElementById("batch-actions-popup");
+    if (wrapper && modalBox) {
+      return {
+        show() {
+          const btn = document.getElementById("batch-actions-btn");
+          if (!btn) return;
+          const rect = btn.getBoundingClientRect();
+          const gap = 8;
+          modalBox.style.top = `${rect.bottom + window.scrollY + gap}px`;
+          modalBox.style.left = `${rect.left + window.scrollX}px`;
+          wrapper.classList.remove("hidden");
+        },
+        hide() {
+          wrapper.classList.add("hidden");
+        },
+      };
+    }
+
+    wrapper = document.createElement("div");
+    wrapper.id = "batch-actions-wrapper";
+    wrapper.className = "fixed inset-0 z-50 hidden";
+
+    modalBox = document.createElement("div");
+    modalBox.id = "batch-actions-popup";
+    modalBox.className =
+      "absolute w-48 bg-white rounded-lg shadow-xl border border-slate-200 overflow-hidden";
+
+    const positionPopup = () => {
+      const btn = document.getElementById("batch-actions-btn");
+      if (!btn) return;
+      const rect = btn.getBoundingClientRect();
+      const gap = 8;
+      modalBox.style.top = `${rect.bottom + window.scrollY + gap}px`;
+      modalBox.style.left = `${rect.left + window.scrollX}px`;
+    };
+
+    modalBox.innerHTML = `
+      <div class="flex flex-col text-sm text-slate-700 hover:!text-slate-700 active:!text-slate-700 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700">
+        <button id="batch-delete-action" class="flex gap-2 px-4 py-2 text-left w-full rounded-lg text-red-600 hover:!text-red-600 active:!text-red-600 focus:!text-red-600 focus-visible:!text-red-600 hover:bg-red-50 active:bg-red-50">
+          <span>Batch Delete</span>
+        </button>
+      </div>
+    `;
+
+    wrapper.appendChild(modalBox);
+    document.body.appendChild(wrapper);
+
+    wrapper.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (!modalBox.contains(e.target)) {
+        wrapper.classList.add("hidden");
+      }
+    });
+
+    modalBox.addEventListener("click", (e) => {
+      e.stopPropagation();
+    });
+
+    window.addEventListener("resize", () => {
+      if (!wrapper.classList.contains("hidden")) {
+        positionPopup();
+      }
+    });
+
+    window.addEventListener("scroll", () => {
+      if (!wrapper.classList.contains("hidden")) {
+        positionPopup();
+      }
+    });
+
+    return {
+      show() {
+        positionPopup();
+        wrapper.classList.remove("hidden");
+      },
+      hide() {
+        wrapper.classList.add("hidden");
+      },
+    };
+  }
+
   handleActionButtonClick() {
     const tableElement = document.getElementById("inquiry-table-container");
     if (!tableElement) return;

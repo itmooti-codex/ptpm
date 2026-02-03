@@ -62,3 +62,12 @@ body::-webkit-scrollbar,
 body {
   scrollbar-width: none;
 }
+
+/* Action icons should indicate interactivity */
+#view-icon,
+#add-icon,
+#delete-icon,
+a[data-action],
+a[data-action] svg {
+  cursor: pointer;
+}

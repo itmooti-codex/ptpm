@@ -100,6 +100,7 @@ export class DashboardController {
     };
     this.latestNotifications = [];
     this.notificationListeners = new Set();
+    this.batchDeleteMode = false;
     this.renderSourceOptionsForTab(this.sources || []);
   }
 
@@ -323,6 +324,8 @@ export class DashboardController {
     this.onNotificationIconClick();
     this.loadNotifications();
     this.initGlobalSearch();
+    this.initPrintButton();
+    this.initBatchActions();
     this.bindApplyFilters();
     this.initFlatpickr();
     this.view.initTopTabs({
@@ -366,6 +369,406 @@ export class DashboardController {
     if (this.calendarEl) {
       this.calendarEl.removeEventListener("click", this.onCalendarClick);
     }
+  }
+
+  initPrintButton() {
+    const btn = document.getElementById("print-btn");
+    if (!btn) return;
+
+    const old = this._printHandlers;
+    if (old && old.btn) {
+      old.btn.removeEventListener("click", old.onClick);
+      old.btn.removeEventListener("keydown", old.onKeyDown);
+    }
+
+    const onClick = (e) => {
+      e.preventDefault();
+      this.printCurrentTable();
+    };
+
+    const onKeyDown = (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        this.printCurrentTable();
+      }
+    };
+
+    btn.addEventListener("click", onClick);
+    btn.addEventListener("keydown", onKeyDown);
+    this._printHandlers = { btn, onClick, onKeyDown };
+  }
+
+  initBatchActions() {
+    if (this._batchActionsInit) return;
+    this._batchActionsInit = true;
+
+    const btn = document.getElementById("batch-actions-btn");
+    if (!btn || !this.view?.createBatchActionsPopup) return;
+
+    this.batchActionsPopup = this.view.createBatchActionsPopup();
+    const wrapper = document.getElementById("batch-actions-wrapper");
+
+    const showPopup = () => {
+      this.batchActionsPopup?.show?.();
+      btn.setAttribute("aria-expanded", "true");
+    };
+
+    const hidePopup = () => {
+      this.batchActionsPopup?.hide?.();
+      btn.setAttribute("aria-expanded", "false");
+    };
+
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isHidden = wrapper?.classList.contains("hidden");
+      if (isHidden) showPopup();
+      else hidePopup();
+    });
+
+    wrapper?.addEventListener("click", () => {
+      btn.setAttribute("aria-expanded", "false");
+    });
+
+    const menuBtn = document.getElementById("batch-delete-action");
+    if (menuBtn) {
+      menuBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        hidePopup();
+        this.enableBatchDeleteMode();
+      });
+    }
+
+    const deleteBtn = document.getElementById("batch-delete-btn");
+    if (deleteBtn) {
+      deleteBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        this.showBatchDeleteModal();
+      });
+    }
+  }
+
+  enableBatchDeleteMode() {
+    if (this.batchDeleteMode) return;
+    this.batchDeleteMode = true;
+    this.toggleBatchDeleteButton(true);
+    this.applyBatchSelectionToTable();
+  }
+
+  toggleBatchDeleteButton(show = false) {
+    const btn = document.getElementById("batch-delete-btn");
+    if (!btn) return;
+    btn.classList.toggle("hidden", !show);
+    btn.setAttribute("aria-hidden", show ? "false" : "true");
+    btn.tabIndex = show ? 0 : -1;
+  }
+
+  applyBatchSelectionToTable() {
+    if (!this.batchDeleteMode) return;
+    const container = document.getElementById("inquiry-table-container");
+    const table = container?.querySelector("table");
+    if (!table) return;
+
+    const headRow = table.querySelector("thead tr");
+    if (!headRow) return;
+
+    if (headRow.querySelector("[data-batch-select-all]")) {
+      this.syncBatchSelectAllState(table);
+      return;
+    }
+
+    const headerCell = document.createElement("th");
+    headerCell.className = "px-3 sm:px-6 py-3 sm:py-4 text-center w-10";
+    headerCell.innerHTML = `
+      <input type="checkbox" data-batch-select-all class="h-4 w-4 accent-red-600" aria-label="Select all rows">
+    `;
+    headRow.insertBefore(headerCell, headRow.firstChild);
+
+    const bodyRows = Array.from(table.querySelectorAll("tbody tr"));
+    bodyRows.forEach((row) => {
+      const cells = Array.from(row.children);
+      if (!cells.length) return;
+      const firstCell = cells[0];
+      const isEmptyState =
+        cells.length === 1 &&
+        firstCell.tagName === "TD" &&
+        (firstCell.colSpan || 0) > 1;
+
+      if (isEmptyState) {
+        firstCell.colSpan = (firstCell.colSpan || 1) + 1;
+        return;
+      }
+
+      const td = document.createElement("td");
+      td.className = "px-3 sm:px-6 py-3 sm:py-4 text-center";
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.className = "h-4 w-4 accent-red-600";
+      cb.setAttribute("data-batch-select-row", "");
+      const rowId = row.getAttribute("data-unique-id");
+      if (rowId) cb.dataset.batchId = rowId;
+      td.appendChild(cb);
+      row.insertBefore(td, row.firstChild);
+    });
+
+    const selectAll = headRow.querySelector("[data-batch-select-all]");
+    if (!selectAll) return;
+    const rowChecks = Array.from(
+      table.querySelectorAll("input[data-batch-select-row]")
+    );
+
+    const sync = () => {
+      const total = rowChecks.length;
+      const checked = rowChecks.filter((cb) => cb.checked).length;
+      selectAll.checked = total > 0 && checked === total;
+      selectAll.indeterminate = checked > 0 && checked < total;
+      selectAll.disabled = total === 0;
+    };
+
+    selectAll.addEventListener("change", () => {
+      rowChecks.forEach((cb) => (cb.checked = selectAll.checked));
+      sync();
+    });
+
+    rowChecks.forEach((cb) => cb.addEventListener("change", sync));
+    sync();
+  }
+
+  syncBatchSelectAllState(table) {
+    const selectAll = table.querySelector("[data-batch-select-all]");
+    if (!selectAll) return;
+    const rowChecks = Array.from(
+      table.querySelectorAll("input[data-batch-select-row]")
+    );
+    const total = rowChecks.length;
+    const checked = rowChecks.filter((cb) => cb.checked).length;
+    selectAll.checked = total > 0 && checked === total;
+    selectAll.indeterminate = checked > 0 && checked < total;
+    selectAll.disabled = total === 0;
+  }
+
+  ensureBatchDeleteModal() {
+    if (this._batchDeleteModal) return this._batchDeleteModal;
+    let modal = document.getElementById("ptpm-batch-delete-modal");
+    if (!modal) {
+      modal = document.createElement("div");
+      modal.id = "ptpm-batch-delete-modal";
+      modal.className =
+        "fixed inset-0 z-[9998] hidden items-center justify-center bg-black/40";
+      modal.innerHTML = `
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 overflow-hidden font-['Inter'] hover:!bg-white active:!bg-white">
+          <div class="flex items-start justify-between px-4 py-3 border-b border-slate-200 hover:!border-slate-200 active:!border-slate-200">
+            <h3 class="text-lg font-semibold text-slate-900">Confirm Batch Delete</h3>
+            <button type="button" data-batch-delete-close class="!bg-transparent !text-slate-500 hover:!text-slate-500 active:!text-slate-500 focus:!text-slate-500 focus-visible:!text-slate-500">
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+          <div class="px-4 py-5 space-y-4 text-left">
+            <p class="text-sm text-slate-700">Delete the selected rows? This cannot be undone.</p>
+            <div class="flex justify-end gap-3">
+              <button type="button" data-batch-delete-cancel class="!px-4 !py-2 !rounded !bg-white !text-slate-600 !text-sm !font-semibold hover:!bg-slate-100 active:!bg-slate-100">Cancel</button>
+              <button type="button" data-batch-delete-confirm class="!px-4 !py-2 !rounded !bg-red-600 !text-white !text-sm !font-semibold hover:!bg-red-600 active:!bg-red-600">Delete</button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+
+    const hide = () => {
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+      document.body.style.overflow = "";
+    };
+
+    const show = () => {
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+      document.body.style.overflow = "hidden";
+    };
+
+    const closeBtn = modal.querySelector("[data-batch-delete-close]");
+    const cancelBtn = modal.querySelector("[data-batch-delete-cancel]");
+    const confirmBtn = modal.querySelector("[data-batch-delete-confirm]");
+
+    closeBtn?.addEventListener("click", hide);
+    cancelBtn?.addEventListener("click", hide);
+    confirmBtn?.addEventListener("click", hide);
+
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) hide();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && !modal.classList.contains("hidden")) hide();
+    });
+
+    this._batchDeleteModal = { modal, show, hide };
+    return this._batchDeleteModal;
+  }
+
+  showBatchDeleteModal() {
+    const inst = this.ensureBatchDeleteModal();
+    inst?.show?.();
+  }
+
+  printCurrentTable() {
+    const container = document.getElementById("inquiry-table-container");
+    const table = container?.querySelector("table");
+    if (!table) {
+      this.view?.showToast?.("No table available to print.");
+      return;
+    }
+
+    const headerCells = Array.from(table.querySelectorAll("thead th"));
+    const headers = headerCells.map((th) =>
+      (th.dataset.col || th.textContent || "").toString().trim()
+    );
+    const normalize = (v) => v.toString().trim().toLowerCase();
+    const actionIndex = headers.findIndex((h) => normalize(h) === "action");
+    const clientIndex = headers.findIndex(
+      (h) => normalize(h) === "client info"
+    );
+    const batchIndex = headerCells.findIndex((th, idx) => {
+      if (idx === actionIndex) return false;
+      return (
+        th.querySelector("input[data-batch-select-all]") ||
+        (normalize(headers[idx] || "") === "" &&
+          th.querySelector("input[type='checkbox']"))
+      );
+    });
+
+    const printableTable = document.createElement("table");
+    const thead = document.createElement("thead");
+    const headRow = document.createElement("tr");
+    const printHeaders = [];
+
+    headers.forEach((label, idx) => {
+      if (idx === actionIndex || idx === batchIndex) return;
+      if (idx === clientIndex) {
+        printHeaders.push(
+          "Client Name",
+          "Client Phone",
+          "Client Email",
+          "Client Address"
+        );
+        return;
+      }
+      printHeaders.push(label || `Column ${idx + 1}`);
+    });
+
+    printHeaders.forEach((label) => {
+      const th = document.createElement("th");
+      th.textContent = label;
+      headRow.appendChild(th);
+    });
+    thead.appendChild(headRow);
+    printableTable.appendChild(thead);
+
+    const tbody = document.createElement("tbody");
+    const bodyRows = Array.from(table.querySelectorAll("tbody tr"));
+    const normalizeText = (text) =>
+      text
+        .replace(/\s+/g, " ")
+        .replace(/\u00a0/g, " ")
+        .trim();
+
+    bodyRows.forEach((row) => {
+      const cells = Array.from(row.children);
+      const isEmptyState =
+        cells.length === 1 &&
+        cells[0].tagName === "TD" &&
+        (cells[0].colSpan || 0) > 1;
+      const tr = document.createElement("tr");
+
+      if (isEmptyState) {
+        const td = document.createElement("td");
+        td.colSpan = printHeaders.length || 1;
+        td.textContent = normalizeText(cells[0].textContent || "");
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+        return;
+      }
+
+      cells.forEach((cell, idx) => {
+        if (idx === actionIndex || idx === batchIndex) return;
+
+        if (idx === clientIndex) {
+          const name =
+            cell.querySelector("div")?.textContent?.trim() ||
+            normalizeText(cell.textContent || "") ||
+            "-";
+          const phone =
+            cell
+              .querySelector('a[data-action="call"]')
+              ?.getAttribute("title")
+              ?.trim() || "-";
+          const email =
+            cell
+              .querySelector('a[data-action="email"]')
+              ?.getAttribute("title")
+              ?.trim() || "-";
+          const address =
+            cell
+              .querySelector('a[data-action="address"]')
+              ?.getAttribute("title")
+              ?.trim() || "-";
+
+          [name, phone, email, address].forEach((value) => {
+            const td = document.createElement("td");
+            td.textContent = value || "-";
+            tr.appendChild(td);
+          });
+          return;
+        }
+
+        const td = document.createElement("td");
+        td.textContent = normalizeText(cell.textContent || "");
+        tr.appendChild(td);
+      });
+
+      tbody.appendChild(tr);
+    });
+
+    printableTable.appendChild(tbody);
+
+    const printWindow = window.open("", "_blank", "width=1200,height=800");
+    if (!printWindow) {
+      this.view?.showToast?.("Please allow pop-ups to print.");
+      return;
+    }
+
+    const title = document.title || "Dashboard Table";
+    const styles = `
+      <style>
+        :root { color-scheme: light; }
+        * { box-sizing: border-box; }
+        body { margin: 24px; font-family: Inter, ui-sans-serif, system-ui, sans-serif; color: #0f172a; min-width: 1600px; }
+        table { width: 100%; border-collapse: collapse; table-layout: auto; }
+        thead th { background: #f5f8ff; text-transform: uppercase; letter-spacing: 0.04em; font-size: 11px; }
+        th, td { border: 1px solid #e2e8f0; padding: 8px 10px; text-align: left; vertical-align: top; font-size: 12px; }
+        tr:nth-child(even) td { background: #f8fafc; }
+        a { color: inherit; text-decoration: none; }
+        @page { size: 17in 11in; margin: 10mm; }
+      </style>
+    `;
+
+    printWindow.document.open();
+    printWindow.document.write(
+      `<!doctype html><html><head><title>${title}</title>${styles}</head><body>${printableTable.outerHTML}</body></html>`
+    );
+    printWindow.document.close();
+    printWindow.focus();
+
+    let printed = false;
+    const triggerPrint = () => {
+      if (printed) return;
+      printed = true;
+      printWindow.print();
+      printWindow.close();
+    };
+    printWindow.addEventListener("load", triggerPrint);
+    setTimeout(triggerPrint, 300);
   }
 
   refresh() {
@@ -479,6 +882,7 @@ export class DashboardController {
         statusClasses,
         formatDisplayDate
       );
+      this.applyBatchSelectionToTable();
       return;
     }
 
@@ -490,6 +894,7 @@ export class DashboardController {
         statusClasses,
         formatDisplayDate
       );
+      this.applyBatchSelectionToTable();
       return;
     }
 
@@ -501,6 +906,7 @@ export class DashboardController {
         statusClasses,
         formatDisplayDate
       );
+      this.applyBatchSelectionToTable();
       return;
     }
 
@@ -512,6 +918,7 @@ export class DashboardController {
         statusClasses,
         formatDisplayDate
       );
+      this.applyBatchSelectionToTable();
       return;
     }
 
@@ -523,6 +930,7 @@ export class DashboardController {
         statusClasses,
         formatDisplayDate
       );
+      this.applyBatchSelectionToTable();
       return;
     }
 
@@ -534,6 +942,7 @@ export class DashboardController {
         statusClasses,
         formatDisplayDate
       );
+      this.applyBatchSelectionToTable();
       return;
     }
 
@@ -548,6 +957,7 @@ export class DashboardController {
       formatDisplayDate,
       selectedDate
     );
+    this.applyBatchSelectionToTable();
   }
 
   renderStatusOptionsForTab(statuses) {
