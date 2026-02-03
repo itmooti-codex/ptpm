@@ -1,4 +1,4 @@
-import { DashboardHelper, hideLoader } from "../helper.js";
+import { DashboardHelper, hideLoader, showLoader } from "../helper.js";
 export class DashboardController {
   constructor(model, view, loaderRefs = {}) {
     this.model = model;
@@ -101,6 +101,8 @@ export class DashboardController {
     this.latestNotifications = [];
     this.notificationListeners = new Set();
     this.batchDeleteMode = false;
+    this.batchSelections = new Map();
+    this.pendingDelete = null;
     this.renderSourceOptionsForTab(this.sources || []);
   }
 
@@ -447,6 +449,31 @@ export class DashboardController {
     }
   }
 
+  normalizeUniqueId(raw) {
+    return String(raw || "").replace(/^#/, "").trim();
+  }
+
+  getSelectionSet(tab = this.currentTab) {
+    if (!this.batchSelections.has(tab)) {
+      this.batchSelections.set(tab, new Set());
+    }
+    return this.batchSelections.get(tab);
+  }
+
+  getAllSelections() {
+    const dealIds = new Set();
+    const jobIds = new Set();
+    for (const [tab, set] of this.batchSelections.entries()) {
+      if (!set || !set.size) continue;
+      const target = tab === "inquiry" ? dealIds : jobIds;
+      set.forEach((id) => target.add(id));
+    }
+    return {
+      dealIds: Array.from(dealIds),
+      jobIds: Array.from(jobIds),
+    };
+  }
+
   enableBatchDeleteMode() {
     if (this.batchDeleteMode) return;
     this.batchDeleteMode = true;
@@ -472,6 +499,14 @@ export class DashboardController {
     if (!headRow) return;
 
     if (headRow.querySelector("[data-batch-select-all]")) {
+      const selected = this.getSelectionSet();
+      const rowChecks = Array.from(
+        table.querySelectorAll("input[data-batch-select-row]")
+      );
+      rowChecks.forEach((cb) => {
+        const id = cb.dataset.batchId;
+        if (id) cb.checked = selected.has(id);
+      });
       this.syncBatchSelectAllState(table);
       return;
     }
@@ -483,6 +518,7 @@ export class DashboardController {
     `;
     headRow.insertBefore(headerCell, headRow.firstChild);
 
+    const selected = this.getSelectionSet();
     const bodyRows = Array.from(table.querySelectorAll("tbody tr"));
     bodyRows.forEach((row) => {
       const cells = Array.from(row.children);
@@ -505,7 +541,11 @@ export class DashboardController {
       cb.className = "h-4 w-4 accent-red-600";
       cb.setAttribute("data-batch-select-row", "");
       const rowId = row.getAttribute("data-unique-id");
-      if (rowId) cb.dataset.batchId = rowId;
+      if (rowId) {
+        const normalized = this.normalizeUniqueId(rowId);
+        cb.dataset.batchId = normalized;
+        cb.checked = selected.has(normalized);
+      }
       td.appendChild(cb);
       row.insertBefore(td, row.firstChild);
     });
@@ -525,11 +565,26 @@ export class DashboardController {
     };
 
     selectAll.addEventListener("change", () => {
-      rowChecks.forEach((cb) => (cb.checked = selectAll.checked));
+      rowChecks.forEach((cb) => {
+        cb.checked = selectAll.checked;
+        const id = cb.dataset.batchId;
+        if (!id) return;
+        if (selectAll.checked) selected.add(id);
+        else selected.delete(id);
+      });
       sync();
     });
 
-    rowChecks.forEach((cb) => cb.addEventListener("change", sync));
+    rowChecks.forEach((cb) =>
+      cb.addEventListener("change", () => {
+        const id = cb.dataset.batchId;
+        if (id) {
+          if (cb.checked) selected.add(id);
+          else selected.delete(id);
+        }
+        sync();
+      })
+    );
     sync();
   }
 
@@ -592,16 +647,34 @@ export class DashboardController {
     const cancelBtn = modal.querySelector("[data-batch-delete-cancel]");
     const confirmBtn = modal.querySelector("[data-batch-delete-confirm]");
 
-    closeBtn?.addEventListener("click", hide);
-    cancelBtn?.addEventListener("click", hide);
-    confirmBtn?.addEventListener("click", hide);
+    if (!modal.dataset.boundBatchDelete) {
+      modal.dataset.boundBatchDelete = "true";
+      closeBtn?.addEventListener("click", () => {
+        this.pendingDelete = null;
+        hide();
+      });
+      cancelBtn?.addEventListener("click", () => {
+        this.pendingDelete = null;
+        hide();
+      });
+      confirmBtn?.addEventListener("click", () => {
+        hide();
+        this.executeDelete();
+      });
 
-    modal.addEventListener("click", (e) => {
-      if (e.target === modal) hide();
-    });
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && !modal.classList.contains("hidden")) hide();
-    });
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) {
+          this.pendingDelete = null;
+          hide();
+        }
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && !modal.classList.contains("hidden")) {
+          this.pendingDelete = null;
+          hide();
+        }
+      });
+    }
 
     this._batchDeleteModal = { modal, show, hide };
     return this._batchDeleteModal;
@@ -610,6 +683,60 @@ export class DashboardController {
   showBatchDeleteModal() {
     const inst = this.ensureBatchDeleteModal();
     inst?.show?.();
+  }
+
+  queueSingleDelete(rowId) {
+    const normalized = this.normalizeUniqueId(rowId);
+    if (!normalized) return;
+    this.pendingDelete = { tab: this.currentTab, ids: [normalized] };
+    this.showBatchDeleteModal();
+  }
+
+  async executeDelete() {
+    const pending = this.pendingDelete;
+    this.pendingDelete = null;
+
+    let dealIds = [];
+    let jobIds = [];
+    if (pending?.ids?.length) {
+      if (pending.tab === "inquiry") dealIds = pending.ids;
+      else jobIds = pending.ids;
+    } else {
+      const selections = this.getAllSelections();
+      dealIds = selections.dealIds;
+      jobIds = selections.jobIds;
+    }
+
+    if (!dealIds.length && !jobIds.length) {
+      this.view?.showToast?.("No records selected.");
+      return;
+    }
+
+    try {
+      showLoader(
+        this.loaderElement,
+        this.loaderMessageEl,
+        this.loaderCounter,
+        "Deleting records..."
+      );
+      if (dealIds.length) await this.model.deleteDealsByIds(dealIds);
+      if (jobIds.length) await this.model.deleteJobsByIds(jobIds);
+
+      if (dealIds.length) this.getSelectionSet("inquiry").clear();
+      if (jobIds.length) {
+        ["quote", "jobs", "payment", "active-jobs", "urgent-calls"].forEach(
+          (tab) => this.getSelectionSet(tab).clear()
+        );
+      }
+
+      await this.handleTabChange(this.currentTab);
+      this.view?.showToast?.("Delete completed.");
+    } catch (err) {
+      console.error("Delete failed", err);
+      this.view?.showToast?.("Delete failed. Please try again.");
+    } finally {
+      hideLoader(this.loaderElement, this.loaderCounter);
+    }
   }
 
   printCurrentTable() {

@@ -138,6 +138,28 @@ export class DashboardModel {
     return `${day} ${monthName} ${year}`;
   }
 
+  async deleteDealsByIds(ids = []) {
+    const cleaned = Array.from(
+      new Set((ids || []).map((id) => String(id || "").trim()).filter(Boolean))
+    );
+    if (!cleaned.length) return null;
+    const query = window.ptpmDealModel?.mutation?.();
+    if (!query) return null;
+    query.delete((q) => q.where("unique_id", "in", cleaned));
+    return await query.execute(true).toPromise();
+  }
+
+  async deleteJobsByIds(ids = []) {
+    const cleaned = Array.from(
+      new Set((ids || []).map((id) => String(id || "").trim()).filter(Boolean))
+    );
+    if (!cleaned.length) return null;
+    const query = window.ptpmJobModel?.mutation?.();
+    if (!query) return null;
+    query.delete((q) => q.where("unique_id", "in", cleaned));
+    return await query.execute(true).toPromise();
+  }
+
   applyIdRange(query) {
     const start = Number(this.startIndex);
     const end = Number(this.endIndex);

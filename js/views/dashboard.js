@@ -1569,6 +1569,15 @@ export class DashboardView {
     if (!tableElement) return;
 
     tableElement.addEventListener("click", (e) => {
+      const deleteIcon = e.target.closest("svg#delete-icon");
+      if (deleteIcon) {
+        e.preventDefault();
+        e.stopPropagation();
+        const row = deleteIcon.closest("tr");
+        const rowId = row?.dataset?.uniqueId || "";
+        window.App?.controllers?.dashboard?.queueSingleDelete?.(rowId);
+        return;
+      }
       const svgIcon = e.target.closest("svg#view-icon");
       if (!svgIcon) return;
 
