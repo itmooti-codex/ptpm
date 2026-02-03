@@ -1461,8 +1461,8 @@
   x-show="newClientModal"
   x-transition.opacity.duration.200ms
   x-trap.inert.noscroll="newClientModal"
-  @keydown.esc.window="newClientModal = false; closePropertySubModal();"
-  @click.self="newClientModal = false; closePropertySubModal();"
+  @keydown.esc.window="newClientModal = false; window.closePropertySubModal && window.closePropertySubModal();"
+  @click.self="newClientModal = false; window.closePropertySubModal && window.closePropertySubModal();"
   class="fixed inset-0 z-30 flex items-end justify-center bg-black/20 p-4 pb-8 backdrop-blur-md sm:items-center lg:p-8 max-[1100px]:p-0"
   role="dialog"
   aria-modal="true"
@@ -1487,7 +1487,7 @@
         Add Client Information
       </h3>
       <button
-        @click="newClientModal = false; closePropertySubModal();"
+        @click="newClientModal = false; window.closePropertySubModal && window.closePropertySubModal();"
         aria-label="close modal"
       >
         <svg
@@ -1582,7 +1582,7 @@
     >
       <button
         class="button-plain"
-        @click="newClientModal = false; closePropertySubModal();"
+        @click="newClientModal = false; window.closePropertySubModal && window.closePropertySubModal();"
       >
         Cancel
       </button>
@@ -1598,8 +1598,8 @@
   x-show="addnewCompanyModal"
   x-transition.opacity.duration.200ms
   x-trap.inert.noscroll="addnewCompanyModal"
-  @keydown.esc.window="addnewCompanyModal = false; closePropertySubModal();"
-  @click.self="addnewCompanyModal = false; closePropertySubModal();"
+  @keydown.esc.window="addnewCompanyModal = false; window.closePropertySubModal && window.closePropertySubModal();"
+  @click.self="addnewCompanyModal = false; window.closePropertySubModal && window.closePropertySubModal();"
   class="fixed inset-0 z-30 flex items-end justify-center bg-black/20 p-4 pb-8 backdrop-blur-md sm:items-center lg:p-8 max-[1100px]:p-0"
   role="dialog"
   aria-modal="true"
@@ -1624,7 +1624,7 @@
         Add Company Information
       </h3>
       <button
-        @click="addnewCompanyModal = false; closePropertySubModal();"
+        @click="addnewCompanyModal = false; window.closePropertySubModal && window.closePropertySubModal();"
         aria-label="close modal"
       >
         <svg
@@ -1662,7 +1662,7 @@
     >
       <button
         class="button-plain"
-        @click="addnewCompanyModal = false; closePropertySubModal();"
+        @click="addnewCompanyModal = false; window.closePropertySubModal && window.closePropertySubModal();"
       >
         Cancel
       </button>

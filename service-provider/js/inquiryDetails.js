@@ -88,6 +88,8 @@
     window.propertyModalReturnTarget = target === "combined" ? "combined" : "owner";
   };
   window.closePropertySubModal = () => {
+    setAlpineFlag("newClientModal", false);
+    setAlpineFlag("addnewCompanyModal", false);
     setAlpineFlag("propertyOwnerAndResidentModal", false);
     setAlpineFlag("combinedPropertyEditModal", false);
     if (window.propertyModalReturnTarget === "combined") {
