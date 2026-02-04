@@ -774,22 +774,28 @@ export class DashboardController {
           <div class="px-4 py-5 space-y-4 text-left">
             <div class="space-y-2">
               <label class="text-sm font-medium text-slate-700">Task subject</label>
-              <input data-task-subject type="text" placeholder="Enter task subject..." class="w-full rounded border border-slate-300 px-3 py-2 text-sm text-slate-700" />
+              <div class="customTextInputWrapper">
+                <input data-task-subject type="text" placeholder="Enter task subject..." />
+              </div>
             </div>
             <div class="space-y-2">
               <label class="text-sm font-medium text-slate-700">Due date</label>
-              <div class="relative">
-                <input data-task-date type="date" class="w-full rounded border border-slate-300 px-3 py-2 text-sm text-slate-700" />
+              <div class="customStaeInputWrapper">
+                <input data-task-date type="date" />
               </div>
             </div>
             <div class="space-y-2">
               <label class="text-sm font-medium text-slate-700">Task assignee</label>
-              <select data-task-assignee class="w-full rounded border border-slate-300 px-3 py-2 text-sm text-slate-700 bg-white">
-                <option value="" selected disabled>Select assignee...</option>
-              </select>
+              <div class="customDropdDownWrapper">
+                <select data-task-assignee>
+                  <option value="" selected disabled>Select assignee...</option>
+                </select>
+              </div>
             </div>
             <div class="space-y-2">
-              <textarea data-task-details placeholder="Enter details..." class="w-full rounded border border-slate-300 px-3 py-2 text-sm text-slate-700 min-h-[140px]"></textarea>
+              <div class="customTextAreaWrapper">
+                <textarea data-task-details placeholder="Enter details..."></textarea>
+              </div>
             </div>
           </div>
           <div class="px-4 py-4 border-t border-slate-200 flex justify-end gap-3">
