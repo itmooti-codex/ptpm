@@ -780,7 +780,7 @@ export class DashboardController {
             </div>
             <div class="space-y-2">
               <label class="text-sm font-medium text-slate-700">Due date</label>
-              <div class="customStaeInputWrapper">
+              <div class="customDateInputWrapper">
                 <input data-task-date type="date" />
               </div>
             </div>

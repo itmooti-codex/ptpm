@@ -80,7 +80,7 @@ a[data-action] svg {
 
 /* Task modal input wrappers */
 .customTextInputWrapper,
-.customStaeInputWrapper,
+.customDateInputWrapper,
 .customDropdDownWrapper,
 .customTextAreaWrapper {
   padding: 8px 10px !important;
@@ -94,9 +94,9 @@ a[data-action] svg {
 .customTextInputWrapper:hover,
 .customTextInputWrapper:focus-within,
 .customTextInputWrapper:active,
-.customStaeInputWrapper:hover,
-.customStaeInputWrapper:focus-within,
-.customStaeInputWrapper:active,
+.customDateInputWrapper:hover,
+.customDateInputWrapper:focus-within,
+.customDateInputWrapper:active,
 .customDropdDownWrapper:hover,
 .customDropdDownWrapper:focus-within,
 .customDropdDownWrapper:active,
@@ -108,12 +108,13 @@ a[data-action] svg {
   outline: none !important;
 }
 
-.customTextInputWrapper input{
+.customTextInputWrapper input,
+.customDateInputWrapper input{
   height: unset !important;
 }
 
 .customTextInputWrapper input,
-.customStaeInputWrapper input,
+.customDateInputWrapper input,
 .customDropdDownWrapper select,
 .customTextAreaWrapper textarea {
   width: 100% !important;
