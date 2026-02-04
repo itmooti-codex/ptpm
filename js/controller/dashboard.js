@@ -487,6 +487,26 @@ export class DashboardController {
     btn.classList.toggle("hidden", !show);
     btn.setAttribute("aria-hidden", show ? "false" : "true");
     btn.tabIndex = show ? 0 : -1;
+    if (!show) {
+      btn.disabled = true;
+      btn.setAttribute("aria-disabled", "true");
+      return;
+    }
+    this.updateDeleteButtonState();
+  }
+
+  updateDeleteButtonState() {
+    const btn = document.getElementById("batch-delete-btn");
+    if (!btn) return;
+    if (!this.batchDeleteMode) {
+      btn.disabled = true;
+      btn.setAttribute("aria-disabled", "true");
+      return;
+    }
+    const { dealIds, jobIds } = this.getAllSelections();
+    const hasAny = dealIds.length > 0 || jobIds.length > 0;
+    btn.disabled = !hasAny;
+    btn.setAttribute("aria-disabled", hasAny ? "false" : "true");
   }
 
   applyBatchSelectionToTable() {
@@ -562,6 +582,7 @@ export class DashboardController {
       selectAll.checked = total > 0 && checked === total;
       selectAll.indeterminate = checked > 0 && checked < total;
       selectAll.disabled = total === 0;
+      this.updateDeleteButtonState();
     };
 
     selectAll.addEventListener("change", () => {
@@ -612,7 +633,7 @@ export class DashboardController {
       modal.innerHTML = `
         <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 overflow-hidden font-['Inter'] hover:!bg-white active:!bg-white">
           <div class="flex items-start justify-between px-4 py-3 border-b border-slate-200 hover:!border-slate-200 active:!border-slate-200">
-            <h3 class="text-lg font-semibold text-slate-900">Confirm Batch Delete</h3>
+            <h3 class="text-lg font-semibold text-slate-900" data-batch-delete-title>Confirm Delete</h3>
             <button type="button" data-batch-delete-close class="!bg-transparent !text-slate-500 hover:!text-slate-500 active:!text-slate-500 focus:!text-slate-500 focus-visible:!text-slate-500">
               <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -620,7 +641,7 @@ export class DashboardController {
             </button>
           </div>
           <div class="px-4 py-5 space-y-4 text-left">
-            <p class="text-sm text-slate-700">Delete the selected rows? This cannot be undone.</p>
+            <p class="text-sm text-slate-700" data-batch-delete-message>Delete the selected rows? This cannot be undone.</p>
             <div class="flex justify-end gap-3">
               <button type="button" data-batch-delete-cancel class="!px-4 !py-2 !rounded !bg-white !text-slate-600 !text-sm !font-semibold hover:!bg-slate-100 active:!bg-slate-100">Cancel</button>
               <button type="button" data-batch-delete-confirm class="!px-4 !py-2 !rounded !bg-red-600 !text-white !text-sm !font-semibold hover:!bg-red-600 active:!bg-red-600">Delete</button>
@@ -682,6 +703,113 @@ export class DashboardController {
 
   showBatchDeleteModal() {
     const inst = this.ensureBatchDeleteModal();
+    this.updateBatchDeleteModalContent();
+    inst?.show?.();
+  }
+
+  ensureTaskModal() {
+    if (this._taskModal) return this._taskModal;
+    let modal = document.getElementById("ptpm-task-modal");
+    if (!modal) {
+      modal = document.createElement("div");
+      modal.id = "ptpm-task-modal";
+      modal.className =
+        "fixed inset-0 z-[9998] hidden items-center justify-center bg-black/40";
+      modal.innerHTML = `
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-lg mx-4 overflow-hidden font-['Inter'] hover:!bg-white active:!bg-white">
+          <div class="flex items-start justify-between px-4 py-3 border-b border-slate-200 hover:!border-slate-200 active:!border-slate-200">
+            <h3 class="text-lg font-semibold text-slate-900" data-task-title>Add Task</h3>
+            <button type="button" data-task-close class="!bg-transparent !text-slate-500 hover:!text-slate-500 active:!text-slate-500 focus:!text-slate-500 focus-visible:!text-slate-500">
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+          <div class="px-4 py-5 space-y-4 text-left">
+            <div class="space-y-2">
+              <label class="text-sm font-medium text-slate-700">Task Type</label>
+              <select class="w-full rounded border border-slate-300 px-3 py-2 text-sm text-slate-700 bg-white">
+                <option>Urgent Call</option>
+                <option>Follow Up</option>
+                <option>General</option>
+              </select>
+            </div>
+            <div class="space-y-2">
+              <label class="text-sm font-medium text-slate-700">Subject</label>
+              <input type="text" class="w-full rounded border border-slate-300 px-3 py-2 text-sm text-slate-700" />
+            </div>
+            <div class="space-y-2">
+              <label class="text-sm font-medium text-slate-700">Assignee</label>
+              <div class="relative">
+                <input type="text" class="w-full rounded border border-slate-300 px-3 py-2 pr-9 text-sm text-slate-700" />
+                <span class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16Zm10 2-5.2-5.2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </span>
+              </div>
+              <button type="button" class="text-sm text-blue-600 hover:underline">Assign to me</button>
+            </div>
+            <div class="space-y-2">
+              <label class="text-sm font-medium text-slate-700">Due Date/Time</label>
+              <div class="relative">
+                <input type="date" class="w-full rounded border border-slate-300 px-3 py-2 text-sm text-slate-700" />
+              </div>
+            </div>
+            <div class="space-y-2">
+              <label class="text-sm font-medium text-slate-700">Notes</label>
+              <textarea class="w-full rounded border border-slate-300 px-3 py-2 text-sm text-slate-700 min-h-[120px]"></textarea>
+            </div>
+          </div>
+          <div class="px-4 py-4 border-t border-slate-200 flex justify-end gap-3">
+            <button type="button" data-task-cancel class="px-4 py-2 text-sm font-medium text-slate-600 hover:!text-slate-600">Cancel</button>
+            <button type="button" data-task-confirm class="px-4 py-2 rounded bg-[#003882] text-sm font-medium text-white hover:!bg-[#003882]">Add Task & Notify</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+
+    const hide = () => {
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+      document.body.style.overflow = "";
+    };
+    const show = () => {
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+      document.body.style.overflow = "hidden";
+    };
+
+    if (!modal.dataset.boundTaskModal) {
+      modal.dataset.boundTaskModal = "true";
+      modal.querySelector("[data-task-close]")?.addEventListener("click", hide);
+      modal.querySelector("[data-task-cancel]")?.addEventListener("click", hide);
+      modal
+        .querySelector("[data-task-confirm]")
+        ?.addEventListener("click", hide);
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) hide();
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && !modal.classList.contains("hidden")) hide();
+      });
+    }
+
+    this._taskModal = { modal, show, hide };
+    return this._taskModal;
+  }
+
+  showTaskModal(rowId = "") {
+    const inst = this.ensureTaskModal();
+    const modal = inst?.modal;
+    const titleEl = modal?.querySelector("[data-task-title]");
+    const cleaned = this.normalizeUniqueId(rowId);
+    if (titleEl) {
+      titleEl.textContent = cleaned
+        ? `Add Task to [Job #${cleaned}]`
+        : "Add Task";
+    }
     inst?.show?.();
   }
 
@@ -690,6 +818,23 @@ export class DashboardController {
     if (!normalized) return;
     this.pendingDelete = { tab: this.currentTab, ids: [normalized] };
     this.showBatchDeleteModal();
+  }
+
+  updateBatchDeleteModalContent() {
+    const modal = this.ensureBatchDeleteModal()?.modal;
+    if (!modal) return;
+    const titleEl = modal.querySelector("[data-batch-delete-title]");
+    const msgEl = modal.querySelector("[data-batch-delete-message]");
+    const pending = this.pendingDelete;
+    const isSingle = Array.isArray(pending?.ids) && pending.ids.length === 1;
+    if (titleEl) {
+      titleEl.textContent = isSingle ? "Confirm Delete" : "Confirm Batch Delete";
+    }
+    if (msgEl) {
+      msgEl.textContent = isSingle
+        ? "Delete this record? This cannot be undone."
+        : "Delete the selected rows? This cannot be undone.";
+    }
   }
 
   async executeDelete() {

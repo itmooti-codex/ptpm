@@ -1578,6 +1578,15 @@ export class DashboardView {
         window.App?.controllers?.dashboard?.queueSingleDelete?.(rowId);
         return;
       }
+      const addIcon = e.target.closest("svg#add-icon");
+      if (addIcon) {
+        e.preventDefault();
+        e.stopPropagation();
+        const row = addIcon.closest("tr");
+        const rowId = row?.dataset?.uniqueId || "";
+        window.App?.controllers?.dashboard?.showTaskModal?.(rowId);
+        return;
+      }
       const svgIcon = e.target.closest("svg#view-icon");
       if (!svgIcon) return;
 
