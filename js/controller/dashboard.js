@@ -163,6 +163,7 @@ export class DashboardController {
       };
     });
 
+    this.serviceProviderLabelById = new Map();
     list.innerHTML = "";
     const allItem = document.createElement("li");
     allItem.className = "px-2 py-1 flex items-center gap-2";
@@ -172,6 +173,7 @@ export class DashboardController {
 
     mapped.forEach((item) => {
       if (!item.account_name || item.id == null || item.id === "") return;
+      this.serviceProviderLabelById.set(String(item.id), item.label);
       const slug = String(item.account_name)
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, "-");
@@ -1210,7 +1212,7 @@ export class DashboardController {
       return;
     }
 
-    const title = document.title || "Dashboard Table";
+    const title = "Job List";
     const styles = `
       <style>
         :root { color-scheme: light; }
@@ -1227,7 +1229,7 @@ export class DashboardController {
 
     printWindow.document.open();
     printWindow.document.write(
-      `<!doctype html><html><head><title>${title}</title>${styles}</head><body>${printableTable.outerHTML}</body></html>`
+      `<!doctype html><html><head><title>${title}</title>${styles}</head><body><h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#0f172a;">${title}</h1>${printableTable.outerHTML}</body></html>`
     );
     printWindow.document.close();
     printWindow.focus();
@@ -1805,6 +1807,21 @@ export class DashboardController {
           .map((c) => (c.value || "").trim())
           .filter(Boolean)
       : [];
+    const minEl = document.getElementById("price-min");
+    const maxEl = document.getElementById("price-max");
+    const minVal = toNum(val("price-min"));
+    const maxVal = toNum(val("price-max"));
+    const minDefault = minEl ? toNum(minEl.min) : null;
+    const maxDefault = maxEl ? toNum(maxEl.max) : null;
+    const priceMin =
+      minVal != null && (minDefault == null || minVal !== minDefault)
+        ? minVal
+        : null;
+    const priceMax =
+      maxVal != null && (maxDefault == null || maxVal !== maxDefault)
+        ? maxVal
+        : null;
+
     return {
       // Global
       global: nz(val("global-search")),
@@ -1828,8 +1845,8 @@ export class DashboardController {
       // Notes
       recommendation: nz(val("filter-recommendation")),
       // Ranges
-      priceMin: toNum(val("price-min")),
-      priceMax: toNum(val("price-max")),
+      priceMin,
+      priceMax,
       // Status list
       statuses,
       // Dates (generic range shown in UI)
@@ -1882,7 +1899,11 @@ export class DashboardController {
     addChip(
       "serviceProviders",
       "Service Provider",
-      filters.serviceProviders || []
+      (filters.serviceProviders || []).map((id) => {
+        const label =
+          this.serviceProviderLabelById?.get(String(id)) ?? String(id);
+        return label;
+      })
     );
     addChip("accountName", "Account Name", filters.accountName);
     addChip("resident", "Resident", filters.resident);
