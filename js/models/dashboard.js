@@ -840,9 +840,9 @@ export class DashboardModel {
 
     let minPrice = null;
     let maxPrice = null;
-    if (f.minPrice != 0 && f.maxPrice != 10000) {
-      minPrice = f.minPrice;
-      maxPrice = f.maxPrice;
+    if (f.priceMin != 0 && f.priceMax != 10000) {
+      minPrice = f.priceMin;
+      maxPrice = f.priceMax;
     }
 
     this.activeJobsQuery = ptpmJobModel.query();
@@ -862,13 +862,16 @@ export class DashboardModel {
       );
     }
 
-    if (Array.isArray(f.statuses) && f.statuses.length) {
-      this.activeJobsQuery = this.activeJobsQuery.andWhere(
-        "quote_status",
-        "in",
-        f.statuses
-      );
-    }
+    // Default to "Booked" and "In Progress" for active jobs if no statuses specified
+    const activeJobStatuses = (Array.isArray(f.statuses) && f.statuses.length)
+      ? f.statuses
+      : ["Booked", "In Progress"];
+
+    this.activeJobsQuery = this.activeJobsQuery.andWhere(
+      "job_status",
+      "in",
+      activeJobStatuses
+    );
 
     if (Array.isArray(f.serviceProviders) && f.serviceProviders.length) {
       this.activeJobsQuery = this.activeJobsQuery.andWhere(
@@ -953,7 +956,7 @@ export class DashboardModel {
         }
       );
     }
-    if (f.source) {
+    if (Array.isArray(f.source) && f.source.length) {
       this.activeJobsQuery = this.activeJobsQuery.andWhere(
         "Inquiry_Record",
         (q) => {
@@ -962,21 +965,17 @@ export class DashboardModel {
       );
     }
 
-    this.activeJobsQuery = this.applyIdRange(this.activeJobsQuery);
-
-    this.paymentQuery = this.applyIdRange(
+    this.activeJobsQuery = this.applyIdRange(
       this.activeJobsQuery
         .deSelectAll()
-        .andWhereNot("job_status", "completed")
-        .andWhereNot("job_status", "cancelled")
         .select([
+          "id",
           "Unique_ID",
-          "Invoice_Number",
-          "Invoice_Date",
-          "Due_Date",
-          "Invoice_Total",
-          "Bill_Time_Paid",
-          "Xero_Invoice_Status",
+          "date_started",
+          "date_completed",
+          "quote_total",
+          "job_status",
+          "Date_Booked",
         ])
         .include("Client_Individual", (q) =>
           q.select([
@@ -999,7 +998,7 @@ export class DashboardModel {
           q.deSelectAll().select(["name", "type"])
         )
         .include("Inquiry_Record", (q) =>
-          q.deSelectAll().select(["inquiry_status", "type", "how_did_you_hear"])
+          q.deSelectAll().select(["inquiry_status", "type", "how_did_you_hear", "unique_id"])
         )
         .include("Inquiry_Record", (q) =>
           q.include("Service_Inquiry", (d) =>
@@ -1247,6 +1246,72 @@ export class DashboardModel {
     }
   }
 
+  async fetchAllServiceProviderDetails() {
+    const model = window.ptpmServiceProviderModel;
+    if (!model || typeof model.query !== "function") return [];
+    try {
+      const allFields = [
+        "id", "unique_id", "account_name", "business_entity_name", "status", "type",
+        "abn", "gst_registered", "bsb", "account_number",
+        "mobile_number", "work_email", "emergency_contact_number",
+        "workload_capacity", "job_rate_percentage",
+        "jobs_in_progress", "completed_jobs_last_30_days", "new_jobs_last_30_days",
+        "call_backs_last_30_days", "total_inquiries", "inquiries",
+        "quotes_jobs", "scheduled_visits",
+        "busy", "looking", "ok",
+        "accepted_payment", "declined_payment", "pending_payment",
+        "bill_items_to_be_paid_count", "bill_items_to_be_paid_total",
+        "bill_items_to_be_processed_count", "bill_items_to_be_processed_total",
+        "last_batch_code", "next_batch_code", "process_next_batch",
+        "last_bill_date", "last_bill_due_date", "last_bill_paid_date",
+        "next_bill_date", "next_bill_due_date",
+        "materials_total_deductions_owed", "materials_total_reimbursements_owed",
+        "materials_non_job_deductions_to_be_paid", "materials_non_job_reimbursements_to_be_paid",
+        "total_non_job_materials_balance", "process_non_job_materials_owed",
+        "memos_comments", "approval_by_admin",
+        "google_calendar_id", "contact_information_id",
+        "xero_contact_id", "xero_bill_account_code", "xero_bill_item_code",
+        "xero_tax_rate", "xero_bill_pdf", "xero_api_response",
+        "bulk_email_status", "bulk_sms_status", "shareable_link",
+        "created_at"
+      ];
+
+      const query = model
+        .query()
+        .deSelectAll()
+        .select(allFields)
+        .noDestroy();
+      query.getOrInitQueryCalc?.();
+      const result = await query.fetchDirect().toPromise();
+
+      // Debug: log the raw result structure
+      console.log("[fetchAllServiceProviderDetails] Raw result:", result);
+
+      // Try to extract data from various possible locations
+      const direct = Array.isArray(result?.resp) ? result.resp : result?.resp || [];
+      if (direct.length) {
+        console.log("[fetchAllServiceProviderDetails] Found data in result.resp");
+        return direct;
+      }
+
+      const payload = Array.isArray(result?.payload) ? result.payload : [];
+      console.log("[fetchAllServiceProviderDetails] Payload:", payload);
+
+      const gqlBlock =
+        payload.find((p) => Array.isArray(p?.data?.calcServiceProviders)) ||
+        payload[0];
+      console.log("[fetchAllServiceProviderDetails] gqlBlock:", gqlBlock);
+
+      const gqlList = gqlBlock?.data?.calcServiceProviders || [];
+      console.log("[fetchAllServiceProviderDetails] gqlList:", gqlList);
+
+      return Array.isArray(gqlList) ? gqlList : [];
+    } catch (err) {
+      console.error("[DashboardModel] fetchAllServiceProviderDetails failed", err);
+      return [];
+    }
+  }
+
   async createTask(payload = {}) {
     const model = window.ptpmTaskModel;
     if (!model || typeof model.mutation !== "function") return null;
@@ -1266,6 +1331,44 @@ export class DashboardModel {
     query.getOrInitQueryCalc?.();
     let result = await query.fetchDirect().toPromise();
     return result;
+  }
+
+  async fetchInquiryUniqueIdFromJob(jobId) {
+    try {
+      const query = ptpmJobModel
+        .query()
+        .where("id", jobId)
+        .deSelectAll()
+        .select(["id"])
+        .include("Inquiry_Record", (q) => {
+          q.deSelectAll().select(["unique_id"]);
+        })
+        .noDestroy();
+      query.getOrInitQueryCalc?.();
+      const result = await query.fetchDirect().toPromise();
+
+      // Extract the inquiry unique_id from the result
+      const jobs = Array.isArray(result?.resp) ? result.resp : [];
+      if (jobs.length > 0) {
+        const job = jobs[0];
+        const inquiryUniqueId = job?.Inquiry_Record?.unique_id || job?.inquiry_record?.unique_id;
+        return inquiryUniqueId || null;
+      }
+
+      // Fallback: check payload structure
+      const payload = Array.isArray(result?.payload) ? result.payload : [];
+      const gqlBlock = payload.find((p) => Array.isArray(p?.data?.calcJobs)) || payload[0];
+      const gqlList = gqlBlock?.data?.calcJobs || [];
+      if (gqlList.length > 0) {
+        const job = gqlList[0];
+        return job?.Inquiry_Record?.unique_id || job?.inquiry_record?.unique_id || null;
+      }
+
+      return null;
+    } catch (err) {
+      console.error("[DashboardModel] fetchInquiryUniqueIdFromJob failed", err);
+      return null;
+    }
   }
 
   async fetchNotification(callback) {

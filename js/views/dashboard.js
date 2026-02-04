@@ -100,6 +100,14 @@ export function renderDynamicTable({
     rows.forEach((row, rowIndex) => {
       const tr = document.createElement("tr");
       tr.setAttribute("data-unique-id", row.id);
+      // Store job ID for non-inquiry tabs (quotes, jobs, payments)
+      if (row.meta?.jobId) {
+        tr.setAttribute("data-job-id", row.meta.jobId);
+      }
+      // Store deal ID for inquiry tab
+      if (row.meta?.dealId) {
+        tr.setAttribute("data-deal-id", row.meta.dealId);
+      }
       const zebraClass = zebra
         ? rowIndex % 2 === 0
           ? "bg-white"
@@ -1604,16 +1612,53 @@ export class DashboardView {
       const svgIcon = e.target.closest("svg#view-icon");
       if (!svgIcon) return;
 
-      const currentTab = window.App?.controllers?.dashboard?.currentTab;
-      if (currentTab !== "inquiry") return;
+      e.preventDefault();
+      e.stopPropagation();
 
       const row = svgIcon.closest("tr");
       if (!row) return;
 
-      const rowId = row.dataset.uniqueId?.replace(/^#/, "").trim();
-      const fallbackId = "973F045";
-      const targetId = rowId || fallbackId;
-      window.location.href = `https://my.awesomate.pro/inquiry-details/${targetId}`;
+      const currentTab = window.App?.controllers?.dashboard?.currentTab;
+      const controller = window.App?.controllers?.dashboard;
+
+      if (currentTab === "inquiry") {
+        // For inquiry tab, use the unique_id directly
+        const rowId = row.dataset.uniqueId?.replace(/^#/, "").trim();
+        if (rowId) {
+          window.location.href = `https://my.awesomate.pro/inquiry-details/${rowId}`;
+        }
+      } else {
+        // For other tabs (quote, jobs, payment), fetch inquiry unique_id from job
+        const jobId = row.dataset.jobId;
+        if (!jobId) {
+          controller?.view?.showToast?.({
+            title: "View Failed",
+            message: "Job ID not found for this record."
+          });
+          return;
+        }
+
+        // Fetch inquiry unique_id from the job
+        (async () => {
+          try {
+            const inquiryUniqueId = await controller?.model?.fetchInquiryUniqueIdFromJob?.(jobId);
+            if (inquiryUniqueId) {
+              window.location.href = `https://my.awesomate.pro/inquiry-details/${inquiryUniqueId}`;
+            } else {
+              controller?.view?.showToast?.({
+                title: "View Failed",
+                message: "Inquiry record for this job does not exist."
+              });
+            }
+          } catch (err) {
+            console.error("Failed to fetch inquiry unique_id:", err);
+            controller?.view?.showToast?.({
+              title: "View Failed",
+              message: "Failed to load inquiry details."
+            });
+          }
+        })();
+      }
     });
   }
 

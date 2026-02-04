@@ -72,7 +72,7 @@ export class DashboardController {
       "Other",
     ];
 
-    this.activeJobStatuses = [];
+    this.activeJobStatuses = ["Booked", "In Progress"];
 
     // Bind once so we can add/remove listeners cleanly
     this.onCalendarClick = this.onCalendarClick.bind(this);
@@ -423,26 +423,94 @@ export class DashboardController {
     const btn = document.getElementById("print-btn");
     if (!btn) return;
 
+    const wrapper = document.getElementById("print-wrapper");
+    const popup = document.getElementById("print-popup");
+    if (!wrapper || !popup) return;
+
     const old = this._printHandlers;
     if (old && old.btn) {
       old.btn.removeEventListener("click", old.onClick);
       old.btn.removeEventListener("keydown", old.onKeyDown);
     }
 
+    const positionPopup = () => {
+      const rect = btn.getBoundingClientRect();
+      const gap = 8;
+      popup.style.top = `${rect.bottom + window.scrollY + gap}px`;
+      popup.style.left = `${rect.left + window.scrollX}px`;
+    };
+
+    const showPopup = () => {
+      positionPopup();
+      wrapper.classList.remove("hidden");
+      btn.setAttribute("aria-expanded", "true");
+    };
+
+    const hidePopup = () => {
+      wrapper.classList.add("hidden");
+      btn.setAttribute("aria-expanded", "false");
+    };
+
     const onClick = (e) => {
       e.preventDefault();
-      this.printCurrentTable();
+      e.stopPropagation();
+      const isHidden = wrapper.classList.contains("hidden");
+      if (isHidden) showPopup();
+      else hidePopup();
     };
 
     const onKeyDown = (e) => {
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
-        this.printCurrentTable();
+        onClick(e);
       }
     };
 
     btn.addEventListener("click", onClick);
     btn.addEventListener("keydown", onKeyDown);
+
+    // Close when clicking outside the popup
+    wrapper.addEventListener("click", (e) => {
+      if (!popup.contains(e.target)) {
+        hidePopup();
+      }
+    });
+
+    // Prevent clicks inside popup from closing it
+    popup.addEventListener("click", (e) => {
+      e.stopPropagation();
+    });
+
+    // Print List (PDF) action - existing functionality
+    const printPdfBtn = document.getElementById("print-list-pdf-action");
+    if (printPdfBtn) {
+      printPdfBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        hidePopup();
+        this.printCurrentTable();
+      });
+    }
+
+    // Ecoaccess Report action - exports current table to XLSX
+    const ecoAccessBtn = document.getElementById("print-ecoaccess-action");
+    if (ecoAccessBtn) {
+      ecoAccessBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        hidePopup();
+        this.exportTableToXlsx();
+      });
+    }
+
+    // Serviceman's List action - exports service provider data to XLSX
+    const servicemanListBtn = document.getElementById("print-serviceman-list-action");
+    if (servicemanListBtn) {
+      servicemanListBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        hidePopup();
+        this.exportServicemanListToXlsx();
+      });
+    }
+
     this._printHandlers = { btn, onClick, onKeyDown };
   }
 
@@ -473,8 +541,18 @@ export class DashboardController {
       else hidePopup();
     });
 
-    wrapper?.addEventListener("click", () => {
-      btn.setAttribute("aria-expanded", "false");
+    // Close when clicking outside the popup
+    wrapper?.addEventListener("click", (e) => {
+      const popup = document.getElementById("batch-actions-popup");
+      if (!popup?.contains(e.target)) {
+        hidePopup();
+      }
+    });
+
+    // Prevent clicks inside popup from closing it
+    const popup = document.getElementById("batch-actions-popup");
+    popup?.addEventListener("click", (e) => {
+      e.stopPropagation();
     });
 
     const menuBtn = document.getElementById("batch-delete-action");
@@ -483,6 +561,50 @@ export class DashboardController {
         e.preventDefault();
         hidePopup();
         this.enableBatchDeleteMode();
+      });
+    }
+
+    // Jobs To Check action - placeholder for future implementation
+    const jobsToCheckBtn = document.getElementById("batch-jobs-to-check-action");
+    if (jobsToCheckBtn) {
+      jobsToCheckBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        hidePopup();
+        // TODO: Implement Jobs To Check functionality
+        console.log("Jobs To Check clicked - to be implemented");
+      });
+    }
+
+    // Email List to Serviceman action - placeholder for future implementation
+    const emailServicemanBtn = document.getElementById("batch-email-serviceman-action");
+    if (emailServicemanBtn) {
+      emailServicemanBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        hidePopup();
+        // TODO: Implement Email List to Serviceman functionality
+        console.log("Email List to Serviceman clicked - to be implemented");
+      });
+    }
+
+    // List Unpaid Invoices action - placeholder for future implementation
+    const unpaidInvoicesBtn = document.getElementById("batch-unpaid-invoices-action");
+    if (unpaidInvoicesBtn) {
+      unpaidInvoicesBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        hidePopup();
+        // TODO: Implement List Unpaid Invoices functionality
+        console.log("List Unpaid Invoices clicked - to be implemented");
+      });
+    }
+
+    // List Part Payments action - placeholder for future implementation
+    const partPaymentsBtn = document.getElementById("batch-part-payments-action");
+    if (partPaymentsBtn) {
+      partPaymentsBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        hidePopup();
+        // TODO: Implement List Part Payments functionality
+        console.log("List Part Payments clicked - to be implemented");
       });
     }
 
@@ -1257,6 +1379,192 @@ export class DashboardController {
     setTimeout(triggerPrint, 300);
   }
 
+  exportTableToXlsx() {
+    const container = document.getElementById("inquiry-table-container");
+    const table = container?.querySelector("table");
+    if (!table) {
+      this.view?.showToast?.({ title: "Export Failed", message: "No table available to export." });
+      return;
+    }
+
+    if (typeof XLSX === "undefined") {
+      this.view?.showToast?.({ title: "Export Failed", message: "XLSX library not loaded." });
+      return;
+    }
+
+    const headerCells = Array.from(table.querySelectorAll("thead th"));
+    const headers = headerCells.map((th) =>
+      (th.dataset.col || th.textContent || "").toString().trim()
+    );
+    const normalize = (v) => v.toString().trim().toLowerCase();
+    const actionIndex = headers.findIndex((h) => normalize(h) === "action");
+    const clientIndex = headers.findIndex((h) => normalize(h) === "client info");
+    const batchIndex = headerCells.findIndex((th, idx) => {
+      if (idx === actionIndex) return false;
+      return (
+        th.querySelector("input[data-batch-select-all]") ||
+        (normalize(headers[idx] || "") === "" && th.querySelector("input[type='checkbox']"))
+      );
+    });
+
+    const exportHeaders = [];
+    headers.forEach((label, idx) => {
+      if (idx === actionIndex || idx === batchIndex) return;
+      if (idx === clientIndex) {
+        exportHeaders.push("Client Name", "Client Phone", "Client Email", "Client Address");
+        return;
+      }
+      exportHeaders.push(label || `Column ${idx + 1}`);
+    });
+
+    const normalizeText = (text) =>
+      text.replace(/\s+/g, " ").replace(/\u00a0/g, " ").trim();
+
+    const bodyRows = Array.from(table.querySelectorAll("tbody tr"));
+    const exportData = [exportHeaders];
+
+    bodyRows.forEach((row) => {
+      const cells = Array.from(row.children);
+      const isEmptyState =
+        cells.length === 1 && cells[0].tagName === "TD" && (cells[0].colSpan || 0) > 1;
+
+      if (isEmptyState) return;
+
+      const rowData = [];
+      cells.forEach((cell, idx) => {
+        if (idx === actionIndex || idx === batchIndex) return;
+
+        if (idx === clientIndex) {
+          const name =
+            cell.querySelector("div")?.textContent?.trim() ||
+            normalizeText(cell.textContent || "") ||
+            "-";
+          const phone =
+            cell.querySelector('a[data-action="call"]')?.getAttribute("title")?.trim() || "-";
+          const email =
+            cell.querySelector('a[data-action="email"]')?.getAttribute("title")?.trim() || "-";
+          const address =
+            cell.querySelector('a[data-action="address"]')?.getAttribute("title")?.trim() || "-";
+          rowData.push(name, phone, email, address);
+          return;
+        }
+
+        rowData.push(normalizeText(cell.textContent || ""));
+      });
+
+      if (rowData.length > 0) {
+        exportData.push(rowData);
+      }
+    });
+
+    const ws = XLSX.utils.aoa_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Ecoaccess Report");
+
+    const tabName = this.currentTab || "report";
+    const date = new Date().toISOString().split("T")[0];
+    const filename = `ecoaccess_report_${tabName}_${date}.xlsx`;
+
+    XLSX.writeFile(wb, filename);
+    this.view?.showToast?.({ title: "Export Complete", message: `Exported to ${filename}` });
+  }
+
+  async exportServicemanListToXlsx() {
+    if (typeof XLSX === "undefined") {
+      this.view?.showToast?.({ title: "Export Failed", message: "XLSX library not loaded." });
+      return;
+    }
+
+    try {
+      showLoader(this.loaderElement, this.loaderMessageEl, this.loaderCounter, "Fetching service providers...");
+
+      const serviceProviders = await this.model.fetchAllServiceProviderDetails();
+
+      // Debug: log the raw data structure
+      console.log("[exportServicemanListToXlsx] Raw data:", serviceProviders);
+      if (serviceProviders?.[0]) {
+        console.log("[exportServicemanListToXlsx] First record keys:", Object.keys(serviceProviders[0]));
+        console.log("[exportServicemanListToXlsx] First record:", serviceProviders[0]);
+      }
+
+      if (!serviceProviders || serviceProviders.length === 0) {
+        this.view?.showToast?.({ title: "Export Failed", message: "No service providers found." });
+        return;
+      }
+
+      const headers = [
+        "ID", "Unique_ID", "Account_Name", "Business_Entity_Name", "Status", "Type",
+        "ABN", "GST_Registered", "BSB", "Account_Number",
+        "Mobile_Number", "Work_Email", "Emergency_Contact_Number",
+        "Workload_Capacity", "Job_Rate_Percentage",
+        "Jobs_In_Progress", "Completed_Jobs_Last_30_Days", "New_Jobs_Last_30_Days",
+        "Call_Backs_Last_30_Days", "Total_Inquiries", "Inquiries",
+        "Quotes_Jobs", "Scheduled_Visits",
+        "Busy", "Looking", "OK",
+        "Accepted_Payment", "Declined_Payment", "Pending_Payment",
+        "Bill_Items_to_be_Paid_Count", "Bill_Items_To_Be_Paid_Total",
+        "Bill_Items_To_Be_Processed_Count", "Bill_Items_To_Be_Processed_Total",
+        "Last_Batch_Code", "Next_Batch_Code", "Process_Next_Batch",
+        "Last_Bill_Date", "Last_Bill_Due_Date", "Last_Bill_Paid_Date",
+        "Next_Bill_Date", "Next_Bill_Due_Date",
+        "Materials_Total_Deductions_Owed", "Materials_Total_Reimbursements_Owed",
+        "Materials_Non_Job_Deductions_To_Be_Paid", "Materials_Non_Job_Reimbursements_To_Be_Paid",
+        "Total_Non_Job_Materials_Balance", "Process_Non_Job_Materials_Owed",
+        "Memos_Comments", "Approval_By_Admin",
+        "Google_Calendar_ID", "Contact_Information_ID",
+        "Xero_Contact_ID", "Xero_Bill_Account_Code", "Xero_Bill_Item_Code",
+        "Xero_Tax_Rate", "Xero_Bill_PDF", "Xero_API_Response",
+        "Bulk_Email_Status", "Bulk_SMS_Status", "Shareable_Link",
+        "Date_Added"
+      ];
+
+      // Helper to find field value with flexible key matching
+      const getFieldValue = (obj, header) => {
+        if (!obj) return "";
+        // Try exact header match first
+        if (obj[header] !== undefined) return obj[header];
+        // Try lowercase version
+        const lower = header.toLowerCase();
+        if (obj[lower] !== undefined) return obj[lower];
+        // Try with underscores removed
+        const noUnder = header.replace(/_/g, "").toLowerCase();
+        for (const key of Object.keys(obj)) {
+          if (key.replace(/_/g, "").toLowerCase() === noUnder) {
+            return obj[key];
+          }
+        }
+        return "";
+      };
+
+      const exportData = [headers];
+
+      serviceProviders.forEach((sp) => {
+        const row = headers.map((header) => {
+          const value = getFieldValue(sp, header);
+          if (value === null || value === undefined) return "";
+          if (typeof value === "object") return JSON.stringify(value);
+          return String(value);
+        });
+        exportData.push(row);
+      });
+
+      const ws = XLSX.utils.aoa_to_sheet(exportData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Serviceman List");
+
+      const date = new Date().toISOString().split("T")[0];
+      const filename = `serviceman_list_${date}.xlsx`;
+
+      XLSX.writeFile(wb, filename);
+      this.view?.showToast?.({ title: "Export Complete", message: `Exported to ${filename}` });
+    } catch (err) {
+      console.error("Export failed:", err);
+      this.view?.showToast?.({ title: "Export Failed", message: "Failed to export service providers." });
+    } finally {
+      hideLoader(this.loaderElement, this.loaderCounter);
+    }
+  }
+
   refresh() {
     if (this.currentTab !== "inquiry") return;
     this.renderCalendar();
@@ -1712,10 +2020,10 @@ export class DashboardController {
   async fetchActiveJobsAndRenderTable() {
     try {
       const data =
-        typeof this.model.fetchPayments === "function"
+        typeof this.model.fetchActiveJobs === "function"
           ? await this.model.fetchActiveJobs(this.filters)
           : {};
-      const rows = this.dashboardHelper.mapPaymentRows(data?.rows ?? {});
+      const rows = this.dashboardHelper.mapJobRows(data?.rows ?? {});
       this.deals = rows;
       this.reRenderActiveTab();
       return rows;

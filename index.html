@@ -52,6 +52,8 @@
     />
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <!-- SheetJS for Excel export -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
   </head>
   <body
     class="op-reset bg-slate-100 font-sans text-slate-900 hover:!bg-slate-100 active:!bg-slate-100 hover:!text-slate-900 active:!text-slate-900 hover:bg-slate-100 active:bg-slate-100 focus:bg-slate-100 focus-visible:bg-slate-100 hover:text-slate-900 active:text-slate-900 focus:text-slate-900 focus-visible:text-slate-900"
@@ -582,6 +584,46 @@
                   </svg>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Print Dropdown Menu -->
+        <div id="print-wrapper" class="fixed inset-0 z-50 hidden">
+          <div id="print-popup" class="absolute w-56 bg-white rounded-lg shadow-xl border border-slate-200 overflow-hidden">
+            <div class="flex flex-col text-sm text-slate-700">
+              <button id="print-list-pdf-action" class="flex gap-2 px-4 py-3 text-left w-full hover:bg-slate-50 border-b border-slate-100">
+                Print List (PDF)
+              </button>
+              <button id="print-ecoaccess-action" class="flex gap-2 px-4 py-3 text-left w-full hover:bg-slate-50 border-b border-slate-100">
+                Ecoaccess Report (.xlsx)
+              </button>
+              <button id="print-serviceman-list-action" class="flex gap-2 px-4 py-3 text-left w-full hover:bg-slate-50">
+                Serviceman's List (.xlsx)
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Batch Actions Dropdown Menu -->
+        <div id="batch-actions-wrapper" class="fixed inset-0 z-50 hidden">
+          <div id="batch-actions-popup" class="absolute w-56 bg-white rounded-lg shadow-xl border border-slate-200 overflow-hidden">
+            <div class="flex flex-col text-sm text-slate-700">
+              <button id="batch-jobs-to-check-action" class="flex gap-2 px-4 py-3 text-left w-full hover:bg-slate-50 border-b border-slate-100">
+                Jobs To Check
+              </button>
+              <button id="batch-email-serviceman-action" class="flex gap-2 px-4 py-3 text-left w-full hover:bg-slate-50 border-b border-slate-100">
+                Email List to Serviceman
+              </button>
+              <button id="batch-unpaid-invoices-action" class="flex gap-2 px-4 py-3 text-left w-full hover:bg-slate-50 border-b border-slate-100">
+                List Unpaid Invoices
+              </button>
+              <button id="batch-part-payments-action" class="flex gap-2 px-4 py-3 text-left w-full hover:bg-slate-50 border-b border-slate-100">
+                List Part Payments
+              </button>
+              <button id="batch-delete-action" class="flex gap-2 px-4 py-3 text-left w-full text-red-600 hover:bg-red-50">
+                Delete Selected
+              </button>
             </div>
           </div>
         </div>
