@@ -109,7 +109,7 @@ a[data-action] svg {
 }
 
 .customTextInputWrapper input{
-  height: 0px !important;
+  height: unset !important;
 }
 
 .customTextInputWrapper input,
@@ -130,7 +130,7 @@ a[data-action] svg {
 .customDropdDownWrapper select {
   appearance: none !important;
   display: block !important;
-  height: 0px !important;
+  height: unset !important;
 }
 
 .customTextAreaWrapper textarea {
