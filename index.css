@@ -77,3 +77,57 @@ a[data-action] svg {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* Task modal input wrappers */
+.customTextInputWrapper,
+.customStaeInputWrapper,
+.customDropdDownWrapper,
+.customTextAreaWrapper {
+  padding: 8px 10px !important;
+  border: 1px solid #d3d7e2 !important;
+  border-radius: 4px !important;
+  box-shadow: none !important;
+  outline: none !important;
+  background: #fff !important;
+}
+
+.customTextInputWrapper:hover,
+.customTextInputWrapper:focus-within,
+.customTextInputWrapper:active,
+.customStaeInputWrapper:hover,
+.customStaeInputWrapper:focus-within,
+.customStaeInputWrapper:active,
+.customDropdDownWrapper:hover,
+.customDropdDownWrapper:focus-within,
+.customDropdDownWrapper:active,
+.customTextAreaWrapper:hover,
+.customTextAreaWrapper:focus-within,
+.customTextAreaWrapper:active {
+  border: 1px solid #0391fc !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.customTextInputWrapper input,
+.customStaeInputWrapper input,
+.customDropdDownWrapper select,
+.customTextAreaWrapper textarea {
+  width: 100% !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  color: #0f172a !important;
+  background: transparent !important;
+  font-size: 14px !important;
+}
+
+.customDropdDownWrapper select {
+  appearance: none !important;
+}
+
+.customTextAreaWrapper textarea {
+  min-height: 140px !important;
+  resize: vertical !important;
+}
