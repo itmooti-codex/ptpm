@@ -182,7 +182,6 @@ export class DashboardView {
         "resident-search-filter",
         "address-filter",
         "account-type-filter",
-        "taken-by-filter",
         "Source-filter",
         "date-filters",
         "quote-number-filter",
@@ -191,11 +190,11 @@ export class DashboardView {
       ],
       inquiry: [
         "status-filter-btn",
+        "service-provider-filter-btn",
         "account-name-filter",
         "resident-search-filter",
         "address-filter",
         "account-type-filter",
-        "taken-by-filter",
         "Source-filter",
       ],
       jobs: [
@@ -205,7 +204,6 @@ export class DashboardView {
         "resident-search-filter",
         "address-filter",
         "account-type-filter",
-        "taken-by-filter",
         "Source-filter",
         "date-filters",
         "quote-number-filter",
@@ -220,7 +218,6 @@ export class DashboardView {
         "resident-search-filter",
         "address-filter",
         "account-type-filter",
-        "taken-by-filter",
         "Source-filter",
         "date-filters",
         "quote-number-filter",
@@ -235,7 +232,6 @@ export class DashboardView {
         "resident-search-filter",
         "address-filter",
         "account-type-filter",
-        "taken-by-filter",
         "Source-filter",
         "date-filters",
         "quote-number-filter",
@@ -412,17 +408,35 @@ export class DashboardView {
       const t = document.createElement("div");
       t.id = "dashboardToast";
       t.className =
-        "hidden fixed top-6 right-6 z-50 max-w-sm w-[360px] bg-white border border-slate-200 shadow-xl rounded-lg";
-      t.innerHTML = `<div class="px-4 py-3 text-sm text-slate-800 flex items-start gap-2 hover:!text-slate-800 active:!text-slate-800  hover:text-slate-800 active:text-slate-800 focus:text-slate-800 focus-visible:text-slate-800"><svg class="w-5 h-5 text-red-500 mt-0.5 hover:!text-red-500 active:!text-red-500 hover:text-red-500 active:text-red-500 focus:text-red-500 focus-visible:text-red-500" viewBox="0 0 24 24" fill="currentColor"><path d="M11 7h2v6h-2zm0 8h2v2h-2z"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg><div id="dashboardToastMsg" class="flex-1"></div></div>`;
+        "hidden fixed top-6 right-6 z-50 w-[360px] rounded-lg border border-emerald-200 bg-emerald-50 shadow-xl";
+      t.innerHTML = `
+        <div class="px-4 py-3 flex items-start gap-3 text-slate-800">
+          <div class="mt-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-emerald-600 text-white">
+            <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M16.704 5.29a1 1 0 010 1.414l-7.07 7.07a1 1 0 01-1.414 0l-3.535-3.535a1 1 0 111.414-1.414l2.828 2.828 6.364-6.364a1 1 0 011.414 0z" clip-rule="evenodd"/>
+            </svg>
+          </div>
+          <div class="flex-1">
+            <div id="dashboardToastTitle" class="text-sm font-semibold text-slate-900"></div>
+            <div id="dashboardToastMsg" class="text-xs text-slate-600"></div>
+          </div>
+        </div>`;
       document.body.appendChild(t);
     }
   }
 
-  showToast(message = "") {
+  showToast(input = "") {
     const wrap = document.getElementById("dashboardToast");
     const msg = document.getElementById("dashboardToastMsg");
-    if (!wrap || !msg) return;
-    msg.textContent = message;
+    const title = document.getElementById("dashboardToastTitle");
+    if (!wrap || !msg || !title) return;
+    if (typeof input === "string") {
+      title.textContent = input;
+      msg.textContent = "";
+    } else {
+      title.textContent = input?.title || "";
+      msg.textContent = input?.message || "";
+    }
     wrap.classList.remove("hidden");
     clearTimeout(this._toastTimer);
     this._toastTimer = setTimeout(() => wrap.classList.add("hidden"), 3000);

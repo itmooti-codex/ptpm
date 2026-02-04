@@ -38,6 +38,8 @@ export class DashboardModel {
     window.ptpmDealModel = plugin.switchTo("PeterpmDeal");
     window.ptpmJobModel = plugin.switchTo("PeterpmJob");
     window.pptmAnnouncementModel = plugin.switchTo("PeterpmAnnouncement");
+    window.ptpmTaskModel = plugin.switchTo("PeterpmTask");
+    window.ptpmServiceProviderModel = plugin.switchTo("PeterpmServiceProvider");
 
     this.dealQuery = null;
     this.quoteQuery = null;
@@ -45,6 +47,7 @@ export class DashboardModel {
     this.paymentQuery = null;
     this.activeJobsQuery = null;
     this.announcementQuery = null;
+    this.serviceProviderQuery = null;
 
     this.announcementSub = null;
 
@@ -233,6 +236,13 @@ export class DashboardModel {
         f.statuses
       );
     }
+    if (Array.isArray(f.serviceProviders) && f.serviceProviders.length) {
+      this.dealQuery = this.dealQuery.andWhere(
+        "service_provider_id",
+        "in",
+        f.serviceProviders
+      );
+    }
     if (
       (f.accountName && f.accountName.trim()) ||
       (Array.isArray(f.accountTypes) && f.accountTypes.length)
@@ -352,10 +362,9 @@ export class DashboardModel {
 
     if (Array.isArray(f.serviceProviders) && f.serviceProviders.length) {
       this.quoteQuery = this.quoteQuery.andWhere(
-        "Primary_Service_Provider",
-        (q) => {
-          q.where("account_name", "in", f.serviceProviders);
-        }
+        "primary_service_provider_id",
+        "in",
+        f.serviceProviders
       );
     }
 
@@ -491,10 +500,9 @@ export class DashboardModel {
 
     if (Array.isArray(f.serviceProviders) && f.serviceProviders.length) {
       this.jobQuery = this.jobQuery.andWhere(
-        "Primary_Service_Provider",
-        (q) => {
-          q.where("account_name", "in", f.serviceProviders);
-        }
+        "primary_service_provider_id",
+        "in",
+        f.serviceProviders
       );
     }
 
@@ -669,10 +677,9 @@ export class DashboardModel {
 
     if (Array.isArray(f.serviceProviders) && f.serviceProviders.length) {
       this.paymentQuery = this.paymentQuery.andWhere(
-        "Primary_Service_Provider",
-        (q) => {
-          q.where("account_name", "in", f.serviceProviders);
-        }
+        "primary_service_provider_id",
+        "in",
+        f.serviceProviders
       );
     }
 
@@ -865,10 +872,9 @@ export class DashboardModel {
 
     if (Array.isArray(f.serviceProviders) && f.serviceProviders.length) {
       this.activeJobsQuery = this.activeJobsQuery.andWhere(
-        "Primary_Service_Provider",
-        (q) => {
-          q.where("account_name", "in", f.serviceProviders);
-        }
+        "primary_service_provider_id",
+        "in",
+        f.serviceProviders
       );
     }
 
@@ -1206,6 +1212,47 @@ export class DashboardModel {
     let query = window.ptpmJobModel.mutation();
     query.createOne({});
     let result = await query.execute(true).toPromise();
+    return result;
+  }
+
+  async fetchServiceProvidersList() {
+    const model = window.ptpmServiceProviderModel;
+    if (!model || typeof model.query !== "function") return [];
+    try {
+      this.serviceProviderQuery = model
+        .query()
+        .deSelectAll()
+        .select(["account_name", "id", "status"])
+        .include("Contact_Information", (q) =>
+          q
+            .deSelectAll()
+            .select(["first_name", "last_name", "id", "profile_image"])
+        )
+        .noDestroy();
+      this.serviceProviderQuery.getOrInitQueryCalc?.();
+      const result = await this.serviceProviderQuery.fetchDirect().toPromise();
+      const direct = Array.isArray(result?.resp)
+        ? result.resp
+        : result?.resp || [];
+      if (direct.length) return direct;
+      const payload = Array.isArray(result?.payload) ? result.payload : [];
+      const gqlBlock =
+        payload.find((p) => Array.isArray(p?.data?.calcServiceProviders)) ||
+        payload[0];
+      const gqlList = gqlBlock?.data?.calcServiceProviders || [];
+      return Array.isArray(gqlList) ? gqlList : [];
+    } catch (err) {
+      console.error("[DashboardModel] fetchServiceProvidersList failed", err);
+      return [];
+    }
+  }
+
+  async createTask(payload = {}) {
+    const model = window.ptpmTaskModel;
+    if (!model || typeof model.mutation !== "function") return null;
+    const query = model.mutation();
+    query.createOne(payload);
+    const result = await query.execute(true).toPromise();
     return result;
   }
 

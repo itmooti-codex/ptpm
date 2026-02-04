@@ -24,6 +24,7 @@ export class DashboardHelper {
     return list.map((data) => {
       return {
         uniqueId: data?.unique_id || null,
+        recordId: data?.id ?? null,
         "date-added": this.formatUnixDate(data?.created_at) || null,
         "inquiry-source": data?.how_did_you_hear || null,
         type: data?.type || null,
@@ -68,6 +69,7 @@ export class DashboardHelper {
       type: r.type ?? "-",
       status: r["inquiry-status"] ?? "-",
       meta: {
+        dealId: r.recordId ?? null,
         address: r["client-address"] ?? null,
         email: r["client-email"] ?? null,
         sms: r["client-smsNumber"] ?? null,
@@ -93,6 +95,7 @@ export class DashboardHelper {
       quoteTotal: item?.quote_total ?? 0,
       quoteStatus: item?.quote_status ?? "Unknown",
       meta: {
+        jobId: item?.id ?? null,
         email: item?.Client_Individual?.email ?? null,
         sms: item?.Client_Individual?.sms_number ?? null,
         address: item?.Property?.address_1 ?? null,
@@ -122,6 +125,7 @@ export class DashboardHelper {
       jobTotal: item?.job_total ?? null,
       jobStatus: item?.job_status ?? "Unknown",
       meta: {
+        jobId: item?.id ?? null,
         email: item?.Client_Individual?.email ?? null,
         sms: item?.Client_Individual?.sms_number ?? null,
         address: item?.Property?.address_1 ?? null,
@@ -151,6 +155,7 @@ export class DashboardHelper {
       serviceApproved: item?.bill_approved_service_provider ?? null,
       adminApproved: item?.bill_approved_admin ?? null,
       meta: {
+        jobId: item?.id ?? null,
         email: item?.Client_Individual?.email ?? null,
         sms: item?.Client_Individual?.sms_number ?? null,
         address: item?.Property?.address_1 ?? null,
@@ -173,6 +178,7 @@ export class DashboardHelper {
       bookedDate: records["date-booked"] ?? null,
       startDate: records["date-started"] ?? null,
       meta: {
+        dealId: records.recordId ?? null,
         address: records["client-address"] ?? null,
       },
     }));

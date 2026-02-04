@@ -125,21 +125,6 @@ export class DashboardController {
     const btn = document.getElementById("service-provider-filter-btn");
     const card = document.getElementById("service-provider-filter-card");
     if (!btn || !card) return;
-    const allToggle = card.querySelector("#sp-all");
-    const boxes = Array.from(
-      card.querySelectorAll('input[type="checkbox"][data-service-provider]')
-    );
-    const syncAll = () => {
-      if (!allToggle) return;
-      allToggle.checked = boxes.every((b) => b.checked);
-    };
-    if (allToggle) {
-      allToggle.addEventListener("change", () => {
-        const v = allToggle.checked;
-        boxes.forEach((b) => (b.checked = v));
-      });
-    }
-    boxes.forEach((b) => b.addEventListener("change", syncAll));
     const toggle = () => card.classList.toggle("hidden");
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -151,6 +136,65 @@ export class DashboardController {
       if (card.contains(t) || btn.contains(t)) return;
       card.classList.add("hidden");
     });
+
+    this.refreshServiceProviderList(card);
+  }
+
+  async refreshServiceProviderList(card) {
+    const list = card.querySelector("ul");
+    if (!list) return;
+    const providers = await this.model?.fetchServiceProvidersList?.();
+    const mapped = (providers || []).map((p) => {
+      const account = p?.account_name || p?.Account_Name || "";
+      const id = p?.id ?? p?.ID ?? "";
+      const first =
+        p?.Contact_Information?.first_name ||
+        p?.Contact_Information_First_Name ||
+        "";
+      const last =
+        p?.Contact_Information?.last_name ||
+        p?.Contact_Information_Last_Name ||
+        "";
+      const displayName = [first, last].filter(Boolean).join(" ");
+      return {
+        account_name: account,
+        id,
+        label: displayName || account,
+      };
+    });
+
+    list.innerHTML = "";
+    const allItem = document.createElement("li");
+    allItem.className = "px-2 py-1 flex items-center gap-2";
+    allItem.innerHTML =
+      '<input id="sp-all" type="checkbox" class="h-4 w-4 accent-[#003882]"><label for="sp-all">All</label>';
+    list.appendChild(allItem);
+
+    mapped.forEach((item) => {
+      if (!item.account_name || item.id == null || item.id === "") return;
+      const slug = String(item.account_name)
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-");
+      const id = `sp-${slug}`;
+      const li = document.createElement("li");
+      li.className = "px-2 py-1 flex items-center gap-2";
+      li.innerHTML = `<input data-service-provider value="${item.id}" id="${id}" type="checkbox" class="h-4 w-4 accent-[#003882]"><label for="${id}">${item.label}</label>`;
+      list.appendChild(li);
+    });
+
+    const allToggle = list.querySelector("#sp-all");
+    const boxes = Array.from(
+      list.querySelectorAll('input[type="checkbox"][data-service-provider]')
+    );
+    const syncAll = () => {
+      if (!allToggle) return;
+      allToggle.checked = boxes.every((b) => b.checked);
+    };
+    allToggle?.addEventListener("change", () => {
+      const v = allToggle.checked;
+      boxes.forEach((b) => (b.checked = v));
+    });
+    boxes.forEach((b) => b.addEventListener("change", syncAll));
   }
 
   initSourceDropdown() {
@@ -727,38 +771,23 @@ export class DashboardController {
           </div>
           <div class="px-4 py-5 space-y-4 text-left">
             <div class="space-y-2">
-              <label class="text-sm font-medium text-slate-700">Task Type</label>
-              <select class="w-full rounded border border-slate-300 px-3 py-2 text-sm text-slate-700 bg-white">
-                <option>Urgent Call</option>
-                <option>Follow Up</option>
-                <option>General</option>
+              <label class="text-sm font-medium text-slate-700">Task subject</label>
+              <input data-task-subject type="text" placeholder="Enter task subject..." class="w-full rounded border border-slate-300 px-3 py-2 text-sm text-slate-700" />
+            </div>
+            <div class="space-y-2">
+              <label class="text-sm font-medium text-slate-700">Due date</label>
+              <div class="relative">
+                <input data-task-date type="date" class="w-full rounded border border-slate-300 px-3 py-2 text-sm text-slate-700" />
+              </div>
+            </div>
+            <div class="space-y-2">
+              <label class="text-sm font-medium text-slate-700">Task assignee</label>
+              <select data-task-assignee class="w-full rounded border border-slate-300 px-3 py-2 text-sm text-slate-700 bg-white">
+                <option value="" selected disabled>Select assignee...</option>
               </select>
             </div>
             <div class="space-y-2">
-              <label class="text-sm font-medium text-slate-700">Subject</label>
-              <input type="text" class="w-full rounded border border-slate-300 px-3 py-2 text-sm text-slate-700" />
-            </div>
-            <div class="space-y-2">
-              <label class="text-sm font-medium text-slate-700">Assignee</label>
-              <div class="relative">
-                <input type="text" class="w-full rounded border border-slate-300 px-3 py-2 pr-9 text-sm text-slate-700" />
-                <span class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16Zm10 2-5.2-5.2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </span>
-              </div>
-              <button type="button" class="text-sm text-blue-600 hover:underline">Assign to me</button>
-            </div>
-            <div class="space-y-2">
-              <label class="text-sm font-medium text-slate-700">Due Date/Time</label>
-              <div class="relative">
-                <input type="date" class="w-full rounded border border-slate-300 px-3 py-2 text-sm text-slate-700" />
-              </div>
-            </div>
-            <div class="space-y-2">
-              <label class="text-sm font-medium text-slate-700">Notes</label>
-              <textarea class="w-full rounded border border-slate-300 px-3 py-2 text-sm text-slate-700 min-h-[120px]"></textarea>
+              <textarea data-task-details placeholder="Enter details..." class="w-full rounded border border-slate-300 px-3 py-2 text-sm text-slate-700 min-h-[140px]"></textarea>
             </div>
           </div>
           <div class="px-4 py-4 border-t border-slate-200 flex justify-end gap-3">
@@ -787,7 +816,9 @@ export class DashboardController {
       modal.querySelector("[data-task-cancel]")?.addEventListener("click", hide);
       modal
         .querySelector("[data-task-confirm]")
-        ?.addEventListener("click", hide);
+        ?.addEventListener("click", () => {
+          this.createTaskFromModal();
+        });
       modal.addEventListener("click", (e) => {
         if (e.target === modal) hide();
       });
@@ -805,12 +836,161 @@ export class DashboardController {
     const modal = inst?.modal;
     const titleEl = modal?.querySelector("[data-task-title]");
     const cleaned = this.normalizeUniqueId(rowId);
+    const row = this.findRowByUniqueId(cleaned);
+    const isInquiry = this.currentTab === "inquiry";
+    const recordId = isInquiry
+      ? row?.meta?.dealId ?? row?.meta?.recordId ?? null
+      : row?.meta?.jobId ?? row?.meta?.recordId ?? null;
+    this.pendingTask = {
+      tab: this.currentTab,
+      uniqueId: cleaned,
+      recordId,
+    };
     if (titleEl) {
       titleEl.textContent = cleaned
         ? `Add Task to [Job #${cleaned}]`
         : "Add Task";
     }
+    this.populateTaskAssignees(modal);
     inst?.show?.();
+  }
+
+  formatTaskDueDate(dateValue) {
+    if (!dateValue) return "";
+    const parsed = new Date(`${dateValue}T00:00:00`);
+    if (Number.isNaN(parsed.getTime())) return dateValue;
+    const today = new Date();
+    const isToday =
+      parsed.getFullYear() === today.getFullYear() &&
+      parsed.getMonth() === today.getMonth() &&
+      parsed.getDate() === today.getDate();
+    if (isToday) return "Today";
+    return parsed.toLocaleDateString(undefined, {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  }
+
+  findRowByUniqueId(uniqueId) {
+    const normalized = this.normalizeUniqueId(uniqueId);
+    const list = Array.isArray(this.deals) ? this.deals : [];
+    return list.find(
+      (row) => this.normalizeUniqueId(row?.id || "") === normalized
+    );
+  }
+
+  async createTaskFromModal() {
+    const inst = this.ensureTaskModal();
+    const modal = inst?.modal;
+    if (!modal) return;
+
+    const subject = modal.querySelector("[data-task-subject]")?.value?.trim();
+    const assigneeId =
+      modal.querySelector("[data-task-assignee]")?.value?.trim() || "";
+    const dateValue = modal.querySelector("[data-task-date]")?.value || "";
+    const details =
+      modal.querySelector("[data-task-details]")?.value?.trim() || "";
+    const recordId = this.pendingTask?.recordId;
+    const isInquiry = this.pendingTask?.tab === "inquiry";
+
+    if (!recordId) {
+      console.warn("[Dashboard] Task target record missing");
+      return;
+    }
+
+    const payload = {
+      assignee_id: assigneeId || null,
+      date_due: dateValue ? Math.floor(new Date(dateValue).getTime() / 1000) : null,
+      details: details || null,
+      ...(subject ? { subject } : {}),
+      ...(isInquiry ? { Deal_id: recordId } : { Job_id: recordId }),
+    };
+
+    try {
+      showLoader(
+        this.loaderElement,
+        this.loaderMessageEl,
+        this.loaderCounter,
+        "Creating task..."
+      );
+      await this.model?.createTask?.(payload);
+      const dueLabel = this.formatTaskDueDate(dateValue);
+      const title = this.pendingTask?.uniqueId
+        ? `Task Added to #${this.pendingTask.uniqueId}`
+        : "Task Added";
+      const message = [
+        subject || "Task created",
+        dueLabel ? `(Due: ${dueLabel})` : "",
+      ]
+        .filter(Boolean)
+        .join(" ");
+      const toastPayload = { title, message };
+      this.view?.showToast?.(toastPayload);
+      window.App?.controllers?.dashboard?.view?.showToast?.(toastPayload);
+      this.resetTaskModalFields(modal);
+      inst?.hide?.();
+    } catch (err) {
+      console.error("[Dashboard] createTask failed", err);
+      const errorMsg =
+        err?.message || "Unable to create task. Please try again.";
+      const toastPayload = { title: "Task Failed", message: errorMsg };
+      this.view?.showToast?.(toastPayload);
+      window.App?.controllers?.dashboard?.view?.showToast?.(toastPayload);
+    } finally {
+      hideLoader(this.loaderElement, this.loaderCounter);
+    }
+  }
+
+  resetTaskModalFields(modal) {
+    modal?.querySelector("[data-task-subject]")?.setAttribute("value", "");
+    const subjectEl = modal?.querySelector("[data-task-subject]");
+    if (subjectEl) subjectEl.value = "";
+    const dateEl = modal?.querySelector("[data-task-date]");
+    if (dateEl) dateEl.value = "";
+    const detailsEl = modal?.querySelector("[data-task-details]");
+    if (detailsEl) detailsEl.value = "";
+    const assigneeEl = modal?.querySelector("[data-task-assignee]");
+    if (assigneeEl) assigneeEl.value = "";
+  }
+
+  async loadTaskAssignees() {
+    if (this._taskAssignees) return this._taskAssignees;
+    try {
+      const resp = await fetch("data/assignees.json", { cache: "no-store" });
+      if (!resp.ok) throw new Error("Failed to load assignees");
+      const data = await resp.json();
+      this._taskAssignees = Array.isArray(data) ? data : [];
+    } catch (err) {
+      this._taskAssignees = [];
+      console.warn("Unable to load assignees.json", err);
+    }
+    return this._taskAssignees;
+  }
+
+  async populateTaskAssignees(modal) {
+    const select = modal?.querySelector("[data-task-assignee]");
+    if (!select) return;
+    const placeholder = select.querySelector("option[value=\"\"]");
+    select.innerHTML = "";
+    if (placeholder) {
+      select.appendChild(placeholder);
+    } else {
+      const opt = document.createElement("option");
+      opt.value = "";
+      opt.disabled = true;
+      opt.selected = true;
+      opt.textContent = "Select assignee...";
+      select.appendChild(opt);
+    }
+    const assignees = await this.loadTaskAssignees();
+    assignees.forEach((assignee) => {
+      if (!assignee || !assignee.id || !assignee.name) return;
+      const opt = document.createElement("option");
+      opt.value = assignee.id;
+      opt.textContent = assignee.name;
+      select.appendChild(opt);
+    });
   }
 
   queueSingleDelete(rowId) {
@@ -853,10 +1033,16 @@ export class DashboardController {
     }
 
     if (!dealIds.length && !jobIds.length) {
-      this.view?.showToast?.("No records selected.");
+      const toastPayload = {
+        title: "Nothing Selected",
+        message: "No records selected.",
+      };
+      this.view?.showToast?.(toastPayload);
+      window.App?.controllers?.dashboard?.view?.showToast?.(toastPayload);
       return;
     }
 
+    const deleteCount = dealIds.length + jobIds.length;
     try {
       showLoader(
         this.loaderElement,
@@ -875,10 +1061,23 @@ export class DashboardController {
       }
 
       await this.handleTabChange(this.currentTab);
-      this.view?.showToast?.("Delete completed.");
+      const toastPayload = {
+        title: "Delete Successful",
+        message:
+          deleteCount === 1
+            ? "1 record deleted."
+            : `${deleteCount} records deleted.`,
+      };
+      this.view?.showToast?.(toastPayload);
+      window.App?.controllers?.dashboard?.view?.showToast?.(toastPayload);
     } catch (err) {
       console.error("Delete failed", err);
-      this.view?.showToast?.("Delete failed. Please try again.");
+      const toastPayload = {
+        title: "Delete Failed",
+        message: "Delete failed. Please try again.",
+      };
+      this.view?.showToast?.(toastPayload);
+      window.App?.controllers?.dashboard?.view?.showToast?.(toastPayload);
     } finally {
       hideLoader(this.loaderElement, this.loaderCounter);
     }
@@ -1979,6 +2178,7 @@ export class DashboardController {
       progress.style.left = "0%";
       progress.style.right = "0%";
     }
+
 
     // Reset in-memory filters
     this.filters = {
