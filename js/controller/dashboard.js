@@ -781,7 +781,7 @@ export class DashboardController {
             <div class="space-y-2">
               <label class="text-sm font-medium text-slate-700">Due date</label>
               <div class="customDateInputWrapper">
-                <input data-task-date type="date" />
+                <input data-task-date type="datetime-local" />
               </div>
             </div>
             <div class="space-y-2">
@@ -826,6 +826,12 @@ export class DashboardController {
         .querySelector("[data-task-confirm]")
         ?.addEventListener("click", () => {
           this.createTaskFromModal();
+        });
+      modal
+        .querySelector(".customDateInputWrapper")
+        ?.addEventListener("click", () => {
+          modal.querySelector("[data-task-date]")?.showPicker?.();
+          modal.querySelector("[data-task-date]")?.focus?.();
         });
       modal.addEventListener("click", (e) => {
         if (e.target === modal) hide();
