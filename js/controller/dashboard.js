@@ -965,7 +965,7 @@ export class DashboardController {
   async loadTaskAssignees() {
     if (this._taskAssignees) return this._taskAssignees;
     try {
-      const resp = await fetch("data/assignees.json", { cache: "no-store" });
+      const resp = await fetch("https://itmooti-codex.github.io/ptpm/data/assignees.json", { cache: "no-store" });
       if (!resp.ok) throw new Error("Failed to load assignees");
       const data = await resp.json();
       this._taskAssignees = Array.isArray(data) ? data : [];
