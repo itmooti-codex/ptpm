@@ -725,53 +725,11 @@ document.addEventListener("alpine:init", () => {
       });
       this.filteredCount = visible;
       this.hasLoaded = resolvedData;
-      this.applyStatusBadges();
       if (this.pendingPrefillId) {
         this.selectProviderById(this.pendingPrefillId, {
           preserveMessage: true,
         });
       }
-    },
-    applyStatusBadges() {
-      const list = this.$refs.providerList;
-      if (!list) return;
-      const palette = {
-        active: { dot: "bg-emerald-500", text: "text-emerald-600" },
-        "on-site": { dot: "bg-sky-500", text: "text-sky-600" },
-        offline: { dot: "bg-slate-400", text: "text-slate-600" },
-        archived: { dot: "bg-rose-500", text: "text-rose-600" },
-      };
-      const dotClasses = [
-        "bg-emerald-500",
-        "bg-rose-500",
-        "bg-sky-500",
-        "bg-slate-400",
-        "bg-slate-300",
-      ];
-      const textClasses = [
-        "text-emerald-600",
-        "text-rose-600",
-        "text-sky-600",
-        "text-slate-600",
-        "text-slate-500",
-      ];
-      list.querySelectorAll("[data-status-badge]").forEach((badge) => {
-        const rawValue = badge.textContent?.trim() || "";
-        const normalized = rawValue.toLowerCase().replace(/\s+/g, "-");
-        const colors = palette[normalized] || {
-          dot: "bg-slate-300",
-          text: "text-slate-500",
-        };
-        const dot = badge
-          .closest("[data-provider-row]")
-          ?.querySelector("[data-status-dot]");
-        if (dot) {
-          dotClasses.forEach((cls) => dot.classList.remove(cls));
-          dot.classList.add(colors.dot);
-        }
-        textClasses.forEach((cls) => badge.classList.remove(cls));
-        badge.classList.add(colors.text);
-      });
     },
     extractProviderFromRow(row) {
       if (!row) return null;
