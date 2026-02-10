@@ -22,9 +22,37 @@ export class DashboardHelper {
       ? records
       : Object.values(records ?? {});
     return list.map((data) => {
+      const inquiryJobId =
+        data?.Inquiry_for_Job?.id ??
+        data?.Inquiry_For_Job?.id ??
+        data?.Inquiry_For_Job_ID ??
+        null;
+      const inquiryJobUid =
+        data?.Inquiry_for_Job?.unique_id ??
+        data?.Inquiry_For_Job?.unique_id ??
+        data?.Inquiry_For_Job_Unique_ID ??
+        null;
+      const quoteJobId =
+        data?.Quote_Record?.id ?? data?.Quote_Record_ID ?? null;
+      const quoteJobUid =
+        data?.Quote_Record?.unique_id ?? data?.Quote_Record_Unique_ID ?? null;
+      const jobId = inquiryJobId ?? quoteJobId ?? null;
+      const jobUid = inquiryJobUid ?? quoteJobUid ?? null;
       return {
-        uniqueId: data?.unique_id || null,
+        uniqueId: data?.unique_id ?? data?.Unique_ID ?? null,
         recordId: data?.id ?? null,
+        "inquiry-id": data?.id ?? null,
+        "inquiry-uid": data?.unique_id ?? data?.Unique_ID ?? null,
+        "contact-id": data?.Primary_Contact?.id ?? null,
+        "company-id": data?.Company?.id ?? null,
+        "property-id": data?.Property?.id ?? data?.property_id ?? null,
+        "service-provider-id":
+          data?.Service_Provider?.id ?? data?.service_provider_id ?? null,
+        "account-type": data?.Account_Type ?? data?.account_type ?? null,
+        "company-account-type":
+          data?.Company?.account_type ?? data?.Company_Account_Type ?? null,
+        "job-id": jobId,
+        "job-uid": jobUid,
         "date-added": this.formatUnixDate(data?.created_at) || null,
         "inquiry-source": data?.how_did_you_hear || null,
         type: data?.type || null,
@@ -70,6 +98,16 @@ export class DashboardHelper {
       status: r["inquiry-status"] ?? "-",
       meta: {
         dealId: r.recordId ?? null,
+        inquiryId: r["inquiry-id"] ?? r.recordId ?? null,
+        inquiryUid: r["inquiry-uid"] ?? r.uniqueId ?? null,
+        contactId: r["contact-id"] ?? null,
+        companyId: r["company-id"] ?? null,
+        propertyId: r["property-id"] ?? null,
+        serviceProviderId: r["service-provider-id"] ?? null,
+        accountType: r["account-type"] ?? null,
+        companyAccountType: r["company-account-type"] ?? null,
+        jobId: r["job-id"] ?? null,
+        jobUid: r["job-uid"] ?? null,
         address: r["client-address"] ?? null,
         email: r["client-email"] ?? null,
         sms: r["client-smsNumber"] ?? null,
@@ -82,8 +120,10 @@ export class DashboardHelper {
   mapQuoteRows(quoteData) {
     if (!quoteData || typeof quoteData !== "object") return [];
 
-    return Object.values(quoteData).map((item) => ({
-      id: item?.unique_id ? `#${item.unique_id}` : null,
+    return Object.values(quoteData).map((item) => {
+      const rowUniqueId = item?.unique_id ?? item?.Unique_ID ?? null;
+      return {
+        id: rowUniqueId ? `#${rowUniqueId}` : null,
       client: `${item?.Client_Individual?.first_name ?? ""} ${
         item?.Client_Individual?.last_name ?? ""
       }`.trim(),
@@ -96,18 +136,41 @@ export class DashboardHelper {
       quoteStatus: item?.quote_status ?? "Unknown",
       meta: {
         jobId: item?.id ?? null,
+        jobUid: rowUniqueId ?? null,
+        inquiryId:
+          item?.Inquiry_Record?.id ?? item?.inquiry_record?.id ?? null,
+        inquiryUid:
+          item?.Inquiry_Record?.unique_id ??
+          item?.inquiry_record?.unique_id ??
+          null,
+        contactId:
+          item?.Client_Individual?.id ?? item?.client_individual?.id ?? null,
+        companyId: item?.Client_Entity?.id ?? item?.client_entity?.id ?? null,
+        propertyId: item?.Property?.id ?? item?.property?.id ?? null,
+        serviceProviderId:
+          item?.Primary_Service_Provider?.id ??
+          item?.primary_service_provider?.id ??
+          null,
+        accountType: item?.Account_Type ?? item?.account_type ?? null,
+        companyAccountType:
+          item?.Client_Entity?.account_type ??
+          item?.client_entity?.account_type ??
+          null,
         email: item?.Client_Individual?.email ?? null,
         sms: item?.Client_Individual?.sms_number ?? null,
         address: item?.Property?.address_1 ?? null,
       },
-    }));
+    };
+    });
   }
 
   mapJobRows(jobData) {
     if (!jobData || typeof jobData !== "object") return [];
 
-    return Object.values(jobData).map((item) => ({
-      id: item?.unique_id ? `#${item.unique_id}` : null,
+    return Object.values(jobData).map((item) => {
+      const rowUniqueId = item?.unique_id ?? item?.Unique_ID ?? null;
+      return {
+        id: rowUniqueId ? `#${rowUniqueId}` : null,
       client: `${item?.Client_Individual?.first_name ?? ""} ${
         item?.Client_Individual?.last_name ?? ""
       }`.trim(),
@@ -126,18 +189,41 @@ export class DashboardHelper {
       jobStatus: item?.job_status ?? "Unknown",
       meta: {
         jobId: item?.id ?? null,
+        jobUid: rowUniqueId ?? null,
+        inquiryId:
+          item?.Inquiry_Record?.id ?? item?.inquiry_record?.id ?? null,
+        inquiryUid:
+          item?.Inquiry_Record?.unique_id ??
+          item?.inquiry_record?.unique_id ??
+          null,
+        contactId:
+          item?.Client_Individual?.id ?? item?.client_individual?.id ?? null,
+        companyId: item?.Client_Entity?.id ?? item?.client_entity?.id ?? null,
+        propertyId: item?.Property?.id ?? item?.property?.id ?? null,
+        serviceProviderId:
+          item?.Primary_Service_Provider?.id ??
+          item?.primary_service_provider?.id ??
+          null,
+        accountType: item?.Account_Type ?? item?.account_type ?? null,
+        companyAccountType:
+          item?.Client_Entity?.account_type ??
+          item?.client_entity?.account_type ??
+          null,
         email: item?.Client_Individual?.email ?? null,
         sms: item?.Client_Individual?.sms_number ?? null,
         address: item?.Property?.address_1 ?? null,
       },
-    }));
+    };
+    });
   }
 
   mapPaymentRows(paymentData) {
     if (!paymentData || typeof paymentData !== "object") return [];
 
-    return Object.values(paymentData).map((item) => ({
-      id: item?.unique_id ? `#${item.unique_id}` : null,
+    return Object.values(paymentData).map((item) => {
+      const rowUniqueId = item?.unique_id ?? item?.Unique_ID ?? null;
+      return {
+        id: rowUniqueId ? `#${rowUniqueId}` : null,
       client: `${item?.Client_Individual?.first_name ?? ""} ${
         item?.Client_Individual?.last_name ?? ""
       }`.trim(),
@@ -156,11 +242,32 @@ export class DashboardHelper {
       adminApproved: item?.bill_approved_admin ?? null,
       meta: {
         jobId: item?.id ?? null,
+        jobUid: rowUniqueId ?? null,
+        inquiryId:
+          item?.Inquiry_Record?.id ?? item?.inquiry_record?.id ?? null,
+        inquiryUid:
+          item?.Inquiry_Record?.unique_id ??
+          item?.inquiry_record?.unique_id ??
+          null,
+        contactId:
+          item?.Client_Individual?.id ?? item?.client_individual?.id ?? null,
+        companyId: item?.Client_Entity?.id ?? item?.client_entity?.id ?? null,
+        propertyId: item?.Property?.id ?? item?.property?.id ?? null,
+        serviceProviderId:
+          item?.Primary_Service_Provider?.id ??
+          item?.primary_service_provider?.id ??
+          null,
+        accountType: item?.Account_Type ?? item?.account_type ?? null,
+        companyAccountType:
+          item?.Client_Entity?.account_type ??
+          item?.client_entity?.account_type ??
+          null,
         email: item?.Client_Individual?.email ?? null,
         sms: item?.Client_Individual?.sms_number ?? null,
         address: item?.Property?.address_1 ?? null,
       },
-    }));
+    };
+    });
   }
 
   mapUrgentCallRows(mappedData) {
@@ -179,6 +286,16 @@ export class DashboardHelper {
       startDate: records["date-started"] ?? null,
       meta: {
         dealId: records.recordId ?? null,
+        inquiryId: records["inquiry-id"] ?? records.recordId ?? null,
+        inquiryUid: records["inquiry-uid"] ?? records.uniqueId ?? null,
+        contactId: records["contact-id"] ?? null,
+        companyId: records["company-id"] ?? null,
+        propertyId: records["property-id"] ?? null,
+        serviceProviderId: records["service-provider-id"] ?? null,
+        accountType: records["account-type"] ?? null,
+        companyAccountType: records["company-account-type"] ?? null,
+        jobId: records["job-id"] ?? null,
+        jobUid: records["job-uid"] ?? null,
         address: records["client-address"] ?? null,
       },
     }));

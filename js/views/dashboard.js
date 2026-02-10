@@ -108,6 +108,21 @@ export function renderDynamicTable({
       if (row.meta?.dealId) {
         tr.setAttribute("data-deal-id", row.meta.dealId);
       }
+      const setDataAttr = (key, value) => {
+        if (value == null) return;
+        const str = String(value).trim();
+        if (!str) return;
+        tr.setAttribute(`data-${key}`, str);
+      };
+      setDataAttr("inquiry-id", row.meta?.inquiryId);
+      setDataAttr("inquiry-uid", row.meta?.inquiryUid);
+      setDataAttr("contact-id", row.meta?.contactId);
+      setDataAttr("company-id", row.meta?.companyId);
+      setDataAttr("job-uid", row.meta?.jobUid);
+      setDataAttr("property-id", row.meta?.propertyId);
+      setDataAttr("account-type", row.meta?.accountType);
+      setDataAttr("company-account-type", row.meta?.companyAccountType);
+      setDataAttr("service-provider-id", row.meta?.serviceProviderId);
       const zebraClass = zebra
         ? rowIndex % 2 === 0
           ? "bg-white"
@@ -1619,46 +1634,59 @@ export class DashboardView {
       if (!row) return;
 
       const currentTab = window.App?.controllers?.dashboard?.currentTab;
-      const controller = window.App?.controllers?.dashboard;
+      const isInquiryTab = currentTab === "inquiry";
+      const clean = (value) => {
+        const str = String(value ?? "")
+          .replace(/^#/, "")
+          .trim();
+        if (!str || str === "null" || str === "undefined") return "";
+        return str;
+      };
 
-      if (currentTab === "inquiry") {
-        // For inquiry tab, use the unique_id directly
-        const rowId = row.dataset.uniqueId?.replace(/^#/, "").trim();
-        if (rowId) {
-          window.location.href = `https://my.awesomate.pro/inquiry-details/${rowId}`;
-        }
-      } else {
-        // For other tabs (quote, jobs, payment), fetch inquiry unique_id from job
-        const jobId = row.dataset.jobId;
-        if (!jobId) {
-          controller?.view?.showToast?.({
-            title: "View Failed",
-            message: "Job ID not found for this record."
-          });
-          return;
-        }
+      const inquiryId = clean(row.dataset.inquiryId || row.dataset.dealId);
+      const inquiryUid = clean(
+        row.dataset.inquiryUid || (isInquiryTab ? row.dataset.uniqueId : "")
+      );
+      const jobId = clean(row.dataset.jobId);
+      const jobUid = clean(
+        row.dataset.jobUid || (!isInquiryTab ? row.dataset.uniqueId : "")
+      );
+      const contactId = clean(row.dataset.contactId);
+      const companyId = clean(row.dataset.companyId);
+      const propertyId = clean(row.dataset.propertyId);
+      const serviceProviderId = clean(row.dataset.serviceProviderId);
+      const companyAccountType = clean(row.dataset.companyAccountType);
 
-        // Fetch inquiry unique_id from the job
-        (async () => {
-          try {
-            const inquiryUniqueId = await controller?.model?.fetchInquiryUniqueIdFromJob?.(jobId);
-            if (inquiryUniqueId) {
-              window.location.href = `https://my.awesomate.pro/inquiry-details/${inquiryUniqueId}`;
-            } else {
-              controller?.view?.showToast?.({
-                title: "View Failed",
-                message: "Inquiry record for this job does not exist."
-              });
-            }
-          } catch (err) {
-            console.error("Failed to fetch inquiry unique_id:", err);
-            controller?.view?.showToast?.({
-              title: "View Failed",
-              message: "Failed to load inquiry details."
-            });
-          }
-        })();
+      const normalizeAccountType = (value) => {
+        const v = String(value ?? "").trim().toLowerCase();
+        if (!v) return "";
+        if (v === "company") return "Company";
+        if (v === "contact") return "Contact";
+        if (v === "none") return "None";
+        return value;
+      };
+
+      let accountType = normalizeAccountType(clean(row.dataset.accountType));
+      if (!accountType) {
+        if (companyId) accountType = "Company";
+        else if (contactId) accountType = "Contact";
+        else accountType = "None";
       }
+
+      const params = new URLSearchParams({
+        inquiryid: inquiryId,
+        inquiryuid: inquiryUid,
+        contactid: contactId,
+        companyid: companyId,
+        jobid: jobId,
+        jobuid: jobUid,
+        propertyid: propertyId,
+        accounttype: accountType,
+        companyaccounttype: companyAccountType,
+        serviceproviderid: serviceProviderId,
+      });
+
+      window.location.href = `https://my.awesomate.pro/admin/details/all?${params.toString()}`;
     });
   }
 

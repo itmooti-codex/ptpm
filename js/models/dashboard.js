@@ -287,13 +287,15 @@ export class DashboardModel {
         "Type",
         "Inquiry_Status",
         "How_did_you_hear",
+        "Account_Type",
       ])
       .include("Company", (q) =>
-        q.deSelectAll().select(["name", "account_type"])
+        q.deSelectAll().select(["id", "name", "account_type"])
       )
       .include("Service_Inquiry", (q) => q.select(["service_name"]))
       .include("Primary_Contact", (q) =>
         q.select([
+          "id",
           "first_name",
           "last_name",
           "email",
@@ -302,13 +304,21 @@ export class DashboardModel {
         ])
       )
       .include("Property", (q) => {
-        q.deSelectAll().select(["address_1"]);
+        q.deSelectAll().select(["id", "address_1"]);
       })
       .include("Service_Provider", (q) => {
-        q.deSelectAll().include("Contact_Information", (q) => {
-          q.deSelectAll().select(["first_name", "last_name"]);
-        });
+        q.deSelectAll()
+          .select(["id"])
+          .include("Contact_Information", (q) => {
+            q.deSelectAll().select(["first_name", "last_name"]);
+          });
       })
+      .include("Inquiry_for_Job", (q) =>
+        q.deSelectAll().select(["id", "unique_id"])
+      )
+      .include("Quote_Record", (q) =>
+        q.deSelectAll().select(["id", "unique_id"])
+      )
       .noDestroy();
   }
 
@@ -436,14 +446,17 @@ export class DashboardModel {
         .andWhereNot("quote_status", "isNull")
         .deSelectAll()
         .select([
+          "id",
           "Unique_ID",
           "Quote_Status",
           "Quote_Total",
           "Quote_Date",
           "Date_Quoted_Accepted",
+          "Account_Type",
         ])
         .include("Client_Individual", (q) =>
           q.select([
+            "id",
             "first_name",
             "last_name",
             "email",
@@ -452,18 +465,28 @@ export class DashboardModel {
           ])
         )
         .include("Property", (q) => {
-          q.deSelectAll().select(["property_name"]);
+          q.deSelectAll().select(["id", "property_name"]);
         })
         .include("Primary_Service_Provider", (q) => {
-          q.deSelectAll().include("Contact_Information", (q) => {
-            q.deSelectAll().select(["first_name", "last_name"]);
-          });
+          q.deSelectAll()
+            .select(["id"])
+            .include("Contact_Information", (q) => {
+              q.deSelectAll().select(["first_name", "last_name"]);
+            });
         })
         .include("Client_Entity", (q) =>
-          q.deSelectAll().select(["name", "type"])
+          q.deSelectAll().select(["id", "name", "type", "account_type"])
         )
         .include("Inquiry_Record", (q) =>
-          q.deSelectAll().select(["inquiry_status", "type", "how_did_you_hear"])
+          q
+            .deSelectAll()
+            .select([
+              "id",
+              "unique_id",
+              "inquiry_status",
+              "type",
+              "how_did_you_hear",
+            ])
         )
         .include("Inquiry_Record", (q) =>
           q.include("Service_Inquiry", (d) =>
@@ -589,6 +612,7 @@ export class DashboardModel {
         .andWhereNot("job_status", "isNull")
         .deSelectAll()
         .select([
+          "id",
           "Unique_ID",
           "Date_Started",
           "Payment_Status",
@@ -598,9 +622,11 @@ export class DashboardModel {
           "Job_Total",
           "Date_Quoted_Accepted",
           "invoice_number",
+          "Account_Type",
         ])
         .include("Client_Individual", (q) =>
           q.select([
+            "id",
             "first_name",
             "last_name",
             "email",
@@ -609,18 +635,28 @@ export class DashboardModel {
           ])
         )
         .include("Property", (q) => {
-          q.deSelectAll().select(["property_name"]);
+          q.deSelectAll().select(["id", "property_name"]);
         })
         .include("Primary_Service_Provider", (q) => {
-          q.deSelectAll().include("Contact_Information", (q) => {
-            q.deSelectAll().select(["first_name", "last_name"]);
-          });
+          q.deSelectAll()
+            .select(["id"])
+            .include("Contact_Information", (q) => {
+              q.deSelectAll().select(["first_name", "last_name"]);
+            });
         })
         .include("Client_Entity", (q) =>
-          q.deSelectAll().select(["name", "type"])
+          q.deSelectAll().select(["id", "name", "type", "account_type"])
         )
         .include("Inquiry_Record", (q) =>
-          q.deSelectAll().select(["inquiry_status", "type", "how_did_you_hear"])
+          q
+            .deSelectAll()
+            .select([
+              "id",
+              "unique_id",
+              "inquiry_status",
+              "type",
+              "how_did_you_hear",
+            ])
         )
         .include("Inquiry_Record", (q) =>
           q.include("Service_Inquiry", (d) =>
@@ -766,6 +802,7 @@ export class DashboardModel {
         .andWhereNot("xero_invoice_status", "isNull")
         .deSelectAll()
         .select([
+          "id",
           "Unique_ID",
           "Invoice_Number",
           "Invoice_Date",
@@ -775,9 +812,11 @@ export class DashboardModel {
           "Bill_Approved_Admin",
           "Bill_Approved_Service_Provider2",
           "Xero_Invoice_Status",
+          "Account_Type",
         ])
         .include("Client_Individual", (q) =>
           q.select([
+            "id",
             "first_name",
             "last_name",
             "email",
@@ -786,18 +825,28 @@ export class DashboardModel {
           ])
         )
         .include("Property", (q) => {
-          q.deSelectAll().select(["property_name"]);
+          q.deSelectAll().select(["id", "property_name"]);
         })
         .include("Primary_Service_Provider", (q) => {
-          q.deSelectAll().include("Contact_Information", (q) => {
-            q.deSelectAll().select(["first_name", "last_name"]);
-          });
+          q.deSelectAll()
+            .select(["id"])
+            .include("Contact_Information", (q) => {
+              q.deSelectAll().select(["first_name", "last_name"]);
+            });
         })
         .include("Client_Entity", (q) =>
-          q.deSelectAll().select(["name", "type"])
+          q.deSelectAll().select(["id", "name", "type", "account_type"])
         )
         .include("Inquiry_Record", (q) =>
-          q.deSelectAll().select(["inquiry_status", "type", "how_did_you_hear"])
+          q
+            .deSelectAll()
+            .select([
+              "id",
+              "unique_id",
+              "inquiry_status",
+              "type",
+              "how_did_you_hear",
+            ])
         )
         .include("Inquiry_Record", (q) =>
           q.include("Service_Inquiry", (d) =>
@@ -976,9 +1025,11 @@ export class DashboardModel {
           "quote_total",
           "job_status",
           "Date_Booked",
+          "Account_Type",
         ])
         .include("Client_Individual", (q) =>
           q.select([
+            "id",
             "first_name",
             "last_name",
             "email",
@@ -987,18 +1038,28 @@ export class DashboardModel {
           ])
         )
         .include("Property", (q) => {
-          q.deSelectAll().select(["property_name"]);
+          q.deSelectAll().select(["id", "property_name"]);
         })
         .include("Primary_Service_Provider", (q) => {
-          q.deSelectAll().include("Contact_Information", (q) => {
-            q.deSelectAll().select(["first_name", "last_name"]);
-          });
+          q.deSelectAll()
+            .select(["id"])
+            .include("Contact_Information", (q) => {
+              q.deSelectAll().select(["first_name", "last_name"]);
+            });
         })
         .include("Client_Entity", (q) =>
-          q.deSelectAll().select(["name", "type"])
+          q.deSelectAll().select(["id", "name", "type", "account_type"])
         )
         .include("Inquiry_Record", (q) =>
-          q.deSelectAll().select(["inquiry_status", "type", "how_did_you_hear", "unique_id"])
+          q
+            .deSelectAll()
+            .select([
+              "id",
+              "unique_id",
+              "inquiry_status",
+              "type",
+              "how_did_you_hear",
+            ])
         )
         .include("Inquiry_Record", (q) =>
           q.include("Service_Inquiry", (d) =>
