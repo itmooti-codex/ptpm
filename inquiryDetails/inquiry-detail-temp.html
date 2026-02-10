@@ -2586,6 +2586,52 @@
       class="flex flex-col gap-4 text-slate-700 rounded-sm w-full"
       x-data="quotePanel()"
     >
+      <!-- Missing Quote/Job Message -->
+      <div
+        class="rounded-lg border border-amber-200 bg-white p-4 text-amber-900"
+        x-show="showMissingQuoteMessage"
+        x-cloak
+      >
+        <div class="flex items-center gap-3">
+          <span
+            class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-amber-100 text-amber-600"
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M8 1.33337L15 14.6667H1L8 1.33337Z"
+                stroke="currentColor"
+                stroke-width="1.2"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M8 6V9.33333"
+                stroke="currentColor"
+                stroke-width="1.2"
+                stroke-linecap="round"
+              />
+              <path
+                d="M8 11.6667H8.00667"
+                stroke="currentColor"
+                stroke-width="1.2"
+                stroke-linecap="round"
+              />
+            </svg>
+          </span>
+          <div>
+            <div class="text-[14px] font-semibold">No quote or job found</div>
+            <div class="text-[12px] text-amber-800">
+              Quote details require a job id or inquiry id.
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- /Missing Quote/Job Message -->
       <!-- Quote Details Card -->
       <div
         class="rounded-xl border border-slate-200 bg-white shadow-sm beforeQuote"

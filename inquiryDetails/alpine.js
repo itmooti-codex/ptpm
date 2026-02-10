@@ -1396,6 +1396,15 @@ document.addEventListener("alpine:init", () => {
         )
       );
     },
+    get hasJobIdentifier() {
+      return Boolean(this.resolveJobId());
+    },
+    get hasInquiryIdentifier() {
+      return Boolean(this.resolveInquiryId());
+    },
+    get showMissingQuoteMessage() {
+      return !this.hasQuote && !this.hasJobIdentifier && !this.hasInquiryIdentifier;
+    },
 
     async checkExistingQuote() {
       if (this.initCheckRan) return;
