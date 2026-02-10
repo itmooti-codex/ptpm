@@ -4,16 +4,6 @@ document.addEventListener("alpine:init", () => {
     accepted: false,
   });
 
-  const createOptionMap = (options = []) => {
-    const map = new Map();
-    options
-      .filter((entry) => entry && entry.value != null && entry.text)
-      .forEach((entry) => {
-        map.set(String(entry.value), entry.text);
-      });
-    return map;
-  };
-
   const ACCOUNT_TYPE =
     typeof accountType === "string" ? accountType.trim() : "";
   const DEFAULT_POPUP_COMMENT_TARGET =
@@ -21,59 +11,6 @@ document.addEventListener("alpine:init", () => {
 
   const PRESET_PROVIDER_ID =
     SERVICE_PROVIDER_ID != null ? String(SERVICE_PROVIDER_ID).trim() : "";
-
-  const locationOptions = createOptionMap([
-    { value: 735, text: "Upper Ceiling" },
-    { value: 734, text: "Between floors" },
-    { value: 733, text: "In Walls" },
-    { value: 732, text: "In House" },
-    { value: 731, text: "Chimney" },
-    { value: 730, text: "Garage" },
-    { value: 729, text: "Kitchen" },
-    { value: 728, text: "Hand Catch" },
-    { value: 727, text: "On roof" },
-    { value: 726, text: "Underneath House" },
-    { value: 725, text: "Under Solar Panels" },
-  ]);
-
-  const noiseOptions = createOptionMap([
-    { value: 768, text: "Fighting" },
-    { value: 767, text: "Walking" },
-    { value: 766, text: "Heavy" },
-    { value: 765, text: "Footsteps" },
-    { value: 764, text: "Running" },
-    { value: 763, text: "Scurrying" },
-    { value: 762, text: "Thumping" },
-    { value: 761, text: "Hissing" },
-    { value: 760, text: "Shuffle" },
-    { value: 759, text: "Scratching" },
-    { value: 758, text: "Can hear coming & going" },
-    { value: 757, text: "Movement" },
-    { value: 756, text: "Gnawing" },
-    { value: 755, text: "Rolling" },
-    { value: 754, text: "Dragging" },
-    { value: 753, text: "Squeaking" },
-    { value: 752, text: "Galloping" },
-    { value: 751, text: "Poss Pee" },
-    { value: 750, text: "Fast" },
-    { value: 749, text: "Slow" },
-    { value: 748, text: "Bad Smell" },
-  ]);
-
-  const timeOptions = createOptionMap([
-    { value: "747", text: "Dawn" },
-    { value: "746", text: "Dusk" },
-    { value: "745", text: "Dusk & Dawn" },
-    { value: "744", text: "During Day" },
-    { value: "743", text: "Middle of night" },
-    { value: "742", text: "Night" },
-    { value: "741", text: "Early morning" },
-    { value: "740", text: "Evening" },
-    { value: "739", text: "1-2 am" },
-    { value: "738", text: "3-4 am" },
-    { value: "737", text: "7 - 8 pm" },
-    { value: "736", text: "7.30-10 pm" },
-  ]);
 
   Alpine.data("emailOptionsDropdown", (groupKey = "") => ({
     open: false,
@@ -745,7 +682,6 @@ document.addEventListener("alpine:init", () => {
         lastName,
         phone: grab("[data-search-phone]"),
         email: grab("[data-field='provider-email']"),
-        status: grab("[data-status-badge]"),
       };
     },
     broadcastSelection(provider) {
@@ -831,49 +767,6 @@ document.addEventListener("alpine:init", () => {
         this.toastVisible = false;
         this.toastTimeout = null;
       }, 4000);
-    },
-  }));
-
-  Alpine.data("residentFeedback", (props = {}) => ({
-    rawLocations: props.rawLocations ?? "",
-    rawNoises: props.rawNoises ?? "",
-    rawTimes: props.rawTimes ?? "",
-    get displayLocations() {
-      return this.formatValue(this.rawLocations, locationOptions);
-    },
-    get displayNoises() {
-      return this.formatValue(this.rawNoises, noiseOptions);
-    },
-    get displayTimes() {
-      return this.formatValue(this.rawTimes, timeOptions);
-    },
-    formatValue(raw, map) {
-      const normalized = this.normalizeRaw(raw);
-      if (!normalized) return "—";
-      const codes = this.parseCodes(normalized);
-      if (!codes.length) return normalized;
-      const labels = codes
-        .map((code) => {
-          const key = String(code);
-          return map.get(key) || null;
-        })
-        .filter(Boolean);
-      if (labels.length) return labels.join(", ");
-      return codes.join(", ");
-    },
-    normalizeRaw(raw) {
-      if (raw == null) return "";
-      const value = String(raw).trim();
-      if (!value || value === "-" || value === "—") return "";
-      if (/^\[[^\]]*\]$/.test(value)) return "";
-      return value;
-    },
-    parseCodes(value) {
-      if (!value.includes("*/*")) return [];
-      return value
-        .split("*/*")
-        .map((part) => part.trim())
-        .filter(Boolean);
     },
   }));
 

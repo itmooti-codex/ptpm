@@ -978,6 +978,7 @@
             class="flex-1 flex flex-col gap-4"
             :class="inquiryCollapsed ? 'w-full' : 'w-[60%]'"
           >
+            <!-- toolbar -->
             <div
               class="w-full relative"
               x-data="allocateProviderSearch()"
@@ -1241,6 +1242,11 @@
             <!-- Inquiry Details -->
             <div
               class="p-4 bg-white rounded-lg border border-gray-300 !flex flex-col gap-4"
+              data-dynamic-list="HdrrHrQPUKTcjcfRVv8q6"
+              data-entity="peterpm"
+              data-entity-key="1rBR-jpR3yE3HE1VhFD0j"
+              data-var-inquiryid="[Page//ID]"
+              data-op="subscribe"
             >
               <!-- HEADER -->
               <div class="flex items-start justify-between">
@@ -1255,13 +1261,51 @@
                     Inquiry Details
                   </div>
                 </div>
+
                 <div
+                  x-data="{
+                    statusValue: '[Inquiry_Status]',
+                    options: [
+                      { value: '209', label: 'New Inquiry', color: '#d81b60', backgroundColor: '#f7d1df' },
+                      { value: '801', label: 'Not Allocated', color: '#d81b60', backgroundColor: '#f7d1df' },
+                      { value: '609', label: 'Contact Client', color: '#ab47bc', backgroundColor: '#eedaf2' },
+                      { value: '208', label: 'Contact For Site Visit', color: '#8e24aa', backgroundColor: '#e8d3ee' },
+                      { value: '207', label: 'Site Visit Scheduled', color: '#ffb300', backgroundColor: '#fff0cc' },
+                      { value: '206', label: 'Site Visit to be Re-Scheduled', color: '#fb8c00', backgroundColor: '#fee8cc' },
+                      { value: '205', label: 'Generate Quote', color: '#00acc1', backgroundColor: '#cceef3' },
+                      { value: '204', label: 'Quote Created', color: '#43a047', backgroundColor: '#d9ecda' },
+                      { value: '506', label: 'Completed', color: '#43a047', backgroundColor: '#d9ecda' },
+                      { value: '505', label: 'Cancelled', color: '#000000', backgroundColor: '#cccccc' },
+                      { value: '696', label: 'Expired', color: '#757575', backgroundColor: '#e3e3e3' }
+                    ],
+                    get resolved() {
+                      const raw = (this.statusValue || '').toString().trim();
+                      if (!raw) {
+                        return { label: '', color: '#0f172a', backgroundColor: '#e5e7eb' };
+                      }
+                      const byValue = this.options.find((item) => item.value === raw);
+                      if (byValue) return byValue;
+                      const normalized = raw.toLowerCase();
+                      const byLabel = this.options.find(
+                        (item) => item.label.toLowerCase() === normalized
+                      );
+                      return (
+                        byLabel || {
+                          label: raw,
+                          color: '#0f172a',
+                          backgroundColor: '#e5e7eb',
+                        }
+                      );
+                    }
+                  }"
                   class="px-2.5 py-0.5 rounded-full"
-                  style="background: [Page//Inquiry Status ##color_field_hex]"
+                  :style="{ backgroundColor: resolved.backgroundColor }"
                 >
-                  <span class="f-inter text-[12px] font-medium text-[#000000]"
-                    >[Page//Inquiry Status]</span
-                  >
+                  <span
+                    class="f-inter text-[12px] font-medium"
+                    :style="{ color: resolved.color }"
+                    x-text="resolved.label"
+                  ></span>
                 </div>
               </div>
 
@@ -1274,7 +1318,7 @@
                       >Work Order No:</span
                     >
                     <span class="text-[#0052CC] text-[16px] font-normal"
-                      >#[Page//Unique ID]</span
+                      >#[Unique_ID]</span
                     >
                   </div>
 
@@ -1300,7 +1344,7 @@
                       >How did you hear?</span
                     >
                     <span class="text-[#2A2A2A] text-[14px] font-medium"
-                      >[Page//How did you hear?]</span
+                      >[How_did_you_hear]</span
                     >
                   </div>
 
@@ -1309,7 +1353,7 @@
                       >Other:</span
                     >
                     <span class="text-[#2A2A2A] text-[14px] font-medium"
-                      >[Page//Other]</span
+                      >[Other]</span
                     >
                   </div>
 
@@ -1318,7 +1362,7 @@
                       >How can we help?</span
                     >
                     <span class="text-[#2A2A2A] text-[14px] font-medium"
-                      >[Page//How can we help?]</span
+                      >[How_can_we_help]</span
                     >
                   </div>
                 </div>
@@ -1330,7 +1374,7 @@
                       >Source:</span
                     >
                     <span class="text-[#2A2A2A] text-[14px] font-medium"
-                      >[Page//Inquiry Source]</span
+                      >[Inquiry_Source]</span
                     >
                   </div>
 
@@ -1339,7 +1383,7 @@
                       >Type:</span
                     >
                     <span class="text-[#2A2A2A] text-[14px] font-medium"
-                      >[Page//Type]</span
+                      >[Type]</span
                     >
                   </div>
 
@@ -1348,7 +1392,7 @@
                       >Service:</span
                     >
                     <span class="text-[#2A2A2A] text-[14px] font-medium"
-                      >[Page//Service Inquiry//Service Name]</span
+                      >[Service_Inquiry_Service_Name]</span
                     >
                   </div>
 
@@ -1364,9 +1408,9 @@
               <div class="my-2 h-[1px] bg-[#000000] opacity-[10%]"></div>
 
               <!-- ACCOUNT TYPE VARIABLE -->
-              <span class="hidden" id="account-type">[Page//Account Type]</span>
+              <span class="hidden" id="account-type">[Account_Type]</span>
               <span class="hidden" id="company-internal-type"
-                >[Page//Company//Account Type]</span
+                >[Company_Account_Type]</span
               >
 
               <!-- CONTACT SECTION -->
@@ -1377,7 +1421,7 @@
                       >Account Type:</span
                     >
                     <span class="text-[#2A2A2A] text-[14px] font-medium"
-                      >[Page//Account Type]</span
+                      >[Account_Type]</span
                     >
                   </div>
 
@@ -1386,8 +1430,7 @@
                       >Account Name:</span
                     >
                     <span class="text-[#2A2A2A] text-[14px] font-medium">
-                      [Page//Primary Contact//First Name] [Page//Primary
-                      Contact//Last Name]
+                      [Primary_Contact_First_Name] [Primary_Contact_Last_Name]
                     </span>
                   </div>
                   <div class="flex flex-wrap gap-2">
@@ -1395,9 +1438,8 @@
                       >Address:</span
                     >
                     <span class="text-[#2A2A2A] text-[14px] font-medium">
-                      [Page//Primary Contact//Address], [Page//Primary
-                      Contact//City], [Page//Primary Contact//State],
-                      [Page//Primary Contact//Postal Code]
+                      [Primary_Contact_Address], [Primary_Contact_City],
+                      [Primary_Contact_State], [Primary_Contact_Postal_City]
                     </span>
                   </div>
                 </div>
@@ -1408,9 +1450,9 @@
                       >Email:</span
                     >
                     <a
-                      href="mailto: [Page//Primary Contact//Email]"
+                      href="mailto: [Primary_Contact_Email]"
                       class="text-[#0052CC] text-[14px] font-medium"
-                      >[Page//Primary Contact//Email]</a
+                      >[Primary_Contact_Email]</a
                     >
                   </div>
 
@@ -1419,9 +1461,9 @@
                       >SMS Number:</span
                     >
                     <a
-                      href="tel: [Page//Primary Contact//SMS Number]"
+                      href="tel: [Primary_Contact_SMS_Number]"
                       class="text-[#0052CC] text-[14px] font-medium"
-                      >[Page//Primary Contact//SMS Number]</a
+                      >[Primary_Contact_SMS_Number]</a
                     >
                   </div>
                 </div>
@@ -1435,7 +1477,7 @@
                       >Account Type:</span
                     >
                     <span class="text-[#2A2A2A] text-[14px] font-medium"
-                      >[Page//Account Type]</span
+                      >[Company_Account_Type]</span
                     >
                   </div>
 
@@ -1444,7 +1486,7 @@
                       >Company Name:</span
                     >
                     <span class="text-[#2A2A2A] text-[14px] font-medium"
-                      >[Page//Company//Name]</span
+                      >[CompanyName]</span
                     >
                   </div>
 
@@ -1453,7 +1495,7 @@
                       >Company Phone:</span
                     >
                     <span class="text-[#2A2A2A] text-[14px] font-medium"
-                      >[Page//Company//Phone]</span
+                      >[CompanyPhone]</span
                     >
                   </div>
 
@@ -1462,8 +1504,8 @@
                       >Address:</span
                     >
                     <span class="text-[#2A2A2A] text-[14px] font-medium">
-                      [Page//Company//Address], [Page//Company//City],
-                      [Page//Company//State], [Page//Company//Postal Code]
+                      [CompanyAddress], [CompanyCity], [CompanyState],
+                      [Company_Postal_Code]
                     </span>
                   </div>
                   <div class="flex flex-wrap gap-2">
@@ -1471,8 +1513,7 @@
                       >Name</span
                     >
                     <span class="text-[#2A2A2A] text-[14px] font-medium"
-                      >[Page//Company//Primary Person First Name]
-                      [Page//Company//Primary Person Last Name]</span
+                      >[Contact_First_Name] [Contact_Last_Name]</span
                     >
                   </div>
                   <div class="flex flex-wrap gap-2">
@@ -1480,9 +1521,9 @@
                       >Email</span
                     >
                     <a
-                      href="mailto: [Page//Company//Primary Person Email]"
+                      href="mailto: [CompanyContactEmail]"
                       class="text-[#0052CC] text-[14px] font-medium"
-                      >[Page//Company//Primary Person Email]</a
+                      >[ContactEmail]</a
                     >
                   </div>
                   <div class="flex flex-wrap gap-2">
@@ -1490,9 +1531,9 @@
                       >Phone</span
                     >
                     <a
-                      href="tel: [Page//Company//Primary Person SMS Number]"
+                      href="tel: [Company_Contact_SMS_Number]"
                       class="text-[#0052CC] text-[14px] font-medium"
-                      >[Page//Company//Primary Person SMS Number]</a
+                      >[Contact_SMS_Number]</a
                     >
                   </div>
                 </div>
@@ -1503,7 +1544,7 @@
                       >Type:</span
                     >
                     <span class="text-[#2A2A2A] text-[14px] font-medium"
-                      >[Page//Company//Type]</span
+                      >[Company_Account_Type]</span
                     >
                   </div>
 
@@ -1512,7 +1553,7 @@
                       >Industry:</span
                     >
                     <span class="text-[#2A2A2A] text-[14px] font-medium"
-                      >[Page//Company//Industry]</span
+                      >[CompanyIndustry]</span
                     >
                   </div>
 
@@ -1521,7 +1562,7 @@
                       >Annual Revenue:</span
                     >
                     <span class="text-[#2A2A2A] text-[14px] font-medium"
-                      >[Page//Company//Annual Revenue]</span
+                      >[Company_Annual_Revenue]</span
                     >
                   </div>
 
@@ -1530,7 +1571,7 @@
                       >Number of Employees:</span
                     >
                     <span class="text-[#2A2A2A] text-[14px] font-medium"
-                      >[Page//Company//Number of Employees]</span
+                      >[Company_Number_Of_Employees]</span
                     >
                   </div>
                 </div>
@@ -1550,25 +1591,22 @@
                         >Body Corporate Company:</span
                       >
                       <span class="text-[#2A2A2A] text-[14px] font-medium"
-                        >[Page//Company//Body Corporate Company//Name]</span
+                        >[CompanyName1]</span
                       >
                       <span class="text-[#4A4A4A] text-[14px] font-normal"
                         >Phone:</span
                       >
                       <a
-                        href="tel:[Page//Company//Body Corporate Company//Phone]"
+                        href="tel:[BodyCorporateCompanyPhone]"
                         class="text-[#0052CC] text-[14px] font-medium"
-                        >[Page//Company//Body Corporate Company//Phone]</a
+                        >[CompanyPhone1]</a
                       >
                       <span class="text-[#4A4A4A] text-[14px] font-normal"
                         >Address:</span
                       >
                       <span class="text-[#2A2A2A] text-[14px] font-medium"
-                        >[Page//Company//Body Corporate Company//Address],
-                        [Page//Company//Body Corporate Company//City],
-                        [Page//Company//Body Corporate Company//State],
-                        [Page//Company//Body Corporate Company//Postal
-                        Code]</span
+                        >[CompanyAddress1], [CompanyCity1], [CompanyState1],
+                        [Company_Postal_Code1]</span
                       >
                     </div>
                     <div class="flex flex-col gap-2">
@@ -1577,9 +1615,7 @@
                           >Name</span
                         >
                         <span class="text-[#2A2A2A] text-[14px] font-medium"
-                          >[Page//Company//Body Corporate Company//Primary
-                          Person First Name] [Page//Company//Body Corporate
-                          Company//Primary Person Last Name]</span
+                          >[Contact_First_Name1] [Contact_Last_Name1]</span
                         >
                       </div>
                       <div class="flex flex-wrap gap-2">
@@ -1587,10 +1623,9 @@
                           >Email</span
                         >
                         <a
-                          href="mailto: [Page//Company//Body Corporate Company//Primary Person Email]"
+                          href="mailto: [ContactEmail1]"
                           class="text-[#0052CC] text-[14px] font-medium"
-                          >[Page//Company//Body Corporate Company//Primary
-                          Person Email]</a
+                          >[ContactEmail1]</a
                         >
                       </div>
                       <div class="flex flex-wrap gap-2">
@@ -1598,10 +1633,9 @@
                           >Phone</span
                         >
                         <a
-                          href="tel: [Page//Company//Body Corporate Company//Primary Person SMS Number]"
+                          href="tel: [Contact_SMS_Number1]"
                           class="text-[#0052CC] text-[14px] font-medium"
-                          >[Page//Company//Body Corporate Company//Primary
-                          Person SMS Number]</a
+                          >[Contact_SMS_Number1]</a
                         >
                       </div>
                     </div>
@@ -1616,7 +1650,7 @@
                   >Client Notes</span
                 >
                 <span class="text-[#2A2A2A] text-[14px] font-medium"
-                  >[Page//Client Notes]</span
+                  >[Client_Notes]</span
                 >
               </div>
             </div>
@@ -1625,6 +1659,11 @@
             <!-- Resident’s Feedback -->
             <div
               class="p-4 bg-white rounded-lg border border-gray-300 !flex flex-col gap-4"
+              data-dynamic-list="HdrrHrQPUKTcjcfRVv8q6"
+              data-entity="peterpm"
+              data-entity-key="1rBR-jpR3yE3HE1VhFD0j"
+              data-var-inquiryid="[Page//ID]"
+              data-op="subscribe"
             >
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
@@ -1672,31 +1711,130 @@
 
               <div class="flex flex-col gap-4">
                 <div
+                  x-data="{
+                    rawLocations: '[Pest_Location_Options_As_Text]',
+                    rawNoises: '[Noise_Signs_Options_As_Text]',
+                    rawTimes: '[Pest_Active_Times_Options_As_Text]',
+                    locationOptions: [
+                      { value: '735', text: 'Upper Ceiling' },
+                      { value: '734', text: 'Between floors' },
+                      { value: '733', text: 'In Walls' },
+                      { value: '732', text: 'In House' },
+                      { value: '731', text: 'Chimney' },
+                      { value: '730', text: 'Garage' },
+                      { value: '729', text: 'Kitchen' },
+                      { value: '728', text: 'Hand Catch' },
+                      { value: '727', text: 'On roof' },
+                      { value: '726', text: 'Underneath House' },
+                      { value: '725', text: 'Under Solar Panels' }
+                    ],
+                    noiseOptions: [
+                      { value: '768', text: 'Fighting' },
+                      { value: '767', text: 'Walking' },
+                      { value: '766', text: 'Heavy' },
+                      { value: '765', text: 'Footsteps' },
+                      { value: '764', text: 'Running' },
+                      { value: '763', text: 'Scurrying' },
+                      { value: '762', text: 'Thumping' },
+                      { value: '761', text: 'Hissing' },
+                      { value: '760', text: 'Shuffle' },
+                      { value: '759', text: 'Scratching' },
+                      { value: '758', text: 'Can hear coming & going' },
+                      { value: '757', text: 'Movement' },
+                      { value: '756', text: 'Gnawing' },
+                      { value: '755', text: 'Rolling' },
+                      { value: '754', text: 'Dragging' },
+                      { value: '753', text: 'Squeaking' },
+                      { value: '752', text: 'Galloping' },
+                      { value: '751', text: 'Poss Pee' },
+                      { value: '750', text: 'Fast' },
+                      { value: '749', text: 'Slow' },
+                      { value: '748', text: 'Bad Smell' }
+                    ],
+                    timeOptions: [
+                      { value: '747', text: 'Dawn' },
+                      { value: '746', text: 'Dusk' },
+                      { value: '745', text: 'Dusk & Dawn' },
+                      { value: '744', text: 'During Day' },
+                      { value: '743', text: 'Middle of night' },
+                      { value: '742', text: 'Night' },
+                      { value: '741', text: 'Early morning' },
+                      { value: '740', text: 'Evening' },
+                      { value: '739', text: '1-2 am' },
+                      { value: '738', text: '3-4 am' },
+                      { value: '737', text: '7 - 8 pm' },
+                      { value: '736', text: '7.30-10 pm' }
+                    ],
+                    get displayLocations() {
+                      return this.formatValue(this.rawLocations, this.locationOptions);
+                    },
+                    get displayNoises() {
+                      return this.formatValue(this.rawNoises, this.noiseOptions);
+                    },
+                    get displayTimes() {
+                      return this.formatValue(this.rawTimes, this.timeOptions);
+                    },
+                    formatValue(raw, options) {
+                      const normalized = this.normalizeRaw(raw);
+                      if (!normalized) return '—';
+                      const codes = this.parseCodes(normalized);
+                      if (!codes.length) return normalized;
+                      const labels = codes
+                        .map((code) => this.lookupOption(code, options))
+                        .filter(Boolean);
+                      if (labels.length) return labels.join(', ');
+                      return codes.join(', ');
+                    },
+                    lookupOption(code, options) {
+                      const key = String(code).trim();
+                      const match = options.find(
+                        (entry) => String(entry.value) === key
+                      );
+                      return match ? match.text : null;
+                    },
+                    normalizeRaw(raw) {
+                      if (raw == null) return '';
+                      const value = String(raw).trim();
+                      if (!value || value === '-' || value === '—') return '';
+                      if (/^\\[[^\\]]*\\]$/.test(value)) return '';
+                      return value;
+                    },
+                    parseCodes(value) {
+                      if (!value.includes('*/*')) return [];
+                      return value
+                        .split('*/*')
+                        .map((part) => part.trim())
+                        .filter(Boolean);
+                    }
+                  }"
                   class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
                 >
                   <div class="flex flex-wrap gap-1">
                     <div class="text-[#4A4A4A] text-[14px] font-normal">
                       Location
                     </div>
-                    <div class="text-[#2A2A2A] text-[14px] font-medium">
-                      [Page//Pest Location]
-                    </div>
+                    <div
+                      class="text-[#2A2A2A] text-[14px] font-medium"
+                      x-text="displayLocations"
+                    ></div>
                   </div>
                   <div class="flex flex-wrap gap-1">
                     <div class="text-[#4A4A4A] text-[14px] font-normal">
                       Noises
                     </div>
-                    <div class="text-[#2A2A2A] text-[14px] font-medium">
-                      [Page//Noise Signs]
-                    </div>
+                    <div
+                      class="text-[#2A2A2A] text-[14px] font-medium"
+                      x-text="displayNoises"
+                    ></div>
                   </div>
                   <div class="flex flex-wrap gap-1">
                     <div class="text-[#4A4A4A] text-[14px] font-normal">
                       Times
                     </div>
-                    <div class="text-[#2A2A2A] text-[14px] font-medium">
-                      [Page//Pest Active Times]
-                    </div>
+                    <div
+                      class="text-[#2A2A2A] text-[14px] font-medium"
+                      x-text="displayTimes"
+                    ></div>
                   </div>
                 </div>
                 <div class="flex flex-wrap gap-2">
@@ -1704,7 +1842,7 @@
                     >Renovations:</span
                   >
                   <span class="text-[#2A2A2A] text-[14px] font-medium"
-                    >[Page//Renovations]</span
+                    >[Renovations]</span
                   >
                 </div>
                 <div class="flex flex-wrap gap-2">
@@ -1712,7 +1850,7 @@
                     >Resident Availability:</span
                   >
                   <span class="text-[#2A2A2A] text-[14px] font-medium"
-                    >[Page//Resident Availability]</span
+                    >[Resident_Availability]</span
                   >
                 </div>
                 <div class="flex flex-wrap gap-2">
@@ -1720,7 +1858,7 @@
                     >Job Required By:</span
                   >
                   <span class="text-[#2A2A2A] text-[14px] font-medium"
-                    >[Page//Date Job Required By %F j, Y%+0]</span
+                    >[Date_Job_Required_By]</span
                   >
                 </div>
               </div>
@@ -1807,6 +1945,11 @@
 
             <!-- Property Address -->
             <div
+              data-dynamic-list="02z9jZuy3SGFIoa0KoCiW"
+              data-entity="peterpm"
+              data-entity-key="1rBR-jpR3yE3HE1VhFD0j"
+              data-var-propertyid="[Page//Property//ID]"
+              data-op="subscribe"
               class="p-4 bg-white rounded-lg border border-gray-300 !flex flex-col gap-4"
             >
               <div class="flex items-center justify-between">
@@ -1834,7 +1977,7 @@
                 >
                   <a
                     class="text-blue-700 text-xs font-normal font-['Inter']"
-                    href="https://www.google.com/maps/search/?api=1&query=[Page//Property//Property Name]"
+                    href="https://www.google.com/maps/search/?api=1&query=[Property_Name]"
                     target="_blank"
                     rel="noopener"
                     >View on Maps</a
@@ -1863,7 +2006,7 @@
                       >Lot Number:</span
                     >
                     <span class="text-[#0052CC] text-[16px] font-normal"
-                      >[Page//Property//Lot Number]</span
+                      >[Lot_Number]</span
                     >
                   </div>
 
@@ -1872,7 +2015,7 @@
                       >Unit Number:</span
                     >
                     <span class="text-[#2A2A2A] text-[14px] font-medium"
-                      >[Page//Property//Unit Number]</span
+                      >[Unit_Number]</span
                     >
                   </div>
 
@@ -1881,7 +2024,7 @@
                       >Address:</span
                     >
                     <span class="text-[#2A2A2A] text-[14px] font-medium"
-                      >[Page//Property//Address 1]</span
+                      >[Address_1]</span
                     >
                   </div>
                 </div>
@@ -1891,7 +2034,7 @@
                       >Suburb/ Town:</span
                     >
                     <span class="text-[#2A2A2A] text-[14px] font-medium"
-                      >[Page//Property//Suburb/Town]</span
+                      >[Suburb_Town]</span
                     >
                   </div>
 
@@ -1900,7 +2043,7 @@
                       >Postal Code:</span
                     >
                     <span class="text-[#2A2A2A] text-[14px] font-medium"
-                      >[Page//Property//Postal Code]</span
+                      >[Postal_Code]</span
                     >
                   </div>
 
@@ -1909,7 +2052,7 @@
                       >State:</span
                     >
                     <span class="text-[#2A2A2A] text-[14px] font-medium"
-                      >[Page//Property//State]</span
+                      >[State]</span
                     >
                   </div>
                 </div>
@@ -1924,7 +2067,7 @@
                       >Property Type:</span
                     >
                     <span class="text-[#2A2A2A] text-[14px] font-medium"
-                      >[Page//Property//Property Type]</span
+                      >[Property_Type]</span
                     >
                   </div>
 
@@ -1933,7 +2076,7 @@
                       >Building Type:</span
                     >
                     <span class="text-[#2A2A2A] text-[14px] font-medium"
-                      >[Page//Property//Building Type]</span
+                      >[Building_Type]</span
                     >
                   </div>
 
@@ -1942,7 +2085,7 @@
                       >Building Type: Other:</span
                     >
                     <span class="text-[#2A2A2A] text-[14px] font-medium"
-                      >[Page//Property//Building Type: Other]</span
+                      >[Building_Type_Other]</span
                     >
                   </div>
 
@@ -1951,7 +2094,7 @@
                       >Bedrooms:</span
                     >
                     <span class="text-[#2A2A2A] text-[14px] font-medium"
-                      >[Page//Property//Bedrooms]</span
+                      >[Bedrooms]</span
                     >
                   </div>
                 </div>
@@ -1961,7 +2104,7 @@
                       >Manhole:</span
                     >
                     <span class="text-[#2A2A2A] text-[14px] font-medium"
-                      >[Page//Property//Manhole]</span
+                      >[Manhole]</span
                     >
                   </div>
                   <div class="flex flex-wrap gap-2">
@@ -1969,7 +2112,7 @@
                       >Stories:</span
                     >
                     <span class="text-[#2A2A2A] text-[14px] font-medium"
-                      >[Page//Property//Stories]</span
+                      >[Stories]</span
                     >
                   </div>
                   <div class="flex flex-wrap gap-2">
@@ -1977,20 +2120,81 @@
                       >Building Age:</span
                     >
                     <span class="text-[#2A2A2A] text-[14px] font-medium"
-                      >[Page//Property//Building Age]</span
+                      >[Building_Age]</span
                     >
                   </div>
-                  <div class="flex flex-wrap gap-2">
+                  <div
+                    x-data="{
+                      rawFeatures: '[Building_Features_Options_As_Text]',
+                      featureOptions: [
+                        { value: '713', label: 'Brick' },
+                        { value: '712', label: 'Concrete' },
+                        { value: '711', label: 'Flat Roof' },
+                        { value: '710', label: 'Highset' },
+                        { value: '709', label: 'Iron Roof' },
+                        { value: '708', label: 'Lowset' },
+                        { value: '707', label: 'PostWar' },
+                        { value: '706', label: 'Queenslander' },
+                        { value: '705', label: 'Raked Ceiling' },
+                        { value: '704', label: 'Sloping Block' },
+                        { value: '703', label: 'Super 6 / Fibro roof' },
+                        { value: '702', label: 'Tile Roof' },
+                        { value: '701', label: 'Town house' },
+                        { value: '700', label: 'Unit Block' },
+                        { value: '699', label: 'Warehouse' },
+                        { value: '698', label: 'Wood' },
+                        { value: '697', label: 'Wood & Brick' }
+                      ],
+                      get displayFeatures() {
+                        return this.formatValue(this.rawFeatures, this.featureOptions);
+                      },
+                      formatValue(raw, options) {
+                        const normalized = this.normalizeRaw(raw);
+                        if (!normalized) return '—';
+                        const codes = this.parseCodes(normalized);
+                        if (!codes.length) return normalized;
+                        const labels = codes
+                          .map((code) => this.lookupOption(code, options))
+                          .filter(Boolean);
+                        if (labels.length) return labels.join(', ');
+                        return codes.join(', ');
+                      },
+                      lookupOption(code, options) {
+                        const key = String(code).trim();
+                        const match = options.find(
+                          (entry) => String(entry.value) === key
+                        );
+                        return match ? match.label : null;
+                      },
+                      normalizeRaw(raw) {
+                        if (raw == null) return '';
+                        const value = String(raw).trim();
+                        if (!value || value === '-' || value === '—') return '';
+                        if (/^\\[[^\\]]*\\]$/.test(value)) return '';
+                        return value;
+                      },
+                      parseCodes(value) {
+                        if (!value.includes('*/*')) return [];
+                        return value
+                          .split('*/*')
+                          .map((part) => part.trim())
+                          .filter(Boolean);
+                      }
+                    }"
+                    class="flex flex-wrap gap-2"
+                  >
                     <span class="text-[#4A4A4A] text-[14px] font-normal"
                       >Building Features:</span
                     >
-                    <span class="text-[#2A2A2A] text-[14px] font-medium"
-                      >[Page//Property//Building Features]</span
-                    >
+                    <span
+                      class="text-[#2A2A2A] text-[14px] font-medium"
+                      x-text="displayFeatures"
+                    ></span>
                   </div>
                 </div>
               </div>
             </div>
+
             <!-- Property Contacts (cards in flex-wrap; no absolute/relative) -->
             <div
               class="p-4 bg-white rounded-lg border border-gray-300 !flex flex-col gap-4"
@@ -2569,44 +2773,134 @@
               </div>
             </div>
             <div class="space-y-4 px-5 py-5">
+              <!-- Job details card to be edited -->
               <div
-                class="flex flex-col gap-3"
-                data-dynamic-list="HdrrHrQPUKTcjcfRVv8q6"
+                data-dynamic-list="HazzF7aEjvfKAJjoa38My"
                 data-entity="peterpm"
                 data-entity-key="1rBR-jpR3yE3HE1VhFD0j"
-                data-var-inquiryid="[Page//ID]"
+                data-var-jobid="[Page//Quote Record//ID]"
               >
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-2">
+                <div
+                  class="flex flex-col gap-3"
+                  x-data="{
+                  accountTypeRaw: '[Account_Type]',
+                  quoteStatusRaw: '[Quote_Status]',
+                  clientEntityName: '[Client_Entity_Name]',
+                  clientEntityPhone: '[Client_Entity_Phone]',
+                  clientIndividualFirst: '[Client_Individual_First_Name]',
+                  clientIndividualLast: '[Client_Individual_Last_Name]',
+                  clientIndividualSms: '[Client_Individual_SMS_Number]',
+                  quoteStatusOptions: [
+                    { value: '676', label: 'New', color: '#e91e63', backgroundColor: '#fbd2e0' },
+                    { value: '144', label: 'Requested', color: '#8e24aa', backgroundColor: '#e8d3ee' },
+                    { value: '143', label: 'Sent', color: '#3949ab', backgroundColor: '#d7dbee' },
+                    { value: '142', label: 'Accepted', color: '#43a047', backgroundColor: '#d9ecda' },
+                    { value: '141', label: 'Declined', color: '#f4511e', backgroundColor: '#fddcd2' },
+                    { value: '140', label: 'Expired', color: '#000000', backgroundColor: '#cccccc' },
+                    { value: '139', label: 'Cancelled', color: '#000000', backgroundColor: '#cccccc' }
+                  ],
+                  get accountType() {
+                    return (this.accountTypeRaw || '').toString().trim().toLowerCase();
+                  },
+                  get isContact() {
+                    return this.accountType === 'contact';
+                  },
+                  get isCompany() {
+                    return this.accountType === 'company';
+                  },
+                  get isNone() {
+                    return !this.accountType || this.accountType === 'none';
+                  },
+                  get individualName() {
+                    const full = `${this.clientIndividualFirst || ''} ${this.clientIndividualLast || ''}`.trim();
+                    return full || '—';
+                  },
+                  get entityName() {
+                    const value = (this.clientEntityName || '').toString().trim();
+                    return value || '—';
+                  },
+                  get entityPhone() {
+                    const value = (this.clientEntityPhone || '').toString().trim();
+                    return value || '—';
+                  },
+                  get individualSms() {
+                    const value = (this.clientIndividualSms || '').toString().trim();
+                    return value || '—';
+                  },
+                  get resolvedQuoteStatus() {
+                    const raw = (this.quoteStatusRaw || '').toString().trim();
+                    if (!raw) {
+                      return { label: '', color: '#0f172a', backgroundColor: '#e5e7eb' };
+                    }
+                    const byValue = this.quoteStatusOptions.find(
+                      (item) => item.value === raw
+                    );
+                    if (byValue) return byValue;
+                    const normalized = raw.toLowerCase();
+                    const byLabel = this.quoteStatusOptions.find(
+                      (item) => item.label.toLowerCase() === normalized
+                    );
+                    return (
+                      byLabel || {
+                        label: raw,
+                        color: '#0f172a',
+                        backgroundColor: '#e5e7eb',
+                      }
+                    );
+                  }
+                }"
+                >
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2" x-show="isContact">
+                      <span class="text-[#4A4A4A] text-[14px] font-normal"
+                        >Account Name:</span
+                      >
+                      <span
+                        class="text-[#2A2A2A] text-[14px] font-medium"
+                        x-text="individualName"
+                      ></span>
+                    </div>
+                    <div class="flex items-center gap-2" x-show="isCompany">
+                      <span class="text-[#4A4A4A] text-[14px] font-normal"
+                        >Entity Name:</span
+                      >
+                      <span
+                        class="text-[#2A2A2A] text-[14px] font-medium"
+                        x-text="entityName"
+                      ></span>
+                    </div>
+                    <div
+                      class="px-2.5 py-0.5 rounded-full"
+                      :style="{ backgroundColor: resolvedQuoteStatus.backgroundColor }"
+                    >
+                      <span
+                        class="f-inter text-[12px] font-medium"
+                        :style="{ color: resolvedQuoteStatus.color }"
+                        x-text="resolvedQuoteStatus.label"
+                      ></span>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2" x-show="isContact">
                     <span class="text-[#4A4A4A] text-[14px] font-normal"
-                      >Account Name:</span
+                      >SMS Number:</span
                     >
-                    <span class="text-[#2A2A2A] text-[14px] font-medium"
-                      >[Primary_Contact_First_Name]
-                      [Primary_Contact_Last_Name]</span
-                    >
+                    <span
+                      class="text-[#2A2A2A] text-[14px] font-medium"
+                      x-text="individualSms"
+                    ></span>
                   </div>
-                  <div
-                    class="px-2.5 py-0.5 rounded-full"
-                    style="
-                      background: [Page//Quote Record//Quote Status
-                        ##color_field_hex];
-                    "
-                  >
-                    <span class="f-inter text-[12px] font-medium text-[#000000]"
-                      >[Page//Quote Record//Quote Status]</span
+                  <div class="flex items-center gap-2" x-show="isCompany">
+                    <span class="text-[#4A4A4A] text-[14px] font-normal"
+                      >Phone:</span
                     >
+                    <span
+                      class="text-[#2A2A2A] text-[14px] font-medium"
+                      x-text="entityPhone"
+                    ></span>
                   </div>
-                </div>
-                <div class="flex items-center gap-2">
-                  <span class="text-[#4A4A4A] text-[14px] font-normal"
-                    >SMS Number:</span
-                  >
-                  <span class="text-[#2A2A2A] text-[14px] font-medium"
-                    >[Primary_Contact_SMS_Number]</span
-                  >
                 </div>
               </div>
+              <!-- Job details card to be edited -->
 
               <!-- Job Email -->
               <div
@@ -3602,9 +3896,7 @@
 
             <div class="flex items-baseline gap-2">
               <span class="text-slate-500">PCA Number:</span>
-              <a href="#" class="text-sky-700 hover:underline font-medium"
-                >#PCA6745</a
-              >
+              <a href="#" class="text-sky-700 hover:underline font-medium"></a>
             </div>
           </div>
 
