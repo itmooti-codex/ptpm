@@ -130,6 +130,29 @@ const CALC_JOBS_QUERY = `
           }
         `;
 
+const CALC_JOB_BY_ID_QUERY = `
+          query calcJobs($id: PeterpmJobID!) {
+            calcJobs(query: [{ where: { id: $id } }]) {
+              Inquiry_Record_ID: field(arg: ["Inquiry_Record", "id"])
+              ID: field(arg: ["id"])
+              Unique_ID: field(arg: ["unique_id"])
+              Client_Individual_ID: field(arg: ["client_individual_id"])
+              Accounts_Contact_ID: field(arg: ["accounts_contact_id"])
+              Quote_Date: field(arg: ["quote_date"])
+                @dateFormat(value: "DD/MM/YYYY")
+              Quote_Total: field(arg: ["quote_total"])
+              Quote_Status: field(arg: ["quote_status"])
+              Follow_Up_Date: field(arg: ["follow_up_date"])
+                @dateFormat(value: "DD/MM/YYYY")
+              Date_Quote_Sent: field(arg: ["date_quote_sent"])
+                @dateFormat(value: "DD/MM/YYYY")
+              Date_Quoted_Accepted: field(arg: ["date_quoted_accepted"])
+                @dateFormat(value: "DD/MM/YYYY")
+                Bill_Approved_Admin: field(arg: ["bill_approved_admin"])
+            }
+          }
+        `;
+
 const CREATE_ACTIVITY_MUTATION = `
           mutation createActivity($payload: ActivityCreateInput = null) {
             createActivity(payload: $payload) {

@@ -1284,32 +1284,53 @@ document.addEventListener("alpine:init", () => {
       }
       return trimmed.toLowerCase();
     },
+    resolveJobId() {
+      return (
+        this.sanitizeRecipientId(JOB_ID) ||
+        this.sanitizeRecipientId(
+          document.body?.dataset?.jobId ||
+            document.querySelector("[data-var-jobid]")?.dataset?.varJobid ||
+            ""
+        )
+      );
+    },
+    resolveInquiryId() {
+      return (
+        this.sanitizeRecipientId(INQUIRY_RECORD_ID) ||
+        this.sanitizeRecipientId(
+          document.body?.dataset?.inquiryId ||
+            document.querySelector("[data-var-inquiryid]")?.dataset
+              ?.varInquiryid ||
+            ""
+        )
+      );
+    },
 
     async checkExistingQuote() {
       if (this.initCheckRan) return;
       this.initCheckRan = true;
-      const inquiryId =
-        this.sanitizeRecipientId(INQUIRY_RECORD_ID) ||
-        this.sanitizeRecipientId(
-          document.body?.dataset?.inquiryId ||
-          document.querySelector("[data-var-inquiryid]")?.dataset
-            ?.varInquiryid ||
-          ""
-        );
-      if (!inquiryId) {
-        this.hasQuote = false;
-        return;
-      }
+      const jobId = this.resolveJobId();
+      const inquiryId = this.resolveInquiryId();
       try {
-        const data = await graphqlRequest(CALC_JOBS_QUERY, {
-          inquiry_record_id: inquiryId,
-        });
-        const record = this.extractJobRecord(data);
-        if (record) {
-          this.handleQuoteCreated(this.mapQuoteRecord(record));
-        } else {
-          this.hasQuote = false;
+        if (jobId) {
+          const data = await graphqlRequest(CALC_JOB_BY_ID_QUERY, { id: jobId });
+          const record = this.extractJobRecord(data);
+          if (record) {
+            this.handleQuoteCreated(this.mapQuoteRecord(record));
+            return;
+          }
         }
+        if (inquiryId) {
+          const data = await graphqlRequest(CALC_JOBS_QUERY, {
+            inquiry_record_id: inquiryId,
+          });
+          const record = this.extractJobRecord(data);
+          if (record) {
+            this.handleQuoteCreated(this.mapQuoteRecord(record));
+            return;
+          }
+        }
+        this.hasQuote = false;
       } catch (error) {
         console.error("Failed to check existing quote", error);
         this.hasQuote = false;
@@ -4318,7 +4339,12 @@ document.addEventListener("alpine:init", () => {
       // Open modal (optionally pass jobId + jobLabel)
       this.boundOpenListener = (event) => {
         const d = event?.detail || {};
-        this.jobId = d.jobId ?? document.body.dataset.inquiryId ?? null;
+        this.jobId =
+          d.jobId ??
+          JOB_ID ??
+          document.body?.dataset?.jobId ??
+          document.querySelector("[data-var-jobid]")?.dataset?.varJobid ??
+          null;
         this.titleSuffix = d.jobLabel ?? "";
         if (d.prefill) this.prefill(d.prefill);
         this.open = true;
@@ -4397,7 +4423,11 @@ document.addEventListener("alpine:init", () => {
       this.error = "";
 
       try {
-        const jobId = this.jobId || document.body.dataset.inquiryId;
+        const jobId =
+          this.jobId ||
+          JOB_ID ||
+          document.body?.dataset?.jobId ||
+          document.querySelector("[data-var-jobid]")?.dataset?.varJobid;
         if (!jobId) throw new Error("Missing job ID");
 
         const payload = {
