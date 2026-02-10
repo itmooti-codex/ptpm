@@ -3680,6 +3680,28 @@
       <div
         class="rounded-sm border border-slate-200 bg-white shadow-sm"
         data-recommendation-card
+        x-data="{
+          jobIdRaw: (typeof JOB_ID !== 'undefined' ? JOB_ID : '[jobid]'),
+          normalize(value) {
+            const raw = (value || '').toString().trim();
+            if (!raw) return '';
+            if (raw.toLowerCase() === 'null' || raw.toLowerCase() === 'undefined') return '';
+            if (/^\\[.*\\]$/.test(raw)) return '';
+            return raw.replace(/^#/, '').trim();
+          },
+          get resolvedJobId() {
+            return (
+              this.normalize(this.jobIdRaw) ||
+              this.normalize(document.body?.dataset?.jobId) ||
+              this.normalize(document.querySelector('[data-var-jobid]')?.dataset?.varJobid)
+            );
+          },
+          get hasJobId() {
+            return Boolean(this.resolvedJobId);
+          }
+        }"
+        x-show="hasJobId || hasQuote"
+        x-cloak
       >
         <div class="flex items-center justify-between px-4 pt-4">
           <div class="text-[#2A2A2A] text-[16px] font-medium f-inter">
@@ -3687,7 +3709,9 @@
           </div>
           <button
             class="inline-flex items-center gap-1 text-xs font-medium text-sky-700"
-            @click.prevent="$dispatch('recommendation:edit', { recommendation: (document.querySelector('[data-admin-recommendation]')?.textContent || '').trim(), jobId: JOB_ID })"
+            @click.prevent="$dispatch('recommendation:edit', { recommendation: (document.querySelector('[data-admin-recommendation]')?.textContent || '').trim(), jobId: resolvedJobId })"
+            x-show="hasJobId || hasQuote"
+            x-cloak
           >
             <svg
               width="14"
@@ -3705,7 +3729,7 @@
           </button>
         </div>
         <div
-          class="px-4 pb-4 pt-2 text-sm leading-relaxed text-slate-700"
+          class="mx-4 mb-4 mt-2 p-4 rounded-lg border border-amber-200 bg-white text-amber-900"
           data-recommendation-empty
           hidden
         >
@@ -3741,7 +3765,7 @@
               </svg>
             </span>
             <div>
-              <div class="text-[14px] font-semibold">
+              <div class="text-[14px] font-semibold text-amber-900">
                 No recommendations yet
               </div>
               <div class="text-[12px] text-amber-800">
@@ -3757,6 +3781,7 @@
           data-entity-key="1rBR-jpR3yE3HE1VhFD0j"
           data-op="subscribe"
           data-recommendation-list
+          class="hidden"
         >
           <div
             class="px-4 pb-4 pt-2 text-sm leading-relaxed text-slate-700"

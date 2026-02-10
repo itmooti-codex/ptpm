@@ -871,6 +871,9 @@ document.addEventListener("alpine:init", () => {
         detail.ID ||
         detail.id;
       this.jobId = detail.jobId || detail.ID || detail.id || this.jobId;
+      if (this.jobId) {
+        document.body.dataset.jobId = this.jobId;
+      }
       if (detail.quoteNumber || uniqueId) {
         this.quoteNumber = detail.quoteNumber || uniqueId;
       }
