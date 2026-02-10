@@ -667,7 +667,7 @@
         </div>
 
         <div
-          class="w-full sm:w-72 relative"
+          class="disableIfNoInquiry w-full sm:w-72 relative"
           x-data="allocateProviderSearch()"
           :class="inquiryCollapsed ? 'hidden' : ''"
           @keydown.escape.window="closeDropdown && closeDropdown()"
@@ -928,7 +928,7 @@
         <div class="flex items-center gap-2">
           <button
             x-data="{}"
-            class="px-4 py-[12px] bg-white text-[#003882] f-inter font-medium text-[14px] rounded border border-sky-900"
+            class="hideIfNoInquiry px-4 py-[12px] bg-white text-[#003882] f-inter font-medium text-[14px] rounded border border-sky-900"
             @click.prevent="$dispatch('dealInfo:open')"
           >
             Deal Info
@@ -936,7 +936,7 @@
 
           <a
             href="https://my.awesomate.pro/inquiry-page/[inquiryuid]"
-            class="px-4 py-[12px] bg-sky-900 text-white f-inter font-medium text-[14px] rounded border border-sky-900"
+            class="hideIfNoInquiry px-4 py-[12px] bg-sky-900 text-white f-inter font-medium text-[14px] rounded border border-sky-900"
             x-show="!hasJob"
             x-cloak
           >
@@ -968,14 +968,145 @@
         </div>
       </div>
 
+      <!-- Missing Data Messages (easy to remove) -->
+      <div
+        class="w-full"
+        x-data="{
+          inquiryIdRaw: '[inquiryid]',
+          inquiryUidRaw: '[inquiryuid]',
+          propertyIdRaw: '[propertyid]',
+          dismissed: false,
+          normalize(value) {
+            const raw = (value || '').toString().trim();
+            if (!raw) return '';
+            if (raw.toLowerCase() === 'null' || raw.toLowerCase() === 'undefined') return '';
+            if (/^\\[.*\\]$/.test(raw)) return '';
+            return raw.replace(/^#/, '').trim();
+          },
+          get hasInquiry() {
+            return Boolean(this.normalize(this.inquiryIdRaw) || this.normalize(this.inquiryUidRaw));
+          },
+          get hasProperty() {
+            return Boolean(this.normalize(this.propertyIdRaw));
+          },
+          get showAny() {
+            return !this.hasInquiry || !this.hasProperty;
+          }
+        }"
+        x-show="showAny && !dismissed"
+        x-cloak
+      >
+        <div class="border border-amber-100 bg-white p-4 text-amber-900">
+          <div class="space-y-3">
+            <div class="flex items-start gap-3" x-show="!hasInquiry">
+              <span class="mt-0.5 inline-flex h-8 w-8 items-center justify-center rounded-full bg-amber-100 text-amber-600">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M8 1.33337L15 14.6667H1L8 1.33337Z"
+                    stroke="currentColor"
+                    stroke-width="1.2"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M8 6V9.33333"
+                    stroke="currentColor"
+                    stroke-width="1.2"
+                    stroke-linecap="round"
+                  />
+                  <path
+                    d="M8 11.6667H8.00667"
+                    stroke="currentColor"
+                    stroke-width="1.2"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </span>
+              <div>
+                <div class="text-[14px] font-semibold">No inquiry found</div>
+                <div class="text-[12px] text-amber-800">
+                  Inquiry details are unavailable for this record.
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3" x-show="!hasProperty">
+              <span class="mt-0.5 inline-flex h-8 w-8 items-center justify-center rounded-full bg-amber-100 text-amber-600">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M8 1.33337L15 14.6667H1L8 1.33337Z"
+                    stroke="currentColor"
+                    stroke-width="1.2"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M8 6V9.33333"
+                    stroke="currentColor"
+                    stroke-width="1.2"
+                    stroke-linecap="round"
+                  />
+                  <path
+                    d="M8 11.6667H8.00667"
+                    stroke="currentColor"
+                    stroke-width="1.2"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </span>
+              <div>
+                <div class="text-[14px] font-semibold">No property found</div>
+                <div class="text-[12px] text-amber-800">
+                  Property details are unavailable for this record.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-4 flex flex-wrap items-center justify-end gap-2">
+            <a
+              href="https://my.awesomate.pro/admin/dashboard"
+              class="rounded border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+            >
+              Back to Dashboard
+            </a>
+            <button
+              type="button"
+              class="rounded border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+              @click="location.reload()"
+            >
+              Reload
+            </button>
+            <button
+              type="button"
+              class="rounded border border-transparent px-2 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900"
+              @click="dismissed = true"
+            >
+              Dismiss
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- /Missing Data Messages -->
+
       <div>
         <div
-          class="flex gap-6 p-4 bg-white rounded-b-xl"
+          class="inquiry-layout flex gap-6 p-4 bg-white rounded-b-xl"
           :class="inquiryCollapsed ? 'flex-col w-[400px] max-h-[calc(100vh-14rem)] overflow-y-auto' : 'w-[800px] max-[1200px]:w-full'"
         >
           <!-- LEFT COLUMN -->
           <section
-            class="flex-1 flex flex-col gap-4"
+            class="inquiry-column flex-1 flex flex-col gap-4"
             :class="inquiryCollapsed ? 'w-full' : 'w-[60%]'"
           >
             <!-- toolbar -->
@@ -1241,7 +1372,7 @@
 
             <!-- Inquiry Details -->
             <div
-              class="p-4 bg-white rounded-lg border border-gray-300 !flex flex-col gap-4"
+              class="hideIfNoInquiry p-4 bg-white rounded-lg border border-gray-300 !flex flex-col gap-4"
               data-dynamic-list="HdrrHrQPUKTcjcfRVv8q6"
               data-entity="peterpm"
               data-entity-key="1rBR-jpR3yE3HE1VhFD0j"
@@ -1658,7 +1789,7 @@
 
             <!-- Resident’s Feedback -->
             <div
-              class="p-4 bg-white rounded-lg border border-gray-300 !flex flex-col gap-4"
+              class="hideIfNoInquiry p-4 bg-white rounded-lg border border-gray-300 !flex flex-col gap-4"
               data-dynamic-list="HdrrHrQPUKTcjcfRVv8q6"
               data-entity="peterpm"
               data-entity-key="1rBR-jpR3yE3HE1VhFD0j"
@@ -1867,12 +1998,12 @@
 
           <!-- RIGHT COLUMN -->
           <aside
-            class="flex flex-col gap-4"
+            class="property-column flex flex-col gap-4"
             :class="inquiryCollapsed ? 'w-full' : 'w-[40%]'"
           >
             <!-- Pop Up Comment -->
             <div
-              class="p-4 bg-white rounded-lg border border-gray-300 !flex flex-col gap-2 cursor-pointer"
+              class="hideIfNoInquiry p-4 bg-white rounded-lg border border-gray-300 !flex flex-col gap-2 cursor-pointer"
               data-dynamic-list="HdrrHrQPUKTcjcfRVv8q6"
               data-entity="peterpm"
               data-entity-key="1rBR-jpR3yE3HE1VhFD0j"
@@ -1950,7 +2081,7 @@
               data-entity-key="1rBR-jpR3yE3HE1VhFD0j"
               data-var-propertyid="[propertyid]"
               data-op="subscribe"
-              class="p-4 bg-white rounded-lg border border-gray-300 !flex flex-col gap-4"
+              class="hideIfNoProperty p-4 bg-white rounded-lg border border-gray-300 !flex flex-col gap-4"
             >
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
@@ -2197,7 +2328,7 @@
 
             <!-- Property Contacts (cards in flex-wrap; no absolute/relative) -->
             <div
-              class="p-4 bg-white rounded-lg border border-gray-300 !flex flex-col gap-4"
+              class="hideIfNoProperty p-4 bg-white rounded-lg border border-gray-300 !flex flex-col gap-4"
             >
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
@@ -4667,6 +4798,30 @@ d="M9 12l2 2 4-4M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
     class="absolute -top-1 -right-1 h-5 min-w-[20px] rounded-full bg-red-500 px-1 text-[11px] font-semibold leading-none text-white ring-2 ring-white flex items-center justify-center"
   ></span>
 </button>
+
+<script>
+  (function () {
+    const normalize = (value) => {
+      const raw = (value || "").toString().trim();
+      if (!raw) return "";
+      const lower = raw.toLowerCase();
+      if (lower === "null" || lower === "undefined") return "";
+      if (/^\\[.*\\]$/.test(raw)) return "";
+      return raw.replace(/^#/, "").trim();
+    };
+    const inquiryId = normalize("[inquiryid]");
+    const inquiryUid = normalize("[inquiryuid]");
+    const propertyId = normalize("[propertyid]");
+    const hasInquiry = Boolean(inquiryId || inquiryUid);
+    const hasProperty = Boolean(propertyId);
+    const apply = () => {
+      if (!hasInquiry) document.body.classList.add("no-inquiry");
+      if (!hasProperty) document.body.classList.add("no-property");
+    };
+    if (document.body) apply();
+    else document.addEventListener("DOMContentLoaded", apply);
+  })();
+</script>
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {

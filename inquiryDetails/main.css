@@ -83,3 +83,39 @@ textarea {
 [type="checkbox"]:not(.filled-in) + span:not(.lever):after {
   display: none !important;
 }
+/* Hide inquiry-only cards when no inquiry id/uid is present */
+.no-inquiry .hideIfNoInquiry {
+  display: none !important;
+}
+
+/* Disable interactive inquiry-only controls when no inquiry id/uid exists */
+.no-inquiry .disableIfNoInquiry {
+  pointer-events: none !important;
+  opacity: 0.6;
+}
+
+.no-inquiry .inquiry-layout {
+  flex-direction: column;
+}
+
+.no-inquiry .inquiry-column,
+.no-inquiry .property-column {
+  width: 100% !important;
+}
+
+/* Property missing state */
+.showIfNoProperty {
+  display: none;
+}
+.no-property .showIfNoProperty {
+  display: block !important;
+}
+.no-property .hideIfNoProperty {
+  display: none !important;
+}
+.no-property .property-column {
+  display: none !important;
+}
+.no-property .inquiry-column {
+  width: 100% !important;
+}
