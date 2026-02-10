@@ -3679,11 +3679,7 @@
       <!-- Recommendations Card -->
       <div
         class="rounded-sm border border-slate-200 bg-white shadow-sm"
-        data-dynamic-list="j63GCaJxEnJ9p7Lnc-HZK"
-        data-entity="peterpm"
-        data-var-jobid="[jobid]"
-        data-entity-key="1rBR-jpR3yE3HE1VhFD0j"
-        data-op="subscribe"
+        data-recommendation-card
       >
         <div class="flex items-center justify-between px-4 pt-4">
           <div class="text-[#2A2A2A] text-[16px] font-medium f-inter">
@@ -3710,9 +3706,64 @@
         </div>
         <div
           class="px-4 pb-4 pt-2 text-sm leading-relaxed text-slate-700"
-          data-admin-recommendation
+          data-recommendation-empty
+          hidden
         >
-          [Admin_Recommendation]
+          <div class="flex items-center gap-3">
+            <span
+              class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-amber-100 text-amber-600"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M8 1.33337L15 14.6667H1L8 1.33337Z"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M8 6V9.33333"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M8 11.6667H8.00667"
+                  stroke="currentColor"
+                  stroke-width="1.2"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </span>
+            <div>
+              <div class="text-[14px] font-semibold">
+                No recommendations yet
+              </div>
+              <div class="text-[12px] text-amber-800">
+                Add a recommendation to display it here.
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          data-dynamic-list="j63GCaJxEnJ9p7Lnc-HZK"
+          data-entity="peterpm"
+          data-var-jobid="[jobid]"
+          data-entity-key="1rBR-jpR3yE3HE1VhFD0j"
+          data-op="subscribe"
+          data-recommendation-list
+        >
+          <div
+            class="px-4 pb-4 pt-2 text-sm leading-relaxed text-slate-700"
+            data-admin-recommendation
+          >
+            [Admin_Recommendation]
+          </div>
         </div>
       </div>
     </div>

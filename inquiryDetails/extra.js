@@ -38,6 +38,37 @@ const initPropertyContactStars = () => {
   );
 };
 
+const initRecommendationCard = () => {
+  const card = document.querySelector("[data-recommendation-card]");
+  if (!card) return;
+  const list = card.querySelector("[data-recommendation-list]");
+  const empty = card.querySelector("[data-recommendation-empty]");
+  if (!list || !empty) return;
+
+  const normalizeText = (value) => {
+    const raw = (value || "").toString().trim();
+    if (!raw) return "";
+    if (/^\[[^\]]+\]$/.test(raw)) return "";
+    return raw;
+  };
+
+  const update = () => {
+    const admin = list.querySelector("[data-admin-recommendation]");
+    const adminText = normalizeText(admin?.textContent);
+    const listText = (list.textContent || "").toLowerCase();
+    const hasNoResults =
+      listText.includes("no results found") ||
+      listText.includes("no result found");
+    const showEmpty = hasNoResults || !adminText;
+    empty.hidden = !showEmpty;
+    list.classList.toggle("hidden", showEmpty);
+  };
+
+  update();
+  const observer = new MutationObserver(() => update());
+  observer.observe(list, { childList: true, subtree: true, characterData: true });
+};
+
 document.addEventListener("DOMContentLoaded", () => {
   const btn = document.getElementById("copy-link-btn");
   if (btn && navigator.clipboard) {
@@ -71,4 +102,5 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   initPropertyContactStars();
+  initRecommendationCard();
 });
