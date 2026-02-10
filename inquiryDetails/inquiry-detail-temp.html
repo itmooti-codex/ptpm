@@ -2904,134 +2904,58 @@
               </div>
             </div>
             <div class="space-y-4 px-5 py-5">
-              <!-- Job details card to be edited -->
-              <div
-                data-dynamic-list="HazzF7aEjvfKAJjoa38My"
-                data-entity="peterpm"
-                data-entity-key="1rBR-jpR3yE3HE1VhFD0j"
-                data-var-jobid="[jobid]"
-              >
-                <div
-                  class="flex flex-col gap-3"
-                  x-data="{
-                  accountTypeRaw: '[Account_Type]',
-                  quoteStatusRaw: '[Quote_Status]',
-                  clientEntityName: '[Client_Entity_Name]',
-                  clientEntityPhone: '[Client_Entity_Phone]',
-                  clientIndividualFirst: '[Client_Individual_First_Name]',
-                  clientIndividualLast: '[Client_Individual_Last_Name]',
-                  clientIndividualSms: '[Client_Individual_SMS_Number]',
-                  quoteStatusOptions: [
-                    { value: '676', label: 'New', color: '#e91e63', backgroundColor: '#fbd2e0' },
-                    { value: '144', label: 'Requested', color: '#8e24aa', backgroundColor: '#e8d3ee' },
-                    { value: '143', label: 'Sent', color: '#3949ab', backgroundColor: '#d7dbee' },
-                    { value: '142', label: 'Accepted', color: '#43a047', backgroundColor: '#d9ecda' },
-                    { value: '141', label: 'Declined', color: '#f4511e', backgroundColor: '#fddcd2' },
-                    { value: '140', label: 'Expired', color: '#000000', backgroundColor: '#cccccc' },
-                    { value: '139', label: 'Cancelled', color: '#000000', backgroundColor: '#cccccc' }
-                  ],
-                  get accountType() {
-                    return (this.accountTypeRaw || '').toString().trim().toLowerCase();
-                  },
-                  get isContact() {
-                    return this.accountType === 'contact';
-                  },
-                  get isCompany() {
-                    return this.accountType === 'company';
-                  },
-                  get isNone() {
-                    return !this.accountType || this.accountType === 'none';
-                  },
-                  get individualName() {
-                    const full = `${this.clientIndividualFirst || ''} ${this.clientIndividualLast || ''}`.trim();
-                    return full || '—';
-                  },
-                  get entityName() {
-                    const value = (this.clientEntityName || '').toString().trim();
-                    return value || '—';
-                  },
-                  get entityPhone() {
-                    const value = (this.clientEntityPhone || '').toString().trim();
-                    return value || '—';
-                  },
-                  get individualSms() {
-                    const value = (this.clientIndividualSms || '').toString().trim();
-                    return value || '—';
-                  },
-                  get resolvedQuoteStatus() {
-                    const raw = (this.quoteStatusRaw || '').toString().trim();
-                    if (!raw) {
-                      return { label: '', color: '#0f172a', backgroundColor: '#e5e7eb' };
-                    }
-                    const byValue = this.quoteStatusOptions.find(
-                      (item) => item.value === raw
-                    );
-                    if (byValue) return byValue;
-                    const normalized = raw.toLowerCase();
-                    const byLabel = this.quoteStatusOptions.find(
-                      (item) => item.label.toLowerCase() === normalized
-                    );
-                    return (
-                      byLabel || {
-                        label: raw,
-                        color: '#0f172a',
-                        backgroundColor: '#e5e7eb',
-                      }
-                    );
-                  }
-                }"
-                >
-                  <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-2" x-show="isContact">
-                      <span class="text-[#4A4A4A] text-[14px] font-normal"
-                        >Account Name:</span
-                      >
-                      <span
-                        class="text-[#2A2A2A] text-[14px] font-medium"
-                        x-text="individualName"
-                      ></span>
-                    </div>
-                    <div class="flex items-center gap-2" x-show="isCompany">
-                      <span class="text-[#4A4A4A] text-[14px] font-normal"
-                        >Entity Name:</span
-                      >
-                      <span
-                        class="text-[#2A2A2A] text-[14px] font-medium"
-                        x-text="entityName"
-                      ></span>
-                    </div>
-                    <div
-                      class="px-2.5 py-0.5 rounded-full"
-                      :style="{ backgroundColor: resolvedQuoteStatus.backgroundColor }"
-                    >
-                      <span
-                        class="f-inter text-[12px] font-medium"
-                        :style="{ color: resolvedQuoteStatus.color }"
-                        x-text="resolvedQuoteStatus.label"
-                      ></span>
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-2" x-show="isContact">
+              <!-- Job details card (API-driven) -->
+              <div class="flex flex-col gap-3">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2" x-show="isContactAccount">
                     <span class="text-[#4A4A4A] text-[14px] font-normal"
-                      >SMS Number:</span
+                      >Account Name:</span
                     >
                     <span
                       class="text-[#2A2A2A] text-[14px] font-medium"
-                      x-text="individualSms"
+                      x-text="individualName"
                     ></span>
                   </div>
-                  <div class="flex items-center gap-2" x-show="isCompany">
+                  <div class="flex items-center gap-2" x-show="isCompanyAccount">
                     <span class="text-[#4A4A4A] text-[14px] font-normal"
-                      >Phone:</span
+                      >Entity Name:</span
                     >
                     <span
                       class="text-[#2A2A2A] text-[14px] font-medium"
-                      x-text="entityPhone"
+                      x-text="entityName"
+                    ></span>
+                  </div>
+                  <div
+                    class="px-2.5 py-0.5 rounded-full"
+                    :style="{ backgroundColor: resolvedQuoteStatus.backgroundColor }"
+                  >
+                    <span
+                      class="f-inter text-[12px] font-medium"
+                      :style="{ color: resolvedQuoteStatus.color }"
+                      x-text="resolvedQuoteStatus.label"
                     ></span>
                   </div>
                 </div>
+                <div class="flex items-center gap-2" x-show="isContactAccount">
+                  <span class="text-[#4A4A4A] text-[14px] font-normal"
+                    >SMS Number:</span
+                  >
+                  <span
+                    class="text-[#2A2A2A] text-[14px] font-medium"
+                    x-text="individualSms"
+                  ></span>
+                </div>
+                <div class="flex items-center gap-2" x-show="isCompanyAccount">
+                  <span class="text-[#4A4A4A] text-[14px] font-normal"
+                    >Phone:</span
+                  >
+                  <span
+                    class="text-[#2A2A2A] text-[14px] font-medium"
+                    x-text="entityPhone"
+                  ></span>
+                </div>
               </div>
-              <!-- Job details card to be edited -->
+              <!-- Job details card (API-driven) -->
 
               <!-- Job Email -->
               <div

@@ -781,6 +781,21 @@ document.addEventListener("alpine:init", () => {
     dateQuoteSent: "",
     dateQuoteAccepted: "",
     jobId: "",
+    accountType: "",
+    clientEntityName: "",
+    clientEntityPhone: "",
+    clientIndividualFirst: "",
+    clientIndividualLast: "",
+    clientIndividualSms: "",
+    quoteStatusOptions: [
+      { value: "676", label: "New", color: "#e91e63", backgroundColor: "#fbd2e0" },
+      { value: "144", label: "Requested", color: "#8e24aa", backgroundColor: "#e8d3ee" },
+      { value: "143", label: "Sent", color: "#3949ab", backgroundColor: "#d7dbee" },
+      { value: "142", label: "Accepted", color: "#43a047", backgroundColor: "#d9ecda" },
+      { value: "141", label: "Declined", color: "#f4511e", backgroundColor: "#fddcd2" },
+      { value: "140", label: "Expired", color: "#000000", backgroundColor: "#cccccc" },
+      { value: "139", label: "Cancelled", color: "#000000", backgroundColor: "#cccccc" },
+    ],
     jobEmailContactId: "",
     accountEmailContactId: "",
     availableRecipients: [],
@@ -884,6 +899,35 @@ document.addEventListener("alpine:init", () => {
       }
       if (detail.followUpDate || detail.follow_up_date) {
         this.followUpDate = detail.followUpDate || detail.follow_up_date || "";
+      }
+      if (detail.accountType || detail.account_type) {
+        this.accountType = detail.accountType || detail.account_type || "";
+      }
+      if (detail.clientEntityName || detail.client_entity_name) {
+        this.clientEntityName =
+          detail.clientEntityName || detail.client_entity_name || "";
+      }
+      if (detail.clientEntityPhone || detail.client_entity_phone) {
+        this.clientEntityPhone =
+          detail.clientEntityPhone || detail.client_entity_phone || "";
+      }
+      if (detail.clientIndividualFirst || detail.client_individual_first_name) {
+        this.clientIndividualFirst =
+          detail.clientIndividualFirst ||
+          detail.client_individual_first_name ||
+          "";
+      }
+      if (detail.clientIndividualLast || detail.client_individual_last_name) {
+        this.clientIndividualLast =
+          detail.clientIndividualLast ||
+          detail.client_individual_last_name ||
+          "";
+      }
+      if (detail.clientIndividualSms || detail.client_individual_sms_number) {
+        this.clientIndividualSms =
+          detail.clientIndividualSms ||
+          detail.client_individual_sms_number ||
+          "";
       }
       if (detail.clientIndividualId) {
         this.jobEmailContactId = detail.clientIndividualId;
@@ -1049,6 +1093,53 @@ document.addEventListener("alpine:init", () => {
     },
     get isQuoteAccepted() {
       return (this.quoteStatus || "").toLowerCase() === "accepted";
+    },
+    get accountTypeNormalized() {
+      return (this.accountType || "").toString().trim().toLowerCase();
+    },
+    get isContactAccount() {
+      return this.accountTypeNormalized === "contact";
+    },
+    get isCompanyAccount() {
+      return this.accountTypeNormalized === "company";
+    },
+    get isNoneAccount() {
+      return !this.accountTypeNormalized || this.accountTypeNormalized === "none";
+    },
+    get individualName() {
+      const full = `${this.clientIndividualFirst || ""} ${this.clientIndividualLast || ""}`.trim();
+      return full || "—";
+    },
+    get entityName() {
+      const value = (this.clientEntityName || "").toString().trim();
+      return value || "—";
+    },
+    get entityPhone() {
+      const value = (this.clientEntityPhone || "").toString().trim();
+      return value || "—";
+    },
+    get individualSms() {
+      const value = (this.clientIndividualSms || "").toString().trim();
+      return value || "—";
+    },
+    get resolvedQuoteStatus() {
+      const raw = (this.quoteStatus || "").toString().trim();
+      if (!raw) {
+        return { label: "", color: "#0f172a", backgroundColor: "#e5e7eb" };
+      }
+      const byValue = this.quoteStatusOptions.find((item) => item.value === raw);
+      if (byValue) return byValue;
+      const normalized = raw.toLowerCase();
+      const byLabel = this.quoteStatusOptions.find(
+        (item) => item.label.toLowerCase() === normalized
+      );
+      return (
+        byLabel || {
+          label: raw,
+          color: "#0f172a",
+          backgroundColor: "#e5e7eb",
+        }
+      );
     },
     get acceptedDateDisplay() {
       return this.dateQuoteAccepted || "—";
@@ -1367,6 +1458,23 @@ document.addEventListener("alpine:init", () => {
         dateQuoteAccepted:
           record.Date_Quoted_Accepted || record.date_quoted_accepted || "",
         jobId: record.ID || record.id || "",
+        accountType: record.Account_Type || record.account_type || "",
+        clientEntityName:
+          record.Client_Entity_Name || record.client_entity_name || "",
+        clientEntityPhone:
+          record.Client_Entity_Phone || record.client_entity_phone || "",
+        clientIndividualFirst:
+          record.Client_Individual_First_Name ||
+          record.client_individual_first_name ||
+          "",
+        clientIndividualLast:
+          record.Client_Individual_Last_Name ||
+          record.client_individual_last_name ||
+          "",
+        clientIndividualSms:
+          record.Client_Individual_SMS_Number ||
+          record.client_individual_sms_number ||
+          "",
         clientIndividualId:
           record.Client_Individual_ID || record.client_individual_id || "",
         accountsContactId:
