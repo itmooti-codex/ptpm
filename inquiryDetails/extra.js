@@ -69,7 +69,37 @@ const initRecommendationCard = () => {
   observer.observe(list, { childList: true, subtree: true, characterData: true });
 };
 
+const normalizeIdentifier = (value) => {
+  const raw = (value || "").toString().trim();
+  if (!raw) return "";
+  const lowered = raw.toLowerCase();
+  if (lowered === "null" || lowered === "undefined") return "";
+  if (/^\[[^\]]+\]$/.test(raw)) return "";
+  return raw;
+};
+
+const initJobSheetGuard = () => {
+  const noJobSheet = document.getElementById("no-job-sheet");
+  const jobSheet = document.getElementById("job-sheet");
+  if (!noJobSheet || !jobSheet) return;
+
+  const params = new URLSearchParams(window.location.search || "");
+  const inquiryId = normalizeIdentifier(params.get("inquiryid"));
+  const inquiryUid = normalizeIdentifier(params.get("inquiryuid"));
+  const jobId = normalizeIdentifier(params.get("jobid"));
+  const jobUid = normalizeIdentifier(params.get("jobuid"));
+
+  const hasInquiryIdentifiers = Boolean(inquiryId || inquiryUid);
+  const hasJobIdentifiers = Boolean(jobId || jobUid);
+  const shouldShowNoJobSheet = !hasInquiryIdentifiers && !hasJobIdentifiers;
+
+  noJobSheet.classList.toggle("hidden", !shouldShowNoJobSheet);
+  jobSheet.classList.toggle("hidden", shouldShowNoJobSheet);
+};
+
 document.addEventListener("DOMContentLoaded", () => {
+  initJobSheetGuard();
+
   const btn = document.getElementById("copy-link-btn");
   if (btn && navigator.clipboard) {
     const handleCopy = async () => {
