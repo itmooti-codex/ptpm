@@ -3361,6 +3361,11 @@ document.addEventListener("alpine:init", () => {
           },
         });
         this.emitToast("Popup note updated.");
+        sendAnnouncement({
+          type: "Inquiry",
+          title: "Popup comment updated",
+          content: `The ${target} popup comment has been updated for inquiry #${INQUIRY_RECORD_ID}.`,
+        });
         const targetNode = document.querySelector(
           `[data-popup-comment="${target}"]`
         );
