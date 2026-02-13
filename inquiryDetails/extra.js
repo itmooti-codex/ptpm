@@ -1,3 +1,11 @@
+  window.addEventListener("load", function () {
+    const loader = document.getElementById("page-loader");
+    loader.style.opacity = "0";
+    loader.style.transition = "opacity 0.5s ease";
+    setTimeout(() => {loader.style.display = "none";}, 500);
+  });
+
+  
 const normalizePrimaryFlag = (value) => {
   if (value === null || value === undefined) return false;
   const normalized = String(value).trim().toLowerCase();
@@ -86,6 +94,14 @@ const normalizeIdentifier = (value) => {
   return cleaned;
 };
 
+const normalizeMetaValue = (value) => {
+  const normalized = normalizeIdentifier(value);
+  if (!normalized) return "";
+  // Ignore unresolved token-like values such as Company_Account_Type.
+  if (/^[A-Za-z]+(?:_[A-Za-z0-9]+)+$/.test(normalized)) return "";
+  return normalized;
+};
+
 const initJobSheetGuard = () => {
   const noJobSheet = document.getElementById("no-job-sheet");
   const jobSheet = document.getElementById("job-sheet");
@@ -106,6 +122,9 @@ const initJobSheetGuard = () => {
 };
 
 const initProgressiveUrlIds = () => {
+  const initialSearch = window.location.search;
+  let reloadTriggered = false;
+
   const applyUrlUpdates = (updates = {}) => {
     const url = new URL(window.location.href);
     let changed = false;
@@ -120,6 +139,10 @@ const initProgressiveUrlIds = () => {
 
     if (changed) {
       window.history.replaceState(window.history.state, "", url.toString());
+      if (!reloadTriggered && url.search !== initialSearch) {
+        reloadTriggered = true;
+        window.location.reload();
+      }
     }
   };
 
@@ -137,7 +160,10 @@ const initProgressiveUrlIds = () => {
           .split("/")
           .map((part) => part.trim())
           .filter(Boolean);
-        if (parts.length >= 2 && (parts[1] === "forms" || parts[1] === "job-sheet")) {
+        if (
+          parts.length >= 2 &&
+          (parts[1] === "forms" || parts[1] === "job-sheet")
+        ) {
           candidate = normalizeIdentifier(parts[0]);
         }
       } catch (error) {
@@ -171,7 +197,15 @@ const initProgressiveUrlIds = () => {
     return normalizeIdentifier(el?.textContent || "");
   };
 
+  const readMetaDataset = () => {
+    const meta = document.querySelector(
+      "[data-account-type], [data-company-account-type], [data-contact-id], [data-company-id]",
+    );
+    return meta?.dataset || {};
+  };
+
   const syncFromKnownSources = () => {
+    const meta = readMetaDataset();
     const providerId =
       normalizeIdentifier(document.body?.dataset?.serviceProviderId || "") ||
       normalizeIdentifier(
@@ -194,12 +228,26 @@ const initProgressiveUrlIds = () => {
       readJobUidFromLinks();
 
     const accountTypeValue =
+      normalizeMetaValue(meta.accountType || "") ||
       readText(".accountType") ||
-      normalizeIdentifier(typeof accountType !== "undefined" ? accountType : "");
+      normalizeIdentifier(
+        typeof accountType !== "undefined" ? accountType : "",
+      );
 
     const companyAccountTypeValue =
+      normalizeMetaValue(meta.companyAccountType || "") ||
       readText(".companyAccountType") ||
-      normalizeIdentifier(typeof companyType !== "undefined" ? companyType : "");
+      normalizeIdentifier(
+        typeof companyType !== "undefined" ? companyType : "",
+      );
+
+    const contactIdValue =
+      normalizeMetaValue(meta.contactId || "") ||
+      normalizeIdentifier(typeof CONTACT_ID !== "undefined" ? CONTACT_ID : "");
+
+    const companyIdValue =
+      normalizeMetaValue(meta.companyId || "") ||
+      normalizeIdentifier(typeof COMPANY_ID !== "undefined" ? COMPANY_ID : "");
 
     applyUrlUpdates({
       serviceproviderid: providerId,
@@ -207,6 +255,8 @@ const initProgressiveUrlIds = () => {
       jobuid: jobUid,
       accounttype: accountTypeValue,
       companyaccounttype: companyAccountTypeValue,
+      contactid: contactIdValue,
+      companyid: companyIdValue,
     });
   };
 
@@ -265,9 +315,87 @@ const initProgressiveUrlIds = () => {
   }, 1000);
 };
 
+const initInquiryAccountSections = () => {
+  const contact = document.querySelector('[data-section="contact"]');
+  const company = document.querySelector('[data-section="company"]');
+  const bodycorp = document.querySelector('[data-section="bodycorp"]');
+  if (!contact || !company || !bodycorp) return;
+
+  const readMetaDataset = () => {
+    const meta = document.querySelector(
+      "[data-account-type], [data-company-account-type], [data-contact-id], [data-company-id]",
+    );
+    return meta?.dataset || {};
+  };
+
+  const readText = (selector) => {
+    const el = document.querySelector(selector);
+    return normalizeIdentifier(el?.textContent || "");
+  };
+
+  const apply = () => {
+    const meta = readMetaDataset();
+    const accountTypeValue =
+      normalizeMetaValue(meta.accountType || "") ||
+      readText(".accountType") ||
+      normalizeIdentifier(
+        typeof accountType !== "undefined" ? accountType : "",
+      );
+    const companyTypeValue =
+      normalizeMetaValue(meta.companyAccountType || "") ||
+      readText(".companyAccountType") ||
+      normalizeIdentifier(
+        typeof companyType !== "undefined" ? companyType : "",
+      );
+    const contactIdValue =
+      normalizeMetaValue(meta.contactId || "") ||
+      normalizeIdentifier(typeof CONTACT_ID !== "undefined" ? CONTACT_ID : "");
+    const companyIdValue =
+      normalizeMetaValue(meta.companyId || "") ||
+      normalizeIdentifier(typeof COMPANY_ID !== "undefined" ? COMPANY_ID : "");
+
+    const account = accountTypeValue.toLowerCase();
+    const companyType = companyTypeValue.toLowerCase();
+
+    const showContact =
+      account === "contact" ||
+      (!account && Boolean(contactIdValue) && !companyIdValue);
+    const showCompany =
+      account === "company" || (!account && Boolean(companyIdValue));
+    const showBodyCorp =
+      showCompany &&
+      (companyType === "body corp" ||
+        companyType === "body corp company" ||
+        companyType === "body corporate");
+
+    contact.classList.toggle("hidden", !showContact);
+    contact.classList.toggle("flex", showContact);
+    company.classList.toggle("hidden", !showCompany);
+    company.classList.toggle("flex", showCompany);
+    bodycorp.classList.toggle("hidden", !showBodyCorp);
+    bodycorp.classList.toggle("flex", showBodyCorp);
+  };
+
+  apply();
+
+  const root =
+    document.querySelector("[data-var-inquiryid]") ||
+    document.querySelector(".hideIfNoInquiry") ||
+    document.body;
+  if (!root) return;
+
+  const observer = new MutationObserver(() => apply());
+  observer.observe(root, {
+    childList: true,
+    subtree: true,
+    characterData: true,
+  });
+};
+
 document.addEventListener("DOMContentLoaded", () => {
   initJobSheetGuard();
   initProgressiveUrlIds();
+  initInquiryAccountSections();
 
   const btn = document.getElementById("copy-link-btn");
   if (btn && navigator.clipboard) {
@@ -303,3 +431,26 @@ document.addEventListener("DOMContentLoaded", () => {
   initPropertyContactStars();
   initRecommendationCard();
 });
+
+(function () {
+  const normalize = (value) => {
+    const raw = (value || "").toString().trim();
+    if (!raw) return "";
+    const lower = raw.toLowerCase();
+    if (lower === "null" || lower === "undefined") return "";
+    if (/^\\[.*\\]$/.test(raw)) return "";
+    return raw.replace(/^#/, "").trim();
+  };
+  const inquiryId = normalize("[inquiryid]");
+  console.log("inquiryId", inquiryId);
+  const inquiryUid = normalize("[inquiryuid]");
+  const propertyId = normalize("[propertyid]");
+  const hasInquiry = Boolean(inquiryId || inquiryUid);
+  const hasProperty = Boolean(propertyId);
+  const apply = () => {
+    if (!hasInquiry) document.body.classList.add("no-inquiry");
+    if (!hasProperty) document.body.classList.add("no-property");
+  };
+  if (document.body) apply();
+  else document.addEventListener("DOMContentLoaded", apply);
+})();
