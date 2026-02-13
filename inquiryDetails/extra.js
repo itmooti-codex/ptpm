@@ -78,10 +78,12 @@ const initRecommendationCard = () => {
 const normalizeIdentifier = (value) => {
   const raw = (value || "").toString().trim();
   if (!raw) return "";
-  const lowered = raw.toLowerCase();
+  const cleaned = raw.replace(/^#/, "").trim();
+  if (!cleaned) return "";
+  const lowered = cleaned.toLowerCase();
   if (lowered === "null" || lowered === "undefined") return "";
-  if (/^\[[^\]]+\]$/.test(raw)) return "";
-  return raw;
+  if (/^\[[^\]]+\]$/.test(cleaned)) return "";
+  return cleaned;
 };
 
 const initJobSheetGuard = () => {
@@ -128,10 +130,39 @@ const initProgressiveUrlIds = () => {
     for (const link of links) {
       const href = (link.getAttribute("href") || "").trim();
       if (!href) continue;
-      const match = href.match(/my\.awesomate\.pro\/([^/?#]+)\//i);
-      const candidate = normalizeIdentifier(match?.[1] || "");
+      let candidate = "";
+      try {
+        const url = new URL(href, window.location.origin);
+        const parts = (url.pathname || "")
+          .split("/")
+          .map((part) => part.trim())
+          .filter(Boolean);
+        if (parts.length >= 2 && (parts[1] === "forms" || parts[1] === "job-sheet")) {
+          candidate = normalizeIdentifier(parts[0]);
+        }
+      } catch (error) {
+        candidate = "";
+      }
       if (candidate) return candidate;
     }
+    return "";
+  };
+
+  const readJobUidFromUi = () => {
+    const direct =
+      normalizeIdentifier(
+        document.querySelector("[data-job-unique-source]")?.textContent || "",
+      ) || "";
+    if (direct) return direct;
+
+    const workOrderLabel = Array.from(document.querySelectorAll("span")).find(
+      (el) => (el.textContent || "").trim() === "Work Order No:",
+    );
+    const fromSibling = normalizeIdentifier(
+      workOrderLabel?.nextElementSibling?.textContent || "",
+    );
+    if (fromSibling) return fromSibling;
+
     return "";
   };
 
@@ -159,6 +190,7 @@ const initProgressiveUrlIds = () => {
       normalizeIdentifier(
         typeof JOB_UNIQUE_ID !== "undefined" ? JOB_UNIQUE_ID : "",
       ) ||
+      readJobUidFromUi() ||
       readJobUidFromLinks();
 
     const accountTypeValue =
