@@ -16,7 +16,7 @@ const updatePropertyContactStars = () => {
   const stars = document.querySelectorAll(".property-contact-star");
   stars.forEach((star) => {
     const container = star.closest(
-      "[data-primary-owner], [data-primary-resident], [data-primary-manager]"
+      "[data-primary-owner], [data-primary-resident], [data-primary-manager]",
     );
     const isPrimary =
       hasPrimaryFlag(star.dataset) ||
@@ -29,12 +29,14 @@ const initPropertyContactStars = () => {
   const list = document.querySelector("[data-property-contact-list]");
   updatePropertyContactStars();
   const target = list || document.body;
-  const observer = new MutationObserver(() =>
-    updatePropertyContactStars()
-  );
-  observer.observe(target, { childList: true, subtree: true, attributes: true });
+  const observer = new MutationObserver(() => updatePropertyContactStars());
+  observer.observe(target, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+  });
   window.addEventListener("propertyContacts:changed", () =>
-    updatePropertyContactStars()
+    updatePropertyContactStars(),
   );
 };
 
@@ -66,7 +68,11 @@ const initRecommendationCard = () => {
 
   update();
   const observer = new MutationObserver(() => update());
-  observer.observe(list, { childList: true, subtree: true, characterData: true });
+  observer.observe(list, {
+    childList: true,
+    subtree: true,
+    characterData: true,
+  });
 };
 
 const normalizeIdentifier = (value) => {
@@ -113,7 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
               type: "success",
               message: "Link copied to clipboard.",
             },
-          })
+          }),
         );
       } catch (error) {
         console.error("Failed to copy link", error);
@@ -123,7 +129,7 @@ document.addEventListener("DOMContentLoaded", () => {
               type: "error",
               message: "Failed to copy link.",
             },
-          })
+          }),
         );
       }
     };
@@ -134,3 +140,125 @@ document.addEventListener("DOMContentLoaded", () => {
   initPropertyContactStars();
   initRecommendationCard();
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+  const normalize = (value) => {
+    const raw = (value || "").toString().trim();
+    if (!raw) return "";
+    const lower = raw.toLowerCase();
+    if (
+      lower === "null" ||
+      lower === "undefined" ||
+      lower === "none" ||
+      /^\\[.*\\]$/.test(raw)
+    ) {
+      return "";
+    }
+    return raw;
+  };
+
+  const getQueryValue = (...keys) => {
+    const params = new URLSearchParams(window.location.search || "");
+    for (const key of keys) {
+      const value = normalize(params.get(key));
+      if (value) return value;
+    }
+    return "";
+  };
+
+  const getHiddenText = (id) => {
+    const el = document.getElementById(id);
+    return normalize(el?.textContent || "");
+  };
+
+  const readGlobal = (name) => {
+    try {
+      if (typeof globalThis[name] !== "undefined") {
+        return normalize(globalThis[name]);
+      }
+    } catch (error) {
+      console.warn(`Unable to read global ${name}`, error);
+    }
+    return "";
+  };
+
+  const resolveAccountType = () =>
+    (
+      getQueryValue("accounttype", "accountType") ||
+      readGlobal("accountType") ||
+      getHiddenText("account-type")
+    )
+      .toString()
+      .trim()
+      .toLowerCase();
+
+  const resolveCompanyType = () =>
+    (
+      getQueryValue("companyaccounttype", "companyAccountType") ||
+      readGlobal("companyType") ||
+      readGlobal("companyAccountType") ||
+      getHiddenText("company-internal-type")
+    )
+      .toString()
+      .trim()
+      .toLowerCase();
+
+  const isBodyCorpType = (value) => {
+    if (!value) return false;
+    return value.includes("body corp") || value.includes("body corporate");
+  };
+
+  const applySections = () => {
+    const contact = document.querySelector('[data-section="contact"]');
+    const company = document.querySelector('[data-section="company"]');
+    const bodycorp = document.querySelector('[data-section="bodycorp"]');
+    if (!contact || !company || !bodycorp) return;
+
+    const accountTypeValue = resolveAccountType();
+    const companyTypeValue = resolveCompanyType();
+    const isContact = accountTypeValue === "contact";
+    const isCompany = accountTypeValue === "company";
+    const showBodyCorp = isCompany && isBodyCorpType(companyTypeValue);
+
+    contact.style.display = isContact ? "flex" : "none";
+    company.style.display = isCompany ? "flex" : "none";
+    bodycorp.style.display = showBodyCorp ? "flex" : "none";
+  };
+
+  applySections();
+
+  const inquiryRoot =
+    document.querySelector("[data-var-inquiryid]") ||
+    document.querySelector(".hideIfNoInquiry") ||
+    document.body;
+  if (!inquiryRoot) return;
+
+  const observer = new MutationObserver(() => applySections());
+  observer.observe(inquiryRoot, {
+    childList: true,
+    subtree: true,
+    characterData: true,
+  });
+});
+
+(function () {
+  const normalize = (value) => {
+    const raw = (value || "").toString().trim();
+    if (!raw) return "";
+    const lower = raw.toLowerCase();
+    if (lower === "null" || lower === "undefined") return "";
+    if (/^\\[.*\\]$/.test(raw)) return "";
+    return raw.replace(/^#/, "").trim();
+  };
+  const inquiryId = normalize("[inquiryid]");
+  const inquiryUid = normalize("[inquiryuid]");
+  const propertyId = normalize("[propertyid]");
+  const hasInquiry = Boolean(inquiryId || inquiryUid);
+  const hasProperty = Boolean(propertyId);
+  const apply = () => {
+    if (!hasInquiry) document.body.classList.add("no-inquiry");
+    if (!hasProperty) document.body.classList.add("no-property");
+  };
+  if (document.body) apply();
+  else document.addEventListener("DOMContentLoaded", apply);
+})();
