@@ -103,8 +103,69 @@ const initJobSheetGuard = () => {
   jobSheet.classList.toggle("hidden", shouldShowNoJobSheet);
 };
 
+const initProgressiveUrlIds = () => {
+  const applyUrlUpdates = (updates = {}) => {
+    const url = new URL(window.location.href);
+    let changed = false;
+
+    Object.entries(updates).forEach(([key, value]) => {
+      const normalized = normalizeIdentifier(value);
+      if (!normalized) return;
+      if (url.searchParams.get(key) === normalized) return;
+      url.searchParams.set(key, normalized);
+      changed = true;
+    });
+
+    if (changed) {
+      window.history.replaceState(window.history.state, "", url.toString());
+    }
+  };
+
+  const initialServiceProviderId =
+    typeof SERVICE_PROVIDER_ID !== "undefined" ? SERVICE_PROVIDER_ID : "";
+  const initialJobId = typeof JOB_ID !== "undefined" ? JOB_ID : "";
+  const initialJobUid =
+    typeof JOB_UNIQUE_ID !== "undefined" ? JOB_UNIQUE_ID : "";
+
+  applyUrlUpdates({
+    serviceproviderid: initialServiceProviderId,
+    jobid: initialJobId,
+    jobuid: initialJobUid,
+  });
+
+  window.addEventListener("provider-selected", (event) => {
+    const providerId =
+      event?.detail?.provider?.id ||
+      event?.detail?.providerId ||
+      event?.detail?.provider_id ||
+      "";
+
+    applyUrlUpdates({ serviceproviderid: providerId });
+  });
+
+  window.addEventListener("quote:created", (event) => {
+    const detail = event?.detail || {};
+    const jobId =
+      detail.jobId || detail.id || detail.ID || detail.job_id || detail.Job_ID;
+    const jobUid =
+      detail.uniqueId ||
+      detail.Unique_ID ||
+      detail.unique_id ||
+      detail.jobUid ||
+      detail.jobuid ||
+      detail.job_uid ||
+      "";
+
+    applyUrlUpdates({
+      jobid: jobId,
+      jobuid: jobUid,
+    });
+  });
+};
+
 document.addEventListener("DOMContentLoaded", () => {
   initJobSheetGuard();
+  initProgressiveUrlIds();
 
   const btn = document.getElementById("copy-link-btn");
   if (btn && navigator.clipboard) {
@@ -140,5 +201,4 @@ document.addEventListener("DOMContentLoaded", () => {
   initPropertyContactStars();
   initRecommendationCard();
 });
-
 
