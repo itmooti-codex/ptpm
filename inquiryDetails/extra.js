@@ -121,17 +121,49 @@ const initProgressiveUrlIds = () => {
     }
   };
 
-  const initialServiceProviderId =
-    typeof SERVICE_PROVIDER_ID !== "undefined" ? SERVICE_PROVIDER_ID : "";
-  const initialJobId = typeof JOB_ID !== "undefined" ? JOB_ID : "";
-  const initialJobUid =
-    typeof JOB_UNIQUE_ID !== "undefined" ? JOB_UNIQUE_ID : "";
+  const readJobUidFromLinks = () => {
+    const links = Array.from(
+      document.querySelectorAll("a[href*='/forms/'], a[href*='/job-sheet']"),
+    );
+    for (const link of links) {
+      const href = (link.getAttribute("href") || "").trim();
+      if (!href) continue;
+      const match = href.match(/my\.awesomate\.pro\/([^/?#]+)\//i);
+      const candidate = normalizeIdentifier(match?.[1] || "");
+      if (candidate) return candidate;
+    }
+    return "";
+  };
 
-  applyUrlUpdates({
-    serviceproviderid: initialServiceProviderId,
-    jobid: initialJobId,
-    jobuid: initialJobUid,
-  });
+  const syncFromKnownSources = () => {
+    const providerId =
+      normalizeIdentifier(document.body?.dataset?.serviceProviderId || "") ||
+      normalizeIdentifier(
+        typeof SERVICE_PROVIDER_ID !== "undefined" ? SERVICE_PROVIDER_ID : "",
+      );
+
+    const jobId =
+      normalizeIdentifier(document.body?.dataset?.jobId || "") ||
+      normalizeIdentifier(
+        document.querySelector("[data-var-jobid]")?.dataset?.varJobid || "",
+      ) ||
+      normalizeIdentifier(typeof JOB_ID !== "undefined" ? JOB_ID : "");
+
+    const jobUid =
+      normalizeIdentifier(document.body?.dataset?.jobUid || "") ||
+      normalizeIdentifier(
+        typeof JOB_UNIQUE_ID !== "undefined" ? JOB_UNIQUE_ID : "",
+      ) ||
+      readJobUidFromLinks();
+
+    applyUrlUpdates({
+      serviceproviderid: providerId,
+      jobid: jobId,
+      jobuid: jobUid,
+    });
+  };
+
+  syncFromKnownSources();
 
   window.addEventListener("provider-selected", (event) => {
     const providerId =
@@ -140,6 +172,10 @@ const initProgressiveUrlIds = () => {
       event?.detail?.provider_id ||
       "";
 
+    const normalizedProviderId = normalizeIdentifier(providerId);
+    if (normalizedProviderId) {
+      document.body.dataset.serviceProviderId = normalizedProviderId;
+    }
     applyUrlUpdates({ serviceproviderid: providerId });
   });
 
@@ -156,11 +192,30 @@ const initProgressiveUrlIds = () => {
       detail.job_uid ||
       "";
 
+    const normalizedJobId = normalizeIdentifier(jobId);
+    const normalizedJobUid = normalizeIdentifier(jobUid);
+    if (normalizedJobId) {
+      document.body.dataset.jobId = normalizedJobId;
+    }
+    if (normalizedJobUid) {
+      document.body.dataset.jobUid = normalizedJobUid;
+    }
     applyUrlUpdates({
       jobid: jobId,
       jobuid: jobUid,
     });
   });
+
+  // Some IDs resolve shortly after first paint via dynamic content.
+  let attempts = 0;
+  const maxAttempts = 90;
+  const intervalId = window.setInterval(() => {
+    syncFromKnownSources();
+    attempts += 1;
+    if (attempts >= maxAttempts) {
+      window.clearInterval(intervalId);
+    }
+  }, 1000);
 };
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -201,4 +256,3 @@ document.addEventListener("DOMContentLoaded", () => {
   initPropertyContactStars();
   initRecommendationCard();
 });
-
