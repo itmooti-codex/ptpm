@@ -135,6 +135,11 @@ const initProgressiveUrlIds = () => {
     return "";
   };
 
+  const readText = (selector) => {
+    const el = document.querySelector(selector);
+    return normalizeIdentifier(el?.textContent || "");
+  };
+
   const syncFromKnownSources = () => {
     const providerId =
       normalizeIdentifier(document.body?.dataset?.serviceProviderId || "") ||
@@ -156,10 +161,20 @@ const initProgressiveUrlIds = () => {
       ) ||
       readJobUidFromLinks();
 
+    const accountTypeValue =
+      readText(".accountType") ||
+      normalizeIdentifier(typeof accountType !== "undefined" ? accountType : "");
+
+    const companyAccountTypeValue =
+      readText(".companyAccountType") ||
+      normalizeIdentifier(typeof companyType !== "undefined" ? companyType : "");
+
     applyUrlUpdates({
       serviceproviderid: providerId,
       jobid: jobId,
       jobuid: jobUid,
+      accounttype: accountTypeValue,
+      companyaccounttype: companyAccountTypeValue,
     });
   };
 
