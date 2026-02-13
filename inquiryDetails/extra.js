@@ -143,13 +143,7 @@ const initProgressiveUrlIds = () => {
     normalizeIdentifier(searchParams.get("inquiryid")) ||
     normalizeIdentifier(searchParams.get("inquiryuid")) ||
     "unknown";
-  const reloadStateKey = `ptpm:url-sync-reloaded:${window.location.pathname}:${inquiryReloadKeyPart}`;
   let reloadTriggered = false;
-  try {
-    reloadTriggered = window.sessionStorage.getItem(reloadStateKey) === "1";
-  } catch (error) {
-    reloadTriggered = false;
-  }
   let reloadTimer = null;
   let resolvedPropertyId = "";
   let dealLookupAttempted = false;
@@ -163,11 +157,6 @@ const initProgressiveUrlIds = () => {
     reloadTimer = window.setTimeout(() => {
       if (reloadTriggered) return;
       reloadTriggered = true;
-      try {
-        window.sessionStorage.setItem(reloadStateKey, "1");
-      } catch (error) {
-        // Ignore storage write issues and still reload.
-      }
       window.location.reload();
     }, 1500);
   };
@@ -450,25 +439,31 @@ const initInquiryAccountSections = () => {
   const apply = () => {
     const params = new URLSearchParams(window.location.search || "");
     const account = normalizeType(
-      params.get("accounttype") ||
-        (typeof accountType !== "undefined" ? accountType : ""),
+      (typeof accountType !== "undefined" ? accountType : "") ||
+        params.get("accounttype"),
     );
     const companyTypeNormalized = normalizeType(
-      params.get("companyaccounttype") ||
-        (typeof companyType !== "undefined" ? companyType : ""),
+      (typeof companyType !== "undefined" ? companyType : "") ||
+        params.get("companyaccounttype"),
     );
-    const contactIdValue = normalizeIdentifier(params.get("contactid"));
-    const companyIdValue = normalizeIdentifier(params.get("companyid"));
+    const contactIdValue = normalizeIdentifier(
+      params.get("contactid") ||
+        (typeof CONTACT_ID !== "undefined" ? CONTACT_ID : ""),
+    );
+    const companyIdValue = normalizeIdentifier(
+      params.get("companyid") ||
+        (typeof COMPANY_ID !== "undefined" ? COMPANY_ID : ""),
+    );
 
     const showContact =
-      account === "contact" ||
+      account === "Contact" ||
       (!account && Boolean(contactIdValue) && !companyIdValue);
     const showCompany =
-      account === "company" || (!account && Boolean(companyIdValue));
+      account === "Company" || (!account && Boolean(companyIdValue));
     const showBodyCorp =
       showCompany &&
       (companyTypeNormalized === "body corp" ||
-        companyTypeNormalized === "body corp company" ||
+        companyTypeNormalized === "Body Corp Company" ||
         companyTypeNormalized === "body corporate");
 
     contact.classList.toggle("hidden", !showContact);
@@ -545,14 +540,29 @@ document.addEventListener("DOMContentLoaded", () => {
     return raw.replace(/^#/, "").trim();
   };
 
-  const params = new URLSearchParams(window.location.search || "");
-  const inquiryId = normalize(params.get("inquiryid"));
-  const inquiryUid = normalize(params.get("inquiryuid"));
-  const propertyId = normalize(params.get("propertyid"));
-  const hasInquiry = Boolean(inquiryId || inquiryUid);
-  const hasProperty = Boolean(propertyId);
-
   const apply = () => {
+    const params = new URLSearchParams(window.location.search || "");
+    const inquiryId =
+      normalize(params.get("inquiryid")) ||
+      normalize(
+        document.querySelector("[data-var-inquiryid]")?.dataset?.varInquiryid || "",
+      ) ||
+      normalize(
+        typeof INQUIRY_RECORD_ID !== "undefined" ? INQUIRY_RECORD_ID : "",
+      );
+    const inquiryUid =
+      normalize(params.get("inquiryuid")) ||
+      normalize(typeof INQUIRY_UID !== "undefined" ? INQUIRY_UID : "");
+    const propertyId =
+      normalize(params.get("propertyid")) ||
+      normalize(
+        document.querySelector("[data-var-propertyid]")?.dataset?.varPropertyid || "",
+      ) ||
+      normalize(typeof PROPERTY_ID !== "undefined" ? PROPERTY_ID : "");
+
+    const hasInquiry = Boolean(inquiryId || inquiryUid);
+    const hasProperty = Boolean(propertyId);
+
     document.body.classList.toggle("no-inquiry", !hasInquiry);
     document.body.classList.toggle("no-property", !hasProperty);
   };
