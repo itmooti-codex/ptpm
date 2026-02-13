@@ -446,25 +446,14 @@ const initInquiryAccountSections = () => {
       (typeof companyType !== "undefined" ? companyType : "") ||
         params.get("companyaccounttype"),
     );
-    const contactIdValue = normalizeIdentifier(
-      params.get("contactid") ||
-        (typeof CONTACT_ID !== "undefined" ? CONTACT_ID : ""),
-    );
-    const companyIdValue = normalizeIdentifier(
-      params.get("companyid") ||
-        (typeof COMPANY_ID !== "undefined" ? COMPANY_ID : ""),
-    );
 
-    const showContact =
-      account === "Contact" ||
-      (!account && Boolean(contactIdValue) && !companyIdValue);
-    const showCompany =
-      account === "Company" || (!account && Boolean(companyIdValue));
+    // Exact rules requested:
+    // accounttype => Contact | Company
+    // companyaccounttype => Body Corp Company
+    const showContact = account === "contact";
+    const showCompany = account === "company";
     const showBodyCorp =
-      showCompany &&
-      (companyTypeNormalized === "body corp" ||
-        companyTypeNormalized === "Body Corp Company" ||
-        companyTypeNormalized === "body corporate");
+      showCompany && companyTypeNormalized === "body corp company";
 
     contact.classList.toggle("hidden", !showContact);
     contact.classList.toggle("flex", showContact);
