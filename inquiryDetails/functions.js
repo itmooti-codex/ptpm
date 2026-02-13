@@ -253,3 +253,30 @@ window.taskRowPopovers = function (task, assignees) {
     },
   };
 };
+
+function sendAnnouncement({
+  type,
+  title,
+  content,
+  inquiryId,
+  quoteJobId,
+  notifiedContactId,
+  postId,
+  commentId,
+} = {}) {
+  graphqlRequest(CREATE_ANNOUNCEMENT_MUTATION, {
+    payload: {
+      type: type || "Inquiry",
+      title: title || "",
+      status: "Published",
+      content: content || "",
+      post_id: postId || null,
+      comment_id: commentId || null,
+      inquiry_id: inquiryId || INQUIRY_RECORD_ID || null,
+      quote_job_id: quoteJobId || JOB_ID || null,
+      is_read: false,
+      notified_contact_id: notifiedContactId || SERVICE_PROVIDER_ID || null,
+      origin_url: null,
+    },
+  }).catch((err) => console.error("Announcement failed:", err));
+}

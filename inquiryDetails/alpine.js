@@ -742,6 +742,12 @@ document.addEventListener("alpine:init", () => {
         this.pendingPrefillId = updatedId;
         this.selectProviderById(updatedId, { preserveMessage: true });
         this.showToast(successMessage);
+        sendAnnouncement({
+          type: "Inquiry",
+          title: "New inquiry allocated to you",
+          content: `You have been allocated to inquiry #${this.inquiryId}.`,
+          notifiedContactId: this.selectedProviderId,
+        });
       } catch (error) {
         console.error("Failed to update allocation", error);
         this.feedbackVariant = "error";
@@ -1586,6 +1592,12 @@ document.addEventListener("alpine:init", () => {
           `Quote created & notified for ${this.providerName}.`,
           "success"
         );
+        sendAnnouncement({
+          type: "Quote/Job",
+          title: "New quote created",
+          content: `A new quote has been created for inquiry #${INQUIRY_RECORD_ID}. Job ID: ${createdJobId}.`,
+          quoteJobId: createdJobId,
+        });
         const quoteNumber = createdJobId
           ? `#Q${String(createdJobId).padStart(4, "0")}`
           : "#Q0000";
@@ -1728,6 +1740,11 @@ document.addEventListener("alpine:init", () => {
           payload,
         });
         this.emitToast("Quote updated.");
+        sendAnnouncement({
+          type: "Quote/Job",
+          title: "Quote updated",
+          content: `The quote for job #${JOB_ID} has been updated with new details.`,
+        });
         this.closeModal();
       } catch (error) {
         console.error("Failed to update quote", error);
@@ -2186,6 +2203,12 @@ document.addEventListener("alpine:init", () => {
           );
         }
         this.emitToast("Quote marked as sent.");
+        sendAnnouncement({
+          type: "Quote/Job",
+          title: "Quote sent to client",
+          content: `The quote for job #${jobId} has been sent to the client.`,
+          quoteJobId: jobId,
+        });
         this.close();
       } catch (error) {
         console.error("Failed to send quote", error);
@@ -2285,6 +2308,11 @@ document.addEventListener("alpine:init", () => {
           })
         );
         this.emitToast("Quote marked as accepted.");
+        sendAnnouncement({
+          type: "Quote/Job",
+          title: "Quote accepted by client",
+          content: `The quote for job #${JOB_ID} has been accepted.`,
+        });
         this.close();
       } catch (error) {
         console.error("Failed to accept quote", error);
@@ -2523,6 +2551,13 @@ document.addEventListener("alpine:init", () => {
           checked ? "Billing approval saved." : "Billing approval removed.",
           "success"
         );
+        if (checked) {
+          sendAnnouncement({
+            type: "Quote/Job",
+            title: "Bill approved",
+            content: `The billing for job #${JOB_ID} has been approved by admin.`,
+          });
+        }
       } catch (error) {
         console.error(error);
         this.notify(
@@ -3903,6 +3938,13 @@ document.addEventListener("alpine:init", () => {
       try {
         await graphqlRequest(mutation, variables);
         this.notify(isEdit ? "Activity updated." : "Activity created.");
+        sendAnnouncement({
+          type: "Quote/Job",
+          title: isEdit ? "Activity updated" : "New activity added",
+          content: isEdit
+            ? `An activity has been updated on job #${JOB_ID}.`
+            : `A new activity has been added to job #${JOB_ID}.`,
+        });
         this.open = false;
       } catch (error) {
         console.error("Failed to submit activity", error);
@@ -4363,6 +4405,12 @@ document.addEventListener("alpine:init", () => {
             },
           })
         );
+        sendAnnouncement({
+          type: "Inquiry",
+          title: "Inquiry details updated",
+          content: `The deal information for inquiry #${dealId} has been updated.`,
+          inquiryId: dealId,
+        });
 
         this.handleClose();
       } catch (error) {
@@ -5882,6 +5930,11 @@ document.addEventListener("alpine:init", () => {
             file: fileUrl,
           },
         });
+        sendAnnouncement({
+          type: JOB_ID ? "Quote/Job" : "Inquiry",
+          title: "New memo posted",
+          content: "A new memo has been posted on the job thread.",
+        });
         this.memoText = "";
         this.memoFile = null;
       } catch (e) {
@@ -5902,6 +5955,12 @@ document.addEventListener("alpine:init", () => {
             comment: text,
             created_at: Math.floor(Date.now() / 1000),
           },
+        });
+        sendAnnouncement({
+          type: JOB_ID ? "Quote/Job" : "Inquiry",
+          title: "New comment on memo",
+          content: "A new reply has been added to a memo.",
+          postId: postId,
         });
         if (typeof onSuccess === "function") onSuccess();
       } catch (e) {

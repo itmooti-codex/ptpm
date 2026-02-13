@@ -491,3 +491,21 @@ const DELETE_FORUM_POST_MUTATION = `
     }
   }
 `;
+
+const CREATE_ANNOUNCEMENT_MUTATION = `
+  mutation createAnnouncement($payload: AnnouncementCreateInput = null) {
+    createAnnouncement(payload: $payload) {
+      type
+      title
+      status
+      content
+      post_id
+      comment_id
+      inquiry_id
+      quote_job_id
+      is_read
+      notified_contact_id
+      origin_url
+    }
+  }
+`;
