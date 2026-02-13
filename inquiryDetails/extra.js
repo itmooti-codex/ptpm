@@ -121,6 +121,48 @@ const initJobSheetGuard = () => {
   jobSheet.classList.toggle("hidden", shouldShowNoJobSheet);
 };
 
+const initInquiryVisibilityGuards = () => {
+  const normalize = (value) => {
+    const raw = (value || "").toString().trim();
+    if (!raw) return "";
+    const lower = raw.toLowerCase();
+    if (lower === "null" || lower === "undefined") return "";
+    if (/^\[.*\]$/.test(raw)) return "";
+    return raw.replace(/^#/, "").trim();
+  };
+
+  const apply = () => {
+    const params = new URLSearchParams(window.location.search || "");
+    const inquiryId =
+      normalize(params.get("inquiryid")) ||
+      normalize(
+        document.querySelector("[data-var-inquiryid]")?.dataset?.varInquiryid || "",
+      ) ||
+      normalize(
+        typeof INQUIRY_RECORD_ID !== "undefined" ? INQUIRY_RECORD_ID : "",
+      );
+    const inquiryUid =
+      normalize(params.get("inquiryuid")) ||
+      normalize(typeof INQUIRY_UID !== "undefined" ? INQUIRY_UID : "");
+    const propertyId =
+      normalize(params.get("propertyid")) ||
+      normalize(
+        document.querySelector("[data-var-propertyid]")?.dataset?.varPropertyid || "",
+      ) ||
+      normalize(typeof PROPERTY_ID !== "undefined" ? PROPERTY_ID : "");
+
+    const hasInquiry = Boolean(inquiryId || inquiryUid);
+    const hasProperty = Boolean(propertyId);
+
+    document.body.classList.toggle("no-inquiry", !hasInquiry);
+    document.body.classList.toggle("no-property", !hasProperty);
+  };
+
+  apply();
+  window.addEventListener("url:params:updated", apply);
+  window.addEventListener("popstate", apply);
+};
+
 const initProgressiveUrlIds = () => {
   const DEAL_PROPERTY_QUERY = `
     query calcDeals($id: PeterpmDealID!) {
@@ -130,10 +172,11 @@ const initProgressiveUrlIds = () => {
     }
   `;
 
-  const JOB_PROPERTY_QUERY = `
+  const JOB_DETAILS_QUERY = `
     query calcJobs($id: PeterpmJobID!) {
       calcJobs(query: [{ where: { id: $id } }]) {
         Property_ID: field(arg: ["property_id"])
+        Unique_ID: field(arg: ["unique_id"])
       }
     }
   `;
@@ -149,6 +192,7 @@ const initProgressiveUrlIds = () => {
   let dealLookupAttempted = false;
   let jobLookupAttempted = false;
   let propertyLookupInFlight = false;
+  const jobDetailsCache = new Map();
 
   const scheduleFinalReload = () => {
     if (reloadTriggered) return;
@@ -175,6 +219,7 @@ const initProgressiveUrlIds = () => {
 
     if (changed) {
       window.history.replaceState(window.history.state, "", url.toString());
+      window.dispatchEvent(new CustomEvent("url:params:updated"));
       scheduleFinalReload();
     }
   };
@@ -185,6 +230,22 @@ const initProgressiveUrlIds = () => {
   };
 
   const getFirstRecord = (rows) => (Array.isArray(rows) ? rows[0] : rows || null);
+
+  const getJobDetails = async (jobId) => {
+    const normalizedJobId = normalizeIdentifier(jobId);
+    if (!normalizedJobId) return null;
+    if (jobDetailsCache.has(normalizedJobId)) {
+      return jobDetailsCache.get(normalizedJobId);
+    }
+    const request = graphqlRequest(JOB_DETAILS_QUERY, { id: normalizedJobId })
+      .then((data) => getFirstRecord(data?.calcJobs) || null)
+      .catch((error) => {
+        jobDetailsCache.delete(normalizedJobId);
+        throw error;
+      });
+    jobDetailsCache.set(normalizedJobId, request);
+    return request;
+  };
 
   const resolvePropertyFromDealThenJob = async ({ inquiryId, jobId, propertyId }) => {
     if (propertyLookupInFlight) return;
@@ -220,12 +281,19 @@ const initProgressiveUrlIds = () => {
 
       if (!jobLookupAttempted && jobId) {
         jobLookupAttempted = true;
-        const jobData = await graphqlRequest(JOB_PROPERTY_QUERY, { id: jobId });
-        const jobRecord = getFirstRecord(jobData?.calcJobs);
+        const jobRecord = await getJobDetails(jobId);
         const jobPropertyId = normalizeIdentifier(jobRecord?.Property_ID || "");
+        const jobUniqueId = normalizeIdentifier(jobRecord?.Unique_ID || "");
+        if (jobUniqueId) {
+          document.body.dataset.jobUid = jobUniqueId;
+        }
         if (jobPropertyId) {
           resolvedPropertyId = jobPropertyId;
-          applyUrlUpdates({ propertyid: jobPropertyId });
+          applyUrlUpdates({ propertyid: jobPropertyId, jobuid: jobUniqueId });
+          return;
+        }
+        if (jobUniqueId) {
+          applyUrlUpdates({ jobuid: jobUniqueId });
         }
       }
     } catch (error) {
@@ -269,16 +337,26 @@ const initProgressiveUrlIds = () => {
         document.querySelector("[data-job-unique-source]")?.textContent || "",
       ) || "";
     if (direct) return direct;
-
-    const workOrderLabel = Array.from(document.querySelectorAll("span")).find(
-      (el) => (el.textContent || "").trim() === "Work Order No:",
-    );
-    const fromSibling = normalizeIdentifier(
-      workOrderLabel?.nextElementSibling?.textContent || "",
-    );
-    if (fromSibling) return fromSibling;
-
     return "";
+  };
+
+  const resolveJobUidFromJob = async ({ jobId, jobUid }) => {
+    const normalizedJobId = normalizeIdentifier(jobId);
+    const normalizedJobUid = normalizeIdentifier(jobUid);
+    const urlJobUid = readUrlParam("jobuid");
+    if (!normalizedJobId) return;
+
+    try {
+      const jobRecord = await getJobDetails(normalizedJobId);
+      const fetchedJobUid = normalizeIdentifier(jobRecord?.Unique_ID || "");
+      if (!fetchedJobUid) return;
+      const currentJobUid = normalizedJobUid || urlJobUid;
+      if (currentJobUid === fetchedJobUid) return;
+      document.body.dataset.jobUid = fetchedJobUid;
+      applyUrlUpdates({ jobuid: fetchedJobUid });
+    } catch (error) {
+      console.error("Failed to resolve job uid from job", error);
+    }
   };
 
   const readText = (selector) => {
@@ -370,6 +448,10 @@ const initProgressiveUrlIds = () => {
       jobId,
       propertyId: propertyIdValue,
     });
+    void resolveJobUidFromJob({
+      jobId,
+      jobUid,
+    });
   };
 
   syncFromKnownSources();
@@ -427,62 +509,10 @@ const initProgressiveUrlIds = () => {
   }, 1000);
 };
 
-const initInquiryAccountSections = () => {
-  const contact = document.querySelector('[data-section="contact"]');
-  const company = document.querySelector('[data-section="company"]');
-  const bodycorp = document.querySelector('[data-section="bodycorp"]');
-  if (!contact || !company || !bodycorp) return;
-
-  const normalizeType = (value) =>
-    normalizeIdentifier(value).toLowerCase().replace(/[_-]+/g, " ").trim();
-
-  const apply = () => {
-    const params = new URLSearchParams(window.location.search || "");
-    const account = normalizeType(
-      (typeof accountType !== "undefined" ? accountType : "") ||
-        params.get("accounttype"),
-    );
-    const companyTypeNormalized = normalizeType(
-      (typeof companyType !== "undefined" ? companyType : "") ||
-        params.get("companyaccounttype"),
-    );
-
-    // Exact rules requested:
-    // accounttype => Contact | Company
-    // companyaccounttype => Body Corp Company
-    const showContact = account === "contact";
-    const showCompany = account === "company";
-    const showBodyCorp =
-      showCompany && companyTypeNormalized === "body corp company";
-
-    contact.classList.toggle("hidden", !showContact);
-    contact.classList.toggle("flex", showContact);
-    company.classList.toggle("hidden", !showCompany);
-    company.classList.toggle("flex", showCompany);
-    bodycorp.classList.toggle("hidden", !showBodyCorp);
-    bodycorp.classList.toggle("flex", showBodyCorp);
-  };
-
-  apply();
-
-  const root =
-    document.querySelector("[data-var-inquiryid]") ||
-    document.querySelector(".hideIfNoInquiry") ||
-    document.body;
-  if (!root) return;
-
-  const observer = new MutationObserver(() => apply());
-  observer.observe(root, {
-    childList: true,
-    subtree: true,
-    characterData: true,
-  });
-};
-
 document.addEventListener("DOMContentLoaded", () => {
   initJobSheetGuard();
+  initInquiryVisibilityGuards();
   initProgressiveUrlIds();
-  initInquiryAccountSections();
 
   const btn = document.getElementById("copy-link-btn");
   if (btn && navigator.clipboard) {
@@ -518,44 +548,3 @@ document.addEventListener("DOMContentLoaded", () => {
   initPropertyContactStars();
   initRecommendationCard();
 });
-
-(function () {
-  const normalize = (value) => {
-    const raw = (value || "").toString().trim();
-    if (!raw) return "";
-    const lower = raw.toLowerCase();
-    if (lower === "null" || lower === "undefined") return "";
-    if (/^\[.*\]$/.test(raw)) return "";
-    return raw.replace(/^#/, "").trim();
-  };
-
-  const apply = () => {
-    const params = new URLSearchParams(window.location.search || "");
-    const inquiryId =
-      normalize(params.get("inquiryid")) ||
-      normalize(
-        document.querySelector("[data-var-inquiryid]")?.dataset?.varInquiryid || "",
-      ) ||
-      normalize(
-        typeof INQUIRY_RECORD_ID !== "undefined" ? INQUIRY_RECORD_ID : "",
-      );
-    const inquiryUid =
-      normalize(params.get("inquiryuid")) ||
-      normalize(typeof INQUIRY_UID !== "undefined" ? INQUIRY_UID : "");
-    const propertyId =
-      normalize(params.get("propertyid")) ||
-      normalize(
-        document.querySelector("[data-var-propertyid]")?.dataset?.varPropertyid || "",
-      ) ||
-      normalize(typeof PROPERTY_ID !== "undefined" ? PROPERTY_ID : "");
-
-    const hasInquiry = Boolean(inquiryId || inquiryUid);
-    const hasProperty = Boolean(propertyId);
-
-    document.body.classList.toggle("no-inquiry", !hasInquiry);
-    document.body.classList.toggle("no-property", !hasProperty);
-  };
-
-  if (document.body) apply();
-  else document.addEventListener("DOMContentLoaded", apply);
-})();
