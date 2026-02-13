@@ -792,6 +792,7 @@
                         class="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-slate-50 focus:bg-slate-100 focus:outline-none transition"
                         data-provider-row
                         data-provider-id="[ID]"
+                        data-provider-contact-id="[Contact_Information_ID]"
                         role="option"
                         @click="handleRowSelect($event)"
                         x-bind:aria-selected="selectedProviderId === $el.dataset.providerId"
@@ -1236,6 +1237,7 @@
                             class="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-slate-50 focus:bg-slate-100 focus:outline-none transition"
                             data-provider-row
                             data-provider-id="[ID]"
+                            data-provider-contact-id="[Contact_Information_ID]"
                             role="option"
                             @click="handleRowSelect($event)"
                             x-bind:aria-selected="selectedProviderId === $el.dataset.providerId"

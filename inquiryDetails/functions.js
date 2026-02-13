@@ -275,7 +275,7 @@ function sendAnnouncement({
       inquiry_id: inquiryId || INQUIRY_RECORD_ID || null,
       quote_job_id: quoteJobId || JOB_ID || null,
       is_read: false,
-      notified_contact_id: notifiedContactId || SERVICE_PROVIDER_ID || null,
+      notified_contact_id: notifiedContactId || document.body.dataset.providerContactId || null,
       origin_url: null,
     },
   }).catch((err) => console.error("Announcement failed:", err));

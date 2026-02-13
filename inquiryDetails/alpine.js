@@ -580,6 +580,9 @@ document.addEventListener("alpine:init", () => {
       this.selectedProvider = provider;
       this.providerDisplayName =
         provider?.name || this.providerDisplayName || "";
+      if (provider.contactId) {
+        document.body.dataset.providerContactId = provider.contactId;
+      }
       this.updatePlaceholder(provider);
       this.searchTerm = "";
       this.scheduleFilter();
@@ -677,6 +680,7 @@ document.addEventListener("alpine:init", () => {
       const lastName = rest.join(" ").trim();
       return {
         id: row.dataset?.providerId || grab("[data-field='provider-id']"),
+        contactId: row.dataset?.providerContactId || "",
         name,
         firstName,
         lastName,
@@ -746,7 +750,7 @@ document.addEventListener("alpine:init", () => {
           type: "Inquiry",
           title: "New inquiry allocated to you",
           content: `You have been allocated to inquiry #${this.inquiryId}.`,
-          notifiedContactId: this.selectedProviderId,
+          notifiedContactId: this.selectedProvider?.contactId || null,
         });
       } catch (error) {
         console.error("Failed to update allocation", error);
