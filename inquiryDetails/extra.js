@@ -122,8 +122,35 @@ const initJobSheetGuard = () => {
 };
 
 const initProgressiveUrlIds = () => {
-  const initialSearch = window.location.search;
+  const searchParams = new URLSearchParams(window.location.search || "");
+  const inquiryReloadKeyPart =
+    normalizeIdentifier(searchParams.get("inquiryid")) ||
+    normalizeIdentifier(searchParams.get("inquiryuid")) ||
+    "unknown";
+  const reloadStateKey = `ptpm:url-sync-reloaded:${window.location.pathname}:${inquiryReloadKeyPart}`;
   let reloadTriggered = false;
+  try {
+    reloadTriggered = window.sessionStorage.getItem(reloadStateKey) === "1";
+  } catch (error) {
+    reloadTriggered = false;
+  }
+  let reloadTimer = null;
+
+  const scheduleFinalReload = () => {
+    if (reloadTriggered) return;
+    if (reloadTimer) window.clearTimeout(reloadTimer);
+    // Wait for URL updates to settle, then reload once.
+    reloadTimer = window.setTimeout(() => {
+      if (reloadTriggered) return;
+      reloadTriggered = true;
+      try {
+        window.sessionStorage.setItem(reloadStateKey, "1");
+      } catch (error) {
+        // Ignore storage write issues and still reload.
+      }
+      window.location.reload();
+    }, 1500);
+  };
 
   const applyUrlUpdates = (updates = {}) => {
     const url = new URL(window.location.href);
@@ -139,10 +166,7 @@ const initProgressiveUrlIds = () => {
 
     if (changed) {
       window.history.replaceState(window.history.state, "", url.toString());
-      if (!reloadTriggered && url.search !== initialSearch) {
-        reloadTriggered = true;
-        window.location.reload();
-      }
+      scheduleFinalReload();
     }
   };
 
