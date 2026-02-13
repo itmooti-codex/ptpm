@@ -94,7 +94,6 @@ async function updateJobEmailCheckbox(fieldId) {
   try {
     await graphqlRequest(mutation, variables);
     // optional: toast or console log
-    // console.log(\`Updated job field \${fieldId} to true\`);
   } catch (error) {
     console.error("Failed to update job email checkbox:", error);
   }

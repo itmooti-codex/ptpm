@@ -4304,7 +4304,6 @@ document.addEventListener("alpine:init", () => {
       window.addEventListener("dealInfo:open", this.boundOpenListener);
       window.addEventListener("dealInfo:prefill", (event) => {
         const data = event.detail || {};
-        console.log("Prefilling deal info modal with data:", data);
         this.form.dealName = data.dealName ?? "";
         this.form.dealValue = data.dealValue ?? "";
         this.form.salesStage = data.salesStage ?? "";
@@ -4853,7 +4852,6 @@ document.addEventListener("alpine:init", () => {
     },
 
     handleMarkComplete(task) {
-      console.log("clicked mark complete for", task);
       this.markComplete(task);
     },
 
