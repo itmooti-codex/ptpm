@@ -122,6 +122,22 @@ const initJobSheetGuard = () => {
 };
 
 const initProgressiveUrlIds = () => {
+  const DEAL_PROPERTY_QUERY = `
+    query calcDeals($id: PeterpmDealID!) {
+      calcDeals(query: [{ where: { id: $id } }]) {
+        Property_ID: field(arg: ["property_id"])
+      }
+    }
+  `;
+
+  const JOB_PROPERTY_QUERY = `
+    query calcJobs($id: PeterpmJobID!) {
+      calcJobs(query: [{ where: { id: $id } }]) {
+        Property_ID: field(arg: ["property_id"])
+      }
+    }
+  `;
+
   const searchParams = new URLSearchParams(window.location.search || "");
   const inquiryReloadKeyPart =
     normalizeIdentifier(searchParams.get("inquiryid")) ||
@@ -135,6 +151,10 @@ const initProgressiveUrlIds = () => {
     reloadTriggered = false;
   }
   let reloadTimer = null;
+  let resolvedPropertyId = "";
+  let dealLookupAttempted = false;
+  let jobLookupAttempted = false;
+  let propertyLookupInFlight = false;
 
   const scheduleFinalReload = () => {
     if (reloadTriggered) return;
@@ -167,6 +187,62 @@ const initProgressiveUrlIds = () => {
     if (changed) {
       window.history.replaceState(window.history.state, "", url.toString());
       scheduleFinalReload();
+    }
+  };
+
+  const readUrlParam = (key) => {
+    const url = new URL(window.location.href);
+    return normalizeIdentifier(url.searchParams.get(key));
+  };
+
+  const getFirstRecord = (rows) => (Array.isArray(rows) ? rows[0] : rows || null);
+
+  const resolvePropertyFromDealThenJob = async ({ inquiryId, jobId, propertyId }) => {
+    if (propertyLookupInFlight) return;
+    if (resolvedPropertyId) return;
+
+    const urlPropertyId = readUrlParam("propertyid");
+    if (urlPropertyId) {
+      resolvedPropertyId = urlPropertyId;
+      return;
+    }
+
+    if (propertyId) {
+      resolvedPropertyId = propertyId;
+      applyUrlUpdates({ propertyid: propertyId });
+      return;
+    }
+
+    if (!inquiryId && !jobId) return;
+
+    propertyLookupInFlight = true;
+    try {
+      if (!dealLookupAttempted && inquiryId) {
+        dealLookupAttempted = true;
+        const dealData = await graphqlRequest(DEAL_PROPERTY_QUERY, { id: inquiryId });
+        const dealRecord = getFirstRecord(dealData?.calcDeals);
+        const dealPropertyId = normalizeIdentifier(dealRecord?.Property_ID || "");
+        if (dealPropertyId) {
+          resolvedPropertyId = dealPropertyId;
+          applyUrlUpdates({ propertyid: dealPropertyId });
+          return;
+        }
+      }
+
+      if (!jobLookupAttempted && jobId) {
+        jobLookupAttempted = true;
+        const jobData = await graphqlRequest(JOB_PROPERTY_QUERY, { id: jobId });
+        const jobRecord = getFirstRecord(jobData?.calcJobs);
+        const jobPropertyId = normalizeIdentifier(jobRecord?.Property_ID || "");
+        if (jobPropertyId) {
+          resolvedPropertyId = jobPropertyId;
+          applyUrlUpdates({ propertyid: jobPropertyId });
+        }
+      }
+    } catch (error) {
+      console.error("Failed to resolve property id from deal/job", error);
+    } finally {
+      propertyLookupInFlight = false;
     }
   };
 
@@ -230,6 +306,15 @@ const initProgressiveUrlIds = () => {
 
   const syncFromKnownSources = () => {
     const meta = readMetaDataset();
+    const inquiryId =
+      normalizeIdentifier(
+        document.querySelector("[data-var-inquiryid]")?.dataset?.varInquiryid || "",
+      ) ||
+      normalizeIdentifier(readUrlParam("inquiryid")) ||
+      normalizeIdentifier(
+        typeof INQUIRY_RECORD_ID !== "undefined" ? INQUIRY_RECORD_ID : "",
+      );
+
     const providerId =
       normalizeIdentifier(document.body?.dataset?.serviceProviderId || "") ||
       normalizeIdentifier(
@@ -273,6 +358,13 @@ const initProgressiveUrlIds = () => {
       normalizeMetaValue(meta.companyId || "") ||
       normalizeIdentifier(typeof COMPANY_ID !== "undefined" ? COMPANY_ID : "");
 
+    const propertyIdValue =
+      normalizeIdentifier(document.body?.dataset?.propertyId || "") ||
+      normalizeIdentifier(
+        document.querySelector("[data-var-propertyid]")?.dataset?.varPropertyid || "",
+      ) ||
+      normalizeIdentifier(typeof PROPERTY_ID !== "undefined" ? PROPERTY_ID : "");
+
     applyUrlUpdates({
       serviceproviderid: providerId,
       jobid: jobId,
@@ -281,6 +373,13 @@ const initProgressiveUrlIds = () => {
       companyaccounttype: companyAccountTypeValue,
       contactid: contactIdValue,
       companyid: companyIdValue,
+      propertyid: propertyIdValue,
+    });
+
+    void resolvePropertyFromDealThenJob({
+      inquiryId,
+      jobId,
+      propertyId: propertyIdValue,
     });
   };
 
@@ -345,41 +444,21 @@ const initInquiryAccountSections = () => {
   const bodycorp = document.querySelector('[data-section="bodycorp"]');
   if (!contact || !company || !bodycorp) return;
 
-  const readMetaDataset = () => {
-    const meta = document.querySelector(
-      "[data-account-type], [data-company-account-type], [data-contact-id], [data-company-id]",
-    );
-    return meta?.dataset || {};
-  };
-
-  const readText = (selector) => {
-    const el = document.querySelector(selector);
-    return normalizeIdentifier(el?.textContent || "");
-  };
+  const normalizeType = (value) =>
+    normalizeIdentifier(value).toLowerCase().replace(/[_-]+/g, " ").trim();
 
   const apply = () => {
-    const meta = readMetaDataset();
-    const accountTypeValue =
-      normalizeMetaValue(meta.accountType || "") ||
-      readText(".accountType") ||
-      normalizeIdentifier(
-        typeof accountType !== "undefined" ? accountType : "",
-      );
-    const companyTypeValue =
-      normalizeMetaValue(meta.companyAccountType || "") ||
-      readText(".companyAccountType") ||
-      normalizeIdentifier(
-        typeof companyType !== "undefined" ? companyType : "",
-      );
-    const contactIdValue =
-      normalizeMetaValue(meta.contactId || "") ||
-      normalizeIdentifier(typeof CONTACT_ID !== "undefined" ? CONTACT_ID : "");
-    const companyIdValue =
-      normalizeMetaValue(meta.companyId || "") ||
-      normalizeIdentifier(typeof COMPANY_ID !== "undefined" ? COMPANY_ID : "");
-
-    const account = accountTypeValue.toLowerCase();
-    const companyType = companyTypeValue.toLowerCase();
+    const params = new URLSearchParams(window.location.search || "");
+    const account = normalizeType(
+      params.get("accounttype") ||
+        (typeof accountType !== "undefined" ? accountType : ""),
+    );
+    const companyTypeNormalized = normalizeType(
+      params.get("companyaccounttype") ||
+        (typeof companyType !== "undefined" ? companyType : ""),
+    );
+    const contactIdValue = normalizeIdentifier(params.get("contactid"));
+    const companyIdValue = normalizeIdentifier(params.get("companyid"));
 
     const showContact =
       account === "contact" ||
@@ -388,9 +467,9 @@ const initInquiryAccountSections = () => {
       account === "company" || (!account && Boolean(companyIdValue));
     const showBodyCorp =
       showCompany &&
-      (companyType === "body corp" ||
-        companyType === "body corp company" ||
-        companyType === "body corporate");
+      (companyTypeNormalized === "body corp" ||
+        companyTypeNormalized === "body corp company" ||
+        companyTypeNormalized === "body corporate");
 
     contact.classList.toggle("hidden", !showContact);
     contact.classList.toggle("flex", showContact);
@@ -462,19 +541,22 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!raw) return "";
     const lower = raw.toLowerCase();
     if (lower === "null" || lower === "undefined") return "";
-    if (/^\\[.*\\]$/.test(raw)) return "";
+    if (/^\[.*\]$/.test(raw)) return "";
     return raw.replace(/^#/, "").trim();
   };
-  const inquiryId = normalize("[inquiryid]");
-  console.log("inquiryId", inquiryId);
-  const inquiryUid = normalize("[inquiryuid]");
-  const propertyId = normalize("[propertyid]");
+
+  const params = new URLSearchParams(window.location.search || "");
+  const inquiryId = normalize(params.get("inquiryid"));
+  const inquiryUid = normalize(params.get("inquiryuid"));
+  const propertyId = normalize(params.get("propertyid"));
   const hasInquiry = Boolean(inquiryId || inquiryUid);
   const hasProperty = Boolean(propertyId);
+
   const apply = () => {
-    if (!hasInquiry) document.body.classList.add("no-inquiry");
-    if (!hasProperty) document.body.classList.add("no-property");
+    document.body.classList.toggle("no-inquiry", !hasInquiry);
+    document.body.classList.toggle("no-property", !hasProperty);
   };
+
   if (document.body) apply();
   else document.addEventListener("DOMContentLoaded", apply);
 })();
