@@ -1911,7 +1911,6 @@
                 <select
                   class="customSelect"
                   x-model="form.service"
-                  x-ref="serviceSelect"
                   @change="handleServiceChange"
                 >
                   <template x-if="!services.length">
@@ -1941,7 +1940,6 @@
                   <div
                     data-dynamic-list="kA10GF11bcrHMQd3omol7"
                     data-entity="peterpm"
-                    data-op="subscribe"
                     data-entity-key="1rBR-jpR3yE3HE1VhFD0j"
                   >
                     <option
@@ -1964,14 +1962,11 @@
                 >Activity Price</span
               >
               <div class="relative">
-                <span
-                  class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-slate-500"
-                  >$</span
-                >
-                <div class="customInputTextWrapper">
+                <div class="customInputTextWrapper !flex items-center gap-2">
+                  <span class="text-slate-500">$</span>
                   <input
                     type="number"
-                    class="w-full pl-8"
+                    class="w-full min-w-0"
                     placeholder="0.00"
                     x-model="form.activityPrice"
                     min="0"
@@ -1993,7 +1988,6 @@
               <select
                 class="customSelect"
                 x-model="form.serviceOption"
-                x-ref="serviceOptionSelect"
                 @change="handleServiceOptionChange"
               >
                 <template
@@ -2027,7 +2021,6 @@
                 <div
                   data-dynamic-list="aT2fiSDR1Yiib-oqyJogP"
                   data-entity="peterpm"
-                  data-op="subscribe"
                   data-entity-key="1rBR-jpR3yE3HE1VhFD0j"
                 >
                   <option

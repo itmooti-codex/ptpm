@@ -3891,18 +3891,6 @@ document.addEventListener("alpine:init", () => {
       this.form.serviceOption = optionId || "";
       this.pendingServiceId = this.form.service;
       this.pendingServiceOptionId = optionId || "";
-      this.ensureTempSelectOption(
-        "service",
-        this.$refs.serviceSelect,
-        this.form.service
-      );
-      if (this.form.serviceOption) {
-        this.ensureTempSelectOption(
-          "service-option",
-          this.$refs.serviceOptionSelect,
-          this.form.serviceOption
-        );
-      }
       this.$nextTick(() => {
         this.handleServiceChange();
         if (
@@ -3910,11 +3898,6 @@ document.addEventListener("alpine:init", () => {
           this.form.serviceOption !== this.pendingServiceOptionId
         ) {
           this.form.serviceOption = this.pendingServiceOptionId;
-          this.ensureTempSelectOption(
-            "service-option",
-            this.$refs.serviceOptionSelect,
-            this.pendingServiceOptionId
-          );
         }
       });
     },
@@ -4134,11 +4117,6 @@ document.addEventListener("alpine:init", () => {
       if (this.form.service) {
         this.pendingServiceId = "";
       }
-      this.ensureTempSelectOption(
-        "service",
-        this.$refs.serviceSelect,
-        this.form.service
-      );
       if (!this.form.service) {
         this.filteredServiceOptions = [];
         if (!this.pendingServiceOptionId) {
@@ -4174,11 +4152,6 @@ document.addEventListener("alpine:init", () => {
           this.form.serviceOption = this.filteredServiceOptions[0].id;
         }
       }
-      this.ensureTempSelectOption(
-        "service-option",
-        this.$refs.serviceOptionSelect,
-        this.form.serviceOption
-      );
       this.applySelectedServiceDetails();
     },
     cleanupTempOptions() {
