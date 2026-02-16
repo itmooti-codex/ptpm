@@ -3592,7 +3592,9 @@
                     data-activity-text="[Activity_Text]"
                     data-warranty="[Warranty]"
                     data-note="[Note]"
-                    data-invoice-client="[Invoice_To_Client]"
+                    data-invoice-client="[Invoice_to_Client]"
+                    data-includeinquotesubtotal="[Include_in_Quote_Subtotal]"
+                    data-include-in-quote-subtotal="[Include_in_Quote_Subtotal]"
                     data-job-id="[Job_ID]"
                   >
                     <div
@@ -3630,24 +3632,34 @@
                                                                         const lower = trimmed.toLowerCase();
                                                                         return lower === 'null' || lower === 'undefined' ? '' : trimmed;
                                                                         };
+                                                                        const normalizeText = (value) => {
+                                                                        if (value === undefined || value === null) return '';
+                                                                        const trimmed = String(value).trim();
+                                                                        if (!trimmed) return '';
+                                                                        if (trimmed.includes('[') || trimmed.includes(']')) return '';
+                                                                        const lower = trimmed.toLowerCase();
+                                                                        return lower === 'null' || lower === 'undefined' ? '' : trimmed;
+                                                                        };
                                                                         const serviceParentId = normalizeId(row.dataset.serviceParentId);
                                                                         const serviceRecordId = normalizeId(row.dataset.serviceRecordId);
                                                                         const resolvedServiceId = serviceParentId || serviceRecordId;
                                                                         const serviceOptionId = serviceParentId ? serviceRecordId : '';
+                                                                        const includeInQuoteSubtotalValue = normalizeText(row.dataset.includeInQuoteSubtotal || row.dataset.includeinquotesubtotal);
                                                                         $dispatch('activity:edit', {
                                                                         activityId: normalizeId(row.dataset.activityId) || '',
                                                                         jobId: normalizeId(row.dataset.jobId) || JOB_ID,
-                                                                        task: row.dataset.task || '',
-                                                                        option: row.dataset.option || '',
+                                                                        task: normalizeText(row.dataset.task),
+                                                                        option: normalizeText(row.dataset.option),
                                                                         serviceId: resolvedServiceId,
                                                                         serviceRecordId,
                                                                         serviceParentId,
                                                                         serviceOptionId,
-                                                                        activityPrice: row.dataset.activityPrice || '',
-                                                                        activityText: row.dataset.activityText || '',
-                                                                        warranty: row.dataset.warranty || '',
-                                                                        note: row.dataset.note || '',
-                                                                        invoiceToClient: row.dataset.invoiceClient ?? ''
+                                                                        activityPrice: normalizeText(row.dataset.activityPrice),
+                                                                        activityText: normalizeText(row.dataset.activityText),
+                                                                        warranty: normalizeText(row.dataset.warranty),
+                                                                        note: normalizeText(row.dataset.note),
+                                                                        invoiceToClient: normalizeText(row.dataset.invoiceClient),
+                                                                        includeInQuoteSubtotal: includeInQuoteSubtotalValue
                                                                         });
                                                                         })()
                                                                         "

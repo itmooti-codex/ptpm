@@ -3868,19 +3868,25 @@ document.addEventListener("alpine:init", () => {
         this.form.option
       );
       this.form.activityPrice = this.normalizePrice(detail.activityPrice);
-      this.form.activityText = detail.activityText || "";
-      this.form.warranty = detail.warranty || "";
-      this.form.note = detail.note || "";
+      this.form.activityText = this.sanitizeText(detail.activityText);
+      this.form.warranty = this.sanitizeText(detail.warranty);
+      this.form.note = this.sanitizeText(detail.note);
+      const invoiceToClientRaw = this.sanitizeText(
+        detail.invoiceToClient ?? detail.invoice_to_client
+      );
       this.form.invoiceClient =
-        detail.invoiceToClient !== undefined
-          ? this.normalizeBoolean(detail.invoiceToClient)
-          : true;
+        invoiceToClientRaw === ""
+          ? true
+          : this.normalizeBoolean(invoiceToClientRaw);
+      const includeInQuoteSubtotalRaw = this.sanitizeText(
+        detail.includeInQuoteSubtotal ??
+          detail.include_in_quote_subtotal ??
+          detail.includeinquotesubtotal
+      );
       this.form.includeInQuoteSubtotal =
-        detail.includeInQuoteSubtotal !== undefined
-          ? this.normalizeBoolean(detail.includeInQuoteSubtotal)
-          : detail.include_in_quote_subtotal !== undefined
-          ? this.normalizeBoolean(detail.include_in_quote_subtotal)
-          : true;
+        includeInQuoteSubtotalRaw === ""
+          ? true
+          : this.normalizeBoolean(includeInQuoteSubtotalRaw);
       const fallbackParentId = this.sanitizeId(detail.serviceParentId);
       const fallbackOptionId = this.sanitizeId(detail.serviceOptionId);
       const recordId =
@@ -3898,7 +3904,7 @@ document.addEventListener("alpine:init", () => {
       this.pendingServiceId = this.form.service;
       this.pendingServiceOptionId = optionId || "";
       this.$nextTick(() => {
-        this.handleServiceChange();
+        this.handleServiceChange({ skipServiceAutofill: true });
         if (
           this.pendingServiceOptionId &&
           this.form.serviceOption !== this.pendingServiceOptionId
@@ -4116,7 +4122,8 @@ document.addEventListener("alpine:init", () => {
       this.form.activityText = selectedService.description || "";
       this.form.activityPrice = this.normalizePrice(selectedService.price);
     },
-    handleServiceChange() {
+    handleServiceChange(options = {}) {
+      const shouldApplyServiceDetails = !options.skipServiceAutofill;
       const targetServiceId = this.pendingServiceId || this.form.service;
       if (targetServiceId && targetServiceId !== this.form.service) {
         this.form.service = targetServiceId;
@@ -4138,7 +4145,9 @@ document.addEventListener("alpine:init", () => {
         if (!this.pendingServiceOptionId) {
           this.form.serviceOption = "";
         }
-        this.applySelectedServiceDetails();
+        if (shouldApplyServiceDetails) {
+          this.applySelectedServiceDetails();
+        }
         return;
       }
       const desiredOptionId =
@@ -4159,7 +4168,9 @@ document.addEventListener("alpine:init", () => {
           this.form.serviceOption = this.filteredServiceOptions[0].id;
         }
       }
-      this.applySelectedServiceDetails();
+      if (shouldApplyServiceDetails) {
+        this.applySelectedServiceDetails();
+      }
     },
     cleanupTempOptions() {
       Object.values(this.tempSelectOptions || {}).forEach((option) => {
