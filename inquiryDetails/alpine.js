@@ -3767,7 +3767,7 @@ document.addEventListener("alpine:init", () => {
       warranty: "",
       note: "",
       invoiceClient: true,
-      includeDocuments: true,
+      includeInQuoteSubtotal: true,
     },
     mode: "create",
     activityId: null,
@@ -3843,8 +3843,8 @@ document.addEventListener("alpine:init", () => {
     resetForm() {
       this.cleanupTempOptions();
       this.form = {
-        job: "",
-        option: "",
+        job: "Job 1",
+        option: "Option 1",
         service: "",
         activityPrice: "0.00",
         serviceOption: "",
@@ -3852,15 +3852,15 @@ document.addEventListener("alpine:init", () => {
         warranty: "",
         note: "",
         invoiceClient: true,
-        includeDocuments: true,
+        includeInQuoteSubtotal: true,
       };
       this.pendingServiceId = "";
       this.pendingServiceOptionId = "";
     },
     prefillFromDetail(detail = {}) {
       if (!detail) return;
-      this.form.job = detail.task || "";
-      this.form.option = detail.option || "";
+      this.form.job = detail.task || "Job 1";
+      this.form.option = detail.option || "Option 1";
       this.ensureTempSelectOption("job", this.$refs.jobSelect, this.form.job);
       this.ensureTempSelectOption(
         "option",
@@ -3874,6 +3874,12 @@ document.addEventListener("alpine:init", () => {
       this.form.invoiceClient =
         detail.invoiceToClient !== undefined
           ? this.normalizeBoolean(detail.invoiceToClient)
+          : true;
+      this.form.includeInQuoteSubtotal =
+        detail.includeInQuoteSubtotal !== undefined
+          ? this.normalizeBoolean(detail.includeInQuoteSubtotal)
+          : detail.include_in_quote_subtotal !== undefined
+          ? this.normalizeBoolean(detail.include_in_quote_subtotal)
           : true;
       const fallbackParentId = this.sanitizeId(detail.serviceParentId);
       const fallbackOptionId = this.sanitizeId(detail.serviceOptionId);
@@ -3920,6 +3926,7 @@ document.addEventListener("alpine:init", () => {
         warranty: this.form.warranty,
         note: this.form.note,
         invoice_to_client: Boolean(this.form.invoiceClient),
+        include_in_quote_subtotal: Boolean(this.form.includeInQuoteSubtotal),
       };
       const isEdit = this.mode === "edit" && this.activityId;
       const mutation = isEdit
