@@ -83,79 +83,6 @@ const initRecommendationCard = () => {
   });
 };
 
-const initActivityTextareaAutoResize = () => {
-  const modalRoot = document.querySelector('div[x-data="activityModal()"]');
-  if (!modalRoot) return;
-
-  const textareaSelector = [
-    'textarea[x-model="form.activityText"]',
-    'textarea[x-model="form.warranty"]',
-    'textarea[x-model="form.note"]',
-  ].join(", ");
-
-  const serviceSelectSelector = [
-    'select[x-model="form.service"]',
-    'select[x-model="form.serviceOption"]',
-  ].join(", ");
-
-  const resizeTextarea = (textarea) => {
-    if (!(textarea instanceof HTMLTextAreaElement)) return;
-    textarea.style.overflowY = "hidden";
-    textarea.style.height = "auto";
-    textarea.style.height = `${textarea.scrollHeight}px`;
-  };
-
-  const resizeAll = () => {
-    modalRoot.querySelectorAll(textareaSelector).forEach((textarea) => {
-      resizeTextarea(textarea);
-    });
-  };
-
-  const scheduleResizeAll = () => {
-    window.requestAnimationFrame(() => {
-      resizeAll();
-      window.setTimeout(resizeAll, 0);
-      window.setTimeout(resizeAll, 120);
-    });
-  };
-
-  modalRoot.addEventListener("input", (event) => {
-    const target = event.target;
-    if (!(target instanceof HTMLTextAreaElement)) return;
-    if (!target.matches(textareaSelector)) return;
-    resizeTextarea(target);
-  });
-
-  modalRoot.addEventListener("focusin", (event) => {
-    const target = event.target;
-    if (!(target instanceof HTMLTextAreaElement)) return;
-    if (!target.matches(textareaSelector)) return;
-    resizeTextarea(target);
-  });
-
-  modalRoot.addEventListener("change", (event) => {
-    const target = event.target;
-    if (!(target instanceof HTMLSelectElement)) return;
-    if (!target.matches(serviceSelectSelector)) return;
-    scheduleResizeAll();
-  });
-
-  window.addEventListener("activity:add", scheduleResizeAll);
-  window.addEventListener("activity:edit", scheduleResizeAll);
-
-  const observer = new MutationObserver(() => {
-    scheduleResizeAll();
-  });
-  observer.observe(modalRoot, {
-    childList: true,
-    subtree: true,
-    attributes: true,
-    attributeFilter: ["style", "class"],
-  });
-
-  scheduleResizeAll();
-};
-
 const normalizeIdentifier = (value) => {
   const raw = (value || "").toString().trim();
   if (!raw) return "";
@@ -620,5 +547,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
   initPropertyContactStars();
   initRecommendationCard();
-  initActivityTextareaAutoResize();
 });
