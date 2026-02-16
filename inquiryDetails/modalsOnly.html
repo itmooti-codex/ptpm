@@ -1911,6 +1911,7 @@
                 <select
                   class="customSelect"
                   x-model="form.service"
+                  x-ref="serviceSelect"
                   @change="handleServiceChange"
                 >
                   <template x-if="!services.length">
@@ -1948,6 +1949,9 @@
                       data-service-name="[Service_Name]"
                       data-service-type="[Service_Type]"
                       data-parent-service="[Primary_Service_ID]"
+                      data-warranty-text = "[Standard_Warranty]"
+                      data-description = "[Description]"
+                      data-price = "[Service_Price]"
                     >
                       [Service_Name]
                     </option>
@@ -1967,7 +1971,7 @@
                 <div class="customInputTextWrapper">
                   <input
                     type="number"
-                    class="w-full"
+                    class="w-full pl-8"
                     placeholder="0.00"
                     x-model="form.activityPrice"
                     min="0"
@@ -1977,7 +1981,11 @@
               </div>
             </label>
           </div>
-          <label class="space-y-1 block">
+          <label
+            class="space-y-1 block"
+            x-show="filteredServiceOptions.length"
+            x-cloak
+          >
             <span class="text-xs font-semibold uppercase text-slate-500"
               >Service Options</span
             >
@@ -1985,8 +1993,8 @@
               <select
                 class="customSelect"
                 x-model="form.serviceOption"
-                x-show="filteredServiceOptions.length"
-                x-cloak
+                x-ref="serviceOptionSelect"
+                @change="handleServiceOptionChange"
               >
                 <template
                   x-for="option in filteredServiceOptions"
@@ -1997,7 +2005,6 @@
               </select>
               <span
                 class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-slate-400"
-                x-show="filteredServiceOptions.length"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -2012,12 +2019,6 @@
                   />
                 </svg>
               </span>
-              <p
-                class="text-sm text-slate-500"
-                x-show="!filteredServiceOptions.length"
-              >
-                Select a service to view available options.
-              </p>
               <div
                 class="hidden"
                 x-ref="serviceOptionSource"
@@ -2033,6 +2034,9 @@
                     value="[serviceid]"
                     data-parent-service="[Primary_Service_ID]"
                     data-service-name="[Service_Name]"
+                    data-warranty-text = "[Standard_Warranty]"
+                    data-description = "[Description]"
+                    data-price = "[Service_Price]"
                   >
                     [Service_Name]
                   </option>

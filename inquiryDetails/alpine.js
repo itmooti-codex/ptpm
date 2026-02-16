@@ -4090,14 +4090,41 @@ document.addEventListener("alpine:init", () => {
           const type = option.dataset.serviceType?.trim() || "";
           if (!withParent && type && /option/i.test(type)) return null;
           const parentId = this.sanitizeId(option.dataset.parentService);
+          const warrantyText = this.sanitizeText(option.dataset.warrantyText);
+          const description = this.sanitizeText(option.dataset.description);
+          const priceValue = this.sanitizeText(option.dataset.price);
           return {
             id,
             name: name || id,
             type,
             parentId: withParent ? parentId : "",
+            warrantyText,
+            description,
+            price: priceValue ? this.normalizePrice(priceValue) : "0.00",
           };
         })
         .filter(Boolean);
+    },
+    handleServiceOptionChange() {
+      this.applySelectedServiceDetails();
+    },
+    applySelectedServiceDetails() {
+      let selectedService = null;
+      if (this.filteredServiceOptions.length && this.form.serviceOption) {
+        selectedService =
+          this.filteredServiceOptions.find(
+            (option) => option.id === this.form.serviceOption
+          ) || null;
+      }
+      if (!selectedService && this.form.service) {
+        selectedService =
+          this.services.find((service) => service.id === this.form.service) ||
+          null;
+      }
+      if (!selectedService) return;
+      this.form.warranty = selectedService.warrantyText || "";
+      this.form.activityText = selectedService.description || "";
+      this.form.activityPrice = this.normalizePrice(selectedService.price);
     },
     handleServiceChange() {
       const targetServiceId = this.pendingServiceId || this.form.service;
@@ -4126,6 +4153,7 @@ document.addEventListener("alpine:init", () => {
         if (!this.pendingServiceOptionId) {
           this.form.serviceOption = "";
         }
+        this.applySelectedServiceDetails();
         return;
       }
       const desiredOptionId =
@@ -4151,6 +4179,7 @@ document.addEventListener("alpine:init", () => {
         this.$refs.serviceOptionSelect,
         this.form.serviceOption
       );
+      this.applySelectedServiceDetails();
     },
     cleanupTempOptions() {
       Object.values(this.tempSelectOptions || {}).forEach((option) => {
@@ -4203,6 +4232,19 @@ document.addEventListener("alpine:init", () => {
         trimmed.includes("[") ||
         trimmed.includes("]")
       ) {
+        return "";
+      }
+      return trimmed;
+    },
+    sanitizeText(value) {
+      if (value === null || value === undefined) return "";
+      const trimmed = String(value).trim();
+      if (!trimmed) return "";
+      const lower = trimmed.toLowerCase();
+      if (lower === "null" || lower === "undefined") {
+        return "";
+      }
+      if (/^\[.*\]$/.test(trimmed)) {
         return "";
       }
       return trimmed;
