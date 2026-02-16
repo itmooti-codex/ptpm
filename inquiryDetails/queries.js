@@ -175,6 +175,7 @@ const CREATE_ACTIVITY_MUTATION = `
               warranty
               note
               invoice_to_client
+              include_in_quote_subtotal
               job_id
               Service {
                 id
