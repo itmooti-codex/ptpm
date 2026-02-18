@@ -1760,12 +1760,11 @@ export class NewInquiryView {
           </button>
         </div>
         
-        <div class="px-5 py-5 space-y-6">
+        <div class="px-5 py-5 space-y-4">
         <div class="hidden" id="account-type-section">
                 <label class="block text-xs font-semibold uppercase text-slate-500">Entity Type</label>
-                <div class="relative mt-2 browser-default">
-                  <div class="customDropdDownWrapper">
-                  <select id="account-type" data-contact-id="account-type" data-contact-field="account_type" class="browser-default">
+                <div class="relative mt-2">
+                  <select id="account-type" data-contact-id="account-type" data-contact-field="account_type" class="customSelect browser-default">
                     <option clas="font-medium text-slate-600" value="Body Corp">Body Corp</option>
                     <option clas="font-medium text-slate-600" value="Body Corp Company">Body Corp Company</option>
                     <option clas="font-medium text-slate-600" value="Business &amp; Gov">Business &amp; Gov</option>
@@ -1775,23 +1774,22 @@ export class NewInquiryView {
                     <option clas="font-medium text-slate-600" value="Tenant to Pay">Tenant to Pay</option>
                     <option clas="font-medium text-slate-600" value="Wildlife Rescue">Wildlife Rescue</option>
                   </select>
-                  </div>
-                  <span class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400 browser-default">
-                    <svg class="h-4 w-4 browser-default" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M6 9l6 6 6-6" class="browser-default"></path>
+                  <span class="pointer-events-none absolute inset-y-0 right-3 inline-flex items-center text-slate-400">
+                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M6 9l6 6 6-6"></path>
                     </svg>
                   </span>
                 </div>
               </div>
               <div id="company-name-section" class="hidden">
                 <label class="text-xs font-semibold uppercase text-slate-500">Company Name</label>
-                <div class="customTextInputWrapper mt-1"><input type="tel" data-contact-field="company_name" data-contact-id="company_name" class="browser-default"></div>
+                <div class="customTextInputWrapper mt-2"><input type="tel" data-contact-field="company_name" data-contact-id="company_name" class="browser-default"></div>
               </div>
         <div class="hidden" id="affiliations-role-section">
                 <label class="block text-xs font-semibold uppercase text-slate-500"
                   >Role</label
                 >
-                <div class="customTextInputWrapper mt-1"><input
+                <div class="customTextInputWrapper mt-2"><input
                   type="text"
                   data-contact-id="affiliationsrole"
                   data-contact-field="affiliationsrole"
@@ -1803,91 +1801,87 @@ export class NewInquiryView {
            <div class="flex gap-4">
                 <div class="flex-1 min-w-[150px]">
                   <label class="text-xs font-semibold uppercase text-slate-500">First Name <span class="text-rose-500">*</span></label>
-                  <div class="customTextInputWrapper mt-1"><input type="text" data-contact-field="first_name" data-contact-id="first_name" class="browser-default"></div>
+                  <div class="customTextInputWrapper mt-2"><input type="text" data-contact-field="first_name" data-contact-id="first_name" class="browser-default"></div>
                 </div>
                 <div class="flex-1 min-w-[150px]">
                   <label class="text-xs font-semibold uppercase text-slate-500">Last Name</label>
-                  <div class="customTextInputWrapper mt-1"><input type="text" data-contact-field="last_name" data-contact-id="last_name" class="browser-default"></div>
+                  <div class="customTextInputWrapper mt-2"><input type="text" data-contact-field="last_name" data-contact-id="last_name" class="browser-default"></div>
                 </div>
               </div>
 
               <div class="flex gap-4">
                 <div class="flex-1 min-w-[150px]">
                   <label class="text-xs font-semibold uppercase text-slate-500">Email <span class="text-rose-500">*</span></label>
-                  <div class="customTextInputWrapper mt-1"><input type="email" data-contact-field="email" data-contact-id="email" class="browser-default"></div>
+                  <div class="customTextInputWrapper mt-2"><input type="email" data-contact-field="email" data-contact-id="email" class="browser-default"></div>
                 </div>
                 <div class="flex-1 min-w-[150px]">
                   <label class="text-xs font-semibold uppercase text-slate-500">SMS Number</label>
-                  <div class="customTextInputWrapper mt-1"><input type="tel" data-contact-field="sms_number" data-contact-id="sms_number" class="browser-default"></div>
+                  <div class="customTextInputWrapper mt-2"><input type="tel" data-contact-field="sms_number" data-contact-id="sms_number" class="browser-default"></div>
                 </div>
               </div>
               <div  class="hidden">
-              <div class="customTextInputWrapper mt-1"><input id="contact-address" type="text" class="browser-default"/></div>
+              <div class="customTextInputWrapper mt-2"><input id="contact-address" type="text" class="browser-default"/></div>
               </div>
               
 
               <div>
                 <label class="text-xs font-semibold uppercase text-slate-500">Office Number</label>
-                <div class="customTextInputWrapper mt-1"><input type="tel" data-contact-field="office_phone" data-contact-id="office_phone" class="browser-default"></div>
+                <div class="customTextInputWrapper mt-2"><input type="tel" data-contact-field="office_phone" data-contact-id="office_phone" class="browser-default"></div>
               </div>
             <div>
               <label class="block text-xs font-semibold uppercase text-slate-500">Address</label>
             <div class="relative hidden">
-              <div class="customTextInputWrapper mt-1"><input id="adTopSearch" type="text" class="browser-default" /></div>
+              <div class="customTextInputWrapper mt-2"><input id="adTopSearch" type="text" class="browser-default" /></div>
                 <svg class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" viewBox="0 0 24 24" fill="currentColor"><path d="M21 20l-5.6-5.6a7.5 7.5 0 10-1.4 1.4L20 21l1-1Zm-13.5-5A5.5 5.5 0 1113 9.5 5.51 5.51 0 017.5 15Z"/></svg>
               </div>
             </div>
             <div data-section="address">
-            <div class="flex gap-3">
+            <div class="flex gap-4">
               <div class="flex-1">
                 <label class="block text-xs font-semibold uppercase text-slate-500">Address line 1</label>
-                <div class="customTextInputWrapper mt-1"><input id="adTopLine1" data-contact-id="address" data-contact-field="top_address_line1" type="text" class="browser-default" /></div>
+                <div class="customTextInputWrapper mt-2"><input id="adTopLine1" data-contact-id="address" data-contact-field="top_address_line1" type="text" class="browser-default" /></div>
               </div>
               <div class="flex-1">
                 <label class="block text-xs font-semibold uppercase text-slate-500">Address line 2</label>
-                <div class="customTextInputWrapper mt-1"><input id="adTopLine2" data-contact-id="address_2" data-contact-field="top_address_line2" type="text" class="browser-default" /></div>
+                <div class="customTextInputWrapper mt-2"><input id="adTopLine2" data-contact-id="address_2" data-contact-field="top_address_line2" type="text" class="browser-default" /></div>
               </div>
             </div>
-            <div class="flex gap-3">
+            <div class="flex gap-4">
               <div class="flex-1">
                 <label class="block text-xs font-semibold uppercase text-slate-500">City</label>
-                <div class="customTextInputWrapper mt-1"><input id="adTopCity" data-contact-id="city" data-contact-field="top_city" type="text" class="browser-default" /></div>
+                <div class="customTextInputWrapper mt-2"><input id="adTopCity" data-contact-id="city" data-contact-field="top_city" type="text" class="browser-default" /></div>
               </div>
               <div class="flex-1">
                 <label class="block text-xs font-semibold uppercase text-slate-500">State
                    <span class="text-rose-500">*</span>
                 </label>
-                 <div class="relative mt-2 browser-default">
-                  <div class="customDropdDownWrapper">
-                  <select id="adTopState" data-contact-id="state" data-contact-field="top_state" class="browser-default">
+                <div class="relative mt-2">
+                  <select id="adTopState" data-contact-id="state" data-contact-field="top_state" class="customSelect browser-default">
                   </select>
-                  </div>
-                  <span class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400 browser-default">
-                    <svg class="h-4 w-4 browser-default" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M6 9l6 6 6-6" class="browser-default"></path>
+                  <span class="pointer-events-none absolute inset-y-0 right-3 inline-flex items-center text-slate-400">
+                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M6 9l6 6 6-6"></path>
                     </svg>
                   </span>
                 </div>
               </div>
             </div>
-            <div class="flex gap-3">
+            <div class="flex gap-4">
               <div class="flex-1">
                 <label class="block text-xs font-semibold uppercase text-slate-500">Postal Code
                   <span class="text-rose-500">*</span>
                 </label>
-                <div class="customTextInputWrapper mt-1"><input id="adTopPostal" data-contact-id="zip_code" data-contact-field="top_postal" type="text" class="browser-default" /></div>
+                <div class="customTextInputWrapper mt-2"><input id="adTopPostal" data-contact-id="zip_code" data-contact-field="top_postal" type="text" class="browser-default" /></div>
               </div>
               <div class="flex-1">
                 <label class="block text-xs font-semibold uppercase text-slate-500">Country</label>
-                <div class="relative mt-2 browser-default">
-                  <div class="customDropdDownWrapper">
-                  <select id="adTopCountry" data-contact-id="country" data-contact-field="top_country" class="browser-default">
+                <div class="relative mt-2">
+                  <select id="adTopCountry" data-contact-id="country" data-contact-field="top_country" class="customSelect browser-default">
                      <option value="AU" selected>Australia</option>
                   </select>
-                  </div>
-                  <span class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400 browser-default">
-                    <svg class="h-4 w-4 browser-default" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M6 9l6 6 6-6" class="browser-default"></path>
+                  <span class="pointer-events-none absolute inset-y-0 right-3 inline-flex items-center text-slate-400">
+                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M6 9l6 6 6-6"></path>
                     </svg>
                   </span>
                 </div>
@@ -1913,62 +1907,58 @@ export class NewInquiryView {
 
             </div>
   
-            <div class="space-y-3" data-section="postal-address">
+            <div class="space-y-4" data-section="postal-address">
               <div class="hidden">
                 <label class="block text-xs font-semibold uppercase text-slate-500">Address</label>
-              <div class="customTextInputWrapper mt-1"><input id="adBotSearch" type="text" class="browser-default" /></div>
+              <div class="customTextInputWrapper mt-2"><input id="adBotSearch" type="text" class="browser-default" /></div>
               </div>
-              <div class="flex gap-3">
+              <div class="flex gap-4">
                 <div class="flex-1">
                   <label class="block text-xs font-semibold uppercase text-slate-500">Address line 1</label>
-                  <div class="customTextInputWrapper mt-1"><input id="adBotLine1" data-contact-id="postal_address"  data-contact-field="bot_address_line1" type="text" class="browser-default" /></div>
+                  <div class="customTextInputWrapper mt-2"><input id="adBotLine1" data-contact-id="postal_address"  data-contact-field="bot_address_line1" type="text" class="browser-default" /></div>
                 </div>
                 <div class="flex-1">
                   <label class="block text-xs font-semibold uppercase text-slate-500">Address line 2</label>
-                  <div class="customTextInputWrapper mt-1"><input id="adBotLine2" data-contact-id="postal_address_2"  data-contact-field="bot_address_line2" type="text" class="browser-default" /></div>
+                  <div class="customTextInputWrapper mt-2"><input id="adBotLine2" data-contact-id="postal_address_2"  data-contact-field="bot_address_line2" type="text" class="browser-default" /></div>
                 </div>
               </div>
-              <div class="flex gap-3">
+              <div class="flex gap-4">
                 <div class="flex-1">
                   <label class="block text-xs font-semibold uppercase text-slate-500">City</label>
-                  <div class="customTextInputWrapper mt-1"><input id="adBotCity" data-contact-id="postal_city" data-contact-field="bot_city" type="text" class="browser-default" /></div>
+                  <div class="customTextInputWrapper mt-2"><input id="adBotCity" data-contact-id="postal_city" data-contact-field="bot_city" type="text" class="browser-default" /></div>
                 </div>
                 <div class="flex-1">
                   <label class="block text-xs font-semibold uppercase text-slate-500">State
                      <span class="text-rose-500">*</span>
                   </label>
-                  <div class="relative mt-2 browser-default">
-                    <div class="customDropdDownWrapper">
-                    <select id="adBotState" data-contact-id="postal_state" data-contact-field="bot_state" class="browser-default">
-                      
+                  <div class="relative mt-2">
+                    <select id="adBotState" data-contact-id="postal_state" data-contact-field="bot_state" class="customSelect browser-default">
+
                     </select>
-                    </div>
-                    <span class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400 browser-default">
-                      <svg class="h-4 w-4 browser-default" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M6 9l6 6 6-6" class="browser-default"></path>
+                    <span class="pointer-events-none absolute inset-y-0 right-3 inline-flex items-center text-slate-400">
+                      <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 9l6 6 6-6"></path>
                       </svg>
                     </span>
                   </div>
                 </div>
               </div>
-              <div class="flex gap-3">
+              <div class="flex gap-4">
                 <div class="flex-1">
                   <label class="block text-xs font-semibold uppercase text-slate-500">Postal Code
                      <span class="text-rose-500">*</span>
                   </label>
-                  <div class="customTextInputWrapper mt-1"><input id="adBotPostal" data-contact-id="postal_code" data-contact-field="bot_postal" type="text" class="browser-default" /></div>
+                  <div class="customTextInputWrapper mt-2"><input id="adBotPostal" data-contact-id="postal_code" data-contact-field="bot_postal" type="text" class="browser-default" /></div>
                 </div>
                 <div class="flex-1">
                   <label class="block text-xs font-semibold uppercase text-slate-500">Country</label>
-                  <div class="relative mt-2 browser-default">
-                    <div class="customDropdDownWrapper">
-                    <select id="adBotCountry" data-contact-id="postal_country" data-contact-field="bot_country" class="browser-default">
+                  <div class="relative mt-2">
+                    <select id="adBotCountry" data-contact-id="postal_country" data-contact-field="bot_country" class="customSelect browser-default">
                       <option value="AU" selected>Australia</option>
                     </select>
-                    </div>
-                    <span class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400 browser-default">
-                      <svg class="h-4 w-4 browser-default" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M6 9l6 6 6-6" class="browser-default"></path>
+                    <span class="pointer-events-none absolute inset-y-0 right-3 inline-flex items-center text-slate-400">
+                      <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 9l6 6 6-6"></path>
                       </svg>
                     </span>
                   </div>
@@ -2125,7 +2115,7 @@ export class NewInquiryView {
           <div>
             <label class="block text-xs font-semibold uppercase text-slate-500">Contact</label>
             <div class="relative">
-              <div class="customTextInputWrapper mt-1"><input id="pcSearch" type="text" placeholder="Search by name, email, phone"
+              <div class="customTextInputWrapper mt-2"><input id="pcSearch" type="text" placeholder="Search by name, email, phone"
                      class="browser-default"/></div>
               <div id="pcSearchList" class="absolute z-10 mt-1 left-0 right-0 bg-white border border-slate-200 rounded-lg shadow-md hidden">
                 <div id="pcSearchScroll" class="max-h-64 overflow-auto"></div>
@@ -2141,7 +2131,7 @@ export class NewInquiryView {
            <div class="flex gap-3">
             <div class="flex-1">
               <label class="block text-xs font-semibold uppercase text-slate-500">Role</label>
-              <div class="customTextInputWrapper mt-1"><input id="pcRole" type="text" class="browser-default"/></div>
+              <div class="customTextInputWrapper mt-2"><input id="pcRole" type="text" class="browser-default"/></div>
             </div>
           </div>
   
@@ -2149,11 +2139,11 @@ export class NewInquiryView {
           <div class="flex gap-3" id>
             <div class="flex-1">
               <label class="block text-xs font-semibold uppercase text-slate-500">First Name*</label>
-              <div class="customTextInputWrapper mt-1"><input id="pcFirstName" type="text" class="browser-default"/></div>
+              <div class="customTextInputWrapper mt-2"><input id="pcFirstName" type="text" class="browser-default"/></div>
             </div>
             <div class="flex-1">
               <label class="block text-xs font-semibold uppercase text-slate-500">Last Name</label>
-              <div class="customTextInputWrapper mt-1"><input id="pcLastName" type="text" class="browser-default"/></div>
+              <div class="customTextInputWrapper mt-2"><input id="pcLastName" type="text" class="browser-default"/></div>
             </div>
           </div>
   
@@ -2161,11 +2151,11 @@ export class NewInquiryView {
           <div class="flex gap-3">
             <div class="flex-1">
               <label class="block text-xs font-semibold uppercase text-slate-500">Email*</label>
-              <div class="customTextInputWrapper mt-1"><input id="pcEmail" type="email" class="browser-default"/></div>
+              <div class="customTextInputWrapper mt-2"><input id="pcEmail" type="email" class="browser-default"/></div>
             </div>
             <div class="flex-1">
               <label class="block text-xs font-semibold uppercase text-slate-500">SMS Number</label>
-              <div class="customTextInputWrapper mt-1"><input id="pcSms" type="tel" class="browser-default"/></div>
+              <div class="customTextInputWrapper mt-2"><input id="pcSms" type="tel" class="browser-default"/></div>
             </div>
           </div>
   

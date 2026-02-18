@@ -59,9 +59,18 @@ body {
   display: block !important;
   appearance: none !important;
   color: black !important;
+  width: 100% !important;
+  font-size: 14px !important;
+  background: #fff !important;
   option {
     color: black !important;
   }
+}
+
+.customSelect:hover,
+.customSelect:focus,
+.customSelect:active {
+  border: 1px solid #0391fc !important;
 }
 
 textarea {

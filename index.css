@@ -138,3 +138,72 @@ a[data-action] svg {
   min-height: 140px !important;
   resize: vertical !important;
 }
+
+.customSelect {
+  padding: 10.5px 10px !important;
+  border: 1px solid #d3d7e2 !important;
+  border-radius: 4px !important;
+  height: unset !important;
+  box-shadow: none !important;
+  outline: none !important;
+  margin: 0 !important;
+  display: block !important;
+  appearance: none !important;
+  color: black !important;
+  width: 100% !important;
+  font-size: 14px !important;
+  background: #fff !important;
+}
+
+.customSelect:hover,
+.customSelect:focus,
+.customSelect:active {
+  border: 1px solid #0391fc !important;
+}
+
+.customSelect option {
+  color: black !important;
+}
+
+/* List field button wrapper - for multi-select dropdown buttons */
+.customListFieldWrapper {
+  padding: 8px 10px !important;
+  border: 1px solid #d3d7e2 !important;
+  border-radius: 4px !important;
+  box-shadow: none !important;
+  outline: none !important;
+  background: #fff !important;
+  position: relative !important;
+  width: 100% !important;
+}
+
+.customListFieldWrapper:hover,
+.customListFieldWrapper:focus-within,
+.customListFieldWrapper:active {
+  border: 1px solid #0391fc !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.customListFieldWrapper button {
+  width: 100% !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  cursor: pointer !important;
+}
+
+.customListFieldWrapper button span {
+  font-size: 14px !important;
+  color: #64748b !important;
+}
+
+.customListFieldWrapper button svg {
+  flex-shrink: 0 !important;
+}
