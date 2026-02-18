@@ -70,19 +70,32 @@
       >
         <div class="w-full px-6 py-4 inline-flex justify-between items-center">
           <div class="flex justify-start items-center gap-28">
-            <div class="flex justify-start items-center gap-3">
+            <!-- Page Title -->
+            <div class="flex gap-2 justify-start items-center">
               <a
                 href="https://my.awesomate.pro/admin/dashboard"
-                class="rounded border border-white/30 bg-white/10 px-3 py-1.5 text-xs font-semibold text-white hover:bg-white/20"
+                class="flex flex-inline gap-3 justify-around items-center"
               >
-                ← Back to Dashboard
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="white"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M22 12.3335C22 12.5545 21.9122 12.7665 21.7559 12.9228C21.5997 13.079 21.3877 13.1668 21.1667 13.1668H4.84535L10.9233 19.2437C11.0007 19.3211 11.0621 19.4131 11.104 19.5142C11.1459 19.6154 11.1675 19.7238 11.1675 19.8333C11.1675 19.9428 11.1459 20.0512 11.104 20.1523C11.0621 20.2535 11.0007 20.3454 10.9233 20.4228C10.8459 20.5003 10.7539 20.5617 10.6528 20.6036C10.5516 20.6455 10.4432 20.667 10.3337 20.667C10.2242 20.667 10.1158 20.6455 10.0146 20.6036C9.91349 20.5617 9.82157 20.5003 9.74415 20.4228L2.2444 12.9231C2.16692 12.8457 2.10546 12.7538 2.06352 12.6526C2.02158 12.5515 2 12.443 2 12.3335C2 12.224 2.02158 12.1156 2.06352 12.0144C2.10546 11.9133 2.16692 11.8214 2.2444 11.744L9.74415 4.24421C9.90051 4.08784 10.1126 4 10.3337 4C10.5548 4 10.7669 4.08784 10.9233 4.24421C11.0796 4.40057 11.1675 4.61264 11.1675 4.83377C11.1675 5.0549 11.0796 5.26697 10.9233 5.42333L4.84535 11.5002H21.1667C21.3877 11.5002 21.5997 11.588 21.7559 11.7443C21.9122 11.9006 22 12.1125 22 12.3335Z"
+                    fill="white"
+                  />
+                </svg>
+                <div
+                  class="justify-end text-white f-inter font-small text-[20px]"
+                >
+                  Job Details
+                </div>
               </a>
-              <h1
-                class="text-white text-xl font-medium leading-6 hover:!text-white active:!text-white hover:text-white active:text-white focus:text-white focus-visible:text-white hover:text-xl active:text-xl focus:text-xl focus-visible:text-xl"
-              >
-                Inquiry Information
-              </h1>
             </div>
+            <!-- Page Title -->
           </div>
           <div
             class="flex justify-start items-center gap-4 text-sm font-medium"
@@ -132,11 +145,7 @@
               </svg>
               Save
             </button>
-            <button
-              id="submit-btn"
-              type="button"
-              class="px-4 py-3 bg-white rounded outline outline-1 outline-offset-[-1px] outline-white flex justify-center items-center gap-2 overflow-hidden text-sky-900 leading-4 focus:bg-white focus-visible:bg-white focus:outline focus-visible:outline focus:outline-1 focus-visible:outline-1 focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] focus:outline-white focus-visible:outline-white focus:text-sky-900 focus-visible:text-sky-900"
-            >
+            <button id="submit-btn" type="button" class="">
               <span class="inline-flex h-3 w-3 items-center justify-center">
                 <svg
                   width="11"
@@ -232,18 +241,20 @@
               <div class="space-y-4" data-contact-section="individual">
                 <div>
                   <label
-                    class="block text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
+                    class="block text-xs font-semibold uppercase text-slate-500"
                     >Contact</label
                   >
                   <div class="relative" data-search-root="contact-individual">
-                    <input
-                      type="text"
-                      placeholder="Search by name, email, phone"
-                      class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                      data-search-input
-                      data-contact-id="search-input"
-                      autocomplete="off"
-                    />
+                    <div class="customTextInputWrapper mt-2">
+                      <input
+                        type="text"
+                        placeholder="Search by name, email, phone"
+                        class=""
+                        data-search-input
+                        data-contact-id="search-input"
+                        autocomplete="off"
+                      />
+                    </div>
                     <button
                       type="button"
                       class="mt-2 absolute inset-y-0 right-3 inline-flex items-center rounded-md px-2 text-slate-400 focus:text-slate-400 focus-visible:text-slate-400"
@@ -308,15 +319,17 @@
 
                 <div class="hidden">
                   <label
-                    class="block text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
+                    class="block text-xs font-semibold uppercase text-slate-500"
                     >Role</label
                   >
-                  <input
-                    type="text"
-                    data-contact-field="affiliationsrole"
-                    placeholder="Resident, Owner, Property Manager..."
-                    class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                  />
+                  <div class="customTextInputWrapper mt-2">
+                    <input
+                      type="text"
+                      data-contact-field="affiliationsrole"
+                      placeholder="Resident, Owner, Property Manager..."
+                      class=""
+                    />
+                  </div>
                 </div>
 
                 <input
@@ -334,76 +347,77 @@
                 <div class="flex gap-4">
                   <div class="flex-1 min-w-[150px]">
                     <label
-                      class="text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
-                      >First Name
-                      <span
-                        class="text-rose-500 hover:!text-rose-500 active:!text-rose-500 hover:text-rose-500 active:text-rose-500 focus:text-rose-500 focus-visible:text-rose-500"
-                        >*</span
-                      ></label
+                      class="text-xs font-semibold uppercase text-slate-500"
+                      >First Name <span class="text-rose-500">*</span></label
                     >
-                    <input
-                      type="text"
-                      data-contact-field="first_name"
-                      data-contact-id="first_name"
-                      class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                    />
+                    <div class="customTextInputWrapper mt-2">
+                      <input
+                        type="text"
+                        data-contact-field="first_name"
+                        data-contact-id="first_name"
+                        class=""
+                      />
+                    </div>
                   </div>
                   <div class="flex-1 min-w-[150px]">
                     <label
-                      class="text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
+                      class="text-xs font-semibold uppercase text-slate-500"
                       >Last Name</label
                     >
-                    <input
-                      type="text"
-                      data-contact-field="last_name"
-                      data-contact-id="last_name"
-                      class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                    />
+                    <div class="customTextInputWrapper mt-2">
+                      <input
+                        type="text"
+                        data-contact-field="last_name"
+                        data-contact-id="last_name"
+                        class=""
+                      />
+                    </div>
                   </div>
                 </div>
 
                 <div class="flex gap-4">
                   <div class="flex-1 min-w-[150px]">
                     <label
-                      class="text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
-                      >Email
-                      <span
-                        class="text-rose-500 hover:!text-rose-500 active:!text-rose-500 hover:text-rose-500 active:text-rose-500 focus:text-rose-500 focus-visible:text-rose-500"
-                        >*</span
-                      ></label
+                      class="text-xs font-semibold uppercase text-slate-500"
+                      >Email <span class="text-rose-500">*</span></label
                     >
-                    <input
-                      type="email"
-                      data-contact-field="email"
-                      data-contact-id="email"
-                      class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                    />
+                    <div class="customTextInputWrapper mt-2">
+                      <input
+                        type="email"
+                        data-contact-field="email"
+                        data-contact-id="email"
+                        class=""
+                      />
+                    </div>
                   </div>
                   <div class="flex-1 min-w-[150px]">
                     <label
-                      class="text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
+                      class="text-xs font-semibold uppercase text-slate-500"
                       >SMS Number</label
                     >
-                    <input
-                      type="tel"
-                      data-contact-field="sms_number"
-                      data-contact-id="sms_number"
-                      class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                    />
+                    <div class="customTextInputWrapper mt-2">
+                      <input
+                        type="tel"
+                        data-contact-field="sms_number"
+                        data-contact-id="sms_number"
+                        class=""
+                      />
+                    </div>
                   </div>
                 </div>
 
                 <div>
-                  <label
-                    class="text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
+                  <label class="text-xs font-semibold uppercase text-slate-500"
                     >Office Number</label
                   >
-                  <input
-                    type="tel"
-                    data-contact-field="office_phone"
-                    data-contact-id="office_phone"
-                    class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                  />
+                  <div class="customTextInputWrapper mt-2">
+                    <input
+                      type="tel"
+                      data-contact-field="office_phone"
+                      data-contact-id="office_phone"
+                      class=""
+                    />
+                  </div>
                 </div>
 
                 <label
@@ -423,44 +437,50 @@
                 >
                   <div>
                     <label
-                      class="text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
+                      class="text-xs font-semibold uppercase text-slate-500"
                       >Work Requested By</label
                     >
-                    <input
-                      type="text"
-                      data-contact-field="work_requested_by"
-                      data-contact-id="work-requested-by"
-                      class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                    />
+                    <div class="customTextInputWrapper mt-2">
+                      <input
+                        type="text"
+                        data-contact-field="work_requested_by"
+                        data-contact-id="work-requested-by"
+                        class=""
+                      />
+                    </div>
                   </div>
                   <div>
                     <label
-                      class="text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
+                      class="text-xs font-semibold uppercase text-slate-500"
                       >Work Order Number</label
                     >
-                    <input
-                      type="text"
-                      data-contact-id="work-order-number"
-                      class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                    />
+                    <div class="customTextInputWrapper mt-2">
+                      <input
+                        type="text"
+                        data-contact-id="work-order-number"
+                        class=""
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
               <div class="flex flex-col gap-3" data-contact-section="entity">
                 <div>
                   <label
-                    class="block text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
+                    class="block text-xs font-semibold uppercase text-slate-500"
                     >Entity</label
                   >
                   <div class="relative mt-2" data-search-root="contact-entity">
-                    <input
-                      type="text"
-                      placeholder="Search entity"
-                      class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                      data-search-input
-                      data-contact-id="search-input"
-                      autocomplete="off"
-                    />
+                    <div class="customTextInputWrapper mt-2">
+                      <input
+                        type="text"
+                        placeholder="Search entity"
+                        class=""
+                        data-search-input
+                        data-contact-id="search-input"
+                        autocomplete="off"
+                      />
+                    </div>
                     <button
                       type="button"
                       class="absolute inset-y-0 right-3 inline-flex items-center rounded-md px-2 text-slate-400 focus:text-slate-400 focus-visible:text-slate-400"
@@ -525,60 +545,67 @@
 
                 <div>
                   <label
-                    class="block text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
+                    class="block text-xs font-semibold uppercase text-slate-500"
                     >Entity Type</label
                   >
-                  <select
-                    id="account-type"
-                    data-contact-field="account_type"
-                    class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 !block appearance-none hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                  >
-                    <option clas="font-medium text-slate-600" value="Body Corp">
-                      Body Corp
-                    </option>
-                    <option
-                      clas="font-medium text-slate-600"
-                      value="Body Corp Company"
-                    >
-                      Body Corp Company
-                    </option>
-                    <option
-                      clas="font-medium text-slate-600"
-                      value="Business & Gov"
-                    >
-                      Business & Gov
-                    </option>
-                    <option
-                      clas="font-medium text-slate-600"
-                      value="Closed Real Estate"
-                    >
-                      Closed Real Estate
-                    </option>
-                    <option
-                      clas="font-medium text-slate-600"
-                      value="School/Childcare"
-                    >
-                      School/Childcare
-                    </option>
-                    <option
-                      clas="font-medium text-slate-600"
-                      value="Real Estate Agent"
-                    >
-                      Real Estate Agent
-                    </option>
-                    <option
-                      clas="font-medium text-slate-600"
-                      value="Tenant to Pay"
-                    >
-                      Tenant to Pay
-                    </option>
-                    <option
-                      clas="font-medium text-slate-600"
-                      value="Wildlife Rescue"
-                    >
-                      Wildlife Rescue
-                    </option>
-                  </select>
+                  <div class="relative mt-2">
+                    <div class="customDropdDownWrapper">
+                      <select
+                        id="account-type"
+                        data-contact-field="account_type"
+                        class=""
+                      >
+                        <option
+                          clas="font-medium text-slate-600"
+                          value="Body Corp"
+                        >
+                          Body Corp
+                        </option>
+                        <option
+                          clas="font-medium text-slate-600"
+                          value="Body Corp Company"
+                        >
+                          Body Corp Company
+                        </option>
+                        <option
+                          clas="font-medium text-slate-600"
+                          value="Business & Gov"
+                        >
+                          Business & Gov
+                        </option>
+                        <option
+                          clas="font-medium text-slate-600"
+                          value="Closed Real Estate"
+                        >
+                          Closed Real Estate
+                        </option>
+                        <option
+                          clas="font-medium text-slate-600"
+                          value="School/Childcare"
+                        >
+                          School/Childcare
+                        </option>
+                        <option
+                          clas="font-medium text-slate-600"
+                          value="Real Estate Agent"
+                        >
+                          Real Estate Agent
+                        </option>
+                        <option
+                          clas="font-medium text-slate-600"
+                          value="Tenant to Pay"
+                        >
+                          Tenant to Pay
+                        </option>
+                        <option
+                          clas="font-medium text-slate-600"
+                          value="Wildlife Rescue"
+                        >
+                          Wildlife Rescue
+                        </option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
 
                 <input
@@ -587,82 +614,83 @@
                   data-entity-id="entity-id"
                 />
                 <label
-                  class="text-neutral-700 text-sm font-medium font-['Inter'] leading-4 mt-2 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
+                  class="mt-2 text-xs font-semibold uppercase text-slate-500"
                   >Primary Contact</label
                 >
                 <div class="flex gap-4">
                   <div class="flex-1 min-w-[150px]">
                     <label
-                      class="text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
-                      >First Name
-                      <span
-                        class="text-rose-500 hover:!text-rose-500 active:!text-rose-500 hover:text-rose-500 active:text-rose-500 focus:text-rose-500 focus-visible:text-rose-500"
-                        >*</span
-                      ></label
+                      class="text-xs font-semibold uppercase text-slate-500"
+                      >First Name <span class="text-rose-500">*</span></label
                     >
-                    <input
-                      type="text"
-                      data-contact-field="first_name"
-                      data-contact-id="first_name"
-                      class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                    />
+                    <div class="customTextInputWrapper mt-2">
+                      <input
+                        type="text"
+                        data-contact-field="first_name"
+                        data-contact-id="first_name"
+                        class=""
+                      />
+                    </div>
                   </div>
                   <div class="flex-1 min-w-[150px]">
                     <label
-                      class="text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
+                      class="text-xs font-semibold uppercase text-slate-500"
                       >Last Name</label
                     >
-                    <input
-                      type="text"
-                      data-contact-field="last_name"
-                      data-contact-id="last_name"
-                      class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                    />
+                    <div class="customTextInputWrapper mt-2">
+                      <input
+                        type="text"
+                        data-contact-field="last_name"
+                        data-contact-id="last_name"
+                        class=""
+                      />
+                    </div>
                   </div>
                 </div>
 
                 <div class="flex gap-4">
                   <div class="flex-1 min-w-[150px]">
                     <label
-                      class="text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
-                      >Email
-                      <span
-                        class="text-rose-500 hover:!text-rose-500 active:!text-rose-500 hover:text-rose-500 active:text-rose-500 focus:text-rose-500 focus-visible:text-rose-500"
-                        >*</span
-                      ></label
+                      class="text-xs font-semibold uppercase text-slate-500"
+                      >Email <span class="text-rose-500">*</span></label
                     >
-                    <input
-                      type="email"
-                      data-contact-field="email"
-                      data-contact-id="email"
-                      class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                    />
+                    <div class="customTextInputWrapper mt-2">
+                      <input
+                        type="email"
+                        data-contact-field="email"
+                        data-contact-id="email"
+                        class=""
+                      />
+                    </div>
                   </div>
                   <div class="flex-1 min-w-[150px]">
                     <label
-                      class="text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
+                      class="text-xs font-semibold uppercase text-slate-500"
                       >SMS Number</label
                     >
-                    <input
-                      type="tel"
-                      data-contact-field="sms_number"
-                      data-contact-id="sms_number"
-                      class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                    />
+                    <div class="customTextInputWrapper mt-2">
+                      <input
+                        type="tel"
+                        data-contact-field="sms_number"
+                        data-contact-id="sms_number"
+                        class=""
+                      />
+                    </div>
                   </div>
                 </div>
 
                 <div>
-                  <label
-                    class="text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
+                  <label class="text-xs font-semibold uppercase text-slate-500"
                     >Office Number</label
                   >
-                  <input
-                    type="tel"
-                    data-contact-field="office_phone"
-                    data-contact-id="office_phone"
-                    class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                  />
+                  <div class="customTextInputWrapper mt-2">
+                    <input
+                      type="tel"
+                      data-contact-field="office_phone"
+                      data-contact-id="office_phone"
+                      class=""
+                    />
+                  </div>
                 </div>
 
                 <label
@@ -682,26 +710,30 @@
                 >
                   <div>
                     <label
-                      class="text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
+                      class="text-xs font-semibold uppercase text-slate-500"
                       >Work Requested By</label
                     >
-                    <input
-                      type="text"
-                      data-contact-field="work_requested_by"
-                      data-contact-id="work-requested-by"
-                      class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                    />
+                    <div class="customTextInputWrapper mt-2">
+                      <input
+                        type="text"
+                        data-contact-field="work_requested_by"
+                        data-contact-id="work-requested-by"
+                        class=""
+                      />
+                    </div>
                   </div>
                   <div>
                     <label
-                      class="text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
+                      class="text-xs font-semibold uppercase text-slate-500"
                       >Work Order Number</label
                     >
-                    <input
-                      type="text"
-                      data-contact-id="work-order-number"
-                      class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                    />
+                    <div class="customTextInputWrapper mt-2">
+                      <input
+                        type="text"
+                        data-contact-id="work-order-number"
+                        class=""
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -823,13 +855,15 @@
                   >Property Search</label
                 >
                 <div data-search-root="property" class="relative mt-2">
-                  <input
-                    type="text"
-                    placeholder="Search properties"
-                    class="w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                    data-search-input
-                    autocomplete="off"
-                  />
+                  <div class="customTextInputWrapper mt-2">
+                    <input
+                      type="text"
+                      placeholder="Search properties"
+                      class=""
+                      data-search-input
+                      autocomplete="off"
+                    />
+                  </div>
                   <button
                     type="button"
                     class="absolute top-1/2 -translate-y-1/2 transform inset-y-0 right-3 inline-flex items-center rounded-md px-2 text-slate-400 focus:text-slate-400 focus-visible:text-slate-400"
@@ -896,110 +930,107 @@
                 >
                   <div>
                     <label
-                      class="block text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
+                      class="block text-xs font-semibold uppercase text-slate-500"
                       >Lot Number</label
                     >
-                    <input
-                      type="text"
-                      data-property-id="lot_number"
-                      class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                    />
+                    <div class="customTextInputWrapper mt-2">
+                      <input
+                        type="text"
+                        data-property-id="lot_number"
+                        class=""
+                      />
+                    </div>
                   </div>
                   <div>
                     <label
-                      class="block text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
+                      class="block text-xs font-semibold uppercase text-slate-500"
                       >Unit Number</label
                     >
-                    <input
-                      type="text"
-                      data-property-id="unit-number"
-                      class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                    />
+                    <div class="customTextInputWrapper mt-2">
+                      <input
+                        type="text"
+                        data-property-id="unit-number"
+                        class=""
+                      />
+                    </div>
                   </div>
                   <div>
                     <label
-                      class="flex items-center gap-1 text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
-                      >Address
-                      <span
-                        class="text-rose-500 hover:!text-rose-500 active:!text-rose-500 hover:text-rose-500 active:text-rose-500 focus:text-rose-500 focus-visible:text-rose-500"
-                        >*</span
-                      ></label
+                      class="flex items-center gap-1 text-xs font-semibold uppercase text-slate-500"
+                      >Address <span class="text-rose-500">*</span></label
                     >
-                    <input
-                      type="text"
-                      data-property-id="address_1"
-                      class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                    />
+                    <div class="customTextInputWrapper mt-2">
+                      <input
+                        type="text"
+                        data-property-id="address_1"
+                        class=""
+                      />
+                    </div>
                   </div>
                   <div>
                     <label
-                      class="block text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
+                      class="block text-xs font-semibold uppercase text-slate-500"
                       >Address 2</label
                     >
-                    <input
-                      type="text"
-                      data-property-id="address_2"
-                      class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                    />
+                    <div class="customTextInputWrapper mt-2">
+                      <input
+                        type="text"
+                        data-property-id="address_2"
+                        class=""
+                      />
+                    </div>
                   </div>
                   <div>
                     <label
-                      class="flex items-center gap-1 text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
-                      >Suburb/ Town
-                      <span
-                        class="text-rose-500 hover:!text-rose-500 active:!text-rose-500 hover:text-rose-500 active:text-rose-500 focus:text-rose-500 focus-visible:text-rose-500"
-                        >*</span
-                      ></label
+                      class="flex items-center gap-1 text-xs font-semibold uppercase text-slate-500"
+                      >Suburb/ Town <span class="text-rose-500">*</span></label
                     >
-                    <input
-                      type="text"
-                      data-property-id="suburb_town"
-                      class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                    />
+                    <div class="customTextInputWrapper mt-2">
+                      <input
+                        type="text"
+                        data-property-id="suburb_town"
+                        class=""
+                      />
+                    </div>
                   </div>
                   <div>
                     <label
-                      class="flex items-center gap-1 text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
-                      >Postal Code
-                      <span
-                        class="text-rose-500 hover:!text-rose-500 active:!text-rose-500 hover:text-rose-500 active:text-rose-500 focus:text-rose-500 focus-visible:text-rose-500"
-                        >*</span
-                      ></label
+                      class="flex items-center gap-1 text-xs font-semibold uppercase text-slate-500"
+                      >Postal Code <span class="text-rose-500">*</span></label
                     >
-                    <input
-                      type="text"
-                      data-property-id="postal_code"
-                      class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                    />
+                    <div class="customTextInputWrapper mt-2">
+                      <input
+                        type="text"
+                        data-property-id="postal_code"
+                        class=""
+                      />
+                    </div>
                   </div>
                 </div>
 
                 <div>
                   <label
-                    class="flex items-center gap-1 text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
-                    >State
-                    <span
-                      class="text-rose-500 hover:!text-rose-500 active:!text-rose-500 hover:text-rose-500 active:text-rose-500 focus:text-rose-500 focus-visible:text-rose-500"
-                      >*</span
-                    ></label
+                    class="flex items-center gap-1 text-xs font-semibold uppercase text-slate-500"
+                    >State <span class="text-rose-500">*</span></label
                   >
                   <div class="relative mt-2">
-                    <select
-                      class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 !block appearance-none hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                      data-property-id="state"
-                    >
-                      <option value="" disabled selected hidden>
-                        Select a state
-                      </option>
-                      <option value="NSW">New South Wales</option>
-                      <option value="QLD">Queensland</option>
-                      <option value="VIC">Victoria</option>
-                      <option value="TAS">Tasmania</option>
-                      <option value="SA">South Australia</option>
-                      <option value="ACT">Australian Capital Territory</option>
-                      <option value="NT">Northern Territory</option>
-                      <option value="WA">Western Australia</option>
-                    </select>
+                    <div class="customDropdDownWrapper">
+                      <select class="" data-property-id="state">
+                        <option value="" disabled selected hidden>
+                          Select a state
+                        </option>
+                        <option value="NSW">New South Wales</option>
+                        <option value="QLD">Queensland</option>
+                        <option value="VIC">Victoria</option>
+                        <option value="TAS">Tasmania</option>
+                        <option value="SA">South Australia</option>
+                        <option value="ACT">
+                          Australian Capital Territory
+                        </option>
+                        <option value="NT">Northern Territory</option>
+                        <option value="WA">Western Australia</option>
+                      </select>
+                    </div>
 
                     <span
                       class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400"
@@ -1031,21 +1062,20 @@
                 >
                   <div>
                     <label
-                      class="block text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
+                      class="block text-xs font-semibold uppercase text-slate-500"
                       >Property Type</label
                     >
                     <div class="relative mt-2">
-                      <select
-                        class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 !block appearance-none hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                        data-property-id="property-type"
-                      >
-                        <option value="" disabled selected hidden>
-                          Select None
-                        </option>
-                        <option value="Residential">Residential</option>
-                        <option value="Commercial">Commercial</option>
-                        <option value="Industrial">Industrial</option>
-                      </select>
+                      <div class="customDropdDownWrapper">
+                        <select class="" data-property-id="property-type">
+                          <option value="" disabled selected hidden>
+                            Select None
+                          </option>
+                          <option value="Residential">Residential</option>
+                          <option value="Commercial">Commercial</option>
+                          <option value="Industrial">Industrial</option>
+                        </select>
+                      </div>
                       <span
                         class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400"
                       >
@@ -1065,24 +1095,23 @@
                   </div>
                   <div>
                     <label
-                      class="block text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
+                      class="block text-xs font-semibold uppercase text-slate-500"
                       >Building Type</label
                     >
                     <div class="relative mt-2">
-                      <select
-                        class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 !block appearance-none hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                        data-property-id="building-type"
-                      >
-                        <option value="" disabled selected hidden>
-                          Select None
-                        </option>
-                        <option value="House">House</option>
-                        <option value="Unit">Unit</option>
-                        <option value="Unit Block">Unit Block</option>
-                        <option value="Offices">Offices</option>
-                        <option value="Warehouse">Warehouse</option>
-                        <option value="Other">Other</option>
-                      </select>
+                      <div class="customDropdDownWrapper">
+                        <select class="" data-property-id="building-type">
+                          <option value="" disabled selected hidden>
+                            Select None
+                          </option>
+                          <option value="House">House</option>
+                          <option value="Unit">Unit</option>
+                          <option value="Unit Block">Unit Block</option>
+                          <option value="Offices">Offices</option>
+                          <option value="Warehouse">Warehouse</option>
+                          <option value="Other">Other</option>
+                        </select>
+                      </div>
                       <span
                         class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400"
                       >
@@ -1102,21 +1131,20 @@
                   </div>
                   <div>
                     <label
-                      class="block text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
+                      class="block text-xs font-semibold uppercase text-slate-500"
                       >Foundation Type</label
                     >
                     <div class="relative mt-2">
-                      <select
-                        class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 !block appearance-none hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                        data-property-id="foundation-type"
-                      >
-                        <option value="" disabled selected hidden>
-                          Select None
-                        </option>
-                        <option value="Slab on Ground">Slab on Ground</option>
-                        <option value="Lowset">Lowset</option>
-                        <option value="Highset">Highset</option>
-                      </select>
+                      <div class="customDropdDownWrapper">
+                        <select class="" data-property-id="foundation-type">
+                          <option value="" disabled selected hidden>
+                            Select None
+                          </option>
+                          <option value="Slab on Ground">Slab on Ground</option>
+                          <option value="Lowset">Lowset</option>
+                          <option value="Highset">Highset</option>
+                        </select>
+                      </div>
                       <span
                         class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400"
                       >
@@ -1136,15 +1164,11 @@
                   </div>
                   <div>
                     <label
-                      class="block text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
+                      class="block text-xs font-semibold uppercase text-slate-500"
                       >Building Features</label
                     >
                     <div class="relative mt-2">
-                      <button
-                        id="property-building-btn"
-                        type="button"
-                        class="w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-between items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 text-left transition focus:bg-white focus-visible:bg-white focus:outline focus-visible:outline focus:outline-1 focus-visible:outline-1 focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] focus:outline-gray-300 focus-visible:outline-gray-300 focus:text-slate-700 focus-visible:text-slate-700 focus:text-sm focus-visible:text-sm focus:text-left focus-visible:text-left"
-                      >
+                      <button id="property-building-btn" type="button" class="">
                         <span
                           class="text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
                           >Select</span
@@ -1193,42 +1217,48 @@
                   </div>
                   <div>
                     <label
-                      class="block text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
+                      class="block text-xs font-semibold uppercase text-slate-500"
                       >Storeys</label
                     >
-                    <input
-                      type="number"
-                      value="1"
-                      data-property-id="stories"
-                      class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                    />
+                    <div class="customTextInputWrapper mt-2">
+                      <input
+                        type="number"
+                        value="1"
+                        data-property-id="stories"
+                        class=""
+                      />
+                    </div>
                   </div>
                   <div>
                     <label
-                      class="block text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
+                      class="block text-xs font-semibold uppercase text-slate-500"
                       >Bedrooms</label
                     >
-                    <input
-                      type="number"
-                      value="1"
-                      data-property-id="bedrooms"
-                      class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                    />
+                    <div class="customTextInputWrapper mt-2">
+                      <input
+                        type="number"
+                        value="1"
+                        data-property-id="bedrooms"
+                        class=""
+                      />
+                    </div>
                   </div>
                   <div>
                     <label
-                      class="block text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
+                      class="block text-xs font-semibold uppercase text-slate-500"
                       >Building Age</label
                     >
-                    <input
-                      type="number"
-                      value="1"
-                      data-property-id="building-age"
-                      class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                    />
+                    <div class="customTextInputWrapper mt-2">
+                      <input
+                        type="number"
+                        value="1"
+                        data-property-id="building-age"
+                        class=""
+                      />
+                    </div>
                   </div>
                   <label
-                    class="inline-flex items-center gap-2 text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
+                    class="inline-flex items-center gap-2 text-xs font-semibold uppercase text-slate-500"
                   >
                     <input
                       type="checkbox"
@@ -1570,53 +1600,53 @@
                   >
                     <div class="hidden">
                       <label
-                        class="block text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
+                        class="block text-xs font-semibold uppercase text-slate-500"
                         >Job Date</label
                       >
                       <div class="relative mt-2">
-                        <input
-                          id="job-date"
-                          type="date"
-                          placeholder="dd-mm-yyyy"
-                          class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 date-picker pr-10 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                        />
+                        <div class="customTextInputWrapper mt-2">
+                          <input
+                            id="job-date"
+                            type="date"
+                            placeholder="dd-mm-yyyy"
+                            class="date-picker"
+                          />
+                        </div>
                       </div>
                     </div>
                     <div class="hidden">
                       <label
-                        class="block text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
+                        class="block text-xs font-semibold uppercase text-slate-500"
                         >Job Taken By</label
                       >
-                      <input
-                        id="job-taken-by"
-                        type="text"
-                        class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                      />
+                      <div class="customTextInputWrapper mt-2">
+                        <input id="job-taken-by" type="text" class="" />
+                      </div>
                     </div>
                     <div class="hidden">
                       <label
-                        class="block text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
+                        class="block text-xs font-semibold uppercase text-slate-500"
                         >Entered By</label
                       >
-                      <input
-                        id="entered-by"
-                        type="text"
-                        class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                      />
+                      <div class="customTextInputWrapper mt-2">
+                        <input id="entered-by" type="text" class="" />
+                      </div>
                     </div>
                     <div class="">
                       <label
-                        class="block text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
+                        class="block text-xs font-semibold uppercase text-slate-500"
                         >Inquiry Source</label
                       >
                       <div class="relative mt-2">
-                        <select
-                          id="inquiry-source"
-                          data-inquiry-id="inquiry-source"
-                          class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 !block appearance-none hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                        >
-                          <option>Select</option>
-                        </select>
+                        <div class="customDropdDownWrapper">
+                          <select
+                            id="inquiry-source"
+                            data-inquiry-id="inquiry-source"
+                            class=""
+                          >
+                            <option>Select</option>
+                          </select>
+                        </div>
                         <span
                           class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400"
                         >
@@ -1636,17 +1666,19 @@
                     </div>
                     <div>
                       <label
-                        class="block text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
+                        class="block text-xs font-semibold uppercase text-slate-500"
                         >Inquiry Type</label
                       >
                       <div class="relative mt-2">
-                        <select
-                          id="inquiry-type"
-                          data-inquiry-id="type"
-                          class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 !block appearance-none hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                        >
-                          <option>Select</option>
-                        </select>
+                        <div class="customDropdDownWrapper">
+                          <select
+                            id="inquiry-type"
+                            data-inquiry-id="type"
+                            class=""
+                          >
+                            <option>Select</option>
+                          </select>
+                        </div>
                         <span
                           class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400"
                         >
@@ -1666,15 +1698,11 @@
                     </div>
                     <div>
                       <label
-                        class="block text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
+                        class="block text-xs font-semibold uppercase text-slate-500"
                         >Service Inquiry</label
                       >
                       <div class="relative hidden">
-                        <button
-                          id="services-btn"
-                          type="button"
-                          class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-between items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 text-left transition focus:bg-white focus-visible:bg-white focus:outline focus-visible:outline focus:outline-1 focus-visible:outline-1 focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] focus:outline-gray-300 focus-visible:outline-gray-300 focus:text-slate-700 focus-visible:text-slate-700 focus:text-sm focus-visible:text-sm focus:text-left focus-visible:text-left"
-                        >
+                        <button id="services-btn" type="button" class="">
                           <span
                             class="text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
                             >Services</span
@@ -1724,13 +1752,15 @@
                         </div>
                       </div>
                       <div class="relative mt-2">
-                        <select
-                          id="service-inquiry"
-                          data-inquiry-id="service-name"
-                          class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 !block appearance-none hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                        >
-                          <option>Select</option>
-                        </select>
+                        <div class="customDropdDownWrapper">
+                          <select
+                            id="service-inquiry"
+                            data-inquiry-id="service-name"
+                            class=""
+                          >
+                            <option>Select</option>
+                          </select>
+                        </div>
                         <span
                           class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400"
                         >
@@ -1751,46 +1781,52 @@
                   </div>
                   <div>
                     <label
-                      class="block text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
+                      class="block text-xs font-semibold uppercase text-slate-500"
                       >How can we help?</label
                     >
-                    <textarea
-                      id="help-text"
-                      data-inquiry-id="how-can-we-help"
-                      rows="3"
-                      class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                      placeholder="Enter Text..."
-                    ></textarea>
+                    <div class="customTextAreaWrapper mt-2">
+                      <textarea
+                        id="help-text"
+                        data-inquiry-id="how-can-we-help"
+                        rows="3"
+                        class=""
+                        placeholder="Enter Text..."
+                      ></textarea>
+                    </div>
                   </div>
                   <div>
                     <label
-                      class="block text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
+                      class="block text-xs font-semibold uppercase text-slate-500"
                       >Recommendations</label
                     >
-                    <textarea
-                      id="recommendations"
-                      data-inquiry-id="admin-notes"
-                      rows="3"
-                      class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                      placeholder="Enter Text..."
-                    ></textarea>
+                    <div class="customTextAreaWrapper mt-2">
+                      <textarea
+                        id="recommendations"
+                        data-inquiry-id="admin-notes"
+                        rows="3"
+                        class=""
+                        placeholder="Enter Text..."
+                      ></textarea>
+                    </div>
                   </div>
                   <div
                     class="flex gap-4 sm:flex-row sm:flex-wrap sm:[&>div]:basis-[calc(50%-0.5rem)]"
                   >
                     <div class="flex-1">
                       <label
-                        class="block text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
+                        class="block text-xs font-semibold uppercase text-slate-500"
                         >How Did You Hear About Us?</label
                       >
                       <div class="relative mt-2">
-                        <select
-                          id="referral-source"
-                          data-inquiry-id="how-did-you-hear"
-                          class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 !block appearance-none hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                        >
-                          <option>Select</option>
-                        </select>
+                        <div class="customDropdDownWrapper">
+                          <select
+                            id="referral-source"
+                            data-inquiry-id="how-did-you-hear"
+                            class=""
+                          >
+                            <option>Select</option>
+                          </select>
+                        </div>
                         <span
                           class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400"
                         >
@@ -1810,14 +1846,12 @@
                     </div>
                     <div class="hidden">
                       <label
-                        class="block text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
+                        class="block text-xs font-semibold uppercase text-slate-500"
                         >BCC</label
                       >
-                      <input
-                        id="bcc"
-                        type="text"
-                        class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                      />
+                      <div class="customTextInputWrapper mt-2">
+                        <input id="bcc" type="text" class="" />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1839,14 +1873,10 @@
                   >
                     <div class="relative">
                       <label
-                        class="block text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
+                        class="block text-xs font-semibold uppercase text-slate-500"
                         >Noises</label
                       >
-                      <button
-                        id="noises-btn"
-                        type="button"
-                        class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-between items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 text-left transition focus:bg-white focus-visible:bg-white focus:outline focus-visible:outline focus:outline-1 focus-visible:outline-1 focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] focus:outline-gray-300 focus-visible:outline-gray-300 focus:text-slate-700 focus-visible:text-slate-700 focus:text-sm focus-visible:text-sm focus:text-left focus-visible:text-left"
-                      >
+                      <button id="noises-btn" type="button" class="">
                         <span
                           class="text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
                           >Select</span
@@ -1899,14 +1929,10 @@
 
                     <div class="relative">
                       <label
-                        class="block text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
+                        class="block text-xs font-semibold uppercase text-slate-500"
                         >Times</label
                       >
-                      <button
-                        id="times-btn"
-                        type="button"
-                        class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-between items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 text-left transition focus:bg-white focus-visible:bg-white focus:outline focus-visible:outline focus:outline-1 focus-visible:outline-1 focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] focus:outline-gray-300 focus-visible:outline-gray-300 focus:text-slate-700 focus-visible:text-slate-700 focus:text-sm focus-visible:text-sm focus:text-left focus-visible:text-left"
-                      >
+                      <button id="times-btn" type="button" class="">
                         <span
                           class="text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
                           >Select</span
@@ -1957,14 +1983,10 @@
 
                     <div class="relative">
                       <label
-                        class="block text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
+                        class="block text-xs font-semibold uppercase text-slate-500"
                         >Location</label
                       >
-                      <button
-                        id="location-btn"
-                        type="button"
-                        class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-between items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 text-left transition focus:bg-white focus-visible:bg-white focus:outline focus-visible:outline focus:outline-1 focus-visible:outline-1 focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] focus:outline-gray-300 focus-visible:outline-gray-300 focus:text-slate-700 focus-visible:text-slate-700 focus:text-sm focus-visible:text-sm focus:text-left focus-visible:text-left"
-                      >
+                      <button id="location-btn" type="button" class="">
                         <span
                           class="text-slate-500 focus:text-slate-500 focus-visible:text-slate-500"
                           >Select</span
@@ -2014,41 +2036,43 @@
 
                     <div class="hidden">
                       <label
-                        class="block text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
+                        class="block text-xs font-semibold uppercase text-slate-500"
                         >Access</label
                       >
+                      <div class="customTextInputWrapper mt-2">
+                        <input type="number" value="3" class="" />
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <label
+                      class="block text-xs font-semibold uppercase text-slate-500"
+                      >Renovation</label
+                    >
+                    <div class="customTextInputWrapper mt-2">
                       <input
                         type="number"
-                        value="3"
-                        class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
+                        value="1"
+                        data-feedback-id="renovations"
+                        class=""
                       />
                     </div>
                   </div>
                   <div>
                     <label
-                      class="block text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
-                      >Renovation</label
-                    >
-                    <input
-                      type="number"
-                      value="1"
-                      data-feedback-id="renovations"
-                      class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      class="block text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
+                      class="block text-xs font-semibold uppercase text-slate-500"
                       >Job Required By</label
                     >
                     <div class="relative mt-2">
-                      <input
-                        id="job-required-by"
-                        type="text"
-                        placeholder="dd/mm/yyyy"
-                        data-feedback-id="date-job-required-by"
-                        class="mt-2 w-full px-2.5 pr-10 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 date-picker hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm"
-                      />
+                      <div class="customTextInputWrapper">
+                        <input
+                          id="job-required-by"
+                          type="text"
+                          placeholder="dd/mm/yyyy"
+                          data-feedback-id="date-job-required-by"
+                          class="date-picker"
+                        />
+                      </div>
                       <span
                         class="pointer-events-none absolute inset-y-0 right-3 inline-flex items-center"
                       >
@@ -2072,9 +2096,7 @@
                   <div class="space-y-4">
                     <div>
                       <div class="flex flex-inline gap-2"></div>
-                      <p
-                        class="text-neutral-700 text-sm font-medium font-['Inter'] leading-4 hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700"
-                      >
+                      <p class="text-xs font-semibold uppercase text-slate-500">
                         Upload images related to the inquiry.
                       </p>
                       <div class="flex flex-inline gap-2 py-2">
