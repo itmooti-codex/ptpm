@@ -3356,8 +3356,10 @@ export class NewInquiryView {
       const inquiryId = url.searchParams.get("inquiry");
       const accountType = url.searchParams.get("accountType");
 
-      let result = await this.model.filterEnquiries(inquiryId, accountType);
-      if (!Array.isArray(result.resp)) {
+      if (!inquiryId) return;
+
+      const inquiryData = await this.getInquiryData(inquiryId);
+      if (!inquiryData) {
         showAlertModal({
           title: "Failed to Load",
           message: "No such records exists",
@@ -3366,7 +3368,6 @@ export class NewInquiryView {
         return;
       }
 
-      const inquiryData = await this.getInquiryData(inquiryId);
       const propertyData = await this.safeCall(() =>
         this.model.fetchPropertiesById(inquiryData.Property_ID)
       );

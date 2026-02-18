@@ -1790,9 +1790,10 @@ export class NewInquiryModel {
 
   async filterEnquiries(id, type) {
     let query = this.dealModel.query();
-    if (type === "Contact" && id) {
+    const normalised = type?.toLowerCase();
+    if ((normalised === "contact" || normalised === "individual") && id) {
       query = query.where("id", id).andWhere("account_type", "contact");
-    } else if (type === "Company" && id) {
+    } else if (normalised === "company" && id) {
       query = query.where("id", id).andWhere("account_type", "company");
     } else {
       return [];
