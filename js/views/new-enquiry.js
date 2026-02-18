@@ -1846,7 +1846,7 @@ export class NewInquiryView {
                 <div class="customTextInputWrapper mt-2"><input id="adTopLine2" data-contact-id="address_2" data-contact-field="top_address_line2" type="text" class="browser-default" /></div>
               </div>
             </div>
-            <div class="flex gap-4">
+            <div class="flex gap-4 mt-4">
               <div class="flex-1">
                 <label class="block text-xs font-semibold uppercase text-slate-500">City</label>
                 <div class="customTextInputWrapper mt-2"><input id="adTopCity" data-contact-id="city" data-contact-field="top_city" type="text" class="browser-default" /></div>
@@ -1866,7 +1866,7 @@ export class NewInquiryView {
                 </div>
               </div>
             </div>
-            <div class="flex gap-4">
+            <div class="flex gap-4 mt-4">
               <div class="flex-1">
                 <label class="block text-xs font-semibold uppercase text-slate-500">Postal Code
                   <span class="text-rose-500">*</span>
