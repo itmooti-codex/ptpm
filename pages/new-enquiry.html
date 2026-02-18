@@ -549,12 +549,11 @@
                     >Entity Type</label
                   >
                   <div class="relative mt-2">
-                    <div class="customDropdDownWrapper">
-                      <select
-                        id="account-type"
-                        data-contact-field="account_type"
-                        class=""
-                      >
+                    <select
+                      id="account-type"
+                      data-contact-field="account_type"
+                      class="customSelect"
+                    >
                         <option
                           clas="font-medium text-slate-600"
                           value="Body Corp"
@@ -604,7 +603,6 @@
                           Wildlife Rescue
                         </option>
                       </select>
-                    </div>
                   </div>
                 </div>
 
@@ -1014,26 +1012,23 @@
                     >State <span class="text-rose-500">*</span></label
                   >
                   <div class="relative mt-2">
-                    <div class="customDropdDownWrapper">
-                      <select class="" data-property-id="state">
-                        <option value="" disabled selected hidden>
-                          Select a state
-                        </option>
-                        <option value="NSW">New South Wales</option>
-                        <option value="QLD">Queensland</option>
-                        <option value="VIC">Victoria</option>
-                        <option value="TAS">Tasmania</option>
-                        <option value="SA">South Australia</option>
-                        <option value="ACT">
-                          Australian Capital Territory
-                        </option>
-                        <option value="NT">Northern Territory</option>
-                        <option value="WA">Western Australia</option>
-                      </select>
-                    </div>
-
+                    <select class="customSelect" data-property-id="state">
+                      <option value="" disabled selected hidden>
+                        Select a state
+                      </option>
+                      <option value="NSW">New South Wales</option>
+                      <option value="QLD">Queensland</option>
+                      <option value="VIC">Victoria</option>
+                      <option value="TAS">Tasmania</option>
+                      <option value="SA">South Australia</option>
+                      <option value="ACT">
+                        Australian Capital Territory
+                      </option>
+                      <option value="NT">Northern Territory</option>
+                      <option value="WA">Western Australia</option>
+                    </select>
                     <span
-                      class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400"
+                      class="pointer-events-none absolute inset-y-0 right-3 inline-flex items-center text-slate-400"
                     >
                       <svg
                         class="h-4 w-4"
@@ -1066,18 +1061,16 @@
                       >Property Type</label
                     >
                     <div class="relative mt-2">
-                      <div class="customDropdDownWrapper">
-                        <select class="" data-property-id="property-type">
-                          <option value="" disabled selected hidden>
-                            Select None
-                          </option>
-                          <option value="Residential">Residential</option>
-                          <option value="Commercial">Commercial</option>
-                          <option value="Industrial">Industrial</option>
-                        </select>
-                      </div>
+                      <select class="customSelect" data-property-id="property-type">
+                        <option value="" disabled selected hidden>
+                          Select None
+                        </option>
+                        <option value="Residential">Residential</option>
+                        <option value="Commercial">Commercial</option>
+                        <option value="Industrial">Industrial</option>
+                      </select>
                       <span
-                        class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400"
+                        class="pointer-events-none absolute inset-y-0 right-3 inline-flex items-center text-slate-400"
                       >
                         <svg
                           class="h-4 w-4"
@@ -1099,21 +1092,19 @@
                       >Building Type</label
                     >
                     <div class="relative mt-2">
-                      <div class="customDropdDownWrapper">
-                        <select class="" data-property-id="building-type">
-                          <option value="" disabled selected hidden>
-                            Select None
-                          </option>
-                          <option value="House">House</option>
-                          <option value="Unit">Unit</option>
-                          <option value="Unit Block">Unit Block</option>
-                          <option value="Offices">Offices</option>
-                          <option value="Warehouse">Warehouse</option>
-                          <option value="Other">Other</option>
-                        </select>
-                      </div>
+                      <select class="customSelect" data-property-id="building-type">
+                        <option value="" disabled selected hidden>
+                          Select None
+                        </option>
+                        <option value="House">House</option>
+                        <option value="Unit">Unit</option>
+                        <option value="Unit Block">Unit Block</option>
+                        <option value="Offices">Offices</option>
+                        <option value="Warehouse">Warehouse</option>
+                        <option value="Other">Other</option>
+                      </select>
                       <span
-                        class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400"
+                        class="pointer-events-none absolute inset-y-0 right-3 inline-flex items-center text-slate-400"
                       >
                         <svg
                           class="h-4 w-4"
@@ -1135,18 +1126,16 @@
                       >Foundation Type</label
                     >
                     <div class="relative mt-2">
-                      <div class="customDropdDownWrapper">
-                        <select class="" data-property-id="foundation-type">
-                          <option value="" disabled selected hidden>
-                            Select None
-                          </option>
-                          <option value="Slab on Ground">Slab on Ground</option>
-                          <option value="Lowset">Lowset</option>
-                          <option value="Highset">Highset</option>
-                        </select>
-                      </div>
+                      <select class="customSelect" data-property-id="foundation-type">
+                        <option value="" disabled selected hidden>
+                          Select None
+                        </option>
+                        <option value="Slab on Ground">Slab on Ground</option>
+                        <option value="Lowset">Lowset</option>
+                        <option value="Highset">Highset</option>
+                      </select>
                       <span
-                        class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400"
+                        class="pointer-events-none absolute inset-y-0 right-3 inline-flex items-center text-slate-400"
                       >
                         <svg
                           class="h-4 w-4"
@@ -1657,17 +1646,15 @@
                         >Inquiry Source</label
                       >
                       <div class="relative mt-2">
-                        <div class="customDropdDownWrapper">
-                          <select
-                            id="inquiry-source"
-                            data-inquiry-id="inquiry-source"
-                            class=""
-                          >
-                            <option>Select</option>
-                          </select>
-                        </div>
+                        <select
+                          id="inquiry-source"
+                          data-inquiry-id="inquiry-source"
+                          class="customSelect"
+                        >
+                          <option>Select</option>
+                        </select>
                         <span
-                          class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400"
+                          class="pointer-events-none absolute inset-y-0 right-3 inline-flex items-center text-slate-400"
                         >
                           <svg
                             class="h-4 w-4"
@@ -1689,17 +1676,15 @@
                         >Inquiry Type</label
                       >
                       <div class="relative mt-2">
-                        <div class="customDropdDownWrapper">
-                          <select
-                            id="inquiry-type"
-                            data-inquiry-id="type"
-                            class=""
-                          >
-                            <option>Select</option>
-                          </select>
-                        </div>
+                        <select
+                          id="inquiry-type"
+                          data-inquiry-id="type"
+                          class="customSelect"
+                        >
+                          <option>Select</option>
+                        </select>
                         <span
-                          class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400"
+                          class="pointer-events-none absolute inset-y-0 right-3 inline-flex items-center text-slate-400"
                         >
                           <svg
                             class="h-4 w-4"
@@ -1773,17 +1758,15 @@
                         </div>
                       </div>
                       <div class="relative mt-2">
-                        <div class="customDropdDownWrapper">
-                          <select
-                            id="service-inquiry"
-                            data-inquiry-id="service-name"
-                            class=""
-                          >
-                            <option>Select</option>
-                          </select>
-                        </div>
+                        <select
+                          id="service-inquiry"
+                          data-inquiry-id="service-name"
+                          class="customSelect"
+                        >
+                          <option>Select</option>
+                        </select>
                         <span
-                          class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400"
+                          class="pointer-events-none absolute inset-y-0 right-3 inline-flex items-center text-slate-400"
                         >
                           <svg
                             class="h-4 w-4"
@@ -1839,17 +1822,15 @@
                         >How Did You Hear About Us?</label
                       >
                       <div class="relative mt-2">
-                        <div class="customDropdDownWrapper">
-                          <select
-                            id="referral-source"
-                            data-inquiry-id="how-did-you-hear"
-                            class=""
-                          >
-                            <option>Select</option>
-                          </select>
-                        </div>
+                        <select
+                          id="referral-source"
+                          data-inquiry-id="how-did-you-hear"
+                          class="customSelect"
+                        >
+                          <option>Select</option>
+                        </select>
                         <span
-                          class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400 hover:!text-slate-400 active:!text-slate-400 hover:text-slate-400 active:text-slate-400 focus:text-slate-400 focus-visible:text-slate-400"
+                          class="pointer-events-none absolute inset-y-0 right-3 inline-flex items-center text-slate-400"
                         >
                           <svg
                             class="h-4 w-4"

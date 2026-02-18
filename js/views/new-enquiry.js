@@ -1912,7 +1912,7 @@ export class NewInquiryView {
                 <label class="block text-xs font-semibold uppercase text-slate-500">Address</label>
               <div class="customTextInputWrapper mt-2"><input id="adBotSearch" type="text" class="browser-default" /></div>
               </div>
-              <div class="flex gap-4">
+              <div class="flex gap-4 ">
                 <div class="flex-1">
                   <label class="block text-xs font-semibold uppercase text-slate-500">Address line 1</label>
                   <div class="customTextInputWrapper mt-2"><input id="adBotLine1" data-contact-id="postal_address"  data-contact-field="bot_address_line1" type="text" class="browser-default" /></div>
