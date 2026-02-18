@@ -680,7 +680,7 @@ export class NewInquiryView {
     Object.entries(this.tabs).forEach(([key, button]) => {
       if (!button) return;
       let span = button.querySelector("span");
-      span.classList.remove("hidden");
+      if (span) span.classList.remove("hidden");
 
       const active = key === targetKey;
       if (active) {
