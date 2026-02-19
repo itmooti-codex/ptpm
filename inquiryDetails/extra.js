@@ -1,11 +1,3 @@
-  window.addEventListener("load", function () {
-    const loader = document.getElementById("page-loader");
-    loader.style.opacity = "0";
-    loader.style.transition = "opacity 0.5s ease";
-    setTimeout(() => {loader.style.display = "none";}, 500);
-  });
-
-  
 const normalizePrimaryFlag = (value) => {
   if (value === null || value === undefined) return false;
   const normalized = String(value).trim().toLowerCase();
