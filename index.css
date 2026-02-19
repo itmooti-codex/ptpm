@@ -72,9 +72,21 @@ a[data-action] svg {
   cursor: pointer;
 }
 
+button:not([disabled]),
+[role="button"]:not([aria-disabled="true"]),
+[data-nav-action]:not(.pointer-events-none) {
+  cursor: pointer;
+}
+
 #batch-delete-btn[disabled],
 #batch-delete-btn[aria-disabled="true"] {
   opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button[disabled],
+[role="button"][aria-disabled="true"],
+[data-nav-action].pointer-events-none {
   cursor: not-allowed;
 }
 

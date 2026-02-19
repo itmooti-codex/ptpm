@@ -85,6 +85,7 @@ export class JobDetailView {
     this.setupSidebarToggle();
     this.setupCancelButton();
     this.setupResetButton();
+    this.setupSaveDraftButton();
     this.#createContactDetailsModalUI();
     this.normalizeFormFieldLayout();
   }
@@ -2404,10 +2405,12 @@ export class JobDetailView {
         e.preventDefault();
         showUnsavedChangesModal({
           onDiscard: () => {
-            window.location.href =
-              "https://my.awesomate.pro/portal/new/inquiries";
+            this.redirectToDashboard();
           },
-          onSave: () => window.history.back(),
+          onSave: async () => {
+            const saved = await this.saveDraft({ redirectAfterSave: true });
+            if (!saved) this.redirectToDashboard();
+          },
         });
       });
     });
@@ -2424,11 +2427,166 @@ export class JobDetailView {
         e.preventDefault();
         showResetConfirmModal({
           onConfirm: () => {
-            resetFormFields(document);
+            this.resetAllForms();
           },
         });
       });
     });
+  }
+
+  getDashboardRedirectUrl() {
+    return "https://my.awesomate.pro/admin/dashboard";
+  }
+
+  redirectToDashboard() {
+    window.location.href = this.getDashboardRedirectUrl();
+  }
+
+  setupSaveDraftButton() {
+    const saveDraftBtns = document.querySelectorAll(
+      '[data-nav-action="save-draft"], #save-draft-btn'
+    );
+    saveDraftBtns?.forEach((btn) => {
+      if (btn.dataset.boundSaveDraft) return;
+      btn.dataset.boundSaveDraft = "true";
+      btn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        await this.saveDraft();
+      });
+    });
+  }
+
+  buildDraftPayload() {
+    const payload = {};
+    const fields = document.querySelectorAll(
+      '[data-section="job-information"] [data-field]'
+    );
+
+    fields?.forEach((field) => {
+      if (!field || field.disabled) return;
+      const key = (field.getAttribute("data-field") || "").trim().toLowerCase();
+      if (!key) return;
+
+      const type = (field.getAttribute("type") || "").toLowerCase();
+      let value = "";
+
+      if (type === "checkbox") {
+        value = !!field.checked;
+      } else if (
+        field.classList.contains("date-picker") ||
+        field.classList.contains("flatpickr-input")
+      ) {
+        value = field.value ? this.dateToUnix(field.value) : "";
+      } else {
+        value = field.value;
+      }
+
+      if (type !== "checkbox" && (value === "" || value == null)) return;
+      payload[key] = value;
+    });
+
+    const contactType = (
+      payload.contact_type ||
+      this.activeContactType ||
+      "individual"
+    ).toLowerCase();
+    payload.contact_type = contactType;
+
+    const serviceProviderId =
+      document.querySelector('[data-serviceman-field="serviceman_id"]')?.value ||
+      "";
+    if (serviceProviderId) {
+      payload.primary_service_provider_id = serviceProviderId;
+    }
+
+    if (contactType === "entity") {
+      const companyId =
+        payload.company_id ||
+        document.querySelector('[data-field="company_id"]')?.value ||
+        document.querySelector('[data-entity-id="entity-id"]')?.value ||
+        "";
+      const entityContactId =
+        payload.contact_id ||
+        document.querySelector('[data-entity-id="entity-contact-id"]')?.value ||
+        "";
+      if (companyId) payload.client_entity_id = companyId;
+      if (entityContactId) payload.contact_id = entityContactId;
+      delete payload.client_individual_id;
+    } else {
+      const clientId =
+        payload.client_id ||
+        document.querySelector('[data-field="client_id"]')?.value ||
+        document.querySelector('[data-contact-field="contact_id"]')?.value ||
+        "";
+      if (clientId) payload.client_individual_id = clientId;
+      payload.contact_id = "";
+      delete payload.client_entity_id;
+    }
+
+    return payload;
+  }
+
+  extractCreatedJobId(result) {
+    if (!result) return "";
+    if (result?.resp?.id) return result.resp.id;
+    if (Array.isArray(result?.resp) && result.resp[0]?.id)
+      return result.resp[0].id;
+    if (result?.id) return result.id;
+    if (Array.isArray(result) && result[0]?.id) return result[0].id;
+    return "";
+  }
+
+  async saveDraft({ redirectAfterSave = false } = {}) {
+    const payload = this.buildDraftPayload();
+    const hasPayload = Object.keys(payload).length > 0;
+
+    if (!hasPayload) {
+      if (redirectAfterSave) this.redirectToDashboard();
+      return true;
+    }
+
+    const currentJobId = this.getJobId();
+    this.startLoading(currentJobId ? "Saving draft..." : "Creating draft...");
+    try {
+      let effectiveJobId = currentJobId;
+      if (currentJobId) {
+        await this.model.updateJob(currentJobId, payload);
+      } else {
+        const created = await this.model.createNewJob(payload);
+        effectiveJobId = this.extractCreatedJobId(created) || "";
+      }
+
+      if (effectiveJobId) {
+        this.jobId = `${effectiveJobId}`;
+        if (document?.body) document.body.dataset.jobId = `${effectiveJobId}`;
+      }
+
+      if (redirectAfterSave) {
+        this.redirectToDashboard();
+      } else {
+        this.handleSuccess("Draft saved successfully.");
+      }
+      return true;
+    } catch (error) {
+      console.error("Failed to save draft", error);
+      this.handleFailure("Failed to save draft. Please try again.");
+      return false;
+    } finally {
+      this.stopLoading();
+    }
+  }
+
+  resetAllForms() {
+    resetFormFields(document);
+    this.clearIndividualSelection({ clearInput: true });
+    this.clearEntitySelection({ clearInput: true });
+    document.querySelector('[data-contact-toggle="individual"]')?.click();
+
+    document
+      .querySelectorAll(
+        "[data-search-panel], [data-property-search='panel'], [data-serviceman-search='results'], [data-material-sp-search='results']"
+      )
+      ?.forEach((panel) => panel.classList.add("hidden"));
   }
 
   setupJobInformationTabs() {
