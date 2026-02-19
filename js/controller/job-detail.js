@@ -599,12 +599,86 @@ export class JobDetailController {
         return;
       }
 
+      const normalizedEntries = Object.entries(data || {}).map(([key, value]) => ({
+        key,
+        normalizedKey: String(key || "")
+          .toLowerCase()
+          .replace(/[^a-z0-9]/g, ""),
+        value,
+      }));
+
+      const getValueByKey = (key = "") => {
+        const normalizedKey = String(key || "")
+          .toLowerCase()
+          .replace(/[^a-z0-9]/g, "");
+        const match = normalizedEntries.find(
+          (entry) => entry.normalizedKey === normalizedKey
+        );
+        return match?.value;
+      };
+
       const pick = (keys = [], fallback = "") => {
         for (const key of keys) {
-          const value = data?.[key];
+          const value = getValueByKey(key);
           if (value !== undefined && value !== null && value !== "") return value;
         }
         return fallback;
+      };
+
+      const extractPriority = () => {
+        const explicit = pick(
+          [
+            "priority",
+            "Priority",
+            "job_priority",
+            "Job_Priority",
+            "priority_level",
+            "Priority_Level",
+          ],
+          ""
+        );
+        if (explicit !== "") return explicit;
+
+        const fuzzy = normalizedEntries.find((entry) =>
+          entry.normalizedKey.includes("priority")
+        )?.value;
+        return fuzzy ?? "";
+      };
+
+      const normalizePriorityValue = (rawValue) => {
+        if (rawValue === undefined || rawValue === null || rawValue === "") return "";
+
+        const optionByNumber = {
+          1: "Low",
+          2: "Medium",
+          3: "High",
+        };
+
+        if (typeof rawValue === "number" && optionByNumber[rawValue]) {
+          return optionByNumber[rawValue];
+        }
+
+        if (typeof rawValue === "object") {
+          const nested =
+            rawValue.value ??
+            rawValue.label ??
+            rawValue.name ??
+            rawValue.priority ??
+            rawValue.Priority ??
+            "";
+          return normalizePriorityValue(nested);
+        }
+
+        const text = String(rawValue).trim();
+        if (!text) return "";
+        const lower = text.toLowerCase();
+
+        if (optionByNumber[Number(lower)]) return optionByNumber[Number(lower)];
+        if (lower.includes("high")) return "High";
+        if (lower.includes("med")) return "Medium";
+        if (lower.includes("low")) return "Low";
+
+        return text;
       };
 
       const accountTypeRaw = String(
@@ -664,8 +738,10 @@ export class JobDetailController {
         .filter(Boolean)
         .join(" ");
 
+      const priorityValue = normalizePriorityValue(extractPriority());
+
       let JobDetailObj = {
-        priority: pick(["priority", "Priority"], ""),
+        priority: priorityValue,
         properties: pick(
           [
             "Property_Property_Name",
@@ -685,7 +761,9 @@ export class JobDetailController {
         const match = Array.from(priorityEl.options || []).find(
           (opt) =>
             String(opt.value || "").toLowerCase() ===
-            String(JobDetailObj.priority).toLowerCase()
+              String(JobDetailObj.priority).toLowerCase() ||
+            String(opt.textContent || "").trim().toLowerCase() ===
+              String(JobDetailObj.priority).toLowerCase()
         );
         priorityEl.value = match ? match.value : JobDetailObj.priority;
       }
