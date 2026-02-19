@@ -86,6 +86,138 @@ export class JobDetailView {
     this.setupCancelButton();
     this.setupResetButton();
     this.#createContactDetailsModalUI();
+    this.normalizeFormFieldLayout();
+  }
+
+  normalizeFormFieldLayout(root = document) {
+    if (!root) return;
+
+    const isTextLikeInput = (field) => {
+      const type = (field.getAttribute("type") || "text").toLowerCase();
+      return ![
+        "hidden",
+        "checkbox",
+        "radio",
+        "file",
+        "button",
+        "submit",
+        "reset",
+        "image",
+        "range",
+        "color",
+      ].includes(type);
+    };
+
+    const getSpacingClass = (el) => {
+      if (!el?.classList) return "";
+      if (el.classList.contains("mt-3")) return "mt-3";
+      if (el.classList.contains("mt-2")) return "mt-2";
+      if (el.classList.contains("mt-1")) return "mt-1";
+      return "";
+    };
+
+    const keepFieldClasses = (el) => {
+      const kept = new Set(["w-full"]);
+      if (!el?.classList) return kept;
+      [
+        "hidden",
+        "date-picker",
+        "flatpickr-input",
+        "pac-target-input",
+        "browser-default",
+        "pr-10",
+        "pl-3",
+      ].forEach((cls) => {
+        if (el.classList.contains(cls)) kept.add(cls);
+      });
+      return kept;
+    };
+
+    const ensureTextWrapper = (field, spacingClass = "") => {
+      const parent = field?.parentElement;
+      if (!parent) return;
+      if (
+        parent.classList.contains("customInputTextWrapper") ||
+        parent.classList.contains("customInputTextWrapperDisabled")
+      )
+        return;
+      if (parent.tagName === "LABEL") return;
+
+      const wrapper = document.createElement("div");
+      wrapper.className = spacingClass
+        ? `customInputTextWrapper ${spacingClass}`
+        : "customInputTextWrapper";
+      parent.insertBefore(wrapper, field);
+      wrapper.appendChild(field);
+    };
+
+    root.querySelectorAll("input").forEach((input) => {
+      if (!isTextLikeInput(input)) return;
+      const spacingClass = getSpacingClass(input);
+      const classes = [...keepFieldClasses(input)];
+      input.className = classes.join(" ");
+      if (input.classList.contains("hidden")) return;
+      ensureTextWrapper(input, spacingClass);
+    });
+
+    root.querySelectorAll("textarea").forEach((textarea) => {
+      const spacingClass = getSpacingClass(textarea);
+      const classes = [...keepFieldClasses(textarea)];
+      textarea.className = classes.join(" ");
+      if (textarea.classList.contains("hidden")) return;
+      ensureTextWrapper(textarea, spacingClass);
+    });
+
+    root.querySelectorAll("select").forEach((select) => {
+      const spacingClass = getSpacingClass(select);
+      const classes = ["customSelect"];
+      if (spacingClass) classes.push(spacingClass);
+      if (select.classList.contains("hidden")) classes.push("hidden");
+      if (select.classList.contains("browser-default"))
+        classes.push("browser-default");
+      select.className = classes.join(" ");
+    });
+
+    root.querySelectorAll("label").forEach((label) => {
+      const forId = label.getAttribute("for");
+      const forTarget = forId ? document.getElementById(forId) : null;
+      const directField = label.querySelector("input, select, textarea");
+      const nextField = label.nextElementSibling?.querySelector?.(
+        "input, select, textarea"
+      );
+      const pointsToField =
+        !!directField ||
+        !!nextField ||
+        !!forTarget ||
+        !!label.closest("[data-section='address'], [data-section='postal-address']");
+
+      if (!pointsToField) return;
+
+      const checkboxOrRadioInLabel = label.querySelector(
+        'input[type="checkbox"], input[type="radio"]'
+      );
+      const checkboxOrRadioForTarget =
+        forTarget &&
+        ["checkbox", "radio"].includes(
+          (forTarget.getAttribute("type") || "").toLowerCase()
+        );
+
+      if (checkboxOrRadioInLabel || checkboxOrRadioForTarget) return;
+
+      label.classList.add(
+        "block",
+        "text-xs",
+        "font-semibold",
+        "uppercase",
+        "text-slate-500"
+      );
+      label.classList.remove(
+        "text-sm",
+        "font-medium",
+        "text-slate-600",
+        "text-gray-700"
+      );
+    });
   }
 
   async createAddActivitiesSection() {
@@ -2710,8 +2842,18 @@ export class JobDetailView {
     }
     if (backBtn) {
       const disabled = !prevId;
+      backBtn.setAttribute("aria-disabled", String(disabled));
       backBtn.classList.toggle("opacity-50", disabled);
       backBtn.classList.toggle("pointer-events-none", disabled);
+      backBtn.classList.toggle("bg-gray-300", disabled);
+      backBtn.classList.toggle("outline-gray-300", disabled);
+      backBtn.classList.toggle("bg-white", !disabled);
+      backBtn.classList.toggle("outline-sky-900", !disabled);
+      backBtn.classList.toggle("cursor-pointer", !disabled);
+      if (backLabelEl) {
+        backLabelEl.classList.toggle("text-slate-500", disabled);
+        backLabelEl.classList.toggle("text-sky-900", !disabled);
+      }
     }
   }
 
