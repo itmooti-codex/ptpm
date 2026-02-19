@@ -2409,7 +2409,7 @@ export class JobDetailView {
           },
           onSave: async () => {
             const saved = await this.saveDraft({ redirectAfterSave: true });
-            if (!saved) this.redirectToDashboard();
+            return saved;
           },
         });
       });
@@ -2442,6 +2442,44 @@ export class JobDetailView {
     window.location.href = this.getDashboardRedirectUrl();
   }
 
+  getActionLabelElement(actionEl) {
+    if (!actionEl) return null;
+    const textLike = Array.from(actionEl.querySelectorAll("div, span")).find(
+      (el) => el.children.length === 0 && (el.textContent || "").trim()
+    );
+    return textLike || actionEl;
+  }
+
+  setActionBusyState(actionEl, busy, loadingText = "Saving...") {
+    if (!actionEl) return;
+
+    const labelEl = this.getActionLabelElement(actionEl);
+    if (!labelEl) return;
+
+    if (!actionEl.dataset.defaultLabel) {
+      actionEl.dataset.defaultLabel = (labelEl.textContent || "").trim();
+    }
+
+    if (busy) {
+      actionEl.dataset.saving = "true";
+      actionEl.classList.add("pointer-events-none", "opacity-60");
+      actionEl.setAttribute("aria-busy", "true");
+      if (actionEl.tagName?.toLowerCase() === "button") {
+        actionEl.disabled = true;
+      }
+      labelEl.textContent = loadingText;
+      return;
+    }
+
+    actionEl.dataset.saving = "false";
+    actionEl.classList.remove("pointer-events-none", "opacity-60");
+    actionEl.removeAttribute("aria-busy");
+    if (actionEl.tagName?.toLowerCase() === "button") {
+      actionEl.disabled = false;
+    }
+    labelEl.textContent = actionEl.dataset.defaultLabel || "Save";
+  }
+
   setupSaveDraftButton() {
     const saveDraftBtns = document.querySelectorAll(
       '[data-nav-action="save-draft"], #save-draft-btn'
@@ -2451,46 +2489,57 @@ export class JobDetailView {
       btn.dataset.boundSaveDraft = "true";
       btn.addEventListener("click", async (e) => {
         e.preventDefault();
-        await this.saveDraft();
+        if (btn.dataset.saving === "true") return;
+        await this.saveDraft({ triggerEl: btn });
       });
     });
   }
 
   buildDraftPayload() {
-    const payload = {};
-    const fields = document.querySelectorAll(
-      '[data-section="job-information"] [data-field]'
+    const rawFields = this.getFieldValues(
+      '[data-job-section="job-section-individual"] [data-field]'
     );
 
-    fields?.forEach((field) => {
-      if (!field || field.disabled) return;
-      const key = (field.getAttribute("data-field") || "").trim().toLowerCase();
-      if (!key) return;
-
-      const type = (field.getAttribute("type") || "").toLowerCase();
-      let value = "";
-
-      if (type === "checkbox") {
-        value = !!field.checked;
-      } else if (
-        field.classList.contains("date-picker") ||
-        field.classList.contains("flatpickr-input")
-      ) {
-        value = field.value ? this.dateToUnix(field.value) : "";
-      } else {
-        value = field.value;
-      }
-
-      if (type !== "checkbox" && (value === "" || value == null)) return;
-      payload[key] = value;
-    });
-
+    const payload = {};
     const contactType = (
-      payload.contact_type ||
+      rawFields.contact_type ||
       this.activeContactType ||
       "individual"
     ).toLowerCase();
     payload.contact_type = contactType;
+    payload.account_type = contactType === "entity" ? "Entity" : "Contact";
+
+    const priority = rawFields.priority || "";
+    if (priority) payload.priority = priority;
+
+    const jobType = rawFields.job_type || "";
+    if (jobType) payload.job_type = jobType;
+
+    const jobStatus = rawFields.job_status || "";
+    if (jobStatus) payload.job_status = jobStatus;
+
+    const paymentStatus = rawFields.payment_status || "";
+    if (paymentStatus) payload.payment_status = paymentStatus;
+
+    if (typeof rawFields.mark_complete === "boolean") {
+      payload.mark_complete = rawFields.mark_complete;
+    }
+    if (typeof rawFields.pca_done === "boolean") {
+      payload.pca_done = rawFields.pca_done;
+    }
+    if (typeof rawFields.prestart_done === "boolean") {
+      payload.prestart_done = rawFields.prestart_done;
+    }
+
+    const jobRequiredBy = rawFields.job_required_by || "";
+    if (jobRequiredBy) {
+      payload.date_job_required_by = jobRequiredBy;
+    }
+
+    const propertyId = rawFields.property_id || "";
+    if (propertyId) {
+      payload.property_id = propertyId;
+    }
 
     const serviceProviderId =
       document.querySelector('[data-serviceman-field="serviceman_id"]')?.value ||
@@ -2501,12 +2550,12 @@ export class JobDetailView {
 
     if (contactType === "entity") {
       const companyId =
-        payload.company_id ||
+        rawFields.company_id ||
         document.querySelector('[data-field="company_id"]')?.value ||
         document.querySelector('[data-entity-id="entity-id"]')?.value ||
         "";
       const entityContactId =
-        payload.contact_id ||
+        rawFields.contact_id ||
         document.querySelector('[data-entity-id="entity-contact-id"]')?.value ||
         "";
       if (companyId) payload.client_entity_id = companyId;
@@ -2514,7 +2563,7 @@ export class JobDetailView {
       delete payload.client_individual_id;
     } else {
       const clientId =
-        payload.client_id ||
+        rawFields.client_id ||
         document.querySelector('[data-field="client_id"]')?.value ||
         document.querySelector('[data-contact-field="contact_id"]')?.value ||
         "";
@@ -2536,12 +2585,17 @@ export class JobDetailView {
     return "";
   }
 
-  async saveDraft({ redirectAfterSave = false } = {}) {
+  async saveDraft({ redirectAfterSave = false, triggerEl = null } = {}) {
+    if (triggerEl) {
+      this.setActionBusyState(triggerEl, true, "Saving...");
+    }
+
     const payload = this.buildDraftPayload();
     const hasPayload = Object.keys(payload).length > 0;
 
     if (!hasPayload) {
       if (redirectAfterSave) this.redirectToDashboard();
+      if (triggerEl) this.setActionBusyState(triggerEl, false);
       return true;
     }
 
@@ -2573,6 +2627,9 @@ export class JobDetailView {
       return false;
     } finally {
       this.stopLoading();
+      if (triggerEl) {
+        this.setActionBusyState(triggerEl, false);
+      }
     }
   }
 
@@ -3640,8 +3697,13 @@ export class JobDetailView {
     let jobObj = {};
     let elements = document.querySelectorAll(selector);
     elements?.forEach((item) => {
-      if (item.disabled || item.classList.contains("hidden")) return;
+      const itemType = (item.type || "").toLowerCase();
+      const isHiddenInput = itemType === "hidden";
+      const isVisible = isHiddenInput || item.offsetParent !== null;
+      if (!isVisible || item.disabled || item.classList.contains("hidden"))
+        return;
       let key = item?.getAttribute("data-field")?.toLowerCase();
+      if (!key) return;
       let value;
       if (
         item.classList.contains("date-picker") ||

@@ -520,6 +520,7 @@ function buildUnsavedChangesModal() {
   const closeBtn = modal.querySelector("[data-unsaved-close]");
   const discardBtn = modal.querySelector("[data-unsaved-discard]");
   const saveBtn = modal.querySelector("[data-unsaved-save]");
+  const saveBtnLabel = saveBtn?.querySelector("div") || saveBtn;
 
   const hide = () => {
     modal.classList.add("hidden");
@@ -530,6 +531,17 @@ function buildUnsavedChangesModal() {
   const show = ({ onDiscard, onSave } = {}) => {
     modal._onDiscard = typeof onDiscard === "function" ? onDiscard : null;
     modal._onSave = typeof onSave === "function" ? onSave : null;
+    if (saveBtnLabel && !saveBtn.dataset.defaultLabel) {
+      saveBtn.dataset.defaultLabel = saveBtnLabel.textContent?.trim() || "Save";
+    }
+    if (saveBtn) {
+      saveBtn.disabled = false;
+      saveBtn.classList.remove("opacity-60", "pointer-events-none");
+      saveBtn.removeAttribute("aria-busy");
+    }
+    if (saveBtnLabel) {
+      saveBtnLabel.textContent = saveBtn?.dataset.defaultLabel || "Save";
+    }
     modal.classList.remove("hidden");
     modal.classList.add("flex");
     document.body.style.overflow = "hidden";
@@ -540,9 +552,31 @@ function buildUnsavedChangesModal() {
     modal._onDiscard?.();
   };
 
-  const handleSave = () => {
-    hide();
-    modal._onSave?.();
+  const handleSave = async () => {
+    if (!saveBtn || saveBtn.dataset.saving === "true") return;
+
+    saveBtn.dataset.saving = "true";
+    saveBtn.disabled = true;
+    saveBtn.classList.add("opacity-60", "pointer-events-none");
+    saveBtn.setAttribute("aria-busy", "true");
+    if (saveBtnLabel) {
+      saveBtnLabel.textContent = "Saving...";
+    }
+
+    try {
+      const result = await modal._onSave?.();
+      if (result !== false) {
+        hide();
+      }
+    } finally {
+      saveBtn.dataset.saving = "false";
+      saveBtn.disabled = false;
+      saveBtn.classList.remove("opacity-60", "pointer-events-none");
+      saveBtn.removeAttribute("aria-busy");
+      if (saveBtnLabel) {
+        saveBtnLabel.textContent = saveBtn.dataset.defaultLabel || "Save";
+      }
+    }
   };
 
   discardBtn?.addEventListener("click", handleDiscard);
