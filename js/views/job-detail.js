@@ -39,6 +39,7 @@ export class JobDetailView {
     this.activityRecordsById = new Map();
     this.editingMaterialId = null;
     this.materialRecordsById = new Map();
+    this.setupHeaderActionDelegates();
     this.init();
   }
 
@@ -64,30 +65,53 @@ export class JobDetailView {
   }
 
   async init() {
-    this.createDealInformationModal();
-    this.CreateQuoteOnBehalfOfServicemanModal();
-    this.EditNotes();
-    this.createViewJobDocumentsModal();
-    this.createActivityListModal();
-    this.createWildlifeReportModal();
-    await this.createTasksModal();
-    await this.createAddActivitiesSection();
-    await this.createAddMaterialsSection();
-    this.createUploadsSection();
-    await this.createInvoiceSection();
-    this.setupContactTypeToggle();
-    this.model.fetchContacts((list) => this.setupClientSearch(list || []));
-    this.model
-      .fetchCompanyById()
-      .then((resp) => this.setupCompanySearch(resp?.resp || resp || []));
-    this.setupAddButtons();
     this.setupSectionNavigation();
     this.setupSidebarToggle();
     this.setupCancelButton();
     this.setupResetButton();
     this.setupSaveDraftButton();
-    this.#createContactDetailsModalUI();
-    this.normalizeFormFieldLayout();
+
+    try {
+      this.createDealInformationModal();
+      this.CreateQuoteOnBehalfOfServicemanModal();
+      this.EditNotes();
+      this.createViewJobDocumentsModal();
+      this.createActivityListModal();
+      this.createWildlifeReportModal();
+      await this.createTasksModal();
+      await this.createAddActivitiesSection();
+      await this.createAddMaterialsSection();
+      this.createUploadsSection();
+      await this.createInvoiceSection();
+      this.setupContactTypeToggle();
+      this.model.fetchContacts((list) => this.setupClientSearch(list || []));
+      this.model
+        .fetchCompanyById()
+        .then((resp) => this.setupCompanySearch(resp?.resp || resp || []));
+      this.setupAddButtons();
+      this.#createContactDetailsModalUI();
+      this.normalizeFormFieldLayout();
+    } catch (error) {
+      console.error("JobDetailView init failed", error);
+    }
+  }
+
+  setupHeaderActionDelegates() {
+    if (this._headerActionDelegatesBound) return;
+    this._headerActionDelegatesBound = true;
+
+    document.addEventListener("click", async (e) => {
+      const actionEl = e.target?.closest?.("[data-nav-action]");
+      if (!actionEl) return;
+
+      const action = actionEl.getAttribute("data-nav-action");
+      if (action !== "save-draft") return;
+      if (e.__saveDraftHandled) return;
+
+      e.preventDefault();
+      if (actionEl.dataset.saving === "true") return;
+      await this.saveDraft({ triggerEl: actionEl });
+    });
   }
 
   normalizeFormFieldLayout(root = document) {
@@ -2488,7 +2512,9 @@ export class JobDetailView {
       if (btn.dataset.boundSaveDraft) return;
       btn.dataset.boundSaveDraft = "true";
       btn.addEventListener("click", async (e) => {
+        e.__saveDraftHandled = true;
         e.preventDefault();
+        e.stopPropagation();
         if (btn.dataset.saving === "true") return;
         await this.saveDraft({ triggerEl: btn });
       });

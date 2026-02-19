@@ -599,8 +599,30 @@ export class JobDetailController {
         return;
       }
 
-      const accountType = (data?.Account_Type || "").toLowerCase();
-      const initialType = accountType === "contact" ? "individual" : "entity";
+      const pick = (keys = [], fallback = "") => {
+        for (const key of keys) {
+          const value = data?.[key];
+          if (value !== undefined && value !== null && value !== "") return value;
+        }
+        return fallback;
+      };
+
+      const accountTypeRaw = String(
+        pick(
+          ["account_type", "Account_Type", "contact_type", "Contact_Type"],
+          ""
+        )
+      ).toLowerCase();
+      const hasEntityId = !!pick(
+        ["client_entity_id", "Client_Entity_ID", "cliententityid"],
+        ""
+      );
+      const initialType =
+        accountTypeRaw.includes("entity") ||
+        accountTypeRaw.includes("company") ||
+        hasEntityId
+          ? "entity"
+          : "individual";
 
       const targetToggle = document.querySelector(
         `[data-contact-toggle="${initialType}"]`
@@ -611,52 +633,136 @@ export class JobDetailController {
       const section = document.querySelector(
         '[data-job-section="job-section-individual"]'
       );
+      if (!section) {
+        stopLoader();
+        return;
+      }
 
       const fields = [...section.querySelectorAll("input, select")].filter(
         (el) => !el.disabled && el.offsetParent !== null
       );
 
+      const serviceProviderFirstName = pick(
+        [
+          "Primary_Service_Provider_Contact_Information_First_Name",
+          "primary_service_provider_contact_information_first_name",
+          "Contact_First_Name",
+          "contact_first_name",
+        ],
+        ""
+      );
+      const serviceProviderLastName = pick(
+        [
+          "Primary_Service_Provider_Contact_Information_Last_Name",
+          "primary_service_provider_contact_information_last_name",
+          "Contact_Last_Name",
+          "contact_last_name",
+        ],
+        ""
+      );
+      const serviceProviderName = [serviceProviderFirstName, serviceProviderLastName]
+        .filter(Boolean)
+        .join(" ");
+
       let JobDetailObj = {
-        priority: data.Priority || "",
-        job_required_by: data.date_job_required_by || "",
-        properties: data.Property_Property_Name || "",
-        serviceman: [data.Contact_First_Name, data.Contact_Last_Name]
-          .filter(Boolean)
-          .join(" "),
+        priority: pick(["priority", "Priority"], ""),
+        properties: pick(
+          [
+            "Property_Property_Name",
+            "property_property_name",
+            "property_name",
+            "Property_Name",
+          ],
+          ""
+        ),
+        serviceman: serviceProviderName,
       };
 
       this.view.populateFieldsWithData(fields, JobDetailObj);
 
-      if (data["Account_Type"] == "Contact") {
-        let contactIdElement = document.querySelector(
-          '[data-field="client_id"]'
+      const priorityEl = document.querySelector('[data-field="priority"]');
+      if (priorityEl && JobDetailObj.priority) {
+        const match = Array.from(priorityEl.options || []).find(
+          (opt) =>
+            String(opt.value || "").toLowerCase() ===
+            String(JobDetailObj.priority).toLowerCase()
         );
-        let contactNameElement = document.querySelector(
-          '[data-field="client"]'
+        priorityEl.value = match ? match.value : JobDetailObj.priority;
+      }
+
+      const propertyId = pick(
+        ["property_id", "Property_ID", "Property_Id", "propertyid"],
+        ""
+      );
+      const propertyIdElement = document.querySelector('[data-field="property_id"]');
+      if (propertyIdElement) propertyIdElement.value = propertyId || "";
+
+      const serviceProviderId = pick(
+        [
+          "primary_service_provider_id",
+          "Primary_Service_Provider_ID",
+          "primaryserviceproviderid",
+        ],
+        ""
+      );
+      const serviceProviderIdElement = document.querySelector(
+        '[data-serviceman-field="serviceman_id"]'
+      );
+      if (serviceProviderIdElement) {
+        serviceProviderIdElement.value = serviceProviderId || "";
+      }
+
+      if (initialType === "individual") {
+        const contactIdElement = document.querySelector('[data-field="client_id"]');
+        const contactNameElement = document.querySelector('[data-field="client"]');
+        const contactId = pick(
+          [
+            "client_individual_id",
+            "Client_Individual_Contact_ID",
+            "Client_Individual_ID",
+            "clientindividualid",
+          ],
+          ""
         );
-        if (contactNameElement) {
-          contactNameElement.value = [
-            data.Client_Individual_First_Name,
-            data.Client_Individual_Last_Name,
-          ]
-            .filter(Boolean)
-            .join(" ");
-        }
-        if (contactIdElement) {
-          contactIdElement.value = data.Client_Individual_Contact_ID || "";
-        }
+        const contactName = [
+          pick(
+            ["Client_Individual_First_Name", "client_individual_first_name"],
+            ""
+          ),
+          pick(
+            ["Client_Individual_Last_Name", "client_individual_last_name"],
+            ""
+          ),
+        ]
+          .filter(Boolean)
+          .join(" ");
+        if (contactNameElement) contactNameElement.value = contactName;
+        if (contactIdElement) contactIdElement.value = contactId || "";
       } else {
-        let entityIDElement = document.querySelector(
-          '[data-field="company_id"]'
-        );
-        let entityNameElement = document.querySelector(
+        const entityIDElement = document.querySelector('[data-field="company_id"]');
+        const entityNameElement = document.querySelector(
           '[data-field="entity_name"]'
         );
-        if (entityNameElement) {
-          entityNameElement.value = data.Client_Entity_Name || "";
-        }
-        if (entityIDElement) {
-          entityIDElement.value = data.Client_Entity_ID || "";
+        const entityContactIdElement = document.querySelector(
+          '[data-entity-id="entity-contact-id"]'
+        );
+        const entityId = pick(
+          ["client_entity_id", "Client_Entity_ID", "cliententityid"],
+          ""
+        );
+        const entityName = pick(
+          ["Client_Entity_Name", "client_entity_name", "name"],
+          ""
+        );
+        const entityContactId = pick(
+          ["contact_id", "Contact_ID", "contactid"],
+          ""
+        );
+
+        if (entityNameElement) entityNameElement.value = entityName;
+        if (entityIDElement) entityIDElement.value = entityId || "";
+        if (entityContactIdElement) {
+          entityContactIdElement.value = entityContactId || "";
         }
       }
 
