@@ -116,37 +116,46 @@ export class JobDetailView {
       return "";
     };
 
+    const FIELD_WRAPPER_CLASSES = new Set([
+      "customTextInputWrapper",
+      "customDateInputWrapper",
+      "customDropdDownWrapper",
+      "customTextAreaWrapper",
+      "customInputTextWrapper",
+      "customInputTextWrapperDisabled",
+    ]);
+
     const keepFieldClasses = (el) => {
       const kept = new Set(["w-full"]);
       if (!el?.classList) return kept;
-      [
-        "hidden",
-        "date-picker",
-        "flatpickr-input",
-        "pac-target-input",
-        "browser-default",
-        "pr-10",
-        "pl-3",
-      ].forEach((cls) => {
-        if (el.classList.contains(cls)) kept.add(cls);
-      });
+      ["hidden", "date-picker", "flatpickr-input", "pac-target-input"].forEach(
+        (cls) => {
+          if (el.classList.contains(cls)) kept.add(cls);
+        }
+      );
       return kept;
     };
 
-    const ensureTextWrapper = (field, spacingClass = "") => {
+    const ensureFieldWrapper = (field, wrapperClass, spacingClass = "") => {
       const parent = field?.parentElement;
       if (!parent) return;
-      if (
-        parent.classList.contains("customInputTextWrapper") ||
-        parent.classList.contains("customInputTextWrapperDisabled")
-      )
+
+      const parentHasKnownWrapper = [...FIELD_WRAPPER_CLASSES].some((cls) =>
+        parent.classList.contains(cls)
+      );
+
+      if (parentHasKnownWrapper) {
+        [...FIELD_WRAPPER_CLASSES].forEach((cls) => parent.classList.remove(cls));
+        parent.classList.remove("mt-1", "mt-2", "mt-3");
+        parent.classList.add(wrapperClass);
+        if (spacingClass) parent.classList.add(spacingClass);
         return;
-      if (parent.tagName === "LABEL") return;
+      }
 
       const wrapper = document.createElement("div");
       wrapper.className = spacingClass
-        ? `customInputTextWrapper ${spacingClass}`
-        : "customInputTextWrapper";
+        ? `${wrapperClass} ${spacingClass}`
+        : wrapperClass;
       parent.insertBefore(wrapper, field);
       wrapper.appendChild(field);
     };
@@ -157,7 +166,16 @@ export class JobDetailView {
       const classes = [...keepFieldClasses(input)];
       input.className = classes.join(" ");
       if (input.classList.contains("hidden")) return;
-      ensureTextWrapper(input, spacingClass);
+      const wrapperClass =
+        (input.getAttribute("type") || "").toLowerCase() === "date" ||
+        input.classList.contains("date-picker")
+          ? "customDateInputWrapper"
+          : "customTextInputWrapper";
+      ensureFieldWrapper(
+        input,
+        wrapperClass,
+        spacingClass
+      );
     });
 
     root.querySelectorAll("textarea").forEach((textarea) => {
@@ -165,17 +183,20 @@ export class JobDetailView {
       const classes = [...keepFieldClasses(textarea)];
       textarea.className = classes.join(" ");
       if (textarea.classList.contains("hidden")) return;
-      ensureTextWrapper(textarea, spacingClass);
+      ensureFieldWrapper(
+        textarea,
+        "customTextAreaWrapper",
+        spacingClass
+      );
     });
 
     root.querySelectorAll("select").forEach((select) => {
       const spacingClass = getSpacingClass(select);
-      const classes = ["customSelect"];
-      if (spacingClass) classes.push(spacingClass);
+      const classes = ["w-full"];
       if (select.classList.contains("hidden")) classes.push("hidden");
-      if (select.classList.contains("browser-default"))
-        classes.push("browser-default");
       select.className = classes.join(" ");
+      if (select.classList.contains("hidden")) return;
+      ensureFieldWrapper(select, "customDropdDownWrapper", spacingClass);
     });
 
     root.querySelectorAll("label").forEach((label) => {
