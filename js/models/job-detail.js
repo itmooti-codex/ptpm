@@ -46,6 +46,7 @@ export class JobDetailModal {
     this.activities = [];
     this.materials = [];
     this.materialRecordsById = new Map();
+    this.lastActivityEmitSignature = "";
     this.contactSub = null;
     this.propertySub = null;
     this.appointmentSub = null;
@@ -62,6 +63,145 @@ export class JobDetailModal {
 
   #logError(context, error) {
     console.error(`[JobDetailModel] ${context}`, error);
+  }
+
+  #emitActivitiesIfChanged(records = []) {
+    const safeRecords = Array.isArray(records) ? records : [];
+    const signature = JSON.stringify(
+      safeRecords.map((item) => ({
+        id: item?.id ?? item?.ID ?? "",
+        activity_price: item?.activity_price ?? item?.Activity_Price ?? "",
+        quoted_price: item?.quoted_price ?? item?.Quoted_Price ?? "",
+        activity_status:
+          item?.activity_status ?? item?.Activity_Status ?? item?.status ?? item?.Status ?? "",
+        updated_at: item?.updated_at ?? item?.Updated_At ?? item?.last_modified ?? "",
+      }))
+    );
+    if (signature === this.lastActivityEmitSignature) return false;
+    this.lastActivityEmitSignature = signature;
+    this.activities = safeRecords;
+    if (this.activityCallback) this.activityCallback(safeRecords);
+    return true;
+  }
+
+  #coalescePayloadValue(payload = {}, keys = [], fallback = "") {
+    for (const key of keys) {
+      if (!Object.prototype.hasOwnProperty.call(payload, key)) continue;
+      const value = payload[key];
+      if (value === null || value === undefined) continue;
+      if (typeof value === "string" && value.trim() === "") continue;
+      return value;
+    }
+    return fallback;
+  }
+
+  #toIntegerOrFallback(value, fallback = null) {
+    if (value === null || value === undefined || value === "") return fallback;
+    const parsed = Number.parseInt(String(value), 10);
+    return Number.isFinite(parsed) ? parsed : fallback;
+  }
+
+  #toBooleanOrFallback(value, fallback = false) {
+    if (typeof value === "boolean") return value;
+    if (value === null || value === undefined) return fallback;
+    const normalized = String(value).trim().toLowerCase();
+    if (["true", "1", "yes", "y"].includes(normalized)) return true;
+    if (["false", "0", "no", "n", ""].includes(normalized)) return false;
+    return fallback;
+  }
+
+  #normalizeActivityPriceString(value) {
+    if (value === null || value === undefined || value === "") return "";
+    const normalized = String(value).replace(/[^0-9.-]+/g, "").trim();
+    return normalized || "";
+  }
+
+  #buildActivityMutationPayload(activityObj = {}, { includeJobId = true } = {}) {
+    const source = { ...(activityObj || {}) };
+
+    const jobId = this.#toIntegerOrFallback(
+      this.#coalescePayloadValue(source, ["job_id", "Job_ID", "jobId"], null),
+      null
+    );
+    const quantity = this.#toIntegerOrFallback(
+      this.#coalescePayloadValue(source, ["quantity", "Quantity"], 1),
+      1
+    );
+    const serviceId = this.#toIntegerOrFallback(
+      this.#coalescePayloadValue(
+        source,
+        ["service_id", "Service_ID", "serviceId", "serviceid"],
+        null
+      ),
+      null
+    );
+    const dateRequired = this.#toIntegerOrFallback(
+      this.#coalescePayloadValue(
+        source,
+        ["date_required", "Date_Required", "daterequired"],
+        null
+      ),
+      null
+    );
+    const activityPrice = this.#normalizeActivityPriceString(
+      this.#coalescePayloadValue(
+        source,
+        ["activity_price", "Activity_Price", "activityPrice"],
+        ""
+      )
+    );
+
+    const payload = {
+      note: this.#coalescePayloadValue(source, ["note", "Note"], ""),
+      task: this.#coalescePayloadValue(source, ["task", "Task"], ""),
+      option: this.#coalescePayloadValue(source, ["option", "Option"], ""),
+      quantity,
+      warranty: this.#coalescePayloadValue(source, ["warranty", "Warranty"], ""),
+      service_id: serviceId,
+      activity_text: this.#coalescePayloadValue(
+        source,
+        ["activity_text", "Activity_Text"],
+        ""
+      ),
+      date_required: dateRequired,
+      activity_price: activityPrice,
+      activity_status: this.#coalescePayloadValue(
+        source,
+        ["activity_status", "Activity_Status", "Activity_status", "status", "Status"],
+        "To Be Scheduled"
+      ),
+      include_in_quote: this.#toBooleanOrFallback(
+        this.#coalescePayloadValue(
+          source,
+          ["include_in_quote", "Include_In_Quote"],
+          false
+        ),
+        false
+      ),
+      invoice_to_client: this.#toBooleanOrFallback(
+        this.#coalescePayloadValue(
+          source,
+          ["invoice_to_client", "Invoice_to_Client"],
+          true
+        ),
+        true
+      ),
+      include_in_quote_subtotal: this.#toBooleanOrFallback(
+        this.#coalescePayloadValue(
+          source,
+          ["include_in_quote_subtotal", "Include_In_Quote_Subtotal"],
+          true
+        ),
+        true
+      ),
+    };
+
+    if (includeJobId && jobId !== null) payload.job_id = jobId;
+    if (!includeJobId && jobId !== null) payload.job_id = jobId;
+    if (payload.service_id === null) delete payload.service_id;
+    if (payload.date_required === null) delete payload.date_required;
+
+    return payload;
   }
 
   async #graphqlRequest(query, variables = {}) {
@@ -936,29 +1076,29 @@ export class JobDetailModal {
     let result = await this.activityQuery.fetchDirect().toPromise();
     this.activityCallback = callback;
     const resp = Array.isArray(result?.resp) ? result.resp : result?.resp || [];
-    this.activities = resp;
+    this.lastActivityEmitSignature = "";
+    this.#emitActivitiesIfChanged(resp);
     this.subscribeToActivityChanges();
-    if (this.activityCallback) {
-      this.activityCallback(resp);
-    }
     return resp;
   }
 
   subscribeToActivityChanges() {
     this.activitySub?.unsubscribe?.();
     let liveObs = null;
-    try {
-      if (typeof this.activityQuery.subscribe === "function")
-        liveObs = this.activityQuery.subscribe();
-    } catch (_) {
-      this.#logError("activity subscribe failed", _);
-    }
-
-    if (!liveObs && typeof this.activityQuery.localSubscribe === "function") {
+    if (typeof this.activityQuery.localSubscribe === "function") {
       try {
         liveObs = this.activityQuery.localSubscribe();
       } catch (_) {
         this.#logError("activity localSubscribe failed", _);
+      }
+    }
+
+    if (!liveObs) {
+      try {
+        if (typeof this.activityQuery.subscribe === "function")
+          liveObs = this.activityQuery.subscribe();
+      } catch (_) {
+        this.#logError("activity subscribe failed", _);
       }
     }
 
@@ -972,8 +1112,7 @@ export class JobDetailModal {
               : Array.isArray(payload)
               ? payload
               : [];
-            this.activities = data;
-            if (this.activityCallback) this.activityCallback(data);
+            this.#emitActivitiesIfChanged(data);
           },
           error: () => {},
         });
@@ -1017,47 +1156,9 @@ export class JobDetailModal {
   }
 
   async addNewActivity(acitivityObj) {
-    const payload = { ...(acitivityObj || {}) };
-    const serviceIdRaw =
-      payload.service_id ||
-      payload.Service_ID ||
-      payload.serviceId ||
-      payload.serviceid ||
-      "";
-    const normalizedServiceId =
-      serviceIdRaw === null || serviceIdRaw === undefined || String(serviceIdRaw).trim() === ""
-        ? ""
-        : Number.isFinite(Number(serviceIdRaw))
-        ? Number(serviceIdRaw)
-        : serviceIdRaw;
-
-    const rawActivityPrice =
-      payload.activity_price ??
-      payload.Activity_Price ??
-      payload.activityPrice ??
-      "";
-    if (rawActivityPrice !== "" && rawActivityPrice !== null && rawActivityPrice !== undefined) {
-      const parsed = Number(String(rawActivityPrice).replace(/[^0-9.-]+/g, ""));
-      const normalizedActivityPrice = Number.isFinite(parsed)
-        ? parsed
-        : rawActivityPrice;
-      payload.activity_price = normalizedActivityPrice;
-      payload.Activity_Price = normalizedActivityPrice;
-    }
-
-    if (normalizedServiceId !== "") {
-      payload.service_id = normalizedServiceId;
-    }
-
-    delete payload.Service_ID;
-    delete payload.serviceId;
-    delete payload.serviceid;
-    delete payload.service_name;
-    delete payload.Service_Name;
-    delete payload.serviceName;
-    delete payload.activityPrice;
-    delete payload.Service;
-    delete payload.service;
+    const payload = this.#buildActivityMutationPayload(acitivityObj, {
+      includeJobId: true,
+    });
 
     let query = this.acitivityModel.mutation();
     query.createOne(payload);
@@ -1067,47 +1168,9 @@ export class JobDetailModal {
 
   async updateActivity(activityId, activityObj = {}) {
     if (!activityId) throw new Error("Activity id is required");
-    const payload = { ...activityObj };
-    const serviceIdRaw =
-      payload.service_id ||
-      payload.Service_ID ||
-      payload.serviceId ||
-      payload.serviceid ||
-      "";
-    const normalizedServiceId =
-      serviceIdRaw === null || serviceIdRaw === undefined || String(serviceIdRaw).trim() === ""
-        ? ""
-        : Number.isFinite(Number(serviceIdRaw))
-        ? Number(serviceIdRaw)
-        : serviceIdRaw;
-
-    const rawActivityPrice =
-      payload.activity_price ??
-      payload.Activity_Price ??
-      payload.activityPrice ??
-      "";
-    if (rawActivityPrice !== "" && rawActivityPrice !== null && rawActivityPrice !== undefined) {
-      const parsed = Number(String(rawActivityPrice).replace(/[^0-9.-]+/g, ""));
-      const normalizedActivityPrice = Number.isFinite(parsed)
-        ? parsed
-        : rawActivityPrice;
-      payload.activity_price = normalizedActivityPrice;
-      payload.Activity_Price = normalizedActivityPrice;
-    }
-
-    if (normalizedServiceId !== "") {
-      payload.service_id = normalizedServiceId;
-    }
-
-    delete payload.Service_ID;
-    delete payload.serviceId;
-    delete payload.serviceid;
-    delete payload.service_name;
-    delete payload.Service_Name;
-    delete payload.serviceName;
-    delete payload.activityPrice;
-    delete payload.Service;
-    delete payload.service;
+    const payload = this.#buildActivityMutationPayload(activityObj, {
+      includeJobId: false,
+    });
 
     const query = this.acitivityModel.mutation();
     query.update((q) => q.where("id", activityId).set(payload));

@@ -4582,9 +4582,8 @@ export class JobDetailView {
   normalizeActivityPriceValue(value) {
     if (this._isBlankValue(value)) return "";
     const raw = String(value).trim();
-    const numeric = Number(raw.replace(/[^0-9.-]+/g, ""));
-    if (Number.isFinite(numeric)) return numeric;
-    return raw;
+    const normalized = raw.replace(/[^0-9.-]+/g, "").trim();
+    return normalized || "";
   }
 
   getActivitySelectedServiceContext() {
@@ -5844,7 +5843,14 @@ export class JobDetailView {
           item.Status ||
           item.status ||
           "",
-        Price: item.Activity_Price || item.activity_price || "",
+        Price:
+          item.Activity_Price ??
+          item.activity_price ??
+          item.Quoted_Price ??
+          item.quoted_price ??
+          item.Price ??
+          item.price ??
+          "",
         "Invoice to Client": item.Invoice_to_Client ?? item.invoice_to_client ?? "",
         Option: this.normalizeActivityOption(item.Option || item.option || ""),
         Task: this.normalizeActivityTask(item.Task || item.task || ""),
