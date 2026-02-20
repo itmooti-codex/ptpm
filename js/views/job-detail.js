@@ -4227,6 +4227,25 @@ export class JobDetailView {
     return String(value);
   }
 
+  updateAppointmentTabCount(appointments = []) {
+    const countEl =
+      document.querySelector("[data-appointments-count]") ||
+      document
+        .querySelector('[data-tab="appointments"]')
+        ?.querySelector("div:last-child div");
+    if (!countEl) return;
+
+    const rows = Array.isArray(appointments) ? appointments : [];
+    const withIds = rows
+      .map((item) => item?.ID ?? item?.id ?? null)
+      .filter((value) => value !== null && value !== undefined && value !== "");
+    const uniqueCount = withIds.length
+      ? new Set(withIds.map((value) => String(value))).size
+      : rows.length;
+
+    countEl.textContent = String(uniqueCount).padStart(2, "0");
+  }
+
   renderAppointmentsTable(appointments = []) {
     const target = document.getElementById("appointments-table");
     if (!target) return;
@@ -4242,6 +4261,7 @@ export class JobDetailView {
       [clean(first), clean(last)].filter(Boolean).join(" ").trim();
 
     const rows = Array.isArray(appointments) ? appointments : [];
+    this.updateAppointmentTabCount(rows);
     if (!rows.length) {
       target.innerHTML =
         '<div class="text-sm text-slate-500 px-1 py-2">No appointments found.</div>';
