@@ -6,11 +6,11 @@ import {
   showUnsavedChangesModal,
   showResetConfirmModal,
   resetFormFields,
-  uploadImage,
   initFileUploadArea,
   ensureFilePreviewModal,
   buildUploadCard,
 } from "../helper.js";
+import { API_KEY, HTTP_ENDPOINT } from "../../sdk/config.js";
 
 export class JobDetailView {
   constructor(model) {
@@ -1194,13 +1194,13 @@ export class JobDetailView {
             <p
               class="text-center justify-start text-slate-500 text-xs font-normal leading-3 hover:!text-slate-500 active:!text-slate-500 hover:text-center active:text-center focus:text-center focus-visible:text-center hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500 hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs"
             >
-              SVG, PNG, JPG or GIF (max 800*400px)
+              Upload photos or files from your device
             </p>
             <div class="flex flex-col gap-2 p-2" data-section="images-uploads"></div>
           </div>
         </div>
         <div class="flex justify-end items-center gap-3">
-          <button class="!text-sky-700 !text-sm !font-medium !px-3 !py-2 !rounded hover:!text-sky-700 active:!text-sky-700 focus:!text-sky-700 focus-visible:!text-sky-700 hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm">Cancel</button>
+          <button data-upload-cancel class="!text-sky-700 !text-sm !font-medium !px-3 !py-2 !rounded hover:!text-sky-700 active:!text-sky-700 focus:!text-sky-700 focus-visible:!text-sky-700 hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm">Cancel</button>
           <button id="add-images-btn" class="!text-white !bg-[#003882] !text-sm !font-medium !px-4 !py-2 !rounded hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882] hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm">Add</button>
         </div>
       </div>
@@ -1236,9 +1236,11 @@ export class JobDetailView {
       loaderElement: this.loaderElement,
       loaderMessageEl: this.loaderMessageEl,
       loaderCounter: this.loaderCounter,
-      acceptRegex: /^(image\/|application\/pdf)/,
+      acceptRegex: /.*/,
       multiple: true,
       replaceExisting: false,
+      uploadResolver: async (file, uploadPath) =>
+        this.uploadFileForDirectJob(file, uploadPath),
       renderItem: (meta) => {
         const card = buildUploadCard(meta, {
           onView: () => {
@@ -1257,27 +1259,26 @@ export class JobDetailView {
         card.setAttribute("data-upload-url", meta.url);
         card.setAttribute("data-file-name", meta.name || "Upload");
         card.setAttribute("file-type", meta.type || "");
+        card.setAttribute("data-file-size", String(meta.file?.size || ""));
         return card;
       },
     });
 
-    let addBtn = document.getElementById("add-images-btn");
-    addBtn.addEventListener("click", async () => {
-      let images = uploadResult.querySelectorAll("[data-upload-url]");
+    const cancelBtn = wrapper.querySelector("[data-upload-cancel]");
+    cancelBtn?.addEventListener("click", () => {
+      uploadResult.innerHTML = "";
+      if (uploadSection) uploadSection.value = "";
+    });
 
-      const propertyId =
-        document.querySelector('[data-field="property_id"]')?.value?.trim() ||
-        "";
-      const customerId =
-        document
-          .querySelector('[data-contact-field="contact_id"]')
-          ?.value?.trim() || "";
-      const companyId =
-        document.querySelector('[data-entity-id="entity-id"]')?.value?.trim() ||
-        "";
-      const jobId = this.getJobId();
+    const addBtn = document.getElementById("add-images-btn");
+    addBtn?.addEventListener("click", async () => {
+      const uploadNodes = Array.from(
+        uploadResult.querySelectorAll("[data-upload-url]")
+      );
+      const jobId = this.getJobId() || "";
+      const context = this.getUploadContextData();
 
-      if (!images || !images.length) {
+      if (!uploadNodes.length) {
         this.handleFailure("Please upload at least one file.");
         return;
       }
@@ -1286,29 +1287,20 @@ export class JobDetailView {
         return;
       }
 
+      const payloads = uploadNodes
+        .map((item) => this.buildUploadPayloadFromNode(item, jobId, context))
+        .filter(Boolean);
+      if (!payloads.length) {
+        this.handleFailure("No valid uploads found. Please re-upload and try again.");
+        return;
+      }
+
       this.startLoading("Saving uploads...");
       try {
-        for (const item of images) {
-          let uploadObj = {
-            type: "photo",
-            property_name_id: propertyId,
-            customer_id: customerId,
-            company_id: companyId,
-            job_id: jobId,
-          };
-
-          let imageUrl = item.getAttribute("data-upload-url");
-          const fileType = item.getAttribute("file-type") || "";
-          const fileName = item.getAttribute("data-file-name") || "";
-          if (!imageUrl) continue;
-          uploadObj.photo_upload = imageUrl;
-          if (fileType.startsWith("image/")) {
-            uploadObj.photo_name = fileName;
-          } else {
-            uploadObj.file_name = fileName;
-          }
-          await this.model.createNewUpload(uploadObj);
-        }
+        await this.model.createUploads(payloads);
+        uploadResult.innerHTML = "";
+        if (uploadSection) uploadSection.value = "";
+        await this.reloadExistingUploads();
         this.handleSuccess("Uploads saved successfully.");
       } catch (error) {
         console.error("Failed to save uploads", error);
@@ -1317,6 +1309,260 @@ export class JobDetailView {
         this.stopLoading();
       }
     });
+  }
+
+  async requestUploadUrlForDirectJob(file, uploadPath = "uploads") {
+    const safePath = String(uploadPath || "uploads").replace(
+      /^[\\/]+|[\\/]+$/g,
+      ""
+    );
+    const fileName = file?.name || "upload";
+    const scopedName = safePath ? `${safePath}/${fileName}` : fileName;
+
+    const response = await fetch(`${HTTP_ENDPOINT}/api/v1/rest/upload`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Api-Key": API_KEY,
+      },
+      body: JSON.stringify([
+        {
+          type: file?.type || "application/octet-stream",
+          name: scopedName,
+          generateName: true,
+        },
+      ]),
+    });
+
+    if (!response.ok) {
+      throw new Error("Unable to request upload URL.");
+    }
+
+    const payload = await response.json().catch(() => null);
+    const result = Array.isArray(payload) ? payload[0] : payload;
+    if (result?.statusCode && result.statusCode !== 200) {
+      throw new Error("Upload endpoint rejected the request.");
+    }
+
+    const data = result?.data || result || {};
+    if (!data?.uploadUrl || !data?.url) {
+      throw new Error("Invalid upload response.");
+    }
+    return data;
+  }
+
+  async uploadFileForDirectJob(file, uploadPath = "uploads") {
+    const signed = await this.requestUploadUrlForDirectJob(file, uploadPath);
+    const uploadResponse = await fetch(signed.uploadUrl, {
+      method: "PUT",
+      body: file,
+      headers: {
+        "Content-Type": file?.type || "application/octet-stream",
+      },
+    });
+    if (!uploadResponse.ok) {
+      throw new Error("Failed to upload file.");
+    }
+    return signed.url;
+  }
+
+  getUploadContextData() {
+    const contactType = String(
+      document.querySelector('[data-field="contact_type"]')?.value ||
+        this.activeContactType ||
+        "individual"
+    ).toLowerCase();
+
+    const individualId =
+      document.querySelector('[data-field="client_id"]')?.value?.trim() ||
+      document
+        .querySelector('[data-contact-field="contact_id"]')
+        ?.value?.trim() ||
+      "";
+    const companyId =
+      document.querySelector('[data-field="company_id"]')?.value?.trim() ||
+      document.querySelector('[data-entity-id="entity-id"]')?.value?.trim() ||
+      "";
+    const propertyNameId =
+      document.querySelector('[data-field="property_id"]')?.value?.trim() || "";
+    const inquiryId =
+      document.querySelector('[data-field="inquiry_id"]')?.value?.trim() ||
+      document.body?.dataset?.inquiryId ||
+      "";
+
+    return {
+      contactType,
+      customerId: contactType === "entity" ? "" : individualId,
+      companyId: contactType === "entity" ? companyId : "",
+      propertyNameId,
+      inquiryId,
+    };
+  }
+
+  inferUploadType(fileType = "", fileName = "") {
+    if (this.isImageFileType(fileType, fileName)) return "Photo";
+    if (this.isFormFileType(fileType, fileName)) return "Form";
+    return "File";
+  }
+
+  isImageFileType(fileType = "", fileName = "") {
+    const normalizedType = String(fileType || "").toLowerCase();
+    if (normalizedType.startsWith("image/")) return true;
+    const lowerName = String(fileName || "").toLowerCase();
+    return /\.(jpg|jpeg|png|gif|webp|bmp|svg)$/.test(lowerName);
+  }
+
+  isFormFileType(fileType = "", fileName = "") {
+    const normalizedType = String(fileType || "").toLowerCase();
+    const lowerName = String(fileName || "").toLowerCase();
+    if (
+      /(pdf|msword|officedocument|excel|spreadsheet|rtf|text\/plain|csv|json)/.test(
+        normalizedType
+      )
+    ) {
+      return true;
+    }
+    return /\.(pdf|doc|docx|xls|xlsx|csv|txt|rtf|odt|ods|json)$/.test(
+      lowerName
+    );
+  }
+
+  buildUploadPayloadFromNode(node, jobId, context = {}) {
+    const uploadUrl = node.getAttribute("data-upload-url") || "";
+    if (!uploadUrl) return null;
+
+    const fileType = node.getAttribute("file-type") || "";
+    const fileName = node.getAttribute("data-file-name") || "Upload";
+    const sizeRaw = node.getAttribute("data-file-size") || "";
+    const sizeValue = Number(sizeRaw);
+    const fileSize = Number.isFinite(sizeValue) && sizeValue > 0 ? sizeValue : "";
+
+    const type = this.inferUploadType(fileType, fileName);
+    const isPhoto = type === "Photo";
+
+    return {
+      photo_upload: isPhoto ? uploadUrl : "",
+      file_upload: isPhoto
+        ? ""
+        : {
+            link: uploadUrl,
+            name: fileName || "",
+            size: fileSize,
+            type: fileType || "",
+          },
+      job_id: jobId || "",
+      type,
+      customer_id: context.customerId || "",
+      company_id: context.companyId || "",
+      property_name_id: context.propertyNameId || "",
+      file_name: isPhoto ? "" : fileName || "",
+      photo_name: isPhoto ? fileName || "" : "",
+      inquiry_id: context.inquiryId || "",
+    };
+  }
+
+  parseJsonSafe(value) {
+    if (typeof value !== "string") return null;
+    try {
+      return JSON.parse(value);
+    } catch {
+      return null;
+    }
+  }
+
+  extractNameFromUrl(url = "") {
+    if (!url) return "";
+    try {
+      const clean = String(url).split("?")[0];
+      const parts = clean.split("/");
+      return decodeURIComponent(parts[parts.length - 1] || "");
+    } catch {
+      return "";
+    }
+  }
+
+  getFileUploadObject(raw = null) {
+    if (!raw) return null;
+    if (Array.isArray(raw)) {
+      for (const item of raw) {
+        const next = this.getFileUploadObject(item);
+        if (next) return next;
+      }
+      return null;
+    }
+    if (typeof raw === "string") {
+      const trimmed = raw.trim();
+      if (!trimmed) return null;
+      if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
+        return this.getFileUploadObject(this.parseJsonSafe(trimmed));
+      }
+      if (/^https?:\/\//i.test(trimmed)) {
+        return { link: trimmed, name: this.extractNameFromUrl(trimmed) };
+      }
+      return null;
+    }
+    if (typeof raw === "object") {
+      if (raw.File) {
+        const nested = this.getFileUploadObject(raw.File);
+        if (nested) return nested;
+      }
+      const link = raw.link || raw.url || raw.path || raw.src || "";
+      if (!link) return null;
+      return {
+        link,
+        name: raw.name || raw.filename || this.extractNameFromUrl(link),
+        type: raw.type || raw.mime || "",
+      };
+    }
+    return null;
+  }
+
+  resolveExistingUploadMeta(item = {}) {
+    const id = item.id || item.ID || "";
+    const photoUpload = item.photo_upload || item.Photo_Upload || "";
+    const fileUploadRaw = item.file_upload || item.File_Upload || "";
+    const fileUploadObj = this.getFileUploadObject(fileUploadRaw);
+    const fileUploadUrl = fileUploadObj?.link || "";
+
+    const url = photoUpload || fileUploadUrl || "";
+    const typeValue = item.type || item.Type || "";
+    const photoName = item.photo_name || item.Photo_Name || "";
+    const fileName = item.file_name || item.File_Name || fileUploadObj?.name || "";
+
+    const isPhoto =
+      !!photoUpload ||
+      /photo/i.test(String(typeValue || "")) ||
+      this.isImageFileType(fileUploadObj?.type || "", fileName || url);
+
+    return {
+      id,
+      url,
+      isPhoto,
+      name:
+        (isPhoto ? photoName : fileName) ||
+        this.extractNameFromUrl(url) ||
+        "Upload",
+      fileType: fileUploadObj?.type || "",
+      typeValue,
+    };
+  }
+
+  async reloadExistingUploads() {
+    const jobId = this.getJobId();
+    if (!jobId) return;
+    await this.model.fetchUploads(jobId, (items) => this.renderExistingUploads(items));
+  }
+
+  downloadUpload(url = "", name = "Upload") {
+    if (!url) return;
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = name || "Upload";
+    anchor.target = "_blank";
+    anchor.rel = "noopener noreferrer";
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
   }
 
   renderExistingUploads(items = []) {
@@ -1338,19 +1584,15 @@ export class JobDetailView {
 
     const frag = document.createDocumentFragment();
     items.forEach((item) => {
-      const meta = {
-        id: item.id || item.ID,
-        url: item.Photo_Upload || item.photo || "",
-        name: item.File_Name || item.Photo_Name || item.name || "Upload",
-        type: item.type || "",
-      };
+      const meta = this.resolveExistingUploadMeta(item);
+      if (!meta.url) return;
 
       const card = document.createElement("div");
       card.className =
         "flex items-center gap-3 bg-slate-50 rounded-lg px-3 py-2 shadow-sm border border-slate-100";
       card.setAttribute("data-upload-url", meta.url);
       card.setAttribute("data-file-name", meta.name || "Upload");
-      card.setAttribute("file-type", meta.type || "");
+      card.setAttribute("file-type", meta.fileType || meta.typeValue || "");
 
       const thumb = document.createElement("div");
       thumb.className =
@@ -1364,11 +1606,11 @@ export class JobDetailView {
           : "";
 
       if (resolvedSrc) {
-        if (item.Photo_Name) {
+        if (meta.isPhoto) {
           // IMAGE
           const img = document.createElement("img");
           img.src = resolvedSrc;
-          img.alt = item.Photo_Name || "Photo";
+          img.alt = meta.name || "Photo";
           img.className = "h-full w-full object-cover";
           thumb.appendChild(img);
         } else {
@@ -1401,16 +1643,31 @@ export class JobDetailView {
         </svg>
       `;
       viewBtn.addEventListener("click", () => {
-        const type = meta.type || "";
-        const src =
-          resolvedSrc ||
-          `data:${type || "application/octet-stream"};base64,${meta.url}`;
+        if (!resolvedSrc) return;
+        if (!meta.isPhoto && !/pdf/i.test(meta.fileType || meta.name || "")) {
+          window.open(resolvedSrc, "_blank", "noopener,noreferrer");
+          return;
+        }
+        const src = resolvedSrc;
         this.uploadPreviewModal?.show?.({
           src,
           name: meta.name || "Preview",
-          type,
+          type: meta.fileType || "",
         });
       });
+
+      const downloadBtn = document.createElement("button");
+      downloadBtn.type = "button";
+      downloadBtn.className =
+        "!text-sky-700 hover:!text-sky-700 active:!text-sky-700 focus:!text-sky-700 focus-visible:!text-sky-700";
+      downloadBtn.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 3a1 1 0 0 1 1 1v8.59l2.3-2.29a1 1 0 1 1 1.4 1.42l-4 3.98a1 1 0 0 1-1.4 0l-4-3.98a1 1 0 1 1 1.4-1.42L11 12.59V4a1 1 0 0 1 1-1Zm-7 14a1 1 0 0 1 1 1v1h12v-1a1 1 0 1 1 2 0v1a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-1a1 1 0 0 1 1-1Z"/>
+        </svg>
+      `;
+      downloadBtn.addEventListener("click", () =>
+        this.downloadUpload(resolvedSrc, meta.name || "Upload")
+      );
 
       const deleteBtn = document.createElement("button");
       deleteBtn.type = "button";
@@ -1421,33 +1678,29 @@ export class JobDetailView {
           <path d="M9 3h6a1 1 0 0 1 1 1v1h4v2h-1v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V7H4V5h4V4a1 1 0 0 1 1-1Zm6 3V5H9v1h6Zm-7 2v10h2V8H8Zm4 0v10h2V8h-2Z"/>
         </svg>
       `;
-      deleteBtn.addEventListener("click", async (el) => {
-        const deleteBtn = el.target.closest("button"); // or add a specific class
-        if (!deleteBtn) return;
-
-        const parent = deleteBtn.closest('[data-field="id"]');
-        if (!parent) return;
-        if (parent.id) {
-          showLoader(
-            this.loaderElement,
-            this.loaderMessageEl,
-            this.loaderCounter,
-            "Deleting upload..."
-          );
-          card.remove();
-          await this.model.deleteUpload(parent.id);
+      deleteBtn.addEventListener("click", async () => {
+        if (!meta.id) return;
+        showLoader(
+          this.loaderElement,
+          this.loaderMessageEl,
+          this.loaderCounter,
+          "Deleting upload..."
+        );
+        try {
+          await this.model.deleteUpload(meta.id);
+          await this.reloadExistingUploads();
+        } finally {
           hideLoader(this.loaderElement, this.loaderCounter);
         }
       });
 
       actions.appendChild(viewBtn);
+      actions.appendChild(downloadBtn);
       actions.appendChild(deleteBtn);
 
       card.appendChild(thumb);
       card.appendChild(name);
       card.appendChild(actions);
-      card.setAttribute("data-field", "id");
-      card.id = meta.id;
       frag.appendChild(card);
     });
 

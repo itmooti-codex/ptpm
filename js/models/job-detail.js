@@ -1,3 +1,5 @@
+import { API_KEY, HTTP_ENDPOINT } from "../../sdk/config.js";
+
 export class JobDetailModal {
   constructor(plugin) {
     window.plugin = plugin;
@@ -60,6 +62,29 @@ export class JobDetailModal {
 
   #logError(context, error) {
     console.error(`[JobDetailModel] ${context}`, error);
+  }
+
+  async #graphqlRequest(query, variables = {}) {
+    const response = await fetch(`${HTTP_ENDPOINT}/api/v1/graphql`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Api-Key": API_KEY,
+      },
+      body: JSON.stringify({ query, variables }),
+    });
+    const payload = await response.json().catch(() => null);
+    if (!response.ok) {
+      const message =
+        payload?.errors?.[0]?.message ||
+        payload?.message ||
+        `Request failed (${response.status})`;
+      throw new Error(message);
+    }
+    if (Array.isArray(payload?.errors) && payload.errors.length) {
+      throw new Error(payload.errors[0]?.message || "GraphQL error");
+    }
+    return payload?.data ?? null;
   }
 
   async fetchContacts(callback) {
@@ -477,7 +502,13 @@ export class JobDetailModal {
       .select([
         "id",
         "photo_upload",
+        "file_upload",
+        "job_id",
         "type",
+        "customer_id",
+        "company_id",
+        "property_name_id",
+        "inquiry_id",
         "created_at",
         "photo_name",
         "file_name",
@@ -1051,6 +1082,44 @@ export class JobDetailModal {
     query.createOne(uploadObj);
     let result = await query.execute(true).toPromise();
     return result;
+  }
+
+  async createUploads(uploadObjs = []) {
+    const payload = Array.isArray(uploadObjs) ? uploadObjs.filter(Boolean) : [];
+    if (!payload.length) return [];
+
+    const mutation = `
+      mutation createUploads($payload: [UploadCreateInput] = null) {
+        createUploads(payload: $payload) {
+          photo_upload
+          file_upload
+          job_id
+          type
+          customer_id
+          company_id
+          property_name_id
+          file_name
+          photo_name
+          inquiry_id
+        }
+      }
+    `;
+
+    try {
+      const data = await this.#graphqlRequest(mutation, { payload });
+      const result = data?.createUploads;
+      if (Array.isArray(result)) return result;
+      if (result) return [result];
+      return [];
+    } catch (error) {
+      this.#logError("createUploads failed; falling back to createNewUpload", error);
+      const created = [];
+      for (const item of payload) {
+        const result = await this.createNewUpload(item);
+        created.push(result?.resp ?? result ?? null);
+      }
+      return created.filter(Boolean);
+    }
   }
 
   async getInvoiceByJobId(jobID) {

@@ -861,6 +861,7 @@ export function initFileUploadArea({
   renderItem,
   onClear,
   dropHighlightClass = ["ring-2", "ring-sky-500"],
+  uploadResolver,
 } = {}) {
   if (!triggerEl || !inputEl) return;
   if (multiple) inputEl.multiple = true;
@@ -897,7 +898,9 @@ export function initFileUploadArea({
     try {
       const metas = [];
       for (const file of files) {
-        const url = await uploadImage(file, uploadPath);
+        const url = uploadResolver
+          ? await uploadResolver(file, uploadPath)
+          : await uploadImage(file, uploadPath);
         metas.push({ url, type: file.type, name: file.name, file });
       }
       if (listEl && replaceExisting) listEl.innerHTML = "";
