@@ -1889,8 +1889,6 @@ export class JobDetailView {
           return;
         }
 
-        generateInvoiceBtn.classList.add("hidden");
-
         const invoiceDataObj = this.getFieldValues(
           '[field-section="invoice-input"] input'
         );
@@ -1909,7 +1907,6 @@ export class JobDetailView {
               .toLowerCase();
             const isFailed = status.includes("fail");
             if (isFailed) {
-              generateInvoiceBtn.classList.remove("hidden");
               this.handleFailure("Invoice generation failed. Please retry.");
             } else {
               if (status != "Create invoice") {
@@ -2076,11 +2073,9 @@ export class JobDetailView {
     }
 
     const generateInvoiceBtn = document.getElementById("generate-invoice-btn");
+    generateInvoiceBtn?.classList.remove("hidden");
     if (invoiceNumber) {
-      generateInvoiceBtn?.classList.add("hidden");
       this.renderInvoiceActivitiesTable(this.getInvoiceActivities());
-    } else {
-      generateInvoiceBtn?.classList.remove("hidden");
     }
 
     document.getElementById("invoice-total")?.classList.add("hidden");
