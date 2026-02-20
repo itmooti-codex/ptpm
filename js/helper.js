@@ -865,6 +865,8 @@ export function initFileUploadArea({
 } = {}) {
   if (!triggerEl || !inputEl) return;
   if (multiple) inputEl.multiple = true;
+  if (!triggerEl.hasAttribute("tabindex")) triggerEl.tabIndex = 0;
+  if (!triggerEl.hasAttribute("role")) triggerEl.setAttribute("role", "button");
 
   const previewModal = ensureFilePreviewModal();
 
@@ -943,6 +945,18 @@ export function initFileUploadArea({
   });
   inputEl.addEventListener("change", async (e) => {
     await handleFiles(e.target.files);
+  });
+  triggerEl.addEventListener("click", (e) => {
+    if (e.target === inputEl) return;
+    if (inputEl.disabled) return;
+    inputEl.click();
+  });
+  triggerEl.addEventListener("keydown", (e) => {
+    const key = e.key || "";
+    if (key !== "Enter" && key !== " ") return;
+    e.preventDefault();
+    if (inputEl.disabled) return;
+    inputEl.click();
   });
   const stop = (e) => {
     e.preventDefault();

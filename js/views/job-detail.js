@@ -1200,7 +1200,7 @@ export class JobDetailView {
           </div>
         </div>
         <div class="flex justify-end items-center gap-3">
-          <button data-upload-cancel class="!text-sky-700 !text-sm !font-medium !px-3 !py-2 !rounded hover:!text-sky-700 active:!text-sky-700 focus:!text-sky-700 focus-visible:!text-sky-700 hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm">Cancel</button>
+          <button data-upload-cancel class="hidden !text-sky-700 !text-sm !font-medium !px-3 !py-2 !rounded hover:!text-sky-700 active:!text-sky-700 focus:!text-sky-700 focus-visible:!text-sky-700 hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm">Cancel</button>
           <button id="add-images-btn" class="!text-white !bg-[#003882] !text-sm !font-medium !px-4 !py-2 !rounded hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882] hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm">Add</button>
         </div>
       </div>
@@ -1265,9 +1265,22 @@ export class JobDetailView {
     });
 
     const cancelBtn = wrapper.querySelector("[data-upload-cancel]");
+    const refreshUploadCancelVisibility = () => {
+      if (!cancelBtn) return;
+      const hasLoadedFiles =
+        uploadResult.querySelectorAll("[data-upload-url]").length > 0;
+      cancelBtn.classList.toggle("hidden", !hasLoadedFiles);
+    };
+    const uploadListObserver = new MutationObserver(() => {
+      refreshUploadCancelVisibility();
+    });
+    uploadListObserver.observe(uploadResult, { childList: true, subtree: false });
+    refreshUploadCancelVisibility();
+
     cancelBtn?.addEventListener("click", () => {
       uploadResult.innerHTML = "";
       if (uploadSection) uploadSection.value = "";
+      refreshUploadCancelVisibility();
     });
 
     const addBtn = document.getElementById("add-images-btn");
@@ -1300,6 +1313,7 @@ export class JobDetailView {
         await this.model.createUploads(payloads);
         uploadResult.innerHTML = "";
         if (uploadSection) uploadSection.value = "";
+        refreshUploadCancelVisibility();
         await this.reloadExistingUploads();
         this.handleSuccess("Uploads saved successfully.");
       } catch (error) {
@@ -1553,18 +1567,6 @@ export class JobDetailView {
     await this.model.fetchUploads(jobId, (items) => this.renderExistingUploads(items));
   }
 
-  downloadUpload(url = "", name = "Upload") {
-    if (!url) return;
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = name || "Upload";
-    anchor.target = "_blank";
-    anchor.rel = "noopener noreferrer";
-    document.body.appendChild(anchor);
-    anchor.click();
-    anchor.remove();
-  }
-
   renderExistingUploads(items = []) {
     if (!this.existingUploadsEl) {
       this.existingUploadsEl = document.querySelector(
@@ -1656,19 +1658,6 @@ export class JobDetailView {
         });
       });
 
-      const downloadBtn = document.createElement("button");
-      downloadBtn.type = "button";
-      downloadBtn.className =
-        "!text-sky-700 hover:!text-sky-700 active:!text-sky-700 focus:!text-sky-700 focus-visible:!text-sky-700";
-      downloadBtn.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12 3a1 1 0 0 1 1 1v8.59l2.3-2.29a1 1 0 1 1 1.4 1.42l-4 3.98a1 1 0 0 1-1.4 0l-4-3.98a1 1 0 1 1 1.4-1.42L11 12.59V4a1 1 0 0 1 1-1Zm-7 14a1 1 0 0 1 1 1v1h12v-1a1 1 0 1 1 2 0v1a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-1a1 1 0 0 1 1-1Z"/>
-        </svg>
-      `;
-      downloadBtn.addEventListener("click", () =>
-        this.downloadUpload(resolvedSrc, meta.name || "Upload")
-      );
-
       const deleteBtn = document.createElement("button");
       deleteBtn.type = "button";
       deleteBtn.className =
@@ -1680,6 +1669,10 @@ export class JobDetailView {
       `;
       deleteBtn.addEventListener("click", async () => {
         if (!meta.id) return;
+        const confirmed = window.confirm(
+          "Are you sure you want to delete this upload?"
+        );
+        if (!confirmed) return;
         showLoader(
           this.loaderElement,
           this.loaderMessageEl,
@@ -1695,7 +1688,6 @@ export class JobDetailView {
       });
 
       actions.appendChild(viewBtn);
-      actions.appendChild(downloadBtn);
       actions.appendChild(deleteBtn);
 
       card.appendChild(thumb);
