@@ -1270,7 +1270,7 @@ export class JobDetailModal {
     if (activityPriceScalar === null) {
       delete payload.activity_price;
     } else {
-      payload.activity_price = parseFloat(activityPriceScalar.toFixed(2));
+      payload.activity_price = activityPriceScalar.toFixed(2);
     }
 
     return await this.#graphqlRequest(
@@ -1290,7 +1290,7 @@ export class JobDetailModal {
     if (activityPriceScalar === null) {
       delete payload.activity_price;
     } else {
-      payload.activity_price = parseFloat(activityPriceScalar.toFixed(2));
+      payload.activity_price = activityPriceScalar.toFixed(2);
     }
 
     return await this.#graphqlRequest(
