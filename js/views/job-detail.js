@@ -464,10 +464,6 @@ export class JobDetailView {
       <div data-section="add-activities" class="w-[440px] bg-white rounded-lg border border-slate-200 p-5 flex flex-col gap-4 shadow-sm hover:!bg-white active:!bg-white hover:!border-slate-200 active:!border-slate-200 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-200 active:border-slate-200 focus:border-slate-200 focus-visible:border-slate-200 hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm">
         <div class="flex flex-col items-start gap-2">
           <div class="text-neutral-800 text-base font-semibold hover:!text-neutral-800 active:!text-neutral-800 hover:text-neutral-800 active:text-neutral-800 focus:text-neutral-800 focus-visible:text-neutral-800 hover:text-base active:text-base focus:text-base focus-visible:text-base">Add New Activity</div>
-          <label class="flex items-center gap-2 text-slate-600 text-sm hover:!text-slate-600 active:!text-slate-600 hover:text-slate-600 active:text-slate-600 focus:text-slate-600 focus-visible:text-slate-600 ">
-            <input type="checkbox" data-field="invoice_to_client" class="w-4 h-4 accent-[#0A3E8C]" checked />
-            <div class="!pl-0">Invoice to client</div>
-          </label>
         </div>
 
         <div class="grid grid-cols-2 gap-5">
@@ -509,8 +505,8 @@ export class JobDetailView {
 
           <div data-element= "service_name_secondary" class="hidden flex flex-col">
             <label class="text-neutral-700 text-sm font-medium hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 ">Option Service</label>
-            <div class="relative customDropdDownWrapper customDropdownWrapper">
-              <select data-service-role="option" data-activity-select="service" class="hidden mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 !block appearance-none hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700  hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default"></select>
+            <div class="relative mt-2 customDropdDownWrapper customDropdownWrapper">
+              <select data-service-role="option" data-activity-select="service" class="hidden w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 !block appearance-none hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700  hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default"></select>
               <span class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400 mt-2">
                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M6 9l6 6 6-6"></path>
@@ -528,13 +524,6 @@ export class JobDetailView {
             <label class="text-neutral-700 text-sm font-medium hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 ">Activity Price</label>
             <div class="relative">
               <input type="text" data-field="activity_price" placeholder="$ 0.00" class="${clientInputClass} pr-10" />
-            </div>
-          </div>
-
-          <div class="flex flex-col">
-            <label class="text-neutral-700 text-sm font-medium hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 ">Activity Text</label>
-            <div class="relative">
-              <input type="text" data-field="activity_text" data-activity-select="text" class="${clientInputClass}"></input>
             </div>
           </div>
 
@@ -562,6 +551,11 @@ export class JobDetailView {
             </div>
           </div>
 
+          <div class="flex flex-col col-span-2">
+            <label class="text-neutral-700 text-sm font-medium hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 ">Activity Text</label>
+            <textarea data-field="activity_text" data-activity-select="text" rows="2" class="w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 hover:!bg-white active:!bg-white hover:!border-slate-300 active:!border-slate-300 hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700  hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default"></textarea>
+          </div>
+
           <div class="hidden flex flex-col">
             <label class="text-neutral-700 text-sm font-medium hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 ">Quoted Price</label>
             <div class="relative">
@@ -586,12 +580,16 @@ export class JobDetailView {
           </div>
 
           <div class="col-span-2 flex flex-col gap-2 text-slate-600 text-sm">
-            <label class="flex items-center gap-2">
-              <input type="checkbox" data-field="include_in_quote_subtotal" class="w-4 h-4 accent-[#0A3E8C]" checked />
+            <label class="customCheckboxWrapper flex items-center gap-2 text-slate-600 text-sm hover:!text-slate-600 active:!text-slate-600 hover:text-slate-600 active:text-slate-600 focus:text-slate-600 focus-visible:text-slate-600">
+              <input type="checkbox" data-field="invoice_to_client" class="customCheckboxInput w-4 h-4 accent-[#0A3E8C] rounded border border-slate-300" checked />
+              <span>Invoice to client</span>
+            </label>
+            <label class="customCheckboxWrapper flex items-center gap-2 text-slate-600 text-sm hover:!text-slate-600 active:!text-slate-600 hover:text-slate-600 active:text-slate-600 focus:text-slate-600 focus-visible:text-slate-600">
+              <input type="checkbox" data-field="include_in_quote_subtotal" class="customCheckboxInput w-4 h-4 accent-[#0A3E8C] rounded border border-slate-300" checked />
               <span>Include in quote subtotal</span>
             </label>
-            <label class="flex items-center gap-2">
-              <input type="checkbox" data-field="include_in_quote" class="w-4 h-4 accent-[#0A3E8C]" />
+            <label class="customCheckboxWrapper flex items-center gap-2 text-slate-600 text-sm hover:!text-slate-600 active:!text-slate-600 hover:text-slate-600 active:text-slate-600 focus:text-slate-600 focus-visible:text-slate-600">
+              <input type="checkbox" data-field="include_in_quote" class="customCheckboxInput w-4 h-4 accent-[#0A3E8C] rounded border border-slate-300" />
               <span>Include in quote</span>
             </label>
           </div>
@@ -719,19 +717,28 @@ export class JobDetailView {
       price:
         record.Service_Price ??
         record.service_price ??
+        record.ServicePrice ??
+        record.servicePrice ??
+        record.Price ??
         record.price ??
         record.Activity_Price ??
         record.activity_price ??
         "",
       warranty:
         record.Standard_Warranty ??
+        record.StandardWarranty ??
+        record.standardWarranty ??
         record.standard_warranty ??
+        record.Service_Warranty ??
+        record.service_warranty ??
+        record.Warranty ??
         record.warranty ??
         "",
       description:
+        record.Service_Description ??
+        record.service_description ??
         record.Description ??
         record.description ??
-        record.Service_Description ??
         record.activity_text ??
         "",
     };
