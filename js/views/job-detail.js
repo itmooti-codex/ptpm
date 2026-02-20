@@ -1824,6 +1824,7 @@ export class JobDetailView {
     `;
 
     document.getElementById("replaceable-section").appendChild(wrapper);
+    this.initFlatpickrFor(wrapper);
     const jobIdForInvoice = this.getJobId();
     if (jobIdForInvoice) {
       this.model.fetchJobById(jobIdForInvoice, (jobRecord) =>
@@ -3522,16 +3523,19 @@ export class JobDetailView {
     if (!sectionId) return;
     this.currentSection = sectionId;
 
+    let activeSectionEl = null;
     this.sectionOrder?.forEach((id) => {
       const el = document.querySelector(`[data-section="${id}"]`);
       if (!el) return;
       if (id === sectionId) {
         el.classList.remove("hidden");
+        activeSectionEl = el;
       } else {
         el.classList.add("hidden");
       }
     });
 
+    if (activeSectionEl) this.initFlatpickrFor(activeSectionEl);
     this.updateSidebarState(sectionId);
     this.updateNavButtons();
   }
