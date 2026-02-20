@@ -4023,27 +4023,53 @@ export class JobDetailView {
   setupMaterialServiceProviderSearch(ctx, data = []) {
     const { input, results, hidden, root } = ctx;
     const state = { providers: data || [] };
+    const getProviderParts = (provider = {}) => {
+      const contact = provider.Contact_Information || {};
+      const first =
+        provider.Contact_Information_First_Name ||
+        provider.contact_information_first_name ||
+        provider.Service_Provider_Contact_Information_First_Name ||
+        provider.service_provider_contact_information_first_name ||
+        contact.first_name ||
+        contact.First_Name ||
+        "";
+      const last =
+        provider.Contact_Information_Last_Name ||
+        provider.contact_information_last_name ||
+        provider.Service_Provider_Contact_Information_Last_Name ||
+        provider.service_provider_contact_information_last_name ||
+        contact.last_name ||
+        contact.Last_Name ||
+        "";
+      const phone =
+        provider.Contact_Information_SMS_Number ||
+        provider.contact_information_sms_number ||
+        provider.Service_Provider_Contact_Information_SMS_Number ||
+        provider.service_provider_contact_information_sms_number ||
+        contact.sms_number ||
+        contact.SMS_Number ||
+        "";
+      const image =
+        provider.Contact_Information_Profile_Image ||
+        provider.contact_information_profile_image ||
+        provider.Service_Provider_Contact_Information_Profile_Image ||
+        provider.service_provider_contact_information_profile_image ||
+        contact.profile_image ||
+        contact.Profile_Image ||
+        "";
+      const id =
+        provider.ID ||
+        provider.id ||
+        provider.Service_Provider_ID ||
+        provider.service_provider_id ||
+        "";
+      return { id: String(id || ""), first, last, phone, image };
+    };
 
     const render = (providers, query = "") => {
       const term = query.trim().toLowerCase();
       const filtered = providers.filter((p) => {
-        const first =
-          p.Contact_Information_First_Name ||
-          p.contact_information_first_name ||
-          "";
-        const last =
-          p.Contact_Information_Last_Name ||
-          p.contact_information_last_name ||
-          "";
-        const phone =
-          p.Contact_Information_SMS_Number ||
-          p.contact_information_sms_number ||
-          "";
-
-        const image =
-          p.Contact_Information_Profile_Image ||
-          p.contact_information_profile_image ||
-          "";
+        const { first, last, phone, image } = getProviderParts(p);
         return [first, last, phone, image].some((field) =>
           String(field).toLowerCase().includes(term)
         );
@@ -4056,34 +4082,25 @@ export class JobDetailView {
       }
 
       filtered?.forEach((item) => {
+        const parts = getProviderParts(item);
         const option = document.createElement("div");
         option.className =
           "flex items-center gap-3 p-3 hover:bg-slate-50 cursor-pointer";
-        option.dataset.id = item.ID || item.id || "";
+        option.dataset.id = parts.id || "";
 
         const avatar = document.createElement("img");
         avatar.className = "h-9 w-9 rounded-full object-cover bg-slate-100";
-        avatar.src =
-          item.Contact_Information_Profile_Image ||
-          item.contact_information_profile_image ||
-          "https://via.placeholder.com/40";
-        avatar.alt = `${item.Contact_Information_First_Name || ""} ${
-          item.Contact_Information_Last_Name || ""
-        }`;
+        avatar.src = parts.image || "https://via.placeholder.com/40";
+        avatar.alt = `${parts.first || ""} ${parts.last || ""}`.trim();
 
         const infoWrap = document.createElement("div");
         infoWrap.className = "flex flex-col";
         const nameEl = document.createElement("div");
         nameEl.className = "text-sm font-medium text-slate-800";
-        nameEl.textContent = `${item.Contact_Information_First_Name || ""} ${
-          item.Contact_Information_Last_Name || ""
-        }`.trim();
+        nameEl.textContent = `${parts.first || ""} ${parts.last || ""}`.trim();
         const phoneEl = document.createElement("div");
         phoneEl.className = "text-xs text-slate-500";
-        phoneEl.textContent =
-          item.Contact_Information_SMS_Number ||
-          item.contact_information_sms_number ||
-          "";
+        phoneEl.textContent = parts.phone || "";
 
         infoWrap.appendChild(nameEl);
         infoWrap.appendChild(phoneEl);
@@ -5791,6 +5808,15 @@ export class JobDetailView {
       return;
     }
     data.job_id = jobId;
+    if (!data.service_provider_id && this.editingMaterialId) {
+      const current = this.materialRecordsById?.get?.(this.editingMaterialId) || {};
+      data.service_provider_id =
+        current.service_provider_id ||
+        current.Service_Provider_ID ||
+        current.Service_Provider?.id ||
+        current.Service_Provider?.ID ||
+        "";
+    }
     const receiptUrl =
       document
         .querySelector("[data-material-receipts] [data-upload-url]")
@@ -6108,24 +6134,30 @@ export class JobDetailView {
 
     const providerId =
       material.service_provider_id ||
+      material.Service_Provider_ID ||
       material.Service_Provider?.id ||
       material.Service_Provider?.ID ||
       "";
     mapField("service_provider_id", providerId);
     const spContact = material.Service_Provider?.Contact_Information || {};
-    const providerName =
-      [
-        material.Contact_First_Name ||
-          spContact.first_name ||
-          material.Contact_Information_First_Name ||
-          "",
-        material.Contact_Last_Name ||
-          spContact.last_name ||
-          material.Contact_Information_Last_Name ||
-          "",
-      ]
-        .filter(Boolean)
-        .join(" ") || "";
+    const providerName = [
+      material.Contact_First_Name ||
+        material.Service_Provider_Contact_Information_First_Name ||
+        material.service_provider_contact_information_first_name ||
+        spContact.first_name ||
+        spContact.First_Name ||
+        material.Contact_Information_First_Name ||
+        "",
+      material.Contact_Last_Name ||
+        material.Service_Provider_Contact_Information_Last_Name ||
+        material.service_provider_contact_information_last_name ||
+        spContact.last_name ||
+        spContact.Last_Name ||
+        material.Contact_Information_Last_Name ||
+        "",
+    ]
+      .filter(Boolean)
+      .join(" ");
 
     const providerInput = document.querySelector(
       '[data-material-sp-search="input"]'
@@ -6134,7 +6166,7 @@ export class JobDetailView {
       '[data-material-sp-field="id"]'
     );
     if (providerHidden) providerHidden.value = providerId || "";
-    if (providerInput) providerInput.value = providerName;
+    if (providerInput) providerInput.value = providerName || "";
 
     const addBtn = document.getElementById("add-material-btn");
     if (addBtn) addBtn.textContent = "Update";
