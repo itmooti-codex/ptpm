@@ -1017,17 +1017,32 @@ export class JobDetailModal {
   }
 
   async addNewActivity(acitivityObj) {
-    if (acitivityObj.service_id) {
-      acitivityObj["Service"] = { id: acitivityObj["service_id"] };
-      delete acitivityObj["service_id"];
-    } else {
-      acitivityObj["Service"] = {
-        service_name: acitivityObj["service_name"],
-      };
-      delete acitivityObj["service_name"];
+    const payload = { ...(acitivityObj || {}) };
+    const serviceId =
+      payload.service_id ||
+      payload.Service_ID ||
+      payload.serviceId ||
+      payload.serviceid ||
+      "";
+    const serviceName =
+      payload.service_name || payload.Service_Name || payload.serviceName || "";
+
+    if (serviceId) {
+      payload.Service = { id: serviceId };
+    } else if (serviceName) {
+      payload.Service = { service_name: serviceName };
     }
+
+    delete payload.service_id;
+    delete payload.Service_ID;
+    delete payload.serviceId;
+    delete payload.serviceid;
+    delete payload.service_name;
+    delete payload.Service_Name;
+    delete payload.serviceName;
+
     let query = this.acitivityModel.mutation();
-    query.createOne(acitivityObj);
+    query.createOne(payload);
     let result = await query.execute(true).toPromise();
     return result;
   }
@@ -1035,6 +1050,29 @@ export class JobDetailModal {
   async updateActivity(activityId, activityObj = {}) {
     if (!activityId) throw new Error("Activity id is required");
     const payload = { ...activityObj };
+    const serviceId =
+      payload.service_id ||
+      payload.Service_ID ||
+      payload.serviceId ||
+      payload.serviceid ||
+      "";
+    const serviceName =
+      payload.service_name || payload.Service_Name || payload.serviceName || "";
+
+    if (serviceId) {
+      payload.Service = { id: serviceId };
+    } else if (serviceName) {
+      payload.Service = { service_name: serviceName };
+    }
+
+    delete payload.service_id;
+    delete payload.Service_ID;
+    delete payload.serviceId;
+    delete payload.serviceid;
+    delete payload.service_name;
+    delete payload.Service_Name;
+    delete payload.serviceName;
+
     const query = this.acitivityModel.mutation();
     query.update((q) => q.where("id", activityId).set(payload));
     return await query.execute(true).toPromise();

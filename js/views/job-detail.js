@@ -4564,6 +4564,119 @@ export class JobDetailView {
     return jobObj;
   }
 
+  _isBlankValue(value) {
+    return (
+      value === null ||
+      value === undefined ||
+      (typeof value === "string" && value.trim() === "")
+    );
+  }
+
+  _coalesceNonBlank(...values) {
+    for (const value of values) {
+      if (!this._isBlankValue(value)) return value;
+    }
+    return "";
+  }
+
+  getActivitySelectedServiceContext() {
+    const primaryServiceSelect = document.querySelector(
+      '[data-section="add-activities"] [data-service-role="primary"]'
+    );
+    const optionWrapper = document.querySelector(
+      '[data-element="service_name_secondary"]'
+    );
+    const optionServiceSelect = document.querySelector(
+      '[data-element="service_name_secondary"] [data-service-role="option"]'
+    );
+    const serviceIdInput = document.querySelector(
+      '[data-section="add-activities"] [data-field="service_id"]'
+    );
+
+    const isOptionVisible =
+      !!optionWrapper &&
+      !optionWrapper.classList.contains("hidden") &&
+      !!optionServiceSelect &&
+      !optionServiceSelect.classList.contains("hidden");
+
+    const optionServiceId = isOptionVisible
+      ? this.getSelectedActivityServiceId(optionServiceSelect)
+      : "";
+    const primaryServiceId = this.getSelectedActivityServiceId(primaryServiceSelect);
+    const hiddenServiceId = serviceIdInput?.value || "";
+
+    const selectedServiceId = this._coalesceNonBlank(
+      optionServiceId,
+      primaryServiceId,
+      hiddenServiceId
+    );
+    const selectedServiceName = this._coalesceNonBlank(
+      isOptionVisible ? optionServiceSelect?.value : "",
+      primaryServiceSelect?.value,
+      ""
+    );
+
+    const services = Array.isArray(this.activitiesServices)
+      ? this.activitiesServices
+      : [];
+    const selectedService =
+      services.find((item) => String(item.id) === String(selectedServiceId)) ||
+      services.find(
+        (item) =>
+          selectedServiceName &&
+          String(item.name).trim().toLowerCase() ===
+            String(selectedServiceName).trim().toLowerCase()
+      ) ||
+      null;
+
+    return {
+      serviceId: this._coalesceNonBlank(selectedServiceId, selectedService?.id),
+      serviceName: this._coalesceNonBlank(
+        selectedServiceName,
+        selectedService?.name
+      ),
+      service: selectedService,
+      serviceIdInput,
+    };
+  }
+
+  buildActivityPayload() {
+    const data = this.getFieldValues(
+      '[data-section="add-activities"] input, [data-section="add-activities"] select, [data-section="add-activities"] textarea'
+    );
+    const serviceContext = this.getActivitySelectedServiceContext();
+    const selectedService = serviceContext.service || {};
+
+    data.service_id = this._coalesceNonBlank(
+      serviceContext.serviceId,
+      data.service_id
+    );
+    data.service_name = this._coalesceNonBlank(
+      serviceContext.serviceName,
+      data.service_name
+    );
+
+    data.activity_price = this._coalesceNonBlank(
+      data.activity_price,
+      selectedService.price
+    );
+    data.activity_text = this._coalesceNonBlank(
+      data.activity_text,
+      selectedService.description
+    );
+    data.warranty = this._coalesceNonBlank(data.warranty, selectedService.warranty);
+
+    data.note = this._coalesceNonBlank(data.note, "");
+    data.quoted_text = this._coalesceNonBlank(data.quoted_text, "");
+    data.quantity = this._coalesceNonBlank(data.quantity, "1");
+
+    if (serviceContext.serviceIdInput) {
+      serviceContext.serviceIdInput.value = data.service_id || "";
+    }
+
+    return data;
+  }
+
   setupPropertySearch(properties = []) {
     const input = document.querySelector('[data-field="properties"]');
     const locationSelect = document.querySelector('[data-field="location_id"]');
@@ -6281,9 +6394,7 @@ export class JobDetailView {
   }
 
   async handleAddOrUpdateActivity() {
-    const data = this.getFieldValues(
-      '[data-section="add-activities"] input, [data-section="add-activities"] select, [data-section="add-activities"] textarea'
-    );
+    const data = this.buildActivityPayload();
     const jobId = this.getJobId();
     if (!jobId) {
       this.handleFailure("Missing job id. Reload and try again.");
