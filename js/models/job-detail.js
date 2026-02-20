@@ -230,6 +230,15 @@ export class JobDetailModal {
     return normalized || "";
   }
 
+  #toCurrencyScalarNumber(value) {
+    if (value === null || value === undefined || value === "") return null;
+    const normalized = String(value).replace(/[^0-9.-]+/g, "").trim();
+    if (!normalized) return null;
+    const parsed = Number(normalized);
+    if (!Number.isFinite(parsed)) return null;
+    return parsed;
+  }
+
   #buildActivityMutationPayload(activityObj = {}, { includeJobId = true } = {}) {
     const source = { ...(activityObj || {}) };
 
@@ -278,7 +287,7 @@ export class JobDetailModal {
         ""
       ),
       date_required: dateRequired,
-      activity_price: String(activityPrice ?? ""),
+      activity_price: activityPrice,
       activity_status: this.#coalescePayloadValue(
         source,
         ["activity_status", "Activity_Status", "Activity_status", "status", "Status"],
@@ -1275,7 +1284,12 @@ export class JobDetailModal {
     const payload = this.#buildActivityMutationPayload(acitivityObj, {
       includeJobId: true,
     });
-    payload.activity_price = String(payload.activity_price ?? "");
+    const activityPriceScalar = this.#toCurrencyScalarNumber(payload.activity_price);
+    if (activityPriceScalar === null) {
+      delete payload.activity_price;
+    } else {
+      payload.activity_price = activityPriceScalar;
+    }
     const mutation = `
       mutation createActivity {
         createActivity(payload: ${this.#toGraphqlLiteral(payload)}) {
@@ -1342,7 +1356,12 @@ export class JobDetailModal {
     const payload = this.#buildActivityMutationPayload(activityObj, {
       includeJobId: false,
     });
-    payload.activity_price = String(payload.activity_price ?? "");
+    const activityPriceScalar = this.#toCurrencyScalarNumber(payload.activity_price);
+    if (activityPriceScalar === null) {
+      delete payload.activity_price;
+    } else {
+      payload.activity_price = activityPriceScalar;
+    }
 
     const query = this.acitivityModel.mutation();
     query.update((q) => q.where("id", activityId).set(payload));

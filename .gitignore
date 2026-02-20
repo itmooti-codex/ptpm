@@ -1,6 +1,7 @@
 # Ignore rmd dynamic list table and SDK folders
 rmd-dynamic-list-table/
 sdk/
+z-new-version
 
 # Ignore specific markdown guide files (if they are generated or not to be tracked)
 dynamicguide.md
