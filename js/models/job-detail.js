@@ -180,24 +180,6 @@ export class JobDetailModal {
     return current;
   }
 
-  #toGraphqlLiteral(value) {
-    if (value === null) return "null";
-    if (value === undefined) return "null";
-    if (typeof value === "string") return JSON.stringify(value);
-    if (typeof value === "number") return Number.isFinite(value) ? String(value) : "null";
-    if (typeof value === "boolean") return value ? "true" : "false";
-    if (Array.isArray(value)) {
-      return `[${value.map((entry) => this.#toGraphqlLiteral(entry)).join(", ")}]`;
-    }
-    if (typeof value === "object") {
-      const entries = Object.entries(value).filter(([, val]) => val !== undefined);
-      return `{${entries
-        .map(([key, val]) => `${key}: ${this.#toGraphqlLiteral(val)}`)
-        .join(", ")}}`;
-    }
-    return JSON.stringify(String(value));
-  }
-
   #coalescePayloadValue(payload = {}, keys = [], fallback = "") {
     for (const key of keys) {
       if (!Object.prototype.hasOwnProperty.call(payload, key)) continue;
@@ -1290,65 +1272,11 @@ export class JobDetailModal {
     } else {
       payload.activity_price = activityPriceScalar;
     }
-    const mutation = `
-      mutation createActivity {
-        createActivity(payload: ${this.#toGraphqlLiteral(payload)}) {
-          id
-          note
-          task
-          job_id
-          option
-          report
-          owner_id
-          quantity
-          warranty
-          last_note
-          unique_id
-          created_at
-          ip_address
-          service_id
-          quoted_text
-          quoted_price
-          activity_text
-          date_accepted
-          date_required
-          last_activity
-          last_sms_sent
-          mark_complete
-          profile_image
-          activity_price
-          date_completed
-          quote_accepted
-          activity_status
-          last_email_sent
-          include_in_quote
-          last_call_logged
-          last_modified_at
-          edit_activity_url
-          invoice_to_client
-          last_sms_received
-          last_email_received
-          edit_activity_visits
-          externalRawDataErrors
-          externalRawDataStatus
-          edit_activity_published
-          include_in_quote_subtotal
-          edit_activity_unique_visits
-          _ts_
-          _tsCreate_
-          _tsAction_
-          _tsSessionId_
-          _tsUpdateCount_
-        }
-      }
-    `;
-    const data = await this.#graphqlRequest(mutation);
-    const created = data?.createActivity ?? null;
-    if (created) {
-      const merged = this.#mergeActivityRecord(created);
-      this.#emitActivities(merged);
-    }
-    return { data };
+
+    let query = this.acitivityModel.mutation();
+    query.createOne(payload);
+    let result = await query.execute(true).toPromise();
+    return result;
   }
 
   async updateActivity(activityId, activityObj = {}) {
