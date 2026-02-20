@@ -67,21 +67,55 @@ export class JobDetailModal {
 
   #emitActivitiesIfChanged(records = []) {
     const safeRecords = Array.isArray(records) ? records : [];
-    const signature = JSON.stringify(
-      safeRecords.map((item) => ({
-        id: item?.id ?? item?.ID ?? "",
-        activity_price: item?.activity_price ?? item?.Activity_Price ?? "",
-        quoted_price: item?.quoted_price ?? item?.Quoted_Price ?? "",
-        activity_status:
-          item?.activity_status ?? item?.Activity_Status ?? item?.status ?? item?.Status ?? "",
-        updated_at: item?.updated_at ?? item?.Updated_At ?? item?.last_modified ?? "",
-      }))
-    );
+    const signature = safeRecords
+      .map((item) =>
+        [
+          this.#toSignaturePart(item?.id ?? item?.ID ?? ""),
+          this.#toSignaturePart(item?.activity_price ?? item?.Activity_Price ?? ""),
+          this.#toSignaturePart(item?.quoted_price ?? item?.Quoted_Price ?? ""),
+          this.#toSignaturePart(
+            item?.activity_status ??
+              item?.Activity_Status ??
+              item?.status ??
+              item?.Status ??
+              ""
+          ),
+          this.#toSignaturePart(
+            item?.updated_at ?? item?.Updated_At ?? item?.last_modified ?? ""
+          ),
+        ].join("|")
+      )
+      .join(";;");
     if (signature === this.lastActivityEmitSignature) return false;
     this.lastActivityEmitSignature = signature;
     this.activities = safeRecords;
     if (this.activityCallback) this.activityCallback(safeRecords);
     return true;
+  }
+
+  #toSignaturePart(value) {
+    if (value === null || value === undefined) return "";
+    if (typeof value === "bigint") return value.toString();
+    try {
+      return String(value);
+    } catch (_) {
+      return "";
+    }
+  }
+
+  #extractActivityRecords(payload) {
+    if (Array.isArray(payload?.records)) return payload.records;
+    if (Array.isArray(payload?.resp)) return payload.resp;
+    if (Array.isArray(payload?.data?.subscribeToCalcActivities)) {
+      return payload.data.subscribeToCalcActivities;
+    }
+    if (Array.isArray(payload?.payload?.records)) return payload.payload.records;
+    if (Array.isArray(payload?.payload?.resp)) return payload.payload.resp;
+    if (Array.isArray(payload?.payload?.data?.subscribeToCalcActivities)) {
+      return payload.payload.data.subscribeToCalcActivities;
+    }
+    if (Array.isArray(payload)) return payload;
+    return [];
   }
 
   #coalescePayloadValue(payload = {}, keys = [], fallback = "") {
@@ -1075,7 +1109,7 @@ export class JobDetailModal {
     this.activityQuery.getOrInitQueryCalc?.();
     let result = await this.activityQuery.fetchDirect().toPromise();
     this.activityCallback = callback;
-    const resp = Array.isArray(result?.resp) ? result.resp : result?.resp || [];
+    const resp = this.#extractActivityRecords(result);
     this.lastActivityEmitSignature = "";
     this.#emitActivitiesIfChanged(resp);
     this.subscribeToActivityChanges();
@@ -1107,11 +1141,7 @@ export class JobDetailModal {
         .pipe(window.toMainInstance?.(true) ?? ((x) => x))
         .subscribe({
           next: (payload) => {
-            const data = Array.isArray(payload?.records)
-              ? payload.records
-              : Array.isArray(payload)
-              ? payload
-              : [];
+            const data = this.#extractActivityRecords(payload);
             this.#emitActivitiesIfChanged(data);
           },
           error: () => {},
