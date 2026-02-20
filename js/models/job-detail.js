@@ -46,7 +46,6 @@ export class JobDetailModal {
     this.activities = [];
     this.materials = [];
     this.materialRecordsById = new Map();
-    this.lastActivityEmitSignature = "";
     this.contactSub = null;
     this.propertySub = null;
     this.appointmentSub = null;
@@ -65,42 +64,11 @@ export class JobDetailModal {
     console.error(`[JobDetailModel] ${context}`, error);
   }
 
-  #emitActivitiesIfChanged(records = []) {
+  #emitActivities(records = []) {
     const safeRecords = Array.isArray(records) ? records : [];
-    const signature = safeRecords
-      .map((item) =>
-        [
-          this.#toSignaturePart(item?.id ?? item?.ID ?? ""),
-          this.#toSignaturePart(item?.activity_price ?? item?.Activity_Price ?? ""),
-          this.#toSignaturePart(item?.quoted_price ?? item?.Quoted_Price ?? ""),
-          this.#toSignaturePart(
-            item?.activity_status ??
-              item?.Activity_Status ??
-              item?.status ??
-              item?.Status ??
-              ""
-          ),
-          this.#toSignaturePart(
-            item?.updated_at ?? item?.Updated_At ?? item?.last_modified ?? ""
-          ),
-        ].join("|")
-      )
-      .join(";;");
-    if (signature === this.lastActivityEmitSignature) return false;
-    this.lastActivityEmitSignature = signature;
     this.activities = safeRecords;
     if (this.activityCallback) this.activityCallback(safeRecords);
-    return true;
-  }
-
-  #toSignaturePart(value) {
-    if (value === null || value === undefined) return "";
-    if (typeof value === "bigint") return value.toString();
-    try {
-      return String(value);
-    } catch (_) {
-      return "";
-    }
+    return safeRecords;
   }
 
   #extractActivityRecords(payload) {
@@ -145,7 +113,42 @@ export class JobDetailModal {
     ) {
       return [payload];
     }
+    const deepFound = this.#findActivityArrayDeep(payload);
+    if (deepFound.length) return deepFound;
     if (Array.isArray(payload)) return payload;
+    return [];
+  }
+
+  #looksLikeActivityRecord(record) {
+    if (!record || typeof record !== "object") return false;
+    return (
+      "activity_status" in record ||
+      "Activity_Status" in record ||
+      "activity_price" in record ||
+      "Activity_Price" in record ||
+      "task" in record ||
+      "Task" in record
+    );
+  }
+
+  #findActivityArrayDeep(root, visited = new WeakSet()) {
+    if (!root || typeof root !== "object") return [];
+    if (visited.has(root)) return [];
+    visited.add(root);
+
+    if (Array.isArray(root)) {
+      if (root.length && this.#looksLikeActivityRecord(root[0])) return root;
+      for (const entry of root) {
+        const nested = this.#findActivityArrayDeep(entry, visited);
+        if (nested.length) return nested;
+      }
+      return [];
+    }
+
+    for (const value of Object.values(root)) {
+      const nested = this.#findActivityArrayDeep(value, visited);
+      if (nested.length) return nested;
+    }
     return [];
   }
 
@@ -175,6 +178,24 @@ export class JobDetailModal {
       current.unshift(record);
     }
     return current;
+  }
+
+  #toGraphqlLiteral(value) {
+    if (value === null) return "null";
+    if (value === undefined) return "null";
+    if (typeof value === "string") return JSON.stringify(value);
+    if (typeof value === "number") return Number.isFinite(value) ? String(value) : "null";
+    if (typeof value === "boolean") return value ? "true" : "false";
+    if (Array.isArray(value)) {
+      return `[${value.map((entry) => this.#toGraphqlLiteral(entry)).join(", ")}]`;
+    }
+    if (typeof value === "object") {
+      const entries = Object.entries(value).filter(([, val]) => val !== undefined);
+      return `{${entries
+        .map(([key, val]) => `${key}: ${this.#toGraphqlLiteral(val)}`)
+        .join(", ")}}`;
+    }
+    return JSON.stringify(String(value));
   }
 
   #coalescePayloadValue(payload = {}, keys = [], fallback = "") {
@@ -1169,8 +1190,7 @@ export class JobDetailModal {
     let result = await this.activityQuery.fetchDirect().toPromise();
     this.activityCallback = callback;
     const resp = this.#extractActivityRecords(result);
-    this.lastActivityEmitSignature = "__initial__";
-    this.#emitActivitiesIfChanged(resp);
+    this.#emitActivities(resp);
     this.subscribeToActivityChanges();
     return resp;
   }
@@ -1200,14 +1220,14 @@ export class JobDetailModal {
           next: (payload) => {
             const data = this.#extractActivityRecords(payload);
             if (data.length) {
-              this.#emitActivitiesIfChanged(data);
+              this.#emitActivities(data);
               return;
             }
 
             const singleRecord = this.#extractSingleActivityRecord(payload);
             if (singleRecord) {
               const merged = this.#mergeActivityRecord(singleRecord);
-              this.#emitActivitiesIfChanged(merged);
+              this.#emitActivities(merged);
             }
           },
           error: () => {},
@@ -1256,11 +1276,65 @@ export class JobDetailModal {
       includeJobId: true,
     });
     payload.activity_price = String(payload.activity_price ?? "");
-
-    let query = this.acitivityModel.mutation();
-    query.createOne(payload);
-    let result = await query.execute(true).toPromise();
-    return result;
+    const mutation = `
+      mutation createActivity {
+        createActivity(payload: ${this.#toGraphqlLiteral(payload)}) {
+          id
+          note
+          task
+          job_id
+          option
+          report
+          owner_id
+          quantity
+          warranty
+          last_note
+          unique_id
+          created_at
+          ip_address
+          service_id
+          quoted_text
+          quoted_price
+          activity_text
+          date_accepted
+          date_required
+          last_activity
+          last_sms_sent
+          mark_complete
+          profile_image
+          activity_price
+          date_completed
+          quote_accepted
+          activity_status
+          last_email_sent
+          include_in_quote
+          last_call_logged
+          last_modified_at
+          edit_activity_url
+          invoice_to_client
+          last_sms_received
+          last_email_received
+          edit_activity_visits
+          externalRawDataErrors
+          externalRawDataStatus
+          edit_activity_published
+          include_in_quote_subtotal
+          edit_activity_unique_visits
+          _ts_
+          _tsCreate_
+          _tsAction_
+          _tsSessionId_
+          _tsUpdateCount_
+        }
+      }
+    `;
+    const data = await this.#graphqlRequest(mutation);
+    const created = data?.createActivity ?? null;
+    if (created) {
+      const merged = this.#mergeActivityRecord(created);
+      this.#emitActivities(merged);
+    }
+    return { data };
   }
 
   async updateActivity(activityId, activityObj = {}) {
