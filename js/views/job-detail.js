@@ -60,6 +60,22 @@ export class JobDetailView {
     if (!root || typeof window.flatpickr !== "function") return;
     root.querySelectorAll(".date-picker").forEach((input) => {
       if (input._flatpickr) return;
+      const isAppointmentDateTimeField =
+        input.closest('[data-job-section="job-section-appointment"]') &&
+        ["start_time", "end_time"].includes(
+          (input.getAttribute("data-field") || "").trim()
+        );
+
+      if (isAppointmentDateTimeField) {
+        window.flatpickr(input, {
+          dateFormat: "d/m/Y H:i",
+          enableTime: true,
+          time_24hr: true,
+          allowInput: true,
+        });
+        return;
+      }
+
       window.flatpickr(input, { dateFormat: "d/m/Y", allowInput: true });
     });
   }
