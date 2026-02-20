@@ -2083,7 +2083,7 @@ export class JobDetailView {
       generateInvoiceBtn?.classList.remove("hidden");
     }
 
-    document.getElementById("invoice-total").classList.remove("hidden");
+    document.getElementById("invoice-total")?.classList.add("hidden");
   }
 
   toPascalCase(str) {
@@ -2098,6 +2098,7 @@ export class JobDetailView {
     const tableWrapper = document.querySelector(
       "[data-invoice-activity-table]"
     );
+    const legacyTotal = document.getElementById("invoice-total");
     if (!tableWrapper) return;
 
     const activities = Array.isArray(records) ? records.filter(Boolean) : [];
@@ -2106,16 +2107,119 @@ export class JobDetailView {
     if (!activities.length) {
       tableWrapper.classList.add("hidden");
       placeholder?.classList.remove("hidden");
+      legacyTotal?.classList.add("hidden");
       return;
     }
 
     placeholder?.classList.add("hidden");
     tableWrapper.classList.remove("hidden");
     const mappedActivities = this.mapActivitiesForSharedTable(activities);
-    const tableHTML = this.createActivitiesTable(mappedActivities);
+    const tableHTML = this.createInvoiceActivitiesTable(mappedActivities);
     tableWrapper.id = "invoiceActivitiesTable";
     tableWrapper.appendChild(tableHTML);
-    this.bindActivityRowActions("invoiceActivitiesTable");
+    legacyTotal?.classList.add("hidden");
+  }
+
+  createInvoiceActivitiesTable(data) {
+    const rows = Array.isArray(data) ? data : [];
+    const table = document.createElement("table");
+    table.className =
+      "min-w-full border border-slate-200 rounded-lg overflow-hidden text-sm text-slate-700 leading-6";
+
+    const thead = document.createElement("thead");
+    thead.className = "bg-slate-100";
+    const headerRow = document.createElement("tr");
+    const headers = ["Task", "Option", "Services", "Invoice to Client", "Price"];
+    headers.forEach((text, idx) => {
+      const th = document.createElement("th");
+      th.className =
+        "px-7 py-3 text-left font-normal text-slate-700 leading-6" +
+        (idx === headers.length - 1 ? " text-right" : "");
+      th.textContent = text;
+      headerRow.appendChild(th);
+    });
+    thead.appendChild(headerRow);
+
+    const tbody = document.createElement("tbody");
+    const baseTdClass = "px-7 py-3 align-middle leading-6";
+    let total = 0;
+
+    const parseAmount = (value) => {
+      if (value === null || value === undefined || value === "") return 0;
+      const numeric = Number(String(value).replace(/[^0-9.-]+/g, ""));
+      return Number.isFinite(numeric) ? numeric : 0;
+    };
+
+    rows.forEach((item, idx) => {
+      const tr = document.createElement("tr");
+      tr.className = idx % 2 === 0 ? "bg-white" : "bg-slate-50";
+      tr.id = item.Id;
+
+      const priceValue = parseAmount(item.Price);
+      total += priceValue;
+
+      const cells = [
+        { value: item.Task || "-", className: "text-slate-800" },
+        { value: item.Option || "-", className: "text-slate-800" },
+        { value: item.Services || "-", className: "text-slate-800" },
+        {
+          value: item["Invoice to Client"],
+          render: () => this.renderCheckbox(item["Invoice to Client"]),
+        },
+        {
+          value: this.formatCurrency(priceValue) || "$0.00",
+          className: "text-slate-800 text-right font-medium",
+        },
+      ];
+
+      cells.forEach((cell) => {
+        const td = document.createElement("td");
+        td.className = baseTdClass;
+        if (typeof cell.render === "function") {
+          td.appendChild(cell.render());
+        } else {
+          td.textContent = cell.value ?? "";
+          if (cell.className) td.classList.add(...cell.className.split(" "));
+        }
+        tr.appendChild(td);
+      });
+
+      tbody.appendChild(tr);
+    });
+
+    if (!rows.length) {
+      const tr = document.createElement("tr");
+      const td = document.createElement("td");
+      td.colSpan = headers.length;
+      td.className = `${baseTdClass} text-center text-slate-500`;
+      td.textContent = "No activities found.";
+      tr.appendChild(td);
+      tbody.appendChild(tr);
+    }
+
+    const tfoot = document.createElement("tfoot");
+    const totalRow = document.createElement("tr");
+    totalRow.className = "bg-white border-t border-slate-200";
+
+    const totalLabelTd = document.createElement("td");
+    totalLabelTd.colSpan = headers.length - 1;
+    totalLabelTd.className =
+      "px-7 py-3 text-right text-sm font-semibold text-slate-700";
+    totalLabelTd.textContent = "Invoice Total";
+
+    const totalValueTd = document.createElement("td");
+    totalValueTd.className =
+      "px-7 py-3 text-right text-base font-bold text-slate-700";
+    totalValueTd.textContent = this.formatCurrency(total) || "$0.00";
+
+    totalRow.appendChild(totalLabelTd);
+    totalRow.appendChild(totalValueTd);
+    tfoot.appendChild(totalRow);
+
+    table.appendChild(thead);
+    table.appendChild(tbody);
+    table.appendChild(tfoot);
+    return table;
   }
 
   createDealInformationModal() {
