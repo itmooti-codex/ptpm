@@ -91,9 +91,181 @@ export class JobDetailView {
       this.setupAddButtons();
       this.#createContactDetailsModalUI();
       this.normalizeFormFieldLayout();
+      this.setupColorMappedDropdowns();
     } catch (error) {
       console.error("JobDetailView init failed", error);
     }
+  }
+
+  getColorMappings() {
+    if (this._colorMappings) return this._colorMappings;
+    this._colorMappings = {
+      priority: [
+        { value: "125", label: "Low", color: "#0097a7", backgroundColor: "#cceaed" },
+        { value: "124", label: "Medium", color: "#f57c00", backgroundColor: "#fde5cc" },
+        { value: "123", label: "High", color: "#d84315", backgroundColor: "#f7d9d0" },
+      ],
+      appointmentStatus: [
+        { value: "640", label: "New", color: "#8e24aa", backgroundColor: "#e8d3ee" },
+        { value: "639", label: "To Be Scheduled", color: "#fb8c00", backgroundColor: "#fee8cc" },
+        { value: "638", label: "Scheduled", color: "#0288d1", backgroundColor: "#cce7f6" },
+        { value: "637", label: "Completed", color: "#43a047", backgroundColor: "#d9ecda" },
+        { value: "636", label: "Cancelled", color: "#9e9e9e", backgroundColor: "#ececec" },
+      ],
+      eventColor: [
+        { value: "631", label: "1", color: "#a4bdfc", backgroundColor: "#edf2fe" },
+        { value: "630", label: "2", color: "#7ae7bf", backgroundColor: "#e4faf2" },
+        { value: "629", label: "3", color: "#dbadff", backgroundColor: "#f8efff" },
+        { value: "628", label: "4", color: "#ff887c", backgroundColor: "#ffe7e5" },
+        { value: "627", label: "5", color: "#fbd75b", backgroundColor: "#fef7de" },
+        { value: "626", label: "6", color: "#ffb878", backgroundColor: "#fff1e4" },
+        { value: "625", label: "7", color: "#46d6db", backgroundColor: "#daf7f8" },
+        { value: "624", label: "8", color: "#e1e1e1", backgroundColor: "#f9f9f9" },
+        { value: "623", label: "9", color: "#5484ed", backgroundColor: "#dde6fb" },
+        { value: "622", label: "10", color: "#51b749", backgroundColor: "#dcf1db" },
+        { value: "621", label: "11", color: "#dc2127", backgroundColor: "#f8d3d4" },
+      ],
+    };
+    return this._colorMappings;
+  }
+
+  _normalizePaletteKey(value) {
+    return String(value ?? "")
+      .trim()
+      .toLowerCase();
+  }
+
+  _resolvePaletteEntry(palette = [], value = "", text = "") {
+    const valKey = this._normalizePaletteKey(value);
+    const textKey = this._normalizePaletteKey(text);
+    return (
+      palette.find((entry) => this._normalizePaletteKey(entry.value) === valKey) ||
+      palette.find((entry) => this._normalizePaletteKey(entry.label) === valKey) ||
+      palette.find((entry) => this._normalizePaletteKey(entry.value) === textKey) ||
+      palette.find((entry) => this._normalizePaletteKey(entry.label) === textKey) ||
+      null
+    );
+  }
+
+  _setMappedSelectVisualState(select, entry) {
+    if (!select) return;
+    const wrapper = select.closest(".customDropdDownWrapper");
+    if (!entry) {
+      select.style.removeProperty("color");
+      select.style.removeProperty("background-color");
+      if (wrapper) {
+        wrapper.style.removeProperty("background-color");
+        wrapper.style.removeProperty("border-color");
+      }
+      return;
+    }
+
+    select.style.setProperty("color", entry.color, "important");
+    select.style.setProperty("background-color", entry.backgroundColor, "important");
+    if (wrapper) {
+      wrapper.style.setProperty("background-color", entry.backgroundColor, "important");
+      wrapper.style.setProperty("border-color", entry.color, "important");
+    }
+  }
+
+  _styleMappedSelectOptions(select, palette = []) {
+    if (!select) return;
+    Array.from(select.options || []).forEach((option) => {
+      const entry = this._resolvePaletteEntry(
+        palette,
+        option.dataset?.rawValue || option.value,
+        option.textContent
+      );
+      if (!entry) return;
+      option.style.color = entry.color;
+      option.style.backgroundColor = entry.backgroundColor;
+    });
+  }
+
+  _ensureEventColorOptions() {
+    const eventColorSelect = document.querySelector('[data-field="event_color"]');
+    if (!eventColorSelect) return;
+
+    const mapping = this.getColorMappings().eventColor;
+    const hasValues = Array.from(eventColorSelect.options || []).some(
+      (option) => String(option.value || "").trim() !== ""
+    );
+    const previous = eventColorSelect.value || "";
+
+    if (!hasValues) {
+      eventColorSelect.innerHTML = "";
+      const placeholder = document.createElement("option");
+      placeholder.value = "";
+      placeholder.disabled = true;
+      placeholder.selected = true;
+      placeholder.textContent = "Select";
+      eventColorSelect.appendChild(placeholder);
+
+      mapping.forEach((item) => {
+        const option = document.createElement("option");
+        option.value = item.label;
+        option.dataset.rawValue = item.value;
+        option.textContent = item.label;
+        eventColorSelect.appendChild(option);
+      });
+    }
+
+    if (previous) {
+      const match = Array.from(eventColorSelect.options || []).find((opt) => {
+        const optionValue = this._normalizePaletteKey(opt.value);
+        const optionText = this._normalizePaletteKey(opt.textContent);
+        const previousValue = this._normalizePaletteKey(previous);
+        return optionValue === previousValue || optionText === previousValue;
+      });
+      if (match) eventColorSelect.value = match.value;
+    }
+  }
+
+  setupColorMappedDropdowns() {
+    this._ensureEventColorOptions();
+
+    const mappings = [
+      {
+        selector: '[data-field="priority"]',
+        palette: this.getColorMappings().priority,
+      },
+      {
+        selector: '[data-field="status"]',
+        scope: '[data-job-section="job-section-appointment"]',
+        palette: this.getColorMappings().appointmentStatus,
+      },
+      {
+        selector: '[data-field="event_color"]',
+        palette: this.getColorMappings().eventColor,
+      },
+    ];
+
+    mappings.forEach(({ selector, scope, palette }) => {
+      const query = scope ? `${scope} ${selector}` : selector;
+      const select = document.querySelector(query);
+      if (!select) return;
+
+      this._styleMappedSelectOptions(select, palette);
+
+      if (!select.dataset.boundColorMapChange) {
+        select.dataset.boundColorMapChange = "true";
+        select.addEventListener("change", () => {
+          const current = this._resolvePaletteEntry(
+            palette,
+            select.value,
+            select.options?.[select.selectedIndex]?.textContent || ""
+          );
+          this._setMappedSelectVisualState(select, current);
+        });
+      }
+
+      const current = this._resolvePaletteEntry(
+        palette,
+        select.value,
+        select.options?.[select.selectedIndex]?.textContent || ""
+      );
+      this._setMappedSelectVisualState(select, current);
+    });
   }
 
   setupHeaderActionDelegates() {
@@ -4023,45 +4195,174 @@ export class JobDetailView {
     return dataObj;
   }
 
-  populateAppointmentFields(appointment = {}) {
-    if (!appointment || typeof appointment !== "object") return;
-
-    const mappedValues = {
-      status: appointment.Status ?? "",
-      title: appointment.Title ?? "",
-      start_time: this.formatDateForInput(appointment.Start_Time),
-      end_time: this.formatDateForInput(appointment.End_Time),
-      description: appointment.Description ?? "",
-      inquiry_id: appointment.Inquiry_ID ?? "",
-      job_id: appointment.Job_ID ?? "",
-      type: appointment.Type ?? "",
-      location_id:
-        appointment.Location_ID ??
-        appointment.Location?.id ??
-        appointment.Location?.ID ??
-        "",
-      host_id:
-        appointment.Host_ID ??
-        appointment?.Host?.Contact_Information?.id ??
-        appointment?.Host?.Contact_Information?.ID ??
-        "",
-      primary_guest_id: appointment.Primary_Guest_Contact_ID,
-    };
-
+  clearAppointmentForm() {
     const fields = document.querySelectorAll(
       '[data-job-section="job-section-appointment"] input, [data-job-section="job-section-appointment"] select, [data-job-section="job-section-appointment"] textarea'
     );
 
     fields?.forEach((field) => {
-      const key = field.getAttribute("data-field");
-      if (!key) return;
-      const value = mappedValues[key] ?? "";
-      if (field.type === "checkbox") {
-        field.checked = Boolean(value);
+      if (field.tagName === "SELECT") {
+        const firstOption = field.querySelector("option");
+        if (firstOption) {
+          field.value = firstOption.value ?? "";
+        } else {
+          field.value = "";
+        }
+      } else if (field.type === "checkbox") {
+        field.checked = false;
       } else {
-        field.value = value;
+        field.value = "";
       }
     });
+    this.setupColorMappedDropdowns();
+  }
+
+  formatAppointmentDate(value) {
+    if (!value) return "-";
+    const maybeNumber = Number(value);
+    if (Number.isFinite(maybeNumber)) {
+      return this.formatDateForInput(maybeNumber);
+    }
+    if (typeof value === "string" && value.includes("/")) return value;
+    return String(value);
+  }
+
+  renderAppointmentsTable(appointments = []) {
+    const target = document.getElementById("appointments-table");
+    if (!target) return;
+    const colorMappings = this.getColorMappings();
+
+    const clean = (value) => {
+      if (value === null || value === undefined) return "";
+      const text = String(value).trim();
+      return /^null$/i.test(text) ? "" : text;
+    };
+
+    const fullName = (first, last) =>
+      [clean(first), clean(last)].filter(Boolean).join(" ").trim();
+
+    const rows = Array.isArray(appointments) ? appointments : [];
+    if (!rows.length) {
+      target.innerHTML =
+        '<div class="text-sm text-slate-500 px-1 py-2">No appointments found.</div>';
+      return;
+    }
+
+    const table = document.createElement("table");
+    table.className = "w-full text-left border border-slate-200 rounded-lg overflow-hidden";
+
+    const thead = document.createElement("thead");
+    thead.className = "bg-slate-50 text-xs font-semibold uppercase text-slate-500";
+    thead.innerHTML = `
+      <tr>
+        <th class="px-3 py-2 border-b border-slate-200">Status</th>
+        <th class="px-3 py-2 border-b border-slate-200">Start - End</th>
+        <th class="px-3 py-2 border-b border-slate-200">Location</th>
+        <th class="px-3 py-2 border-b border-slate-200">Host</th>
+        <th class="px-3 py-2 border-b border-slate-200">Guest</th>
+        <th class="px-3 py-2 border-b border-slate-200">Event Color</th>
+      </tr>
+    `;
+    table.appendChild(thead);
+
+    const tbody = document.createElement("tbody");
+    tbody.className = "bg-white divide-y divide-slate-100";
+
+    rows.forEach((item) => {
+      const status = clean(item.Status ?? item.status) || "-";
+      const statusPalette = this._resolvePaletteEntry(
+        colorMappings.appointmentStatus,
+        item.Status ?? item.status,
+        status
+      );
+      const start = this.formatAppointmentDate(item.Start_Time ?? item.start_time);
+      const end = this.formatAppointmentDate(item.End_Time ?? item.end_time);
+
+      const locationName =
+        clean(item.Location_Property_Name) ||
+        clean(item.Location?.property_name) ||
+        clean(item.Location?.Property_Name) ||
+        clean(item.Location?.name) ||
+        "-";
+      const mapHref =
+        locationName !== "-"
+          ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+              locationName
+            )}`
+          : "";
+
+      const hostName =
+        fullName(
+          item.Host_Contact_Information_First_Name,
+          item.Host_Contact_Information_Last_Name
+        ) ||
+        fullName(
+          item?.Host?.Contact_Information?.first_name,
+          item?.Host?.Contact_Information?.last_name
+        ) ||
+        "-";
+
+      const guestName =
+        fullName(item.Primary_Guest_First_Name, item.Primary_Guest_Last_Name) ||
+        fullName(
+          item?.Primary_Guest?.first_name,
+          item?.Primary_Guest?.last_name
+        ) ||
+        "-";
+
+      const rawEventColor =
+        clean(item.Event_Color) ||
+        clean(item.event_color) ||
+        clean(item.Event_Colour) ||
+        clean(item.event_colour) ||
+        clean(item.Google_Calendar_Event_Color) ||
+        clean(item.google_calendar_event_color) ||
+        clean(item.Google_Calendar_Color) ||
+        clean(item.google_calendar_color);
+      const eventColorPalette = this._resolvePaletteEntry(
+        colorMappings.eventColor,
+        rawEventColor,
+        rawEventColor
+      );
+      const eventColorLabel = eventColorPalette?.label || rawEventColor || "-";
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td class="px-3 py-2 text-sm">
+          <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium"
+            style="${
+              statusPalette
+                ? `color:${statusPalette.color};background-color:${statusPalette.backgroundColor};`
+                : "color:#334155;background-color:#f1f5f9;"
+            }"
+          >${status}</span>
+        </td>
+        <td class="px-3 py-2 text-sm text-slate-700">${start} - ${end}</td>
+        <td class="px-3 py-2 text-sm">
+          ${
+            mapHref
+              ? `<a href="${mapHref}" target="_blank" rel="noopener noreferrer" class="text-sky-700 underline">${locationName}</a>`
+              : '<span class="text-slate-500">-</span>'
+          }
+        </td>
+        <td class="px-3 py-2 text-sm text-slate-700">${hostName}</td>
+        <td class="px-3 py-2 text-sm text-slate-700">${guestName}</td>
+        <td class="px-3 py-2 text-sm">
+          <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium"
+            style="${
+              eventColorPalette
+                ? `color:${eventColorPalette.color};background-color:${eventColorPalette.backgroundColor};`
+                : "color:#334155;background-color:#f1f5f9;"
+            }"
+          >${eventColorLabel}</span>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    table.appendChild(tbody);
+    target.innerHTML = "";
+    target.appendChild(table);
   }
 
   toggleModal(id) {

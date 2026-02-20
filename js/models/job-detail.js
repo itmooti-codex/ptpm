@@ -772,15 +772,18 @@ export class JobDetailModal {
       .where("job_id", jobId)
       .deSelectAll()
       .select([
+        "id",
         "status",
         "title",
         "start_time",
         "end_time",
         "description",
+        "event_color",
         "inquiry_id",
         "job_id",
         "location_id",
         "host_id",
+        "primary_guest_contact_id",
         "type",
       ])
       .include("Location", (q) => {
@@ -801,17 +804,19 @@ export class JobDetailModal {
 
     this.appointmentQuery.getOrInitQueryCalc?.();
     const result = await this.appointmentQuery.fetchDirect().toPromise();
-    const appointment = Array.isArray(result?.resp)
-      ? result.resp?.[0] ?? null
+    const appointments = Array.isArray(result?.resp)
+      ? result.resp
       : Array.isArray(result)
-      ? result?.[0] ?? null
-      : result?.resp ?? result ?? null;
+      ? result
+      : Array.isArray(result?.records)
+      ? result.records
+      : [];
 
     this.appointmentCallback = callback;
     this.subscribeToAppointmentChanges();
     if (typeof this.appointmentCallback === "function")
-      this.appointmentCallback(appointment);
-    return appointment;
+      this.appointmentCallback(appointments);
+    return appointments;
   }
 
   subscribeToAppointmentChanges() {
@@ -842,13 +847,13 @@ export class JobDetailModal {
       .pipe(window.toMainInstance?.(true) ?? ((x) => x))
       .subscribe({
         next: (payload) => {
-          const appointment = Array.isArray(payload?.records)
-            ? payload.records?.[0] ?? null
+          const appointments = Array.isArray(payload?.records)
+            ? payload.records
             : Array.isArray(payload)
-            ? payload?.[0] ?? null
-            : payload?.records ?? payload ?? null;
+            ? payload
+            : [];
           if (typeof this.appointmentCallback === "function") {
-            this.appointmentCallback(appointment);
+            this.appointmentCallback(appointments);
           }
         },
         error: () => {},

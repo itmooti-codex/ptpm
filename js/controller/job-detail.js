@@ -539,13 +539,21 @@ export class JobDetailController {
 
   handleCreateAppointment() {
     let button = document.getElementById("create-appointment");
+    if (!button) return;
     button.addEventListener("click", async () => {
       let getFieldValues = this.view.getApointmentsFieldValues();
       this.view.startLoading?.("Creating appointment...");
-      getFieldValues.job_id = this.view.getJobId();
+      const jobId = this.view.getJobId();
+      getFieldValues.job_id = jobId;
+      if (!jobId) {
+        this.view.handleFailure?.("Please save the job first before adding appointments.");
+        this.view.stopLoading?.();
+        return;
+      }
       try {
-        let result = await this.model.createAppointment(getFieldValues);
-        console.log(result);
+        await this.model.createAppointment(getFieldValues);
+        this.view.clearAppointmentForm?.();
+        this.renderAppointment();
         this.view.handleSuccess?.("Appointment created successfully.");
       } catch (err) {
         console.error("Failed to create appointment", err);
@@ -660,6 +668,9 @@ export class JobDetailController {
         if (rawValue === undefined || rawValue === null || rawValue === "") return "";
 
         const optionByNumber = {
+          125: "Low",
+          124: "Medium",
+          123: "High",
           1: "Low",
           2: "Medium",
           3: "High",
@@ -789,6 +800,7 @@ export class JobDetailController {
               String(JobDetailObj.priority).toLowerCase()
         );
         priorityEl.value = match ? match.value : JobDetailObj.priority;
+        priorityEl.dispatchEvent(new Event("change", { bubbles: true }));
       }
 
       const propertyId = pick(
@@ -867,14 +879,19 @@ export class JobDetailController {
         }
       }
 
+      this.view.setupColorMappedDropdowns?.();
       stopLoader();
     });
   }
 
   renderAppointment() {
     let jobId = this.view.getJobId();
-    this.model.fetchAppointmentByJobId(jobId, (appointment) => {
-      this.view.populateAppointmentFields?.(appointment);
+    if (!jobId) {
+      this.view.renderAppointmentsTable?.([]);
+      return;
+    }
+    this.model.fetchAppointmentByJobId(jobId, (appointments) => {
+      this.view.renderAppointmentsTable?.(appointments);
     });
   }
 }
