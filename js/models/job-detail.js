@@ -118,6 +118,34 @@ export class JobDetailModal {
     return [];
   }
 
+  #extractSingleActivityRecord(payload) {
+    const candidate =
+      payload?.data?.createActivity ??
+      payload?.payload?.data?.createActivity ??
+      payload?.data?.updateActivity ??
+      payload?.payload?.data?.updateActivity ??
+      payload?.data?.deleteActivity ??
+      payload?.payload?.data?.deleteActivity ??
+      null;
+    return candidate && typeof candidate === "object" ? candidate : null;
+  }
+
+  #mergeActivityRecord(record) {
+    if (!record || typeof record !== "object") return this.activities || [];
+    const current = Array.isArray(this.activities) ? [...this.activities] : [];
+    const id = String(record?.id ?? record?.ID ?? "");
+    if (!id) return current;
+    const index = current.findIndex(
+      (item) => String(item?.id ?? item?.ID ?? "") === id
+    );
+    if (index >= 0) {
+      current[index] = { ...current[index], ...record };
+    } else {
+      current.unshift(record);
+    }
+    return current;
+  }
+
   #coalescePayloadValue(payload = {}, keys = [], fallback = "") {
     for (const key of keys) {
       if (!Object.prototype.hasOwnProperty.call(payload, key)) continue;
@@ -1110,7 +1138,7 @@ export class JobDetailModal {
     let result = await this.activityQuery.fetchDirect().toPromise();
     this.activityCallback = callback;
     const resp = this.#extractActivityRecords(result);
-    this.lastActivityEmitSignature = "";
+    this.lastActivityEmitSignature = "__initial__";
     this.#emitActivitiesIfChanged(resp);
     this.subscribeToActivityChanges();
     return resp;
@@ -1119,20 +1147,18 @@ export class JobDetailModal {
   subscribeToActivityChanges() {
     this.activitySub?.unsubscribe?.();
     let liveObs = null;
-    if (typeof this.activityQuery.localSubscribe === "function") {
+    try {
+      if (typeof this.activityQuery.subscribe === "function")
+        liveObs = this.activityQuery.subscribe();
+    } catch (_) {
+      this.#logError("activity subscribe failed", _);
+    }
+
+    if (!liveObs && typeof this.activityQuery.localSubscribe === "function") {
       try {
         liveObs = this.activityQuery.localSubscribe();
       } catch (_) {
         this.#logError("activity localSubscribe failed", _);
-      }
-    }
-
-    if (!liveObs) {
-      try {
-        if (typeof this.activityQuery.subscribe === "function")
-          liveObs = this.activityQuery.subscribe();
-      } catch (_) {
-        this.#logError("activity subscribe failed", _);
       }
     }
 
@@ -1142,7 +1168,16 @@ export class JobDetailModal {
         .subscribe({
           next: (payload) => {
             const data = this.#extractActivityRecords(payload);
-            this.#emitActivitiesIfChanged(data);
+            if (data.length) {
+              this.#emitActivitiesIfChanged(data);
+              return;
+            }
+
+            const singleRecord = this.#extractSingleActivityRecord(payload);
+            if (singleRecord) {
+              const merged = this.#mergeActivityRecord(singleRecord);
+              this.#emitActivitiesIfChanged(merged);
+            }
           },
           error: () => {},
         });

@@ -5880,6 +5880,7 @@ export class JobDetailView {
         target.appendChild(tableHTML);
         this.bindActivityRowActions();
       }
+      this.renderInvoiceActivitiesTable(this.getInvoiceActivities());
     });
   }
 
@@ -6432,6 +6433,7 @@ export class JobDetailView {
         await this.model.addNewActivity(data);
         this.handleSuccess("Activity added successfully.");
       }
+      await this.renderActivitiesTable();
       this.resetActivityForm();
       return true;
     } catch (err) {
