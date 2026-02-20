@@ -636,7 +636,7 @@ export class JobDetailView {
       "Cancelled",
     ];
     const jobs = ["Job 1", "Job 2", "Job 3", "Job 4", "Job 5"];
-    const options = ["Option 1", "Option 2", "Option 3", "Option 4"];
+    const options = ["Option 1", "Option 2", "Option 3", "Option 4", "Option 5"];
 
     const addOptions = (selectEl, values = [], placeholder = "Select") => {
       if (!selectEl) return;
@@ -5274,6 +5274,26 @@ export class JobDetailView {
         if (id) this.activityRecordsById.set(id, item);
       });
 
+      const normalizeTask = (value) => {
+        if (value === null || value === undefined || value === "") return "";
+        const raw = String(value).trim();
+        const numeric = Number(raw);
+        if (Number.isInteger(numeric) && numeric >= 1 && numeric <= 5) {
+          return `Job ${numeric}`;
+        }
+        return raw;
+      };
+
+      const normalizeOption = (value) => {
+        if (value === null || value === undefined || value === "") return "";
+        const raw = String(value).trim();
+        const numeric = Number(raw);
+        if (Number.isInteger(numeric) && numeric >= 1 && numeric <= 5) {
+          return `Option ${numeric}`;
+        }
+        return raw;
+      };
+
       let mappedActivities = safeActivities.map((item) => {
         const serviceName =
           item.Service_Service_Name ||
@@ -5284,12 +5304,18 @@ export class JobDetailView {
         return {
           Id: item.ID || item.id || "",
           Services: serviceName,
-          Status: item.Activity_Status || item.activity_status || "",
+          Status:
+            item.Activity_Status ||
+            item.activity_status ||
+            item.Activity_status ||
+            item.Status ||
+            item.status ||
+            "",
           Price: item.Activity_Price || item.activity_price || "",
           "Invoice to Client":
             item.Invoice_to_Client ?? item.invoice_to_client ?? "",
-          Option: item.Option || item.option || "",
-          Task: item.Task || item.task || "",
+          Option: normalizeOption(item.Option || item.option || ""),
+          Task: normalizeTask(item.Task || item.task || ""),
         };
       });
       const tableHTML = this.createActivitiesTable(mappedActivities);
@@ -5312,13 +5338,12 @@ export class JobDetailView {
     thead.className = "bg-slate-100";
     const headerRow = document.createElement("tr");
     const headers = [
-      "Tasks",
+      "Task",
+      "Option",
       "Services",
       "Status",
       "Price",
-      // "Include in Quote",
       "Invoice to Client",
-      // "Option",
       "Actions",
     ];
     headers?.forEach((text, idx) => {
@@ -5331,7 +5356,6 @@ export class JobDetailView {
 
     const tbody = document.createElement("tbody");
     const baseTdClass = "px-7 py-3 align-middle leading-6";
-    let count = 0;
     rows?.forEach((item, idx) => {
       const tr = document.createElement("tr");
       tr.className = idx % 2 === 0 ? "bg-white" : "bg-slate-50";
@@ -5345,8 +5369,9 @@ export class JobDetailView {
       );
 
       const cells = [
-        { value: count++, className: "text-slate-800" },
-        { value: item.Services, className: "text-slate-800" },
+        { value: item.Task || "-", className: "text-slate-800" },
+        { value: item.Option || "-", className: "text-slate-800" },
+        { value: item.Services || "-", className: "text-slate-800" },
         {
           value: "",
           className: "",
@@ -5364,13 +5389,10 @@ export class JobDetailView {
           value: item.Price ? `$${item.Price}` : "",
           className: "text-slate-800",
         },
-        ,
         {
           value: item["Invoice to Client"],
           render: () => this.renderCheckbox(item["Invoice to Client"]),
         },
-        ,
-        // { value: item.Option }
         {
           render: () => {
             const divElement = document.createElement("div");
@@ -5995,7 +6017,12 @@ export class JobDetailView {
     );
     mapField(
       "activity_status",
-      activity.activity_status ?? activity.Activity_Status ?? ""
+      activity.activity_status ??
+        activity.Activity_Status ??
+        activity.Activity_status ??
+        activity.status ??
+        activity.Status ??
+        ""
     );
 
     const dateRequired =

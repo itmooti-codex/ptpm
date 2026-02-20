@@ -888,6 +888,7 @@ export class JobDetailModal {
         "activity_price",
         "activity_text",
         "activity_status",
+        "status",
         "date_required",
         "quoted_price",
         "quoted_text",
