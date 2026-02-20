@@ -1270,13 +1270,15 @@ export class JobDetailModal {
     if (activityPriceScalar === null) {
       delete payload.activity_price;
     } else {
-      payload.activity_price = activityPriceScalar;
+      payload.activity_price = parseFloat(activityPriceScalar.toFixed(2));
     }
 
-    let query = this.acitivityModel.mutation();
-    query.createOne(payload);
-    let result = await query.execute(true).toPromise();
-    return result;
+    return await this.#graphqlRequest(
+      `mutation createActivity($payload: ActivityCreateInput = null) {
+        createActivity(payload: $payload) { id activity_price }
+      }`,
+      { payload }
+    );
   }
 
   async updateActivity(activityId, activityObj = {}) {
@@ -1288,12 +1290,15 @@ export class JobDetailModal {
     if (activityPriceScalar === null) {
       delete payload.activity_price;
     } else {
-      payload.activity_price = activityPriceScalar;
+      payload.activity_price = parseFloat(activityPriceScalar.toFixed(2));
     }
 
-    const query = this.acitivityModel.mutation();
-    query.update((q) => q.where("id", activityId).set(payload));
-    return await query.execute(true).toPromise();
+    return await this.#graphqlRequest(
+      `mutation updateActivity($id: PeterpmActivityID!, $payload: ActivityUpdateInput = null) {
+        updateActivity(query: [{ where: { id: $id } }], payload: $payload) { id }
+      }`,
+      { id: activityId, payload }
+    );
   }
 
   async deleteActivity(activityId) {
