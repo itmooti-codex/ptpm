@@ -3418,168 +3418,257 @@ export class JobDetailView {
   }
 
   setupServiceProviderSearch(data = []) {
-    let contact_id = document.querySelector(
+    const contactIdEl = document.querySelector(
       '[data-serviceman-field="serviceman_id"]'
     );
-    let input = document.querySelector('[data-serviceman-search="input"]');
-    let results = document.querySelector('[data-serviceman-search="results"]');
-    if (!contact_id || !input || !results) return;
-    const state = { providers: data || [] };
+    const input = document.querySelector('[data-serviceman-search="input"]');
+    const results = document.querySelector('[data-serviceman-search="results"]');
+    if (!contactIdEl || !input || !results) return;
 
-    const render = (serviceman, search = "") => {
-      const query = search.trim().toLowerCase();
+    const cleanText = (value) => {
+      if (value === null || value === undefined) return "";
+      const text = String(value).trim();
+      return /^null$/i.test(text) ? "" : text;
+    };
 
-      const filtered = serviceman.filter((item) => {
-        if (!query) return true;
+    const normalizeId = (value) => {
+      const text = cleanText(value);
+      return text ? String(text) : "";
+    };
 
-        return (
-          (item.Contact_Information_First_Name || "")
-            .toLowerCase()
-            .includes(query) ||
-          (item.Contact_Information_Last_Name || "")
-            .toLowerCase()
-            .includes(query) ||
-          (item.Contact_Information_SMS_Number || "")
-            .toLowerCase()
-            .includes(query)
+    const normalizeProviders = (providers = []) =>
+      providers.map((item) => {
+        const info = item?.Contact_Information || {};
+        const id = normalizeId(item?.ID ?? item?.id ?? info?.id);
+        const firstName = cleanText(
+          item?.Contact_Information_First_Name ?? info?.first_name
         );
+        const lastName = cleanText(
+          item?.Contact_Information_Last_Name ?? info?.last_name
+        );
+        const fullName = [firstName, lastName].filter(Boolean).join(" ").trim();
+        return {
+          id,
+          firstName,
+          lastName,
+          fullName: fullName || "Unknown service provider",
+          phone: cleanText(
+            item?.Contact_Information_SMS_Number ?? info?.sms_number
+          ),
+          email: cleanText(item?.Contact_Information_Email ?? info?.email),
+          status: cleanText(item?.Status ?? item?.status) || "Unknown",
+          image:
+            cleanText(
+              item?.Contact_Information_Profile_Image ?? info?.profile_image
+            ) || "https://via.placeholder.com/40",
+        };
       });
 
-      const statusMap = {
-        Active: { text: "text-green-600", dot: "bg-green-600" },
-        Offline: { text: "text-slate-500", dot: "bg-slate-500" },
-        "On-Site": { text: "text-orange-600", dot: "bg-orange-600" },
-        Archived: { text: "text-purple-600", dot: "bg-purple-600" },
-        Looking: { text: "text-teal-700", dot: "bg-teal-700" },
-      };
+    if (
+      this._serviceProviderSearch?.input === input &&
+      this._serviceProviderSearch?.results === results
+    ) {
+      this._serviceProviderSearch.state.providers = normalizeProviders(data);
+      if (!this._serviceProviderSearch.state.selectedProviderId) {
+        this._serviceProviderSearch.state.selectedProviderId = normalizeId(
+          contactIdEl.value
+        );
+      }
+      this._serviceProviderSearch.render(input.value || "");
+      return;
+    }
 
-      const html = filtered
-        .map((item, idx) => {
-          const statusLabel = item.Status || "Looking";
-          const statusStyle = statusMap[statusLabel] || statusMap.Looking;
-          return `
-            <div
-              data-option-index="${idx}"
-              data-id="${item.ID}"
-              class="w-72 px-4 py-2 bg-white inline-flex justify-between items-center cursor-pointer"
-            >
-              <div class="flex justify-start items-center gap-2">
-                <img
-                  class="w-10 h-10 relative rounded-[32px] object-cover"
-                  src="${
-                    item.Contact_Information_Profile_Image ||
-                    "https://via.placeholder.com/40"
-                  }"
-                  alt=""
-                />
-                <div class="inline-flex flex-col justify-center items-start gap-1.5">
-                  <div data-provider-name class="justify-start text-neutral-700 text-sm font-medium font-['Inter'] leading-4">
-                    ${item.Contact_Information_First_Name} ${
-            item.Contact_Information_Last_Name
-          }
+    const state = {
+      providers: normalizeProviders(data),
+      filtered: [],
+      selectedProviderId: normalizeId(contactIdEl.value),
+      pendingProviderId: "",
+      pendingProvider: null,
+      saving: false,
+    };
+
+    const statusMap = {
+      Active: { text: "text-green-600", dot: "bg-green-600" },
+      Offline: { text: "text-slate-500", dot: "bg-slate-500" },
+      "On-Site": { text: "text-orange-600", dot: "bg-orange-600" },
+      Archived: { text: "text-purple-600", dot: "bg-purple-600" },
+      Looking: { text: "text-teal-700", dot: "bg-teal-700" },
+      Unknown: { text: "text-slate-500", dot: "bg-slate-400" },
+    };
+
+    const getCurrentSelectedId = () =>
+      normalizeId(
+        state.pendingProviderId || state.selectedProviderId || contactIdEl.value
+      );
+
+    const render = (search = "") => {
+      const query = cleanText(search).toLowerCase();
+      const selectedId = getCurrentSelectedId();
+
+      state.filtered = state.providers.filter((provider) => {
+        if (!query) return true;
+        return [provider.fullName, provider.phone, provider.email, provider.status]
+          .filter(Boolean)
+          .some((value) => String(value).toLowerCase().includes(query));
+      });
+
+      const rows = state.filtered.length
+        ? state.filtered
+            .map((provider, idx) => {
+              const isSelected = selectedId && provider.id === selectedId;
+              const statusStyle = statusMap[provider.status] || statusMap.Unknown;
+              const rowClass = isSelected
+                ? "bg-[#003882] text-white ring-1 ring-[#003882]"
+                : "bg-white text-slate-700 hover:bg-slate-50";
+              const nameClass = isSelected ? "text-white" : "text-neutral-700";
+              const phoneClass = isSelected ? "text-slate-100" : "text-slate-500";
+              const statusTextClass = isSelected
+                ? "text-white"
+                : statusStyle.text;
+              const statusDotClass = isSelected ? "bg-white" : statusStyle.dot;
+              const phoneDisplay = provider.phone || "-";
+
+              return `
+                <button
+                  type="button"
+                  data-option-index="${idx}"
+                  data-id="${provider.id}"
+                  class="w-full px-4 py-2 border-b border-slate-100 flex items-center justify-between gap-3 cursor-pointer transition ${rowClass}"
+                >
+                  <div class="flex min-w-0 flex-1 items-center gap-2">
+                    <img
+                      class="w-10 h-10 rounded-[32px] object-cover shrink-0"
+                      src="${provider.image}"
+                      alt=""
+                    />
+                    <div class="min-w-0 flex flex-col justify-center items-start gap-1.5">
+                      <div data-provider-name class="truncate text-sm font-medium font-['Inter'] leading-4 ${nameClass}">
+                        ${provider.fullName}
+                      </div>
+                      <div data-provider-phone class="truncate text-xs font-normal font-['Inter'] leading-3 ${phoneClass}">
+                        ${phoneDisplay}
+                      </div>
+                    </div>
                   </div>
-                  <div data-provider-phone class="justify-start text-slate-500 text-xs font-normal font-['Inter'] leading-3">
-                    ${item.Contact_Information_SMS_Number}
+                  <div class="flex shrink-0 items-center justify-end gap-1">
+                    <div class="w-3 h-3 rounded-full ${statusDotClass}"></div>
+                    <div data-provider-status class="text-xs font-medium font-['Inter'] leading-4 ${statusTextClass}">
+                      ${provider.status}
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div data-property-1="${statusLabel}" class="py-0.5 flex justify-center items-center gap-1">
-                <div class="w-3 h-3 relative">
-                  <div class="w-3 h-3 left-0 top-0 absolute bg-neutral-200 rounded-full"></div>
-                  <div class="w-1.5 h-1.5 left-[3px] top-[3px] absolute ${
-                    statusStyle.dot
-                  } rounded-full"></div>
-                </div>
-                <div data-provider-status class="text-center justify-start ${
-                  statusStyle.text
-                } text-xs font-medium font-['Inter'] leading-4">
-                  ${statusLabel}
-                </div>
-              </div>
-            </div>
-          `;
-        })
-        .join("");
+                </button>
+              `;
+            })
+            .join("")
+        : `<div class="px-4 py-3 text-sm text-slate-500">No service providers found.</div>`;
+
+      const confirmDisabled =
+        state.saving || !normalizeId(state.pendingProviderId || state.selectedProviderId);
+      const confirmButtonClass = confirmDisabled
+        ? "opacity-60 pointer-events-none"
+        : "";
 
       const footer = `
-        <div data-field="confirm-allocation" class="p-2 bg-[#003882] flex justify-center sticky bottom-0 hover:!bg-[#003882] active:!bg-[#003882] hover:bg-[#003882] active:bg-[#003882] focus:bg-[#003882] focus-visible:bg-[#003882]">
-          <button class="!text-white !text-sm !font-medium !flex !items-center !gap-2 hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm">
-            Confirm Allocation ✓
+        <div data-field="confirm-allocation" class="p-2 bg-[#003882] flex justify-center sticky bottom-0">
+          <button
+            type="button"
+            class="!text-white !text-sm !font-medium !flex !items-center !gap-2 ${confirmButtonClass}"
+            ${confirmDisabled ? "disabled" : ""}
+          >
+            ${state.saving ? "Saving..." : "Confirm Allocation ✓"}
           </button>
         </div>
       `;
 
-      results.innerHTML = html + footer;
+      results.innerHTML = rows + footer;
       results.classList.remove("hidden");
     };
 
-    // When input is focused
-    input.addEventListener("focus", () => {
-      render(state.providers, input.value);
-    });
-
-    // Live search
-    input.addEventListener("input", () => {
-      render(state.providers, input.value);
-    });
-
-    let serviceman = null;
-    let previousSelected = null;
-
-    const toggleSelection = (item) => {
-      if (previousSelected && previousSelected !== item) {
-        previousSelected.classList.remove("bg-[#003882]", "text-white");
-        previousSelected
-          .querySelectorAll("[data-provider-name]")
-          .forEach((el) => el.classList.remove("text-white"));
-        previousSelected
-          .querySelectorAll("[data-provider-phone]")
-          .forEach((el) => el.classList.remove("text-slate-100"));
-        previousSelected
-          .querySelectorAll("[data-provider-status]")
-          .forEach((el) => el.classList.remove("text-white"));
-      }
-
-      item.classList.add("bg-[#003882]", "text-white");
-      item
-        .querySelectorAll("[data-provider-name]")
-        .forEach((el) => el.classList.add("text-white"));
-      item
-        .querySelectorAll("[data-provider-phone]")
-        .forEach((el) => el.classList.add("text-slate-100"));
-      item
-        .querySelectorAll("[data-provider-status]")
-        .forEach((el) => el.classList.add("text-white"));
-
-      previousSelected = item;
+    const applySelection = (provider) => {
+      if (!provider) return;
+      state.pendingProviderId = normalizeId(provider.id);
+      state.pendingProvider = provider;
+      render(input.value || "");
     };
 
-    // Double click item to select
-    results.addEventListener("dblclick", (e) => {
-      const item = e.target.closest("div[data-option-index]");
-      if (!item) return;
-      toggleSelection(item);
+    const confirmSelection = async () => {
+      const selectedId = normalizeId(state.pendingProviderId || state.selectedProviderId);
+      if (!selectedId || state.saving) return;
 
-      const idx = item.getAttribute("data-option-index");
-      serviceman = state.providers[Number(idx)];
+      const selectedProvider =
+        state.pendingProvider ||
+        state.filtered.find((provider) => normalizeId(provider.id) === selectedId) ||
+        state.providers.find((provider) => normalizeId(provider.id) === selectedId);
+      if (!selectedProvider) return;
 
-      const confirm_allocation_btn = document.querySelector(
-        '[data-field="confirm-allocation"]'
-      );
-      confirm_allocation_btn.addEventListener("click", () => {
-        input.value =
-          "Allocated to " +
-          serviceman.Contact_Information_First_Name +
-          " " +
-          serviceman.Contact_Information_Last_Name;
-        contact_id.value = serviceman.ID;
+      state.saving = true;
+      render(input.value || "");
+      let isSuccess = false;
+
+      try {
+        const jobId = this.getJobId();
+        if (jobId) {
+          await this.model.updateJob(jobId, {
+            primary_service_provider_id: selectedId,
+          });
+        }
+
+        contactIdEl.value = selectedId;
+        input.value = selectedProvider.fullName;
+        state.selectedProviderId = selectedId;
+        state.pendingProviderId = "";
+        state.pendingProvider = null;
         results.classList.add("hidden");
-      });
+        isSuccess = true;
+      } catch (error) {
+        console.error("Failed to allocate service provider", error);
+        this.handleFailure("Failed to allocate service provider. Please try again.");
+      } finally {
+        state.saving = false;
+        if (!isSuccess) {
+          render(input.value || "");
+        }
+      }
+    };
+
+    input.addEventListener("focus", () => {
+      render(input.value || "");
+    });
+
+    input.addEventListener("input", () => {
+      state.pendingProviderId = "";
+      state.pendingProvider = null;
+      render(input.value || "");
+    });
+
+    results.addEventListener("click", async (e) => {
+      const option = e.target.closest("[data-option-index]");
+      if (option) {
+        const idx = Number(option.getAttribute("data-option-index"));
+        const provider = state.filtered[idx];
+        applySelection(provider);
+        return;
+      }
+
+      const confirmBtn = e.target.closest('[data-field="confirm-allocation"]');
+      if (confirmBtn) {
+        await confirmSelection();
+      }
     });
 
     this.updateServiceProviderSearch = (nextProviders = []) => {
-      state.providers = nextProviders;
-      render(state.providers, input.value);
+      state.providers = normalizeProviders(nextProviders);
+      if (!state.selectedProviderId) {
+        state.selectedProviderId = normalizeId(contactIdEl.value);
+      }
+      render(input.value || "");
+    };
+
+    this._serviceProviderSearch = {
+      input,
+      results,
+      state,
+      render,
     };
 
     document.addEventListener("click", (e) => {

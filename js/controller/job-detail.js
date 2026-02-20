@@ -730,6 +730,12 @@ export class JobDetailController {
         (el) => !el.disabled && el.offsetParent !== null
       );
 
+      const cleanText = (value) => {
+        if (value === undefined || value === null) return "";
+        const text = String(value).trim();
+        return /^null$/i.test(text) ? "" : text;
+      };
+
       const serviceProviderFirstName = pick(
         [
           "Primary_Service_Provider_Contact_Information_First_Name",
@@ -748,7 +754,10 @@ export class JobDetailController {
         ],
         ""
       );
-      const serviceProviderName = [serviceProviderFirstName, serviceProviderLastName]
+      const serviceProviderName = [
+        cleanText(serviceProviderFirstName),
+        cleanText(serviceProviderLastName),
+      ]
         .filter(Boolean)
         .join(" ");
 
