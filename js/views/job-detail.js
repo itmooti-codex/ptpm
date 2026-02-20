@@ -65,8 +65,6 @@ export class JobDetailView {
   }
 
   async init() {
-    this.setupSectionNavigation();
-    this.setupSidebarToggle();
     this.setupCancelButton();
     this.setupResetButton();
     this.setupSaveDraftButton();
@@ -83,6 +81,8 @@ export class JobDetailView {
       await this.createAddMaterialsSection();
       this.createUploadsSection();
       await this.createInvoiceSection();
+      this.setupSectionNavigation();
+      this.setupSidebarToggle();
       this.setupContactTypeToggle();
       this.model.fetchContacts((list) => this.setupClientSearch(list || []));
       this.model
