@@ -1018,14 +1018,18 @@ export class JobDetailModal {
 
   async addNewActivity(acitivityObj) {
     const payload = { ...(acitivityObj || {}) };
-    const serviceId =
+    const serviceIdRaw =
       payload.service_id ||
       payload.Service_ID ||
       payload.serviceId ||
       payload.serviceid ||
       "";
-    const serviceName =
-      payload.service_name || payload.Service_Name || payload.serviceName || "";
+    const normalizedServiceId =
+      serviceIdRaw === null || serviceIdRaw === undefined || String(serviceIdRaw).trim() === ""
+        ? ""
+        : Number.isFinite(Number(serviceIdRaw))
+        ? Number(serviceIdRaw)
+        : serviceIdRaw;
 
     const rawActivityPrice =
       payload.activity_price ??
@@ -1034,24 +1038,26 @@ export class JobDetailModal {
       "";
     if (rawActivityPrice !== "" && rawActivityPrice !== null && rawActivityPrice !== undefined) {
       const parsed = Number(String(rawActivityPrice).replace(/[^0-9.-]+/g, ""));
-      payload.activity_price = Number.isFinite(parsed) ? parsed : rawActivityPrice;
+      const normalizedActivityPrice = Number.isFinite(parsed)
+        ? parsed
+        : rawActivityPrice;
+      payload.activity_price = normalizedActivityPrice;
+      payload.Activity_Price = normalizedActivityPrice;
     }
 
-    if (serviceId) {
-      payload.Service = { id: serviceId };
-    } else if (serviceName) {
-      payload.Service = { service_name: serviceName };
+    if (normalizedServiceId !== "") {
+      payload.service_id = normalizedServiceId;
     }
 
-    delete payload.service_id;
     delete payload.Service_ID;
     delete payload.serviceId;
     delete payload.serviceid;
     delete payload.service_name;
     delete payload.Service_Name;
     delete payload.serviceName;
-    delete payload.Activity_Price;
     delete payload.activityPrice;
+    delete payload.Service;
+    delete payload.service;
 
     let query = this.acitivityModel.mutation();
     query.createOne(payload);
@@ -1062,14 +1068,18 @@ export class JobDetailModal {
   async updateActivity(activityId, activityObj = {}) {
     if (!activityId) throw new Error("Activity id is required");
     const payload = { ...activityObj };
-    const serviceId =
+    const serviceIdRaw =
       payload.service_id ||
       payload.Service_ID ||
       payload.serviceId ||
       payload.serviceid ||
       "";
-    const serviceName =
-      payload.service_name || payload.Service_Name || payload.serviceName || "";
+    const normalizedServiceId =
+      serviceIdRaw === null || serviceIdRaw === undefined || String(serviceIdRaw).trim() === ""
+        ? ""
+        : Number.isFinite(Number(serviceIdRaw))
+        ? Number(serviceIdRaw)
+        : serviceIdRaw;
 
     const rawActivityPrice =
       payload.activity_price ??
@@ -1078,24 +1088,26 @@ export class JobDetailModal {
       "";
     if (rawActivityPrice !== "" && rawActivityPrice !== null && rawActivityPrice !== undefined) {
       const parsed = Number(String(rawActivityPrice).replace(/[^0-9.-]+/g, ""));
-      payload.activity_price = Number.isFinite(parsed) ? parsed : rawActivityPrice;
+      const normalizedActivityPrice = Number.isFinite(parsed)
+        ? parsed
+        : rawActivityPrice;
+      payload.activity_price = normalizedActivityPrice;
+      payload.Activity_Price = normalizedActivityPrice;
     }
 
-    if (serviceId) {
-      payload.Service = { id: serviceId };
-    } else if (serviceName) {
-      payload.Service = { service_name: serviceName };
+    if (normalizedServiceId !== "") {
+      payload.service_id = normalizedServiceId;
     }
 
-    delete payload.service_id;
     delete payload.Service_ID;
     delete payload.serviceId;
     delete payload.serviceid;
     delete payload.service_name;
     delete payload.Service_Name;
     delete payload.serviceName;
-    delete payload.Activity_Price;
     delete payload.activityPrice;
+    delete payload.Service;
+    delete payload.service;
 
     const query = this.acitivityModel.mutation();
     query.update((q) => q.where("id", activityId).set(payload));
