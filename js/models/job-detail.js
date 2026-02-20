@@ -1092,6 +1092,7 @@ export class JobDetailModal {
       .select([
         "id",
         "service_name",
+        "service_description",
         "description",
         "service_price",
         "standard_warranty",
