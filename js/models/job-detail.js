@@ -1105,6 +1105,28 @@ export class JobDetailModal {
     this.jobInvoiceQuery = this.jobModel
       .query()
       .where("id", jobId)
+      .select([
+        "id",
+        "account_type",
+        "client_entity_id",
+        "client_individual_id",
+        "contact_id",
+        "property_id",
+        "primary_service_provider_id",
+        "priority",
+        "job_priority",
+        "priority_level",
+        "invoice_number",
+        "xero_invoice_status",
+        "invoice_id",
+        "invoice_date",
+        "due_date",
+        "invoice_total",
+        "payment_id",
+        "payment_method",
+        "invoice_url_client",
+        "xero_invoice_pdf",
+      ])
       .include("Client_Entity", (q) => {
         q.select(["name", "id"]);
       })

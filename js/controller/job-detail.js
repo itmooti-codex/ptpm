@@ -57,7 +57,6 @@ export class JobDetailController {
     // this.onDealInfoButtonClicked();
     this.onEditBtnClicked();
     this.initAutocomplete();
-    this.setupSearches();
     this.handlePropertySearch();
     this.showHideAddAddressModal();
     this.view.renderBuildingFeaturesDropdown?.(this.buildingFeatures);
@@ -91,63 +90,73 @@ export class JobDetailController {
   }
 
   async setupSearches() {
-    try {
-      await this.model.fetchContacts((data) => {
-        const list = Array.isArray(data) ? data : [];
-        this.view.setupClientSearch(list);
-        this.contacts = list;
-        this.setupOptions("contact");
-      });
-    } catch (err) {
-      console.error("Failed to load contacts", err);
-    }
+    if (this._searchesLoaded) return;
+    if (this._searchesPromise) return this._searchesPromise;
 
-    try {
-      await this.model.fetchServiceProviders((data) => {
-        const list = Array.isArray(data) ? data : [];
-        this.serviceProvider = list;
-        this.view.setupServiceProviderSearch(list);
-        this.setupOptions("serviceProvider");
-      });
-    } catch (err) {
-      console.error("Failed to load service providers", err);
-    }
+    this._searchesPromise = (async () => {
+      try {
+        await this.model.fetchContacts((data) => {
+          const list = Array.isArray(data) ? data : [];
+          this.view.setupClientSearch(list);
+          this.contacts = list;
+          this.setupOptions("contact");
+        });
+      } catch (err) {
+        console.error("Failed to load contacts", err);
+      }
 
-    try {
-      await this.model.fetchProperty((data) => {
-        const list = Array.isArray(data) ? data : [];
-        this.properties = list;
-        if (!this._propertySearchInit) {
-          this.view.setupPropertySearch(list);
-          this._propertySearchInit = true;
-        } else if (typeof this.view.updatePropertySearch === "function") {
-          this.view.updatePropertySearch(list);
-        }
-        this.setupOptions("properties");
-      });
-    } catch (err) {
-      console.error("Failed to load properties", err);
-    }
+      try {
+        await this.model.fetchServiceProviders((data) => {
+          const list = Array.isArray(data) ? data : [];
+          this.serviceProvider = list;
+          this.view.setupServiceProviderSearch(list);
+          this.setupOptions("serviceProvider");
+        });
+      } catch (err) {
+        console.error("Failed to load service providers", err);
+      }
 
-    try {
-      await this.model.fetchInquiries((data) => {
-        const list = Array.isArray(data) ? data : [];
-        this.inquiries = list;
-        this.setupOptions("inquiry");
-      });
-    } catch (err) {
-      console.error("Failed to load inquiries", err);
-    }
+      try {
+        await this.model.fetchProperty((data) => {
+          const list = Array.isArray(data) ? data : [];
+          this.properties = list;
+          if (!this._propertySearchInit) {
+            this.view.setupPropertySearch(list);
+            this._propertySearchInit = true;
+          } else if (typeof this.view.updatePropertySearch === "function") {
+            this.view.updatePropertySearch(list);
+          }
+          this.setupOptions("properties");
+        });
+      } catch (err) {
+        console.error("Failed to load properties", err);
+      }
 
-    try {
-      await this.model.fetchJobs((data) => {
-        const list = Array.isArray(data) ? data : [];
-        this.jobs = list;
-        this.setupOptions("job");
-      });
-    } catch (err) {
-      console.error("Failed to load jobs", err);
-    }
+      try {
+        await this.model.fetchInquiries((data) => {
+          const list = Array.isArray(data) ? data : [];
+          this.inquiries = list;
+          this.setupOptions("inquiry");
+        });
+      } catch (err) {
+        console.error("Failed to load inquiries", err);
+      }
+
+      try {
+        await this.model.fetchJobs((data) => {
+          const list = Array.isArray(data) ? data : [];
+          this.jobs = list;
+          this.setupOptions("job");
+        });
+      } catch (err) {
+        console.error("Failed to load jobs", err);
+      }
+      this._searchesLoaded = true;
+    })().finally(() => {
+      this._searchesPromise = null;
+    });
+
+    return this._searchesPromise;
   }
 
   onDealInfoButtonClicked() {
@@ -630,6 +639,8 @@ export class JobDetailController {
           [
             "priority",
             "Priority",
+            "priorty",
+            "Priorty",
             "job_priority",
             "Job_Priority",
             "priority_level",
@@ -672,6 +683,9 @@ export class JobDetailController {
         const text = String(rawValue).trim();
         if (!text) return "";
         const lower = text.toLowerCase();
+        if (["l", "low"].includes(lower)) return "Low";
+        if (["m", "med", "medium"].includes(lower)) return "Medium";
+        if (["h", "high"].includes(lower)) return "High";
 
         if (optionByNumber[Number(lower)]) return optionByNumber[Number(lower)];
         if (lower.includes("high")) return "High";
