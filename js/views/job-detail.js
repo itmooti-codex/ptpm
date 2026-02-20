@@ -2164,7 +2164,12 @@ export class JobDetailView {
         { value: item.Services || "-", className: "text-slate-800" },
         {
           value: item["Invoice to Client"],
-          render: () => this.renderCheckbox(item["Invoice to Client"]),
+          render: () => {
+            const checkbox = this.renderCheckbox(item["Invoice to Client"]);
+            checkbox.classList.remove("justify-center");
+            checkbox.classList.add("items-center");
+            return checkbox;
+          },
         },
         {
           value: this.formatCurrency(priceValue) || "$0.00",
