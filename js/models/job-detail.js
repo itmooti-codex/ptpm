@@ -1027,6 +1027,16 @@ export class JobDetailModal {
     const serviceName =
       payload.service_name || payload.Service_Name || payload.serviceName || "";
 
+    const rawActivityPrice =
+      payload.activity_price ??
+      payload.Activity_Price ??
+      payload.activityPrice ??
+      "";
+    if (rawActivityPrice !== "" && rawActivityPrice !== null && rawActivityPrice !== undefined) {
+      const parsed = Number(String(rawActivityPrice).replace(/[^0-9.-]+/g, ""));
+      payload.activity_price = Number.isFinite(parsed) ? parsed : rawActivityPrice;
+    }
+
     if (serviceId) {
       payload.Service = { id: serviceId };
     } else if (serviceName) {
@@ -1040,6 +1050,8 @@ export class JobDetailModal {
     delete payload.service_name;
     delete payload.Service_Name;
     delete payload.serviceName;
+    delete payload.Activity_Price;
+    delete payload.activityPrice;
 
     let query = this.acitivityModel.mutation();
     query.createOne(payload);
@@ -1059,6 +1071,16 @@ export class JobDetailModal {
     const serviceName =
       payload.service_name || payload.Service_Name || payload.serviceName || "";
 
+    const rawActivityPrice =
+      payload.activity_price ??
+      payload.Activity_Price ??
+      payload.activityPrice ??
+      "";
+    if (rawActivityPrice !== "" && rawActivityPrice !== null && rawActivityPrice !== undefined) {
+      const parsed = Number(String(rawActivityPrice).replace(/[^0-9.-]+/g, ""));
+      payload.activity_price = Number.isFinite(parsed) ? parsed : rawActivityPrice;
+    }
+
     if (serviceId) {
       payload.Service = { id: serviceId };
     } else if (serviceName) {
@@ -1072,6 +1094,8 @@ export class JobDetailModal {
     delete payload.service_name;
     delete payload.Service_Name;
     delete payload.serviceName;
+    delete payload.Activity_Price;
+    delete payload.activityPrice;
 
     const query = this.acitivityModel.mutation();
     query.update((q) => q.where("id", activityId).set(payload));

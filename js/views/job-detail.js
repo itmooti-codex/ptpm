@@ -4579,6 +4579,14 @@ export class JobDetailView {
     return "";
   }
 
+  normalizeActivityPriceValue(value) {
+    if (this._isBlankValue(value)) return "";
+    const raw = String(value).trim();
+    const numeric = Number(raw.replace(/[^0-9.-]+/g, ""));
+    if (Number.isFinite(numeric)) return numeric;
+    return raw;
+  }
+
   getActivitySelectedServiceContext() {
     const primaryServiceSelect = document.querySelector(
       '[data-section="add-activities"] [data-service-role="primary"]'
@@ -4646,6 +4654,9 @@ export class JobDetailView {
     );
     const serviceContext = this.getActivitySelectedServiceContext();
     const selectedService = serviceContext.service || {};
+    const activityPriceInput = document.querySelector(
+      '[data-section="add-activities"] [data-field="activity_price"]'
+    );
 
     data.service_id = this._coalesceNonBlank(
       serviceContext.serviceId,
@@ -4656,10 +4667,12 @@ export class JobDetailView {
       data.service_name
     );
 
-    data.activity_price = this._coalesceNonBlank(
+    const resolvedActivityPrice = this._coalesceNonBlank(
       data.activity_price,
+      activityPriceInput?.value,
       selectedService.price
     );
+    data.activity_price = this.normalizeActivityPriceValue(resolvedActivityPrice);
     data.activity_text = this._coalesceNonBlank(
       data.activity_text,
       selectedService.description
