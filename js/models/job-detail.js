@@ -105,14 +105,45 @@ export class JobDetailModal {
 
   #extractActivityRecords(payload) {
     if (Array.isArray(payload?.records)) return payload.records;
+    if (payload?.records && typeof payload.records === "object") return [payload.records];
     if (Array.isArray(payload?.resp)) return payload.resp;
+    if (payload?.resp && typeof payload.resp === "object") return [payload.resp];
     if (Array.isArray(payload?.data?.subscribeToCalcActivities)) {
       return payload.data.subscribeToCalcActivities;
     }
+    if (
+      payload?.data?.subscribeToCalcActivities &&
+      typeof payload.data.subscribeToCalcActivities === "object"
+    ) {
+      return [payload.data.subscribeToCalcActivities];
+    }
     if (Array.isArray(payload?.payload?.records)) return payload.payload.records;
+    if (payload?.payload?.records && typeof payload.payload.records === "object") {
+      return [payload.payload.records];
+    }
     if (Array.isArray(payload?.payload?.resp)) return payload.payload.resp;
+    if (payload?.payload?.resp && typeof payload.payload.resp === "object") {
+      return [payload.payload.resp];
+    }
     if (Array.isArray(payload?.payload?.data?.subscribeToCalcActivities)) {
       return payload.payload.data.subscribeToCalcActivities;
+    }
+    if (
+      payload?.payload?.data?.subscribeToCalcActivities &&
+      typeof payload.payload.data.subscribeToCalcActivities === "object"
+    ) {
+      return [payload.payload.data.subscribeToCalcActivities];
+    }
+    if (
+      payload &&
+      typeof payload === "object" &&
+      (payload.id || payload.ID) &&
+      ("task" in payload ||
+        "Task" in payload ||
+        "activity_status" in payload ||
+        "Activity_Status" in payload)
+    ) {
+      return [payload];
     }
     if (Array.isArray(payload)) return payload;
     return [];
@@ -226,7 +257,7 @@ export class JobDetailModal {
         ""
       ),
       date_required: dateRequired,
-      activity_price: activityPrice,
+      activity_price: String(activityPrice ?? ""),
       activity_status: this.#coalescePayloadValue(
         source,
         ["activity_status", "Activity_Status", "Activity_status", "status", "Status"],
@@ -1224,6 +1255,7 @@ export class JobDetailModal {
     const payload = this.#buildActivityMutationPayload(acitivityObj, {
       includeJobId: true,
     });
+    payload.activity_price = String(payload.activity_price ?? "");
 
     let query = this.acitivityModel.mutation();
     query.createOne(payload);
@@ -1236,6 +1268,7 @@ export class JobDetailModal {
     const payload = this.#buildActivityMutationPayload(activityObj, {
       includeJobId: false,
     });
+    payload.activity_price = String(payload.activity_price ?? "");
 
     const query = this.acitivityModel.mutation();
     query.update((q) => q.where("id", activityId).set(payload));
