@@ -105,6 +105,14 @@ export class JobDetailView {
         { value: "124", label: "Medium", color: "#f57c00", backgroundColor: "#fde5cc" },
         { value: "123", label: "High", color: "#d84315", backgroundColor: "#f7d9d0" },
       ],
+      activityStatus: [
+        { value: "584", label: "Quoted", color: "#8e24aa", backgroundColor: "#e8d3ee" },
+        { value: "585", label: "To Be Scheduled", color: "#fb8c00", backgroundColor: "#fee8cc" },
+        { value: "606", label: "Reschedule", color: "#ff5722", backgroundColor: "#ffddd3" },
+        { value: "166", label: "Scheduled", color: "#00acc1", backgroundColor: "#cceef3" },
+        { value: "165", label: "Completed", color: "#43a047", backgroundColor: "#d9ecda" },
+        { value: "583", label: "Cancelled", color: "#000000", backgroundColor: "#cccccc" },
+      ],
       appointmentStatus: [
         { value: "640", label: "New", color: "#8e24aa", backgroundColor: "#e8d3ee" },
         { value: "639", label: "To Be Scheduled", color: "#fb8c00", backgroundColor: "#fee8cc" },
@@ -233,6 +241,11 @@ export class JobDetailView {
         selector: '[data-field="status"]',
         scope: '[data-job-section="job-section-appointment"]',
         palette: this.getColorMappings().appointmentStatus,
+      },
+      {
+        selector: '[data-field="activity_status"]',
+        scope: '[data-section="add-activities"]',
+        palette: this.getColorMappings().activityStatus,
       },
       {
         selector: '[data-field="event_color"]',
@@ -470,7 +483,7 @@ export class JobDetailView {
             </div>
           </div>
 
-          <div class="hidden flex flex-col">
+          <div class="flex flex-col">
             <label class="text-neutral-700 text-sm font-medium hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 ">Options</label>
             <div class="relative">
               <select data-field="option" data-activity-select="option" class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 !block appearance-none hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700  hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default"></select>
@@ -496,7 +509,7 @@ export class JobDetailView {
 
           <div data-element= "service_name_secondary" class="hidden flex flex-col">
             <label class="text-neutral-700 text-sm font-medium hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 ">Option Service</label>
-            <div class="relative">
+            <div class="relative customDropdDownWrapper customDropdownWrapper">
               <select data-service-role="option" data-activity-select="service" class="hidden mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 !block appearance-none hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700  hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default"></select>
               <span class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400 mt-2">
                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -2269,15 +2282,6 @@ export class JobDetailView {
     const rows = Array.isArray(records) && records.length ? records : demoRows;
 
     // Status → Tailwind pill styles
-    const statusStyles = {
-      Quoted: "bg-purple-100 text-purple-700",
-      "To Be Scheduled": "bg-yellow-100 text-yellow-700",
-      Scheduled: "bg-blue-100 text-blue-700",
-      Completed: "bg-emerald-100 text-emerald-700",
-      Cancelled: "bg-red-100 text-red-700",
-      Pending: "bg-gray-100 text-gray-700",
-    };
-
     // -------- Create wrapper --------
     const modalWrapper = document.createElement("div");
     modalWrapper.id = "activityListModalWrapper";
@@ -2324,7 +2328,11 @@ export class JobDetailView {
       const tbody = document.getElementById("activityListTbody");
       tbody.innerHTML = data
         .map((r, i) => {
-          const pill = statusStyles[r.status] || "bg-gray-100 text-gray-700";
+          const statusPalette = this._resolvePaletteEntry(
+            this.getColorMappings().activityStatus,
+            r.status,
+            r.status
+          );
           const price =
             typeof r.price === "number" ? `$${r.price.toFixed(2)}` : r.price;
 
@@ -2343,7 +2351,11 @@ export class JobDetailView {
             </td>
             <td class="py-4 px-4 whitespace-nowrap">${price ?? "-"}</td>
             <td class="py-4 px-4 whitespace-nowrap">
-              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${pill} hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs">
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold hover:text-xs active:text-xs focus:text-xs focus-visible:text-xs" style="${
+                statusPalette
+                  ? `color:${statusPalette.color};background-color:${statusPalette.backgroundColor};`
+                  : "color:#475569;background-color:#f1f5f9;"
+              }">
                 ${r.status ?? "Pending"}
               </span>
             </td>
@@ -4379,33 +4391,35 @@ export class JobDetailView {
 
     const rows = Array.isArray(appointments) ? appointments : [];
     this.updateAppointmentTabCount(rows);
-    if (!rows.length) {
-      target.innerHTML =
-        '<div class="text-sm text-slate-500 px-1 py-2">No appointments found.</div>';
-      return;
-    }
 
     const table = document.createElement("table");
-    table.className = "w-full text-left border border-slate-200 rounded-lg overflow-hidden";
+    table.className =
+      "min-w-full border border-slate-200 rounded-lg overflow-hidden text-sm text-slate-700 leading-6";
 
     const thead = document.createElement("thead");
-    thead.className = "bg-slate-50 text-xs font-semibold uppercase text-slate-500";
-    thead.innerHTML = `
-      <tr>
-        <th class="px-3 py-2 border-b border-slate-200">Status</th>
-        <th class="px-3 py-2 border-b border-slate-200">Start - End</th>
-        <th class="px-3 py-2 border-b border-slate-200">Location</th>
-        <th class="px-3 py-2 border-b border-slate-200">Host</th>
-        <th class="px-3 py-2 border-b border-slate-200">Guest</th>
-        <th class="px-3 py-2 border-b border-slate-200">Event Color</th>
-      </tr>
-    `;
+    thead.className = "bg-slate-100";
+    const headerRow = document.createElement("tr");
+    const headers = [
+      "Status",
+      "Start - End",
+      "Location",
+      "Host",
+      "Guest",
+      "Event Color",
+    ];
+    headers.forEach((text) => {
+      const th = document.createElement("th");
+      th.className = "px-7 py-3 text-left font-normal text-slate-700 leading-6";
+      th.textContent = text;
+      headerRow.appendChild(th);
+    });
+    thead.appendChild(headerRow);
     table.appendChild(thead);
 
     const tbody = document.createElement("tbody");
-    tbody.className = "bg-white divide-y divide-slate-100";
+    const baseTdClass = "px-7 py-3 align-middle leading-6";
 
-    rows.forEach((item) => {
+    rows.forEach((item, idx) => {
       const status = clean(item.Status ?? item.status) || "-";
       const statusPalette = this._resolvePaletteEntry(
         colorMappings.appointmentStatus,
@@ -4464,38 +4478,75 @@ export class JobDetailView {
       const eventColorLabel = eventColorPalette?.label || rawEventColor || "-";
 
       const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td class="px-3 py-2 text-sm">
-          <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium"
-            style="${
-              statusPalette
-                ? `color:${statusPalette.color};background-color:${statusPalette.backgroundColor};`
-                : "color:#334155;background-color:#f1f5f9;"
-            }"
-          >${status}</span>
-        </td>
-        <td class="px-3 py-2 text-sm text-slate-700">${start} - ${end}</td>
-        <td class="px-3 py-2 text-sm">
-          ${
-            mapHref
-              ? `<a href="${mapHref}" target="_blank" rel="noopener noreferrer" class="text-sky-700 underline">${locationName}</a>`
-              : '<span class="text-slate-500">-</span>'
-          }
-        </td>
-        <td class="px-3 py-2 text-sm text-slate-700">${hostName}</td>
-        <td class="px-3 py-2 text-sm text-slate-700">${guestName}</td>
-        <td class="px-3 py-2 text-sm">
-          <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium"
-            style="${
-              eventColorPalette
-                ? `color:${eventColorPalette.color};background-color:${eventColorPalette.backgroundColor};`
-                : "color:#334155;background-color:#f1f5f9;"
-            }"
-          >${eventColorLabel}</span>
-        </td>
-      `;
+      tr.className = idx % 2 === 0 ? "bg-white" : "bg-slate-50";
+
+      const statusTd = document.createElement("td");
+      statusTd.className = baseTdClass;
+      const statusBadge = document.createElement("span");
+      statusBadge.className = "inline-flex px-3 py-1 rounded-full text-xs font-normal";
+      statusBadge.style.cssText = statusPalette
+        ? `color:${statusPalette.color};background-color:${statusPalette.backgroundColor};`
+        : "color:#334155;background-color:#f1f5f9;";
+      statusBadge.textContent = status;
+      statusTd.appendChild(statusBadge);
+      tr.appendChild(statusTd);
+
+      const startEndTd = document.createElement("td");
+      startEndTd.className = `${baseTdClass} text-slate-800`;
+      startEndTd.textContent = `${start} - ${end}`;
+      tr.appendChild(startEndTd);
+
+      const locationTd = document.createElement("td");
+      locationTd.className = baseTdClass;
+      if (mapHref) {
+        const link = document.createElement("a");
+        link.href = mapHref;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.className = "text-sky-700 underline";
+        link.textContent = locationName;
+        locationTd.appendChild(link);
+      } else {
+        const empty = document.createElement("span");
+        empty.className = "text-slate-500";
+        empty.textContent = "-";
+        locationTd.appendChild(empty);
+      }
+      tr.appendChild(locationTd);
+
+      const hostTd = document.createElement("td");
+      hostTd.className = `${baseTdClass} text-slate-800`;
+      hostTd.textContent = hostName;
+      tr.appendChild(hostTd);
+
+      const guestTd = document.createElement("td");
+      guestTd.className = `${baseTdClass} text-slate-800`;
+      guestTd.textContent = guestName;
+      tr.appendChild(guestTd);
+
+      const eventColorTd = document.createElement("td");
+      eventColorTd.className = baseTdClass;
+      const eventBadge = document.createElement("span");
+      eventBadge.className = "inline-flex px-3 py-1 rounded-full text-xs font-normal";
+      eventBadge.style.cssText = eventColorPalette
+        ? `color:${eventColorPalette.color};background-color:${eventColorPalette.backgroundColor};`
+        : "color:#334155;background-color:#f1f5f9;";
+      eventBadge.textContent = eventColorLabel;
+      eventColorTd.appendChild(eventBadge);
+      tr.appendChild(eventColorTd);
+
       tbody.appendChild(tr);
     });
+
+    if (!rows.length) {
+      const tr = document.createElement("tr");
+      const td = document.createElement("td");
+      td.colSpan = headers.length;
+      td.className = `${baseTdClass} text-center text-slate-500`;
+      td.textContent = "No appointments found.";
+      tr.appendChild(td);
+      tbody.appendChild(tr);
+    }
 
     table.appendChild(tbody);
     target.innerHTML = "";
@@ -5279,16 +5330,12 @@ export class JobDetailView {
       tr.className = idx % 2 === 0 ? "bg-white" : "bg-slate-50";
       tr.id = item.Id;
 
-      const status = (item.Status || "").toLowerCase();
-      const statusStyles = {
-        quoted: "bg-purple-100 text-purple-700",
-        "to be scheduled": "bg-amber-100 text-amber-700",
-        reschedule: "bg-rose-100 text-rose-700",
-        scheduled: "bg-sky-100 text-sky-700",
-        completed: "bg-emerald-100 text-emerald-700",
-        cancelled: "bg-slate-200 text-slate-700",
-      };
-      const badgeClass = statusStyles[status] || "bg-slate-100 text-slate-600";
+      const status = item.Status || "";
+      const statusPalette = this._resolvePaletteEntry(
+        this.getColorMappings().activityStatus,
+        status,
+        status
+      );
 
       const cells = [
         { value: count++, className: "text-slate-800" },
@@ -5298,9 +5345,10 @@ export class JobDetailView {
           className: "",
           render: () => {
             const span = document.createElement("span");
-            span.className =
-              "inline-flex px-3 py-1 rounded-full text-xs font-normal " +
-              badgeClass;
+            span.className = "inline-flex px-3 py-1 rounded-full text-xs font-normal";
+            span.style.cssText = statusPalette
+              ? `color:${statusPalette.color};background-color:${statusPalette.backgroundColor};`
+              : "color:#475569;background-color:#f1f5f9;";
             span.textContent = item.Status || "";
             return span;
           },
