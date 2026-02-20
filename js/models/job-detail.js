@@ -1198,6 +1198,7 @@ export class JobDetailModal {
         "invoice_date",
         "due_date",
         "invoice_total",
+        "send_to_contact",
         "payment_id",
         "payment_method",
         "invoice_url_client",

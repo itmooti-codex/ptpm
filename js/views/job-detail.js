@@ -1840,7 +1840,8 @@ export class JobDetailView {
         <div class="flex flex-wrap justify-end gap-3">
           <a target="_blank" data-field= "Xero_Invoice_PDF" class="px-4 py-2 rounded outline outline-1 outline-gray-300 text-slate-500 text-sm hover:!text-slate-500 active:!text-slate-500 hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500 " disabled>Download Invoice (PDF)</a>
           <a target="_blank" data-field= "View_Xero_Invoice_(Admin)" class="px-4 py-2 rounded outline outline-1 outline-gray-300 text-slate-500 text-sm hover:!text-slate-500 active:!text-slate-500 hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500 " disabled>View Xero Invoice (Admin)</a>
-          <a target="_blank" data-field= "Invoice_URL_Client" class="px-4 py-2 rounded outline outline-1 outline-gray-300 text-slate-500 text-sm hover:!text-slate-500 active:!text-slate-500 hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500 " disabled>Send To Customer</a>
+          <a target="_blank" rel="noopener noreferrer" data-field= "Invoice_URL_Client" class="px-4 py-2 rounded outline outline-1 outline-gray-300 text-slate-500 text-sm hover:!text-slate-500 active:!text-slate-500 hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-500 active:text-slate-500 focus:text-slate-500 focus-visible:text-slate-500 " disabled>View Xero Invoice (Client)</a>
+          <button type="button" data-action="send-to-customer" class="px-4 py-2 rounded !bg-[#003882] !text-white !text-sm !font-medium hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882] hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm">Send To Customer</button>
           <button data-field= "" class="!hidden !px-4 !py-2 !bg-[#003882] !text-white !text-sm !font-medium !rounded hover:!bg-[#003882] active:!bg-[#003882] focus:!bg-[#003882] focus-visible:!bg-[#003882] hover:!text-white active:!text-white focus:!text-white focus-visible:!text-white hover:!text-sm active:!text-sm focus:!text-sm focus-visible:!text-sm">Generate Invoice</button>
         </div>
       </div>
@@ -1925,6 +1926,41 @@ export class JobDetailView {
         }
       });
     }
+
+    const sendToCustomerBtn = wrapper.querySelector(
+      '[data-action="send-to-customer"]'
+    );
+    if (sendToCustomerBtn) {
+      sendToCustomerBtn.addEventListener("click", async () => {
+        if (sendToCustomerBtn.dataset.saving === "true") return;
+
+        const jobId = this.getJobId();
+        if (!jobId) {
+          this.handleFailure("Missing job id. Reload and try again.");
+          return;
+        }
+
+        const invoiceUrl = (sendToCustomerBtn.dataset.invoiceUrl || "").trim();
+        if (!invoiceUrl) {
+          this.handleFailure(
+            "No client invoice URL found. Generate invoice first and try again."
+          );
+          return;
+        }
+
+        this.setActionBusyState(sendToCustomerBtn, true, "Sending...");
+        try {
+          await this.model.updateJob(jobId, { send_to_contact: true });
+          sendToCustomerBtn.dataset.defaultLabel = "Send To Customer Again";
+          this.setActionBusyState(sendToCustomerBtn, false);
+          this.handleSuccess("Invoice sent to customer.");
+        } catch (error) {
+          console.error("Failed to send invoice to customer", error);
+          this.setActionBusyState(sendToCustomerBtn, false);
+          this.handleFailure("Failed to send invoice to customer. Please try again.");
+        }
+      });
+    }
   }
 
   renderInvoiceDetails(records) {
@@ -1949,10 +1985,32 @@ export class JobDetailView {
       ) {
         value = this.formatCurrency(value);
       } else if (field == "invoice_url_client") {
-        el.href = records["Invoice_URL_Client"];
+        const clientUrl =
+          records.Invoice_URL_Client ||
+          records.invoice_url_client ||
+          records.invoiceUrlClient ||
+          "";
+        if (clientUrl) {
+          el.href = clientUrl;
+          el.classList.remove("pointer-events-none", "opacity-60");
+        } else {
+          el.removeAttribute("href");
+          el.classList.add("pointer-events-none", "opacity-60");
+        }
         return;
       } else if (field == "xero_invoice_pdf") {
-        el.href = records["Xero_Invoice_PDF"];
+        const pdfUrl =
+          records.Xero_Invoice_PDF ||
+          records.xero_invoice_pdf ||
+          records.xeroInvoicePdf ||
+          "";
+        if (pdfUrl) {
+          el.href = pdfUrl;
+          el.classList.remove("pointer-events-none", "opacity-60");
+        } else {
+          el.removeAttribute("href");
+          el.classList.add("pointer-events-none", "opacity-60");
+        }
         return;
       } else if (field == "view_xero_invoice_(admin)") {
         return;
@@ -1983,6 +2041,38 @@ export class JobDetailView {
       invoiceStatusEl.style.cssText = statusPalette
         ? `color:${statusPalette.color};background-color:${statusPalette.backgroundColor};`
         : "color:#475569;background-color:#f1f5f9;";
+    }
+
+    const sendToCustomerBtn = document.querySelector(
+      '[data-section="invoice"] [data-action="send-to-customer"]'
+    );
+    if (sendToCustomerBtn) {
+      const invoiceUrl =
+        records.Invoice_URL_Client ||
+        records.invoice_url_client ||
+        records.invoiceUrlClient ||
+        "";
+      const hasInvoiceUrl = Boolean(String(invoiceUrl).trim());
+      const wasSent = Boolean(
+        records.send_to_contact ??
+          records.Send_To_Contact ??
+          records.sendToContact
+      );
+      const nextLabel = wasSent
+        ? "Send To Customer Again"
+        : "Send To Customer";
+
+      sendToCustomerBtn.dataset.invoiceUrl = hasInvoiceUrl ? invoiceUrl : "";
+      sendToCustomerBtn.dataset.defaultLabel = nextLabel;
+      if (sendToCustomerBtn.dataset.saving !== "true") {
+        const labelEl = this.getActionLabelElement(sendToCustomerBtn);
+        if (labelEl) labelEl.textContent = nextLabel;
+      }
+      if (sendToCustomerBtn.dataset.saving !== "true") {
+        sendToCustomerBtn.disabled = !hasInvoiceUrl;
+        sendToCustomerBtn.classList.toggle("opacity-60", !hasInvoiceUrl);
+        sendToCustomerBtn.classList.toggle("pointer-events-none", !hasInvoiceUrl);
+      }
     }
 
     const generateInvoiceBtn = document.getElementById("generate-invoice-btn");
