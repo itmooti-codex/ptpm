@@ -452,7 +452,7 @@ export class JobDetailView {
         <div class="flex flex-col items-start gap-2">
           <div class="text-neutral-800 text-base font-semibold hover:!text-neutral-800 active:!text-neutral-800 hover:text-neutral-800 active:text-neutral-800 focus:text-neutral-800 focus-visible:text-neutral-800 hover:text-base active:text-base focus:text-base focus-visible:text-base">Add New Activity</div>
           <label class="flex items-center gap-2 text-slate-600 text-sm hover:!text-slate-600 active:!text-slate-600 hover:text-slate-600 active:text-slate-600 focus:text-slate-600 focus-visible:text-slate-600 ">
-            <input type="checkbox" data-field="invoice_to_client" class="w-4 h-4 accent-[#0A3E8C]" />
+            <input type="checkbox" data-field="invoice_to_client" class="w-4 h-4 accent-[#0A3E8C]" checked />
             <div class="!pl-0">Invoice to client</div>
           </label>
         </div>
@@ -485,7 +485,7 @@ export class JobDetailView {
           <div class="flex flex-col">
             <label class="text-neutral-700 text-sm font-medium hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 ">Primary Service</label>
             <div class="relative">
-              <select data-field="service_name" data-activity-select="service" class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 !block appearance-none hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700  hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default"></select>
+              <select data-field="service_name" data-service-role="primary" data-activity-select="service" class="mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 !block appearance-none hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700  hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default"></select>
               <span class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400 mt-2">
                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M6 9l6 6 6-6"></path>
@@ -495,9 +495,9 @@ export class JobDetailView {
           </div>
 
           <div data-element= "service_name_secondary" class="hidden flex flex-col">
-            <label class="text-neutral-700 text-sm font-medium hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 ">Secondary Service</label>
+            <label class="text-neutral-700 text-sm font-medium hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 ">Option Service</label>
             <div class="relative">
-              <select data-field="service_name" data-activity-select="service" class="hidden mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 !block appearance-none hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700  hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default"></select>
+              <select data-service-role="option" data-activity-select="service" class="hidden mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 !block appearance-none hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700  hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default"></select>
               <span class="pointer-events-none absolute inset-y-0 right-4 inline-flex items-center text-slate-400 mt-2">
                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M6 9l6 6 6-6"></path>
@@ -570,6 +570,17 @@ export class JobDetailView {
           <div class="flex flex-col col-span-2">
             <label class="text-neutral-700 text-sm font-medium hover:!text-neutral-700 active:!text-neutral-700 hover:text-neutral-700 active:text-neutral-700 focus:text-neutral-700 focus-visible:text-neutral-700 ">Note</label>
             <textarea data-field="note" rows="2" class="w-full px-3 py-2 bg-white rounded border border-slate-300 text-slate-700 hover:!bg-white active:!bg-white hover:!border-slate-300 active:!border-slate-300 hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700 mt-2 w-full px-2.5 py-2 bg-white rounded outline outline-1 outline-offset-[-1px] outline-gray-300 inline-flex justify-start items-center gap-2 overflow-hidden text-slate-700 text-sm font-normal font-['Inter'] leading-5 placeholder:text-slate-500 placeholder:text-sm placeholder:font-normal placeholder:font-['Inter'] placeholder:leading-5 focus:outline-gray-400 hover:!bg-white active:!bg-white hover:!text-slate-700 active:!text-slate-700 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300 hover:text-slate-700 active:text-slate-700 focus:text-slate-700 focus-visible:text-slate-700  hover:placeholder:text-sm active:placeholder:text-sm focus:placeholder:text-sm focus-visible:placeholder:text-sm browser-default"></textarea>
+          </div>
+
+          <div class="col-span-2 flex flex-col gap-2 text-slate-600 text-sm">
+            <label class="flex items-center gap-2">
+              <input type="checkbox" data-field="include_in_quote_subtotal" class="w-4 h-4 accent-[#0A3E8C]" checked />
+              <span>Include in quote subtotal</span>
+            </label>
+            <label class="flex items-center gap-2">
+              <input type="checkbox" data-field="include_in_quote" class="w-4 h-4 accent-[#0A3E8C]" />
+              <span>Include in quote</span>
+            </label>
           </div>
         </div>
 
@@ -644,28 +655,129 @@ export class JobDetailView {
     addOptions(selectMap.task, jobs, "Select");
     addOptions(selectMap.option, options, "Select");
     addOptions(selectMap.status, activityStatuses, "Select");
+    if (Array.isArray(this._pendingActivityServices)) {
+      const pendingServices = this._pendingActivityServices;
+      this._pendingActivityServices = null;
+      this.renderAddActivitiesServices(pendingServices);
+    }
     await this.renderActivitiesTable();
   }
 
-  renderAddActivitiesServices(data) {
-    // currentSecondaryList stores the active secondary services corresponding
-    // to the selected primary service. It allows the secondary select listener
-    // to reference the correct list without recalculating on every change.
-    let currentSecondaryList = [];
-    this.activitiesServices = Array.isArray(data) ? data : [];
+  normalizeActivityServiceRecord(record = {}) {
+    if (!record || typeof record !== "object") return null;
+    const id =
+      record.ID ??
+      record.id ??
+      record.serviceid ??
+      record.service_id ??
+      record.Service_ID;
+    const name =
+      record.Service_Name ??
+      record.service_name ??
+      record.name ??
+      record.Service_Service_Name ??
+      "";
+    if (!id || !name) return null;
 
-    const servicesSelect = document.querySelector(
-      '[data-field="service_name"]'
+    const rawType =
+      record.Service_Type ??
+      record.service_type ??
+      record.type ??
+      record.ServiceType ??
+      "";
+    const parentId =
+      record.Primary_Service_ID ??
+      record.primary_service_id ??
+      record.parentId ??
+      record.parent_service_id ??
+      "";
+    const hasParent =
+      parentId !== "" && String(parentId) !== String(id);
+    const type =
+      /option/i.test(String(rawType || "")) || hasParent
+        ? "option"
+        : "primary";
+
+    return {
+      id: String(id),
+      name: String(name),
+      type,
+      parentId: parentId === null || parentId === undefined ? "" : String(parentId),
+      price:
+        record.Service_Price ??
+        record.service_price ??
+        record.price ??
+        record.Activity_Price ??
+        record.activity_price ??
+        "",
+      warranty:
+        record.Standard_Warranty ??
+        record.standard_warranty ??
+        record.warranty ??
+        "",
+      description:
+        record.Description ??
+        record.description ??
+        record.Service_Description ??
+        record.activity_text ??
+        "",
+    };
+  }
+
+  getSelectedActivityServiceId(selectEl) {
+    if (!selectEl) return "";
+    const selected = selectEl.selectedOptions?.[0];
+    return selected?.dataset?.serviceId || "";
+  }
+
+  selectActivityServiceOptionById(selectEl, serviceId) {
+    if (!selectEl || !serviceId) return false;
+    let found = false;
+    const normalizedId = String(serviceId);
+    Array.from(selectEl.options || []).forEach((option) => {
+      const isMatch = String(option.dataset.serviceId || "") === normalizedId;
+      option.selected = isMatch;
+      if (isMatch) found = true;
+    });
+    return found;
+  }
+
+  renderAddActivitiesServices(data) {
+    const normalizedServices = (Array.isArray(data) ? data : [])
+      .map((item) => this.normalizeActivityServiceRecord(item))
+      .filter(Boolean);
+    this.activitiesServices = normalizedServices;
+
+    const primarySelect = document.querySelector(
+      '[data-section="add-activities"] [data-service-role="primary"]'
     );
-    const activityPrice = document.querySelector(
-      '[data-field="activity_price"]'
-    );
-    const warranty = document.querySelector('[data-field="warranty"]');
-    const activityText = document.querySelector('[data-field="activity_text"]');
-    const secondaryService = document.querySelector(
+    const optionWrapper = document.querySelector(
       '[data-element="service_name_secondary"]'
     );
-    const secondarySelect = secondaryService.querySelector("select");
+    const optionSelect = document.querySelector(
+      '[data-element="service_name_secondary"] [data-service-role="option"]'
+    );
+    const activityPrice = document.querySelector(
+      '[data-section="add-activities"] [data-field="activity_price"]'
+    );
+    const warranty = document.querySelector(
+      '[data-section="add-activities"] [data-field="warranty"]'
+    );
+    const activityText = document.querySelector(
+      '[data-section="add-activities"] [data-field="activity_text"]'
+    );
+    if (
+      !primarySelect ||
+      !optionWrapper ||
+      !optionSelect ||
+      !activityPrice ||
+      !warranty ||
+      !activityText
+    ) {
+      this._pendingActivityServices = normalizedServices;
+      return;
+    }
+
     let serviceIdInput = document.querySelector(
       '[data-section="add-activities"] [data-field="service_id"]'
     );
@@ -673,80 +785,85 @@ export class JobDetailView {
       serviceIdInput = document.createElement("input");
       serviceIdInput.type = "hidden";
       serviceIdInput.setAttribute("data-field", "service_id");
-      servicesSelect?.parentElement?.appendChild(serviceIdInput);
+      primarySelect.parentElement?.appendChild(serviceIdInput);
     }
 
-    const primaryServices = data.filter(
-      (item) => item.Service_Type === "Primary"
+    const primaryServices = normalizedServices.filter(
+      (item) => item.type === "primary"
     );
-
-    const secondaryMap = new Map();
-    for (const item of data) {
-      if (!secondaryMap.has(item.Primary_Service_ID)) {
-        secondaryMap.set(item.Primary_Service_ID, []);
-      }
-      secondaryMap.get(item.Primary_Service_ID).push(item);
-    }
-
-    servicesSelect.innerHTML = `<option value="" disabled selected hidden>Select</option>`;
-    for (const item of primaryServices) {
-      const opt = document.createElement("option");
-      opt.value = item.Service_Name;
-      opt.id = item.ID;
-      opt.textContent = item.Service_Name;
-      servicesSelect.appendChild(opt);
-    }
-
-    // SECONDARY SELECT EVENT LISTENER (only once)
-    secondarySelect.addEventListener("change", (e) => {
-      const value = e.target.value;
-      const selectedService = currentSecondaryList.find(
-        (s) => s.Service_Name === value
-      );
-
-      if (selectedService) {
-        serviceIdInput.value = selectedService.ID || "";
-        activityPrice.value = selectedService.Service_Price || "";
-        warranty.value = selectedService.Standard_Warranty || "";
-        activityText.value = selectedService.Description || "";
-      }
+    const optionServices = normalizedServices.filter(
+      (item) => item.type === "option" && item.parentId
+    );
+    const optionMap = new Map();
+    optionServices.forEach((item) => {
+      if (!optionMap.has(item.parentId)) optionMap.set(item.parentId, []);
+      optionMap.get(item.parentId).push(item);
     });
 
-    // PRIMARY SELECT EVENT LISTENER
-    servicesSelect.addEventListener("change", () => {
-      activityText.value = "";
+    const renderServiceOptions = (selectEl, services = []) => {
+      selectEl.innerHTML =
+        '<option value="" disabled selected hidden>Select</option>';
+      services.forEach((service) => {
+        const option = document.createElement("option");
+        option.value = service.name;
+        option.dataset.serviceId = service.id;
+        option.textContent = service.name;
+        selectEl.appendChild(option);
+      });
+    };
+
+    const clearPrefillFields = () => {
       activityPrice.value = "";
       warranty.value = "";
+      activityText.value = "";
       serviceIdInput.value = "";
+    };
 
-      secondarySelect.classList.add("hidden");
-      secondaryService.classList.add("hidden");
-      const selectedName = servicesSelect.value;
-      const selectedPrimary = primaryServices.find(
-        (item) => item.Service_Name === selectedName
-      );
+    const applyServicePrefill = (service) => {
+      if (!service) {
+        clearPrefillFields();
+        return;
+      }
+      serviceIdInput.value = service.id || "";
+      activityPrice.value = service.price ?? "";
+      warranty.value = service.warranty ?? "";
+      activityText.value = service.description ?? "";
+    };
+
+    renderServiceOptions(primarySelect, primaryServices);
+    optionWrapper.classList.add("hidden");
+    optionSelect.classList.add("hidden");
+    renderServiceOptions(optionSelect, []);
+
+    optionSelect.onchange = () => {
+      const selectedId = this.getSelectedActivityServiceId(optionSelect);
+      const selected = optionServices.find((item) => item.id === selectedId);
+      applyServicePrefill(selected);
+    };
+
+    primarySelect.onchange = () => {
+      clearPrefillFields();
+      optionWrapper.classList.add("hidden");
+      optionSelect.classList.add("hidden");
+      renderServiceOptions(optionSelect, []);
+
+      const primaryId = this.getSelectedActivityServiceId(primarySelect);
+      const selectedPrimary = primaryServices.find((item) => item.id === primaryId);
       if (!selectedPrimary) return;
 
-      serviceIdInput.value = selectedPrimary.ID || "";
-      currentSecondaryList = secondaryMap.get(selectedPrimary.ID) || [];
-      secondarySelect.innerHTML = `<option value="" disabled selected hidden>Select</option>`;
-
-      if (currentSecondaryList.length > 0) {
-        currentSecondaryList?.forEach((item) => {
-          const opt = document.createElement("option");
-          opt.value = item.Service_Name;
-          opt.id = item.ID;
-          opt.textContent = item.Service_Name;
-          secondarySelect.appendChild(opt);
-        });
-        secondaryService.classList.remove("hidden");
-        secondarySelect.classList.remove("hidden");
+      const secondaryOptions = optionMap.get(selectedPrimary.id) || [];
+      if (secondaryOptions.length) {
+        optionWrapper.classList.remove("hidden");
+        optionSelect.classList.remove("hidden");
+        renderServiceOptions(optionSelect, secondaryOptions);
+        // Match inquiry-details behavior: when options exist, preselect the first option.
+        this.selectActivityServiceOptionById(optionSelect, secondaryOptions[0].id);
+        applyServicePrefill(secondaryOptions[0]);
+        return;
       }
 
-      activityPrice.value = selectedPrimary.Service_Price || "";
-      warranty.value = selectedPrimary.Standard_Warranty || "";
-      activityText.value = selectedPrimary.Description || "";
-    });
+      applyServicePrefill(selectedPrimary);
+    };
   }
 
   async createAddMaterialsSection() {
@@ -5709,6 +5826,32 @@ export class JobDetailView {
       '[data-section="add-activities"] [data-field="quantity"]'
     );
     if (quantity) quantity.value = "1";
+    const invoiceToClient = document.querySelector(
+      '[data-section="add-activities"] [data-field="invoice_to_client"]'
+    );
+    if (invoiceToClient) invoiceToClient.checked = true;
+    const includeInQuoteSubtotal = document.querySelector(
+      '[data-section="add-activities"] [data-field="include_in_quote_subtotal"]'
+    );
+    if (includeInQuoteSubtotal) includeInQuoteSubtotal.checked = true;
+    const includeInQuote = document.querySelector(
+      '[data-section="add-activities"] [data-field="include_in_quote"]'
+    );
+    if (includeInQuote) includeInQuote.checked = false;
+
+    const optionWrapper = document.querySelector(
+      '[data-element="service_name_secondary"]'
+    );
+    const optionSelect = document.querySelector(
+      '[data-element="service_name_secondary"] [data-service-role="option"]'
+    );
+    if (optionWrapper) optionWrapper.classList.add("hidden");
+    if (optionSelect) {
+      optionSelect.classList.add("hidden");
+      optionSelect.innerHTML =
+        '<option value="" disabled selected hidden>Select</option>';
+    }
+
     const addBtn = document.getElementById("add-activities");
     if (addBtn) addBtn.textContent = "Add";
     this.editingActivityId = null;
@@ -5721,48 +5864,59 @@ export class JobDetailView {
       );
       if (!el) return;
       if (el.type === "checkbox") {
-        el.checked = !!value;
+        if (typeof value === "string") {
+          const normalized = value.trim().toLowerCase();
+          el.checked = ["1", "true", "yes", "y"].includes(normalized);
+        } else {
+          el.checked = !!value;
+        }
       } else {
         el.value = value ?? "";
       }
     };
 
     const primaryServiceSelect = document.querySelector(
-      '[data-section="add-activities"] [data-field="service_name"]'
+      '[data-section="add-activities"] [data-service-role="primary"]'
     );
     const secondaryServiceSelect = document.querySelector(
-      '[data-element="service_name_secondary"] select'
+      '[data-element="service_name_secondary"] [data-service-role="option"]'
     );
     const serviceIdInput = document.querySelector(
       '[data-section="add-activities"] [data-field="service_id"]'
     );
-    const serviceId =
-      activity.Service_ID || activity.Service?.id || activity.Service?.ID || "";
+    const serviceId = String(
+      activity.Service_ID ||
+        activity.service_id ||
+        activity.Service?.id ||
+        activity.Service?.ID ||
+        ""
+    );
     const serviceName =
       activity.Service_Service_Name || activity.service_name || "";
     const servicesData = this.activitiesServices || [];
-
-    const matchedService = servicesData.find(
-      (s) =>
-        String(s.ID) === String(serviceId) ||
-        (serviceName && s.Service_Name === serviceName)
-    );
+    const matchedService =
+      servicesData.find((s) => String(s.id) === serviceId) ||
+      servicesData.find((s) => serviceName && s.name === serviceName) ||
+      null;
 
     if (primaryServiceSelect) {
-      if (matchedService && matchedService.Service_Type === "Option") {
+      if (matchedService && matchedService.type === "option") {
         const parentPrimary = servicesData.find(
-          (s) => String(s.ID) === String(matchedService.Primary_Service_ID)
+          (s) => String(s.id) === String(matchedService.parentId)
         );
         if (parentPrimary) {
-          primaryServiceSelect.value = parentPrimary.Service_Name;
+          this.selectActivityServiceOptionById(primaryServiceSelect, parentPrimary.id);
           primaryServiceSelect.dispatchEvent(new Event("change"));
           if (secondaryServiceSelect) {
-            secondaryServiceSelect.value = matchedService.Service_Name;
+            this.selectActivityServiceOptionById(
+              secondaryServiceSelect,
+              matchedService.id
+            );
             secondaryServiceSelect.dispatchEvent(new Event("change"));
           }
         }
       } else if (matchedService) {
-        primaryServiceSelect.value = matchedService.Service_Name;
+        this.selectActivityServiceOptionById(primaryServiceSelect, matchedService.id);
         primaryServiceSelect.dispatchEvent(new Event("change"));
       } else {
         primaryServiceSelect.value = serviceName;
@@ -5773,24 +5927,24 @@ export class JobDetailView {
         serviceIdInput.value = serviceId;
       }
     }
-    mapField("task", activity.task || activity.Task || "");
-    mapField("option", activity.option || activity.Option || "");
-    mapField("quantity", activity.quantity || activity.Quantity || "");
+    mapField("task", activity.task ?? activity.Task ?? "");
+    mapField("option", activity.option ?? activity.Option ?? "");
+    mapField("quantity", activity.quantity ?? activity.Quantity ?? "");
     mapField(
       "activity_price",
-      activity.activity_price || activity.Activity_Price || ""
+      activity.activity_price ?? activity.Activity_Price ?? ""
     );
     mapField(
       "activity_text",
-      activity.activity_text || activity.Activity_Text || ""
+      activity.activity_text ?? activity.Activity_Text ?? ""
     );
     mapField(
       "activity_status",
-      activity.activity_status || activity.Activity_Status || ""
+      activity.activity_status ?? activity.Activity_Status ?? ""
     );
 
     const dateRequired =
-      activity.date_required || activity.Date_Required || activity.date;
+      activity.date_required ?? activity.Date_Required ?? activity.date;
     if (dateRequired) {
       const el = document.querySelector(
         '[data-section="add-activities"] [data-field="date_required"]'
@@ -5806,21 +5960,21 @@ export class JobDetailView {
 
     mapField(
       "quoted_price",
-      activity.quoted_price || activity.Quoted_Price || ""
+      activity.quoted_price ?? activity.Quoted_Price ?? ""
     );
-    mapField("quoted_text", activity.quoted_text || activity.Quoted_Text || "");
-    mapField("note", activity.note || activity.Note || "");
+    mapField("quoted_text", activity.quoted_text ?? activity.Quoted_Text ?? "");
+    mapField("note", activity.note ?? activity.Note ?? "");
     mapField(
       "include_in_quote_subtotal",
-      activity.include_in_quote_subtotal || activity.Include_in_Quote_Subtotal
+      activity.include_in_quote_subtotal ?? activity.Include_in_Quote_Subtotal
     );
     mapField(
       "include_in_quote",
-      activity.include_in_quote || activity.Include_in_Quote
+      activity.include_in_quote ?? activity.Include_in_Quote
     );
     mapField(
       "invoice_to_client",
-      activity.invoice_to_client || activity.Invoice_to_Client
+      activity.invoice_to_client ?? activity.Invoice_to_Client
     );
 
     const addBtn = document.getElementById("add-activities");
