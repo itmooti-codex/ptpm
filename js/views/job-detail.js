@@ -149,6 +149,13 @@ export class JobDetailView {
         { value: "622", label: "10", color: "#51b749", backgroundColor: "#dcf1db" },
         { value: "621", label: "11", color: "#dc2127", backgroundColor: "#f8d3d4" },
       ],
+      xeroInvoiceStatus: [
+        { value: "196", label: "Update Invoice", color: "#8e24aa", backgroundColor: "#e8d3ee" },
+        { value: "194", label: "Create Invoice", color: "#8e24aa", backgroundColor: "#e8d3ee" },
+        { value: "193", label: "Awaiting payment", color: "#fb8c00", backgroundColor: "#fee8cc" },
+        { value: "195", label: "Paid", color: "#43a047", backgroundColor: "#d9ecda" },
+        { value: "192", label: "Failed", color: "#000000", backgroundColor: "#cccccc" },
+      ],
     };
     return this._colorMappings;
   }
@@ -1958,6 +1965,26 @@ export class JobDetailView {
       }
     });
 
+    const invoiceStatusEl = document.querySelector(
+      '[data-section="invoice"] [data-field="xero_invoice_status"]'
+    );
+    if (invoiceStatusEl) {
+      const statusText = (invoiceStatusEl.textContent || "").trim();
+      const statusValue =
+        records.xero_invoice_status ||
+        records.Xero_Invoice_Status ||
+        records.xeroInvoiceStatus ||
+        statusText;
+      const statusPalette = this._resolvePaletteEntry(
+        this.getColorMappings().xeroInvoiceStatus,
+        statusValue,
+        statusText
+      );
+      invoiceStatusEl.style.cssText = statusPalette
+        ? `color:${statusPalette.color};background-color:${statusPalette.backgroundColor};`
+        : "color:#475569;background-color:#f1f5f9;";
+    }
+
     const generateInvoiceBtn = document.getElementById("generate-invoice-btn");
     if (invoiceNumber) {
       generateInvoiceBtn?.classList.add("hidden");
@@ -1994,99 +2021,11 @@ export class JobDetailView {
 
     placeholder?.classList.add("hidden");
     tableWrapper.classList.remove("hidden");
-
-    const table = document.createElement("table");
-    table.className =
-      "w-full border border-slate-200 rounded-lg overflow-hidden text-sm text-slate-800";
-
-    const headers = [
-      "Task",
-      "Description",
-      "Quantity",
-      "Unit Price",
-      "GST",
-      "Amount",
-    ];
-
-    const thead = document.createElement("thead");
-    thead.className =
-      "bg-slate-50 text-xs font-semibold uppercase text-slate-500";
-    const headerRow = document.createElement("tr");
-    headers.forEach((label, idx) => {
-      const th = document.createElement("th");
-      th.className =
-        "px-4 py-3 text-left border-b border-slate-200" +
-        (idx === headers.length - 1 ? " text-right" : "");
-      th.textContent = label;
-      headerRow.appendChild(th);
-    });
-    thead.appendChild(headerRow);
-
-    const tbody = document.createElement("tbody");
-    tbody.className = "bg-white";
-
-    const normalizeNumber = (value) => {
-      if (value === null || value === undefined || value === "") return 0;
-      const numeric = Number(value);
-      return Number.isFinite(numeric) ? numeric : 0;
-    };
-    let count = 0;
-
-    activities.forEach((activity) => {
-      const row = document.createElement("tr");
-      row.className = "border-b border-slate-100 last:border-0";
-
-      const qty = normalizeNumber(activity.quantity || activity.Quantity);
-      const unitPrice = normalizeNumber(
-        activity.activity_price || activity.Activity_Price
-      );
-      const amount = qty * unitPrice;
-      const gstRaw =
-        activity.gst_rate ||
-        activity.gst ||
-        activity.GST ||
-        activity.tax_rate ||
-        activity.tax ||
-        "";
-      const gstValue =
-        typeof gstRaw === "number"
-          ? `${gstRaw}${gstRaw > 1 ? "" : "%"}`
-          : typeof gstRaw === "string" && gstRaw.trim()
-          ? gstRaw
-          : "--";
-
-      const cells = [
-        count++,
-        activity.activity_text ||
-          activity.Service_Service_Name ||
-          activity.note ||
-          activity.Note ||
-          "--",
-        qty.toFixed(2),
-        this.formatCurrency(unitPrice) || "$0.00",
-        gstValue,
-        this.formatCurrency(amount) || "$0.00",
-      ];
-
-      cells.forEach((value, idx) => {
-        const td = document.createElement("td");
-        td.className =
-          "px-4 py-3 text-sm text-slate-800" +
-          (idx === cells.length - 1
-            ? " text-right font-semibold"
-            : idx === 2
-            ? " text-left"
-            : "");
-        td.textContent = value;
-        row.appendChild(td);
-      });
-
-      tbody.appendChild(row);
-    });
-
-    table.appendChild(thead);
-    table.appendChild(tbody);
-    tableWrapper.appendChild(table);
+    const mappedActivities = this.mapActivitiesForSharedTable(activities);
+    const tableHTML = this.createActivitiesTable(mappedActivities);
+    tableWrapper.id = "invoiceActivitiesTable";
+    tableWrapper.appendChild(tableHTML);
+    this.bindActivityRowActions("invoiceActivitiesTable");
   }
 
   createDealInformationModal() {
@@ -5540,6 +5479,54 @@ export class JobDetailView {
     return Array.from(this.activityRecordsById?.values?.() || []);
   }
 
+  normalizeActivityTask(value) {
+    if (value === null || value === undefined || value === "") return "";
+    const raw = String(value).trim();
+    const numeric = Number(raw);
+    if (Number.isInteger(numeric) && numeric >= 1 && numeric <= 5) {
+      return `Job ${numeric}`;
+    }
+    return raw;
+  }
+
+  normalizeActivityOption(value) {
+    if (value === null || value === undefined || value === "") return "";
+    const raw = String(value).trim();
+    const numeric = Number(raw);
+    if (Number.isInteger(numeric) && numeric >= 1 && numeric <= 5) {
+      return `Option ${numeric}`;
+    }
+    return raw;
+  }
+
+  mapActivitiesForSharedTable(activities = []) {
+    const safeActivities = Array.isArray(activities) ? activities : [];
+    return safeActivities.map((item) => {
+      const serviceName =
+        item.Service_Service_Name ||
+        item.service_service_name ||
+        item.service_name ||
+        item.Service?.service_name ||
+        "";
+
+      return {
+        Id: item.ID || item.id || "",
+        Services: serviceName,
+        Status:
+          item.Activity_Status ||
+          item.activity_status ||
+          item.Activity_status ||
+          item.Status ||
+          item.status ||
+          "",
+        Price: item.Activity_Price || item.activity_price || "",
+        "Invoice to Client": item.Invoice_to_Client ?? item.invoice_to_client ?? "",
+        Option: this.normalizeActivityOption(item.Option || item.option || ""),
+        Task: this.normalizeActivityTask(item.Task || item.task || ""),
+      };
+    });
+  }
+
   async renderActivitiesTable() {
     const jobId = this.getJobId();
     if (!jobId) {
@@ -5554,50 +5541,7 @@ export class JobDetailView {
         if (id) this.activityRecordsById.set(id, item);
       });
 
-      const normalizeTask = (value) => {
-        if (value === null || value === undefined || value === "") return "";
-        const raw = String(value).trim();
-        const numeric = Number(raw);
-        if (Number.isInteger(numeric) && numeric >= 1 && numeric <= 5) {
-          return `Job ${numeric}`;
-        }
-        return raw;
-      };
-
-      const normalizeOption = (value) => {
-        if (value === null || value === undefined || value === "") return "";
-        const raw = String(value).trim();
-        const numeric = Number(raw);
-        if (Number.isInteger(numeric) && numeric >= 1 && numeric <= 5) {
-          return `Option ${numeric}`;
-        }
-        return raw;
-      };
-
-      let mappedActivities = safeActivities.map((item) => {
-        const serviceName =
-          item.Service_Service_Name ||
-          item.service_service_name ||
-          item.service_name ||
-          item.Service?.service_name ||
-          "";
-        return {
-          Id: item.ID || item.id || "",
-          Services: serviceName,
-          Status:
-            item.Activity_Status ||
-            item.activity_status ||
-            item.Activity_status ||
-            item.Status ||
-            item.status ||
-            "",
-          Price: item.Activity_Price || item.activity_price || "",
-          "Invoice to Client":
-            item.Invoice_to_Client ?? item.invoice_to_client ?? "",
-          Option: normalizeOption(item.Option || item.option || ""),
-          Task: normalizeTask(item.Task || item.task || ""),
-        };
-      });
+      const mappedActivities = this.mapActivitiesForSharedTable(safeActivities);
       const tableHTML = this.createActivitiesTable(mappedActivities);
       const target = document.getElementById("addActivitiesTable");
       if (target) {
@@ -5761,8 +5705,8 @@ export class JobDetailView {
     });
   }
 
-  bindActivityRowActions() {
-    this.bindRowActions("addActivitiesTable", this.activityRecordsById, {
+  bindActivityRowActions(containerId = "addActivitiesTable") {
+    this.bindRowActions(containerId, this.activityRecordsById, {
       onEdit: (id, record) => {
         this.editingActivityId = id;
         this.populateActivityForm(record);
