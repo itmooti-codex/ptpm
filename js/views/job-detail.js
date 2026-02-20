@@ -1669,22 +1669,20 @@ export class JobDetailView {
       `;
       deleteBtn.addEventListener("click", async () => {
         if (!meta.id) return;
-        const confirmed = window.confirm(
-          "Are you sure you want to delete this upload?"
-        );
-        if (!confirmed) return;
-        showLoader(
-          this.loaderElement,
-          this.loaderMessageEl,
-          this.loaderCounter,
-          "Deleting upload..."
-        );
-        try {
-          await this.model.deleteUpload(meta.id);
-          await this.reloadExistingUploads();
-        } finally {
-          hideLoader(this.loaderElement, this.loaderCounter);
-        }
+        await this.confirmAndDelete(async () => {
+          showLoader(
+            this.loaderElement,
+            this.loaderMessageEl,
+            this.loaderCounter,
+            "Deleting upload..."
+          );
+          try {
+            await this.model.deleteUpload(meta.id);
+            await this.reloadExistingUploads();
+          } finally {
+            hideLoader(this.loaderElement, this.loaderCounter);
+          }
+        });
       });
 
       actions.appendChild(viewBtn);
