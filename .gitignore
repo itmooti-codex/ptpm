@@ -2,6 +2,7 @@
 rmd-dynamic-list-table/
 sdk/
 z-new-version
+*node_modules
 
 # Ignore specific markdown guide files (if they are generated or not to be tracked)
 dynamicguide.md

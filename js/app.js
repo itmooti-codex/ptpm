@@ -66,11 +66,18 @@ function applyBrowserDefault() {
       // Always-available controllers (if DOM present)
       // await this.maybeInitDashboard();
 
-      // Page-specific
-      if (page == "new-inquiry") this.initNewInquiry();
-      if (page === "dashboard") await this.maybeInitDashboard();
-      if (page == "new-direct-job") await this.initDirectJob();
-      if (page === "notification") this.initNotification();
+      try {
+        // Page-specific
+        if (page == "new-inquiry") this.initNewInquiry();
+        if (page === "dashboard") await this.maybeInitDashboard();
+        if (page == "new-direct-job") await this.initDirectJob();
+        if (page === "notification") this.initNotification();
+      } catch (err) {
+        console.error("App page init failed", err);
+      } finally {
+        // Fallback: never leave the global app loader stuck.
+        hideLoader(this.loaderElement, this.loaderCounter, true);
+      }
     },
 
     async maybeInitDashboard() {

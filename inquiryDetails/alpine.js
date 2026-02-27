@@ -3842,6 +3842,7 @@ document.addEventListener("alpine:init", () => {
     },
     resetForm() {
       this.cleanupTempOptions();
+      this.filteredServiceOptions = [];
       this.form = {
         job: "Job 1",
         option: "Option 1",
@@ -3925,9 +3926,7 @@ document.addEventListener("alpine:init", () => {
         service_id: serviceId,
         task: this.form.job,
         option: this.form.option,
-        activity_price: parseFloat(
-          this.normalizePrice(this.form.activityPrice)
-        ),
+        activity_price: this.normalizePrice(this.form.activityPrice),
         activity_text: this.form.activityText,
         warranty: this.form.warranty,
         note: this.form.note,

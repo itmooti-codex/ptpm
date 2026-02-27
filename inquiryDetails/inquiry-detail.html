@@ -6616,7 +6616,7 @@
                     <select
                       class="w-full appearance-none rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm focus:border-sky-600 focus:outline-none focus:ring-1 focus:ring-sky-500 hover:!border-slate-300 active:!border-slate-300 hover:!bg-white active:!bg-white hover:!text-slate-800 active:!text-slate-800 outline outline-1 outline-offset-[-1px] outline-gray-300 hover:border active:border focus:border focus-visible:border hover:border-slate-300 active:border-slate-300 focus:border-slate-300 focus-visible:border-slate-300 hover:bg-white active:bg-white focus:bg-white focus-visible:bg-white hover:text-slate-800 active:text-slate-800 focus:text-slate-800 focus-visible:text-slate-800 hover:shadow-sm active:shadow-sm focus:shadow-sm focus-visible:shadow-sm hover:outline active:outline focus:outline focus-visible:outline hover:outline-1 active:outline-1 focus:outline-1 focus-visible:outline-1 hover:outline-offset-[-1px] active:outline-offset-[-1px] focus:outline-offset-[-1px] focus-visible:outline-offset-[-1px] hover:outline-gray-300 active:outline-gray-300 focus:outline-gray-300 focus-visible:outline-gray-300"
                       x-model="form.service"
-                      @change="handleServiceChange"
+                      @change="form.service = $event.target.value; handleServiceChange()"
                     >
                       <template x-if="!services.length">
                         <option value="">Select a service</option>
