@@ -72,3 +72,71 @@ export const PRIORITY_OPTIONS = [
   { value: "124", label: "Medium", color: "#f57c00", backgroundColor: "#fde5cc" },
   { value: "123", label: "High", color: "#d84315", backgroundColor: "#f7d9d0" },
 ];
+
+export const APPOINTMENT_STATUS_OPTIONS = [
+  { value: "New", label: "New", code: "640", color: "#8e24aa", backgroundColor: "#e8d3ee" },
+  {
+    value: "To Be Scheduled",
+    label: "To Be Scheduled",
+    code: "639",
+    color: "#fb8c00",
+    backgroundColor: "#fee8cc",
+  },
+  {
+    value: "Scheduled",
+    label: "Scheduled",
+    code: "638",
+    color: "#0288d1",
+    backgroundColor: "#cce7f6",
+  },
+  {
+    value: "Completed",
+    label: "Completed",
+    code: "637",
+    color: "#43a047",
+    backgroundColor: "#d9ecda",
+  },
+  {
+    value: "Cancelled",
+    label: "Cancelled",
+    code: "636",
+    color: "#9e9e9e",
+    backgroundColor: "#ececec",
+  },
+];
+
+export const APPOINTMENT_TYPE_OPTIONS = [
+  { value: "select none", label: "select none" },
+  { value: "Inquiry", label: "Inquiry" },
+  { value: "Job", label: "Job" },
+];
+
+export const APPOINTMENT_EVENT_COLOR_OPTIONS = [
+  { value: "1", label: "1", code: "631", color: "#a4bdfc", backgroundColor: "#edf2fe" },
+  { value: "2", label: "2", code: "630", color: "#7ae7bf", backgroundColor: "#e4faf2" },
+  { value: "3", label: "3", code: "629", color: "#dbadff", backgroundColor: "#f8efff" },
+  { value: "4", label: "4", code: "628", color: "#ff887c", backgroundColor: "#ffe7e5" },
+  { value: "5", label: "5", code: "627", color: "#fbd75b", backgroundColor: "#fef7de" },
+  { value: "6", label: "6", code: "626", color: "#ffb878", backgroundColor: "#fff1e4" },
+  { value: "7", label: "7", code: "625", color: "#46d6db", backgroundColor: "#daf7f8" },
+  { value: "8", label: "8", code: "624", color: "#e1e1e1", backgroundColor: "#f9f9f9" },
+  { value: "9", label: "9", code: "623", color: "#5484ed", backgroundColor: "#dde6fb" },
+  { value: "10", label: "10", code: "622", color: "#51b749", backgroundColor: "#dcf1db" },
+  { value: "11", label: "11", code: "621", color: "#dc2127", backgroundColor: "#f8d3d4" },
+];
+
+export const APPOINTMENT_DURATION_HOURS_OPTIONS = [
+  { value: "0", label: "0" },
+  { value: "1", label: "1" },
+  { value: "2", label: "2" },
+  { value: "3", label: "3" },
+  { value: "4", label: "4" },
+  { value: "5", label: "5" },
+];
+
+export const APPOINTMENT_DURATION_MINUTES_OPTIONS = [
+  { value: "0", label: "0" },
+  { value: "15", label: "15" },
+  { value: "30", label: "30" },
+  { value: "45", label: "45" },
+];

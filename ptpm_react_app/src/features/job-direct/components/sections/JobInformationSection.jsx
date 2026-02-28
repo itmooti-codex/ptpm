@@ -5,6 +5,11 @@ import { Modal } from "../../../../shared/components/ui/Modal.jsx";
 import { useToast } from "../../../../shared/providers/ToastProvider.jsx";
 import { JOB_INFO_TABS } from "../../constants/navigation.js";
 import {
+  APPOINTMENT_DURATION_HOURS_OPTIONS,
+  APPOINTMENT_DURATION_MINUTES_OPTIONS,
+  APPOINTMENT_EVENT_COLOR_OPTIONS,
+  APPOINTMENT_STATUS_OPTIONS,
+  APPOINTMENT_TYPE_OPTIONS,
   JOB_STATUS_OPTIONS,
   JOB_TYPE_OPTIONS,
   PRIORITY_OPTIONS,
@@ -16,8 +21,13 @@ import {
   createContactRecord,
   createAffiliationRecord,
   createPropertyRecord,
+  createAppointmentRecord,
   deleteAffiliationRecord,
+  deleteAppointmentRecord,
   deleteUploadRecord,
+  fetchAppointmentsByJobId,
+  fetchContactsForSearch,
+  fetchPropertiesForSearch,
   fetchPropertyAffiliationsByPropertyId,
   fetchPropertyUploads,
   fetchPropertyRecordById,
@@ -26,6 +36,7 @@ import {
   fetchLinkedPropertiesByAccount,
   fetchServiceProvidersForSearch,
   createPropertyUploadFromFile,
+  updateAppointmentRecord,
   updateAffiliationRecord,
   updatePropertyRecord,
 } from "../../sdk/jobDirectSdk.js";
@@ -184,14 +195,20 @@ function SelectInput({
   field,
   options = [],
   defaultValue = "",
+  value,
+  onChange,
   customValueClass = "",
   customSelectClass = "",
 }) {
-  const [selectedValue, setSelectedValue] = useState(defaultValue || "");
+  const isControlled = value !== undefined;
+  const [internalValue, setInternalValue] = useState(defaultValue || "");
 
   useEffect(() => {
-    setSelectedValue(defaultValue || "");
-  }, [defaultValue]);
+    if (isControlled) return;
+    setInternalValue(defaultValue || "");
+  }, [defaultValue, isControlled]);
+
+  const selectedValue = isControlled ? value : internalValue;
 
   return (
     <div className="w-full">
@@ -200,7 +217,11 @@ function SelectInput({
         <select
           data-field={field}
           value={selectedValue}
-          onChange={(event) => setSelectedValue(event.target.value)}
+          onChange={(event) => {
+            const nextValue = event.target.value;
+            if (!isControlled) setInternalValue(nextValue);
+            onChange?.(nextValue);
+          }}
           className={`w-full appearance-none rounded border border-slate-300 bg-white px-2.5 py-2 pr-9 text-sm text-slate-700 outline-none focus:border-slate-400 ${customValueClass} ${customSelectClass}`}
         >
           <option value="" disabled>
@@ -239,12 +260,23 @@ function DateInput({ label, field }) {
   );
 }
 
-function ColorMappedSelectInput({ label, field, options = [], defaultValue = "" }) {
-  const [selectedValue, setSelectedValue] = useState(defaultValue);
+function ColorMappedSelectInput({
+  label,
+  field,
+  options = [],
+  defaultValue = "",
+  value,
+  onChange,
+}) {
+  const isControlled = value !== undefined;
+  const [internalValue, setInternalValue] = useState(defaultValue);
 
   useEffect(() => {
-    setSelectedValue(defaultValue || "");
-  }, [defaultValue]);
+    if (isControlled) return;
+    setInternalValue(defaultValue || "");
+  }, [defaultValue, isControlled]);
+
+  const selectedValue = isControlled ? value : internalValue;
 
   const selectedOption = options.find((option) => String(option.value) === String(selectedValue));
   const selectStyle = selectedOption
@@ -262,7 +294,11 @@ function ColorMappedSelectInput({ label, field, options = [], defaultValue = "" 
         <select
           data-field={field}
           value={selectedValue}
-          onChange={(event) => setSelectedValue(event.target.value)}
+          onChange={(event) => {
+            const nextValue = event.target.value;
+            if (!isControlled) setInternalValue(nextValue);
+            onChange?.(nextValue);
+          }}
           className="w-full appearance-none rounded border border-slate-300 bg-white px-2.5 py-2 pr-9 text-sm text-slate-700 outline-none focus:border-slate-400"
           style={selectStyle}
         >
@@ -881,6 +917,82 @@ function normalizePropertyId(value) {
   return String(value || "").trim();
 }
 
+function normalizeAppointmentValue(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
+function resolveAppointmentMappedOption(options = [], rawValue = "") {
+  const target = normalizeAppointmentValue(rawValue);
+  if (!target) return null;
+
+  return (
+    options.find((option) => normalizeAppointmentValue(option.value) === target) ||
+    options.find((option) => normalizeAppointmentValue(option.label) === target) ||
+    options.find((option) => normalizeAppointmentValue(option.code) === target) ||
+    null
+  );
+}
+
+function parseAppointmentDateInputToUnix(value = "") {
+  const text = String(value || "").trim();
+  if (!text) return null;
+
+  const isoLocal = text.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/);
+  if (isoLocal) {
+    const year = Number.parseInt(isoLocal[1], 10);
+    const month = Number.parseInt(isoLocal[2], 10);
+    const day = Number.parseInt(isoLocal[3], 10);
+    const hour = Number.parseInt(isoLocal[4], 10);
+    const minute = Number.parseInt(isoLocal[5], 10);
+    const date = new Date(year, month - 1, day, hour, minute);
+    if (Number.isNaN(date.getTime())) return null;
+    return Math.floor(date.getTime() / 1000);
+  }
+
+  const withTime = text.match(
+    /^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{2}))?$/
+  );
+  if (!withTime) return null;
+
+  const day = Number.parseInt(withTime[1], 10);
+  const month = Number.parseInt(withTime[2], 10);
+  const year = Number.parseInt(withTime[3], 10);
+  const hour = Number.parseInt(withTime[4] || "0", 10);
+  const minute = Number.parseInt(withTime[5] || "0", 10);
+
+  if (!Number.isFinite(day) || !Number.isFinite(month) || !Number.isFinite(year)) return null;
+  const date = new Date(year, month - 1, day, hour, minute);
+  if (Number.isNaN(date.getTime())) return null;
+  return Math.floor(date.getTime() / 1000);
+}
+
+function formatAppointmentUnix(value = "") {
+  if (value === null || value === undefined || value === "") return "-";
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) {
+    const text = String(value || "").trim();
+    return text || "-";
+  }
+
+  const asMs = String(Math.trunc(Math.abs(numeric))).length <= 10 ? numeric * 1000 : numeric;
+  const date = new Date(asMs);
+  if (Number.isNaN(date.getTime())) return "-";
+
+  const dd = String(date.getDate()).padStart(2, "0");
+  const mm = String(date.getMonth() + 1).padStart(2, "0");
+  const yyyy = date.getFullYear();
+  const hh = String(date.getHours()).padStart(2, "0");
+  const mi = String(date.getMinutes()).padStart(2, "0");
+  return `${dd}/${mm}/${yyyy} ${hh}:${mi}`;
+}
+
+function formatAppointmentDuration(hours = "", minutes = "") {
+  const hh = String(hours || "0").trim();
+  const mm = String(minutes || "0").trim();
+  if (!hh && !mm) return "-";
+  return `${hh || "0"}h ${mm || "0"}m`;
+}
+
 function InquiryOptionCard({
   deal,
   isSelected,
@@ -1279,7 +1391,14 @@ function JobDetailsCard({
   );
 }
 
-function LinkInquiryCard({ jobData, plugin, accountType, clientId, companyId }) {
+function LinkInquiryCard({
+  jobData,
+  plugin,
+  accountType,
+  clientId,
+  companyId,
+  onInquiryRecordChange,
+}) {
   const [deals, setDeals] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [loadError, setLoadError] = useState("");
@@ -1317,6 +1436,10 @@ function LinkInquiryCard({ jobData, plugin, accountType, clientId, companyId }) 
   const effectiveInquiryId = normalizeInquiryId(
     selectedInquiryId || activeRelatedInquiry?.id || persistedInquiryId
   );
+
+  useEffect(() => {
+    onInquiryRecordChange?.(effectiveInquiryId || "");
+  }, [effectiveInquiryId, onInquiryRecordChange]);
 
   useEffect(() => {
     let isActive = true;
@@ -1452,6 +1575,7 @@ function OverviewTab({
   onOpenContactDetailsModal,
   selection,
   onSelectionChange,
+  onInquiryRecordChange,
 }) {
   return (
     <div
@@ -1474,6 +1598,7 @@ function OverviewTab({
           accountType={selection.accountType}
           clientId={selection.clientId}
           companyId={selection.companyId}
+          onInquiryRecordChange={onInquiryRecordChange}
         />
       </div>
     </div>
@@ -2623,102 +2748,666 @@ function ServiceProviderTab({
   );
 }
 
-function AppointmentTab() {
+function AppointmentTab({
+  plugin,
+  jobData,
+  preloadedLookupData,
+  onCountChange,
+  inquiryRecordId = "",
+}) {
+  const { success, error } = useToast();
+  const emptyForm = useMemo(
+    () => ({
+      status: "",
+      type: "select none",
+      title: "",
+      start_time: "",
+      end_time: "",
+      description: "",
+      location_id: "",
+      host_id: "",
+      primary_guest_contact_id: "",
+      event_color: "",
+      duration_hours: "0",
+      duration_minutes: "0",
+    }),
+    []
+  );
+
+  const normalizeIdValue = useCallback((value) => {
+    const text = String(value || "").trim();
+    if (!text) return null;
+    if (/^\d+$/.test(text)) return Number.parseInt(text, 10);
+    return text;
+  }, []);
+
+  const jobId = useMemo(
+    () => normalizeIdValue(jobData?.id || jobData?.ID || ""),
+    [jobData, normalizeIdValue]
+  );
+
+  const [form, setForm] = useState(emptyForm);
+  const [locationQuery, setLocationQuery] = useState("");
+  const [hostQuery, setHostQuery] = useState("");
+  const [guestQuery, setGuestQuery] = useState("");
+
+  const [appointments, setAppointments] = useState([]);
+  const [isAppointmentsLoading, setIsAppointmentsLoading] = useState(false);
+  const [appointmentsError, setAppointmentsError] = useState("");
+
+  const [lookupState, setLookupState] = useState({
+    locations: [],
+    hosts: [],
+    guests: [],
+  });
+  const [isLookupLoading, setIsLookupLoading] = useState(false);
+
+  const [isCreating, setIsCreating] = useState(false);
+  const [updatingId, setUpdatingId] = useState("");
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    setLookupState({
+      locations: Array.isArray(preloadedLookupData?.properties) ? preloadedLookupData.properties : [],
+      hosts: Array.isArray(preloadedLookupData?.serviceProviders)
+        ? preloadedLookupData.serviceProviders
+        : [],
+      guests: Array.isArray(preloadedLookupData?.contacts) ? preloadedLookupData.contacts : [],
+    });
+  }, [preloadedLookupData]);
+
+  useEffect(() => {
+    let isActive = true;
+    if (!plugin) return undefined;
+    setIsLookupLoading(true);
+    Promise.all([
+      fetchPropertiesForSearch({ plugin }),
+      fetchServiceProvidersForSearch({ plugin }),
+      fetchContactsForSearch({ plugin }),
+    ])
+      .then(([locations, hosts, guests]) => {
+        if (!isActive) return;
+        setLookupState({
+          locations: Array.isArray(locations) ? locations : [],
+          hosts: Array.isArray(hosts) ? hosts : [],
+          guests: Array.isArray(guests) ? guests : [],
+        });
+      })
+      .catch((lookupError) => {
+        if (!isActive) return;
+        console.error("[JobDirect] Failed loading appointment lookups", lookupError);
+      })
+      .finally(() => {
+        if (!isActive) return;
+        setIsLookupLoading(false);
+      });
+    return () => {
+      isActive = false;
+    };
+  }, [plugin]);
+
+  const refreshAppointments = useCallback(async () => {
+    if (!plugin || !jobId) {
+      setAppointments([]);
+      setAppointmentsError("");
+      setIsAppointmentsLoading(false);
+      return;
+    }
+
+    setIsAppointmentsLoading(true);
+    setAppointmentsError("");
+    try {
+      const records = await fetchAppointmentsByJobId({ plugin, jobId });
+      setAppointments(Array.isArray(records) ? records : []);
+    } catch (fetchError) {
+      console.error("[JobDirect] Failed to load appointments", fetchError);
+      setAppointments([]);
+      setAppointmentsError("Unable to load appointments.");
+    } finally {
+      setIsAppointmentsLoading(false);
+    }
+  }, [plugin, jobId]);
+
+  useEffect(() => {
+    refreshAppointments();
+  }, [refreshAppointments]);
+
+  useEffect(() => {
+    onCountChange?.(appointments.length);
+  }, [appointments.length, onCountChange]);
+
+  const locationItems = useMemo(
+    () =>
+      (lookupState.locations || []).map((record) => {
+        const id = String(record?.id || record?.ID || record?.Property_ID || "").trim();
+        const label =
+          String(record?.property_name || record?.Property_Name || "").trim() ||
+          String(record?.unique_id || record?.Unique_ID || "").trim() ||
+          (id ? `Property #${id}` : "Property");
+        return {
+          id,
+          label,
+          meta: [
+            record?.unique_id || record?.Unique_ID,
+            record?.address_1 || record?.address || record?.Address_1 || record?.Address,
+            record?.suburb_town || record?.city || record?.Suburb_Town || record?.City,
+            record?.state || record?.State,
+            record?.postal_code || record?.zip_code || record?.Postal_Code || record?.Zip_Code,
+          ]
+            .filter(Boolean)
+            .join(" | "),
+        };
+      }),
+    [lookupState.locations]
+  );
+
+  const hostItems = useMemo(
+    () =>
+      (lookupState.hosts || []).map((record) => {
+        const id = String(record?.id || record?.ID || "").trim();
+        const label =
+          [record?.first_name, record?.last_name].filter(Boolean).join(" ").trim() ||
+          record?.email ||
+          record?.sms_number ||
+          record?.unique_id ||
+          (id ? `Provider #${id}` : "Service Provider");
+        return {
+          id,
+          label,
+          meta: [record?.email, record?.sms_number, record?.unique_id].filter(Boolean).join(" | "),
+        };
+      }),
+    [lookupState.hosts]
+  );
+
+  const guestItems = useMemo(
+    () =>
+      (lookupState.guests || []).map((record) => {
+        const id = String(record?.id || record?.ID || record?.Contact_ID || "").trim();
+        const label =
+          [record?.first_name || record?.First_Name, record?.last_name || record?.Last_Name]
+            .filter(Boolean)
+            .join(" ")
+            .trim() ||
+          record?.email ||
+          record?.Email ||
+          record?.sms_number ||
+          record?.SMS_Number ||
+          (id ? `Contact #${id}` : "Contact");
+        return {
+          id,
+          label,
+          meta: [
+            record?.email || record?.Email,
+            record?.sms_number || record?.SMS_Number,
+            record?.office_phone || record?.Office_Phone,
+          ]
+            .filter(Boolean)
+            .join(" | "),
+        };
+      }),
+    [lookupState.guests]
+  );
+
+  const handleFieldChange = (field, value) => {
+    setForm((previous) => ({ ...previous, [field]: value }));
+  };
+
+  const resetForm = () => {
+    setForm(emptyForm);
+    setLocationQuery("");
+    setHostQuery("");
+    setGuestQuery("");
+  };
+
+  const handleCreateAppointment = async () => {
+    if (!plugin) {
+      error("Create failed", "SDK is still initializing. Please try again.");
+      return;
+    }
+    if (!jobId) {
+      error("Create failed", "Job ID is missing. Refresh and try again.");
+      return;
+    }
+    if (!form.status || !form.location_id || !form.host_id || !form.primary_guest_contact_id) {
+      error("Create failed", "Select status, location, host, and primary guest.");
+      return;
+    }
+
+    const startTime = parseAppointmentDateInputToUnix(form.start_time);
+    const endTime = parseAppointmentDateInputToUnix(form.end_time);
+    if (form.start_time && startTime === null) {
+      error("Create failed", "Start time must be in dd/mm/yyyy or dd/mm/yyyy hh:mm format.");
+      return;
+    }
+    if (form.end_time && endTime === null) {
+      error("Create failed", "End time must be in dd/mm/yyyy or dd/mm/yyyy hh:mm format.");
+      return;
+    }
+    if (startTime !== null && endTime !== null && endTime < startTime) {
+      error("Create failed", "End time cannot be before start time.");
+      return;
+    }
+
+    const guestId = normalizeIdValue(form.primary_guest_contact_id);
+    const isInquiryType = normalizeAppointmentValue(form.type) === "inquiry";
+    const dealId = normalizeIdValue(inquiryRecordId);
+    const payload = {
+      status: form.status,
+      type: form.type,
+      title: String(form.title || "").trim(),
+      start_time: startTime,
+      end_time: endTime,
+      description: String(form.description || "").trim(),
+      location_id: normalizeIdValue(form.location_id),
+      host_id: normalizeIdValue(form.host_id),
+      primary_guest_contact_id: guestId,
+      primary_guest_id: guestId,
+      event_color: form.event_color,
+      duration_hours: String(form.duration_hours || "0").trim(),
+      duration_minutes: String(form.duration_minutes || "0").trim(),
+      job_id: normalizeIdValue(jobId),
+      inquiry_id: isInquiryType ? dealId || "" : "",
+    };
+
+    setIsCreating(true);
+    try {
+      await createAppointmentRecord({ plugin, payload });
+      success("Appointment created", "Appointment was added successfully.");
+      resetForm();
+      await refreshAppointments();
+    } catch (createError) {
+      console.error("[JobDirect] Failed creating appointment", createError);
+      error("Create failed", createError?.message || "Unable to create appointment.");
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+  const handleMarkComplete = async (record) => {
+    const appointmentId = String(record?.id || "").trim();
+    if (!plugin || !appointmentId) return;
+    setUpdatingId(appointmentId);
+    try {
+      await updateAppointmentRecord({
+        plugin,
+        id: appointmentId,
+        payload: {
+          status: "Completed",
+        },
+      });
+      success("Appointment updated", "Appointment marked as completed.");
+      await refreshAppointments();
+    } catch (updateError) {
+      console.error("[JobDirect] Failed updating appointment", updateError);
+      error("Update failed", updateError?.message || "Unable to update appointment.");
+    } finally {
+      setUpdatingId("");
+    }
+  };
+
+  const confirmDeleteAppointment = async () => {
+    const appointmentId = String(deleteTarget?.id || "").trim();
+    if (!plugin || !appointmentId || isDeleting) return;
+    setIsDeleting(true);
+    try {
+      await deleteAppointmentRecord({ plugin, id: appointmentId });
+      success("Appointment deleted", "Appointment was removed.");
+      setDeleteTarget(null);
+      await refreshAppointments();
+    } catch (deleteError) {
+      console.error("[JobDirect] Failed deleting appointment", deleteError);
+      error("Delete failed", deleteError?.message || "Unable to delete appointment.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const getStatusOption = (value) =>
+    resolveAppointmentMappedOption(APPOINTMENT_STATUS_OPTIONS, value);
+  const getEventOption = (value) =>
+    resolveAppointmentMappedOption(APPOINTMENT_EVENT_COLOR_OPTIONS, value);
+
   return (
     <div
       data-job-section="job-section-appointment"
-      className="grid grid-cols-1 gap-4 xl:grid-cols-[420px_420px_1fr]"
+      className="grid grid-cols-1 gap-4 xl:grid-cols-[460px_1fr]"
     >
-      <Card className="space-y-4">
-        <div className="text-base font-bold leading-4 text-neutral-700">Appointments</div>
-        <SelectInput
-          label="Appointment Status"
-          field="status"
-          options={[
-            { value: "New", label: "New" },
-            { value: "To Be Scheduled", label: "To Be Scheduled" },
-            { value: "Scheduled", label: "Scheduled" },
-            { value: "Completed", label: "Completed" },
-            { value: "Cancelled", label: "Cancelled" },
-          ]}
-        />
-        <SelectInput
-          label="Type"
-          field="type"
-          options={[
-            { value: "select none", label: "select none" },
-            { value: "Inquiry", label: "Inquiry" },
-            { value: "Job", label: "Job" },
-          ]}
-        />
-        <div className="w-full">
-          <FieldLabel>Title</FieldLabel>
-          <input
-            type="text"
-            data-field="title"
-            className="mt-2 w-full rounded border border-slate-300 bg-white px-2.5 py-2 text-sm text-slate-700 outline-none"
-          />
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          <DateInput label="Start Time" field="start_time" />
-          <DateInput label="End Time" field="end_time" />
-        </div>
-        <div className="w-full">
-          <FieldLabel>Description</FieldLabel>
-          <textarea
-            rows={6}
-            data-field="description"
-            className="mt-2 w-full rounded border border-slate-300 bg-white px-2.5 py-2 text-sm text-slate-700 outline-none"
-          />
-        </div>
-        <SelectInput label="Location" field="location_id" options={[]} />
-        <SelectInput label="Host" field="host_id" options={[]} />
-        <SelectInput label="Primary Guest" field="primary_guest_id" options={[]} />
-      </Card>
-
       <div className="space-y-4">
         <Card className="space-y-4">
-          <div className="text-base font-bold leading-4 text-neutral-700">Inquiry or Job Information</div>
-          <SelectInput label="Inquiry" field="inquiry_id" options={[]} />
-          <SelectInput label="Job" field="job_id" options={[]} />
-        </Card>
-        <Card className="space-y-4">
-          <div className="text-base font-bold leading-4 text-neutral-700">Google Calendar</div>
-          <SelectInput label="Event Color" field="event_color" options={[]} />
+          <div className="text-base font-bold leading-4 text-neutral-700">Appointments</div>
+
+          <ColorMappedSelectInput
+            label="Appointment Status"
+            field="status"
+            options={APPOINTMENT_STATUS_OPTIONS}
+            value={form.status}
+            onChange={(value) => handleFieldChange("status", value)}
+          />
+          <SelectInput
+            label="Type"
+            field="type"
+            options={APPOINTMENT_TYPE_OPTIONS}
+            value={form.type}
+            onChange={(value) => handleFieldChange("type", value)}
+          />
+
+          <div className="w-full">
+            <FieldLabel>Title</FieldLabel>
+            <input
+              type="text"
+              data-field="title"
+              value={form.title}
+              onChange={(event) => handleFieldChange("title", event.target.value)}
+              className="mt-2 w-full rounded border border-slate-300 bg-white px-2.5 py-2 text-sm text-slate-700 outline-none"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div className="w-full">
+              <FieldLabel>Start Time</FieldLabel>
+              <input
+                type="datetime-local"
+                data-field="start_time"
+                value={form.start_time}
+                onChange={(event) => handleFieldChange("start_time", event.target.value)}
+                className="mt-2 w-full rounded border border-slate-300 bg-white px-2.5 py-2 text-sm text-slate-700 outline-none focus:border-slate-400"
+              />
+            </div>
+            <div className="w-full">
+              <FieldLabel>End Time</FieldLabel>
+              <input
+                type="datetime-local"
+                data-field="end_time"
+                value={form.end_time}
+                onChange={(event) => handleFieldChange("end_time", event.target.value)}
+                className="mt-2 w-full rounded border border-slate-300 bg-white px-2.5 py-2 text-sm text-slate-700 outline-none focus:border-slate-400"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <SelectInput
+              label="Duration Hours"
+              field="duration_hours"
+              options={APPOINTMENT_DURATION_HOURS_OPTIONS}
+              value={form.duration_hours}
+              onChange={(value) => handleFieldChange("duration_hours", value)}
+            />
+            <SelectInput
+              label="Duration Minutes"
+              field="duration_minutes"
+              options={APPOINTMENT_DURATION_MINUTES_OPTIONS}
+              value={form.duration_minutes}
+              onChange={(value) => handleFieldChange("duration_minutes", value)}
+            />
+          </div>
+
+          <div className="w-full">
+            <FieldLabel>Description</FieldLabel>
+            <textarea
+              rows={6}
+              data-field="description"
+              value={form.description}
+              onChange={(event) => handleFieldChange("description", event.target.value)}
+              className="mt-2 w-full rounded border border-slate-300 bg-white px-2.5 py-2 text-sm text-slate-700 outline-none"
+            />
+          </div>
+
+          <SearchDropdownInput
+            label="Location"
+            field="location_id"
+            value={locationQuery}
+            placeholder="Search property name or address"
+            items={locationItems}
+            onValueChange={(value) => {
+              setLocationQuery(value);
+              handleFieldChange("location_id", "");
+            }}
+            onSelect={(item) => {
+              setLocationQuery(item?.label || "");
+              handleFieldChange("location_id", String(item?.id || "").trim());
+            }}
+            hideAddAction
+            emptyText={isLookupLoading ? "Loading properties..." : "No properties found."}
+          />
+
+          <SearchDropdownInput
+            label="Host"
+            field="host_id"
+            value={hostQuery}
+            placeholder="Search service provider"
+            items={hostItems}
+            onValueChange={(value) => {
+              setHostQuery(value);
+              handleFieldChange("host_id", "");
+            }}
+            onSelect={(item) => {
+              setHostQuery(item?.label || "");
+              handleFieldChange("host_id", String(item?.id || "").trim());
+            }}
+            hideAddAction
+            emptyText={isLookupLoading ? "Loading service providers..." : "No service providers found."}
+          />
+
+          <SearchDropdownInput
+            label="Primary Guest"
+            field="primary_guest_contact_id"
+            value={guestQuery}
+            placeholder="Search contact"
+            items={guestItems}
+            onValueChange={(value) => {
+              setGuestQuery(value);
+              handleFieldChange("primary_guest_contact_id", "");
+            }}
+            onSelect={(item) => {
+              setGuestQuery(item?.label || "");
+              handleFieldChange("primary_guest_contact_id", String(item?.id || "").trim());
+            }}
+            hideAddAction
+            emptyText={isLookupLoading ? "Loading contacts..." : "No contacts found."}
+          />
+
+          <div className="border-t border-slate-200 pt-4">
+            <div className="text-base font-bold leading-4 text-neutral-700">Google Calendar</div>
+          </div>
+          <ColorMappedSelectInput
+            label="Event Color"
+            field="event_color"
+            options={APPOINTMENT_EVENT_COLOR_OPTIONS}
+            value={form.event_color}
+            onChange={(value) => handleFieldChange("event_color", value)}
+          />
         </Card>
         <Button
           id="create-appointment"
           className="w-full justify-center bg-[#003882] text-white hover:bg-[#003882]"
           variant="primary"
+          onClick={handleCreateAppointment}
+          disabled={isCreating}
         >
-          Create Appointment
+          {isCreating ? "Creating..." : "Create Appointment"}
         </Button>
       </div>
 
       <Card className="space-y-4">
         <div className="text-base font-bold leading-4 text-neutral-700">Appointments</div>
-        <div className="overflow-x-auto">
-          <table id="appointments-table" className="w-full min-w-[700px] text-left text-sm text-slate-600">
-            <thead className="border-b border-slate-200 text-slate-500">
-              <tr>
-                <th className="px-2 py-2">Status</th>
-                <th className="px-2 py-2">Start - End</th>
-                <th className="px-2 py-2">Location</th>
-                <th className="px-2 py-2">Host</th>
-                <th className="px-2 py-2">Guest</th>
-                <th className="px-2 py-2">Event Color</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="px-2 py-3 text-slate-400" colSpan={6}>
-                  No appointments added yet.
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+
+        {isAppointmentsLoading ? (
+          <div className="rounded border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-500">
+            Loading appointments...
+          </div>
+        ) : null}
+
+        {!isAppointmentsLoading && appointmentsError ? (
+          <div className="rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+            {appointmentsError}
+          </div>
+        ) : null}
+
+        {!isAppointmentsLoading && !appointmentsError ? (
+          <div className="overflow-x-auto">
+            <table id="appointments-table" className="w-full min-w-[900px] table-fixed text-left text-sm text-slate-600">
+              <thead className="border-b border-slate-200 text-slate-500">
+                <tr>
+                  <th className="w-[120px] px-2 py-2">Status</th>
+                  <th className="w-[200px] px-2 py-2">Start - End</th>
+                  <th className="w-[110px] px-2 py-2">Duration</th>
+                  <th className="w-[180px] px-2 py-2">Location</th>
+                  <th className="w-[140px] px-2 py-2">Host</th>
+                  <th className="w-[140px] px-2 py-2">Guest</th>
+                  <th className="w-[110px] px-2 py-2">Event Color</th>
+                  <th className="w-[150px] px-2 py-2 text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {!appointments.length ? (
+                  <tr>
+                    <td className="px-2 py-3 text-slate-400" colSpan={8}>
+                      No appointments added yet.
+                    </td>
+                  </tr>
+                ) : (
+                  appointments.map((record) => {
+                    const recordId = String(record?.id || "").trim();
+                    const statusOption = getStatusOption(record?.status);
+                    const eventOption = getEventOption(record?.event_color);
+                    const statusLabel = statusOption?.label || String(record?.status || "").trim() || "-";
+                    const eventLabel = eventOption?.label || String(record?.event_color || "").trim() || "-";
+                    const isCompleted = normalizeAppointmentValue(statusLabel) === "completed";
+                    const locationName =
+                      String(record?.location_name || "").trim() ||
+                      locationItems.find((item) => String(item.id) === String(record?.location_id || "").trim())?.label ||
+                      "-";
+                    const hostName =
+                      [record?.host_first_name, record?.host_last_name].filter(Boolean).join(" ").trim() ||
+                      hostItems.find((item) => String(item.id) === String(record?.host_id || "").trim())?.label ||
+                      "-";
+                    const guestName =
+                      [record?.primary_guest_first_name, record?.primary_guest_last_name]
+                        .filter(Boolean)
+                        .join(" ")
+                        .trim() ||
+                      guestItems.find(
+                        (item) =>
+                          String(item.id) === String(record?.primary_guest_contact_id || "").trim()
+                      )?.label ||
+                      "-";
+
+                    return (
+                      <tr key={recordId} className="border-b border-slate-100 last:border-b-0">
+                        <td className="px-2 py-3">
+                          <span
+                            className="inline-flex rounded-full px-2 py-1 text-xs font-medium"
+                            style={
+                              statusOption
+                                ? {
+                                    color: statusOption.color,
+                                    backgroundColor: statusOption.backgroundColor,
+                                  }
+                                : undefined
+                            }
+                          >
+                            {statusLabel}
+                          </span>
+                        </td>
+                        <td className="px-2 py-3 text-slate-800">
+                          {`${formatAppointmentUnix(record?.start_time)} - ${formatAppointmentUnix(
+                            record?.end_time
+                          )}`}
+                        </td>
+                        <td className="px-2 py-3 text-slate-800">
+                          {formatAppointmentDuration(
+                            record?.duration_hours,
+                            record?.duration_minutes
+                          )}
+                        </td>
+                        <td className="px-2 py-3 text-slate-800">{locationName}</td>
+                        <td className="px-2 py-3 text-slate-800">{hostName}</td>
+                        <td className="px-2 py-3 text-slate-800">{guestName}</td>
+                        <td className="px-2 py-3">
+                          <span
+                            className="inline-flex rounded-full px-2 py-1 text-xs font-medium"
+                            style={
+                              eventOption
+                                ? {
+                                    color: eventOption.color,
+                                    backgroundColor: eventOption.backgroundColor,
+                                  }
+                                : undefined
+                            }
+                          >
+                            {eventLabel}
+                          </span>
+                        </td>
+                        <td className="px-2 py-3">
+                          <div className="flex items-center justify-end gap-2">
+                            {!isCompleted ? (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-7 px-2 text-xs"
+                                onClick={() => handleMarkComplete(record)}
+                                disabled={updatingId === recordId || isDeleting}
+                              >
+                                {updatingId === recordId ? "Saving..." : "Complete"}
+                              </Button>
+                            ) : null}
+                            <button
+                              type="button"
+                              className="inline-flex h-7 w-7 items-center justify-center rounded border border-slate-300 bg-white text-slate-600 hover:border-red-300 hover:text-red-700 disabled:cursor-not-allowed disabled:opacity-40"
+                              onClick={() => setDeleteTarget(record)}
+                              aria-label="Delete appointment"
+                              title="Delete"
+                              disabled={updatingId === recordId || isDeleting}
+                            >
+                              <TrashIcon />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+        ) : null}
       </Card>
+
+      <Modal
+        open={Boolean(deleteTarget)}
+        onClose={() => {
+          if (isDeleting) return;
+          setDeleteTarget(null);
+        }}
+        title="Delete Appointment"
+        widthClass="max-w-md"
+        footer={
+          <div className="flex justify-end gap-2">
+            <Button
+              variant="ghost"
+              onClick={() => setDeleteTarget(null)}
+              disabled={isDeleting}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="primary"
+              className="bg-red-600 text-white hover:bg-red-700"
+              onClick={confirmDeleteAppointment}
+              disabled={isDeleting}
+            >
+              {isDeleting ? "Deleting..." : "Delete"}
+            </Button>
+          </div>
+        }
+      >
+        <p className="text-sm text-slate-600">
+          Are you sure you want to delete this appointment?
+        </p>
+      </Modal>
     </div>
   );
 }
@@ -2754,6 +3443,10 @@ export function JobInformationSection({
   const persistedPropertyId = normalizePropertyId(persistedRelatedProperty?.id);
   const [selectedPropertyId, setSelectedPropertyId] = useState(persistedPropertyId);
   const [propertySearchQuery, setPropertySearchQuery] = useState("");
+  const [appointmentCount, setAppointmentCount] = useState(0);
+  const [linkedInquiryRecordId, setLinkedInquiryRecordId] = useState(
+    normalizeInquiryId(getJobRelatedInquiry(jobData)?.id)
+  );
   const linkedPropertyRecordsCacheRef = useRef(new Map());
 
   useEffect(() => {
@@ -2778,6 +3471,10 @@ export function JobInformationSection({
   useEffect(() => {
     setSelectedPropertyId(persistedPropertyId);
   }, [persistedPropertyId]);
+
+  useEffect(() => {
+    setLinkedInquiryRecordId(normalizeInquiryId(getJobRelatedInquiry(jobData)?.id));
+  }, [jobData]);
 
   useEffect(() => {
     let isActive = true;
@@ -3027,7 +3724,6 @@ export function JobInformationSection({
     [plugin]
   );
 
-  const appointmentCount = "01";
   const tabContent = {
     overview: (
       <OverviewTab
@@ -3037,6 +3733,7 @@ export function JobInformationSection({
         onOpenContactDetailsModal={onOpenContactDetailsModal}
         selection={selection}
         onSelectionChange={setSelection}
+        onInquiryRecordChange={setLinkedInquiryRecordId}
       />
     ),
     property: (
@@ -3148,7 +3845,15 @@ export function JobInformationSection({
         onSubmitServiceProvider={onSubmitServiceProvider || onSaveJob}
       />
     ),
-    appointments: <AppointmentTab />,
+    appointments: (
+      <AppointmentTab
+        plugin={plugin}
+        jobData={jobData}
+        preloadedLookupData={preloadedLookupData}
+        onCountChange={setAppointmentCount}
+        inquiryRecordId={linkedInquiryRecordId}
+      />
+    ),
   };
 
   return (
@@ -3174,7 +3879,7 @@ export function JobInformationSection({
               {tab.label}
               {tab.id === "appointments" ? (
                 <span className="rounded-[10px] bg-sky-100 px-2.5 py-0.5 text-xs font-medium text-blue-700">
-                  {appointmentCount}
+                  {String(appointmentCount || 0).padStart(2, "0")}
                 </span>
               ) : null}
             </button>

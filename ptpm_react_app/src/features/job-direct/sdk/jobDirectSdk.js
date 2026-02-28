@@ -644,6 +644,292 @@ export async function fetchServiceProvidersForSearch({ plugin } = {}) {
   }
 }
 
+function normalizeAppointmentRecord(rawAppointment = {}) {
+  const hostContact = rawAppointment?.Host?.Contact_Information || {};
+  const primaryGuest = rawAppointment?.Primary_Guest || {};
+  const location = rawAppointment?.Location || {};
+
+  return {
+    id: String(rawAppointment?.id || rawAppointment?.ID || "").trim(),
+    status: String(rawAppointment?.status || rawAppointment?.Status || "").trim(),
+    type: String(rawAppointment?.type || rawAppointment?.Type || "").trim(),
+    title: String(rawAppointment?.title || rawAppointment?.Title || "").trim(),
+    description: String(
+      rawAppointment?.description || rawAppointment?.Description || ""
+    ).trim(),
+    start_time:
+      rawAppointment?.start_time || rawAppointment?.Start_Time || rawAppointment?.startTime || "",
+    end_time:
+      rawAppointment?.end_time || rawAppointment?.End_Time || rawAppointment?.endTime || "",
+    duration_hours: String(
+      rawAppointment?.duration_hours || rawAppointment?.Duration_Hours || "0"
+    ).trim(),
+    duration_minutes: String(
+      rawAppointment?.duration_minutes || rawAppointment?.Duration_Minutes || "0"
+    ).trim(),
+    event_color: String(
+      rawAppointment?.event_color || rawAppointment?.Event_Color || ""
+    ).trim(),
+    job_id: String(rawAppointment?.job_id || rawAppointment?.Job_ID || "").trim(),
+    location_id: String(
+      rawAppointment?.location_id || rawAppointment?.Location_ID || ""
+    ).trim(),
+    host_id: String(rawAppointment?.host_id || rawAppointment?.Host_ID || "").trim(),
+    primary_guest_contact_id: String(
+      rawAppointment?.primary_guest_contact_id ||
+        rawAppointment?.primary_guest_id ||
+        rawAppointment?.Primary_Guest_Contact_ID ||
+        rawAppointment?.Primary_Guest_ID ||
+        ""
+    ).trim(),
+    location_name: String(
+      rawAppointment?.Location_Property_Name ||
+        rawAppointment?.location_property_name ||
+        location?.property_name ||
+        location?.Property_Name ||
+        ""
+    ).trim(),
+    host_first_name: String(
+      rawAppointment?.Host_Contact_Information_First_Name ||
+        rawAppointment?.host_contact_information_first_name ||
+        hostContact?.first_name ||
+        hostContact?.First_Name ||
+        ""
+    ).trim(),
+    host_last_name: String(
+      rawAppointment?.Host_Contact_Information_Last_Name ||
+        rawAppointment?.host_contact_information_last_name ||
+        hostContact?.last_name ||
+        hostContact?.Last_Name ||
+        ""
+    ).trim(),
+    primary_guest_first_name: String(
+      rawAppointment?.Primary_Guest_First_Name ||
+        rawAppointment?.primary_guest_first_name ||
+        primaryGuest?.first_name ||
+        primaryGuest?.First_Name ||
+        ""
+    ).trim(),
+    primary_guest_last_name: String(
+      rawAppointment?.Primary_Guest_Last_Name ||
+        rawAppointment?.primary_guest_last_name ||
+        primaryGuest?.last_name ||
+        primaryGuest?.Last_Name ||
+        ""
+    ).trim(),
+  };
+}
+
+export async function fetchAppointmentsByJobId({ plugin, jobId } = {}) {
+  const resolvedPlugin = resolvePlugin(plugin);
+  if (!resolvedPlugin?.switchTo) return [];
+
+  const normalizedJobId = normalizeIdentifier(jobId);
+  if (!normalizedJobId) return [];
+
+  try {
+    const query = resolvedPlugin
+      .switchTo("PeterpmAppointment")
+      .query()
+      .where("job_id", normalizedJobId)
+      .deSelectAll()
+      .select([
+        "id",
+        "status",
+        "type",
+        "title",
+        "description",
+        "start_time",
+        "end_time",
+        "event_color",
+        "duration_hours",
+        "duration_minutes",
+        "job_id",
+        "location_id",
+        "host_id",
+        "primary_guest_contact_id",
+        "primary_guest_id",
+      ])
+      .include("Location", (locationQuery) =>
+        locationQuery.deSelectAll().select(["id", "property_name"])
+      )
+      .include("Host", (hostQuery) =>
+        hostQuery
+          .deSelectAll()
+          .select(["id"])
+          .include("Contact_Information", (contactQuery) =>
+            contactQuery
+              .deSelectAll()
+              .select(["first_name", "last_name", "email", "sms_number"])
+          )
+      )
+      .include("Primary_Guest", (guestQuery) =>
+        guestQuery.deSelectAll().select(["id", "first_name", "last_name", "email", "sms_number"])
+      )
+      .noDestroy();
+
+    query.getOrInitQueryCalc?.();
+    const response = await fetchDirectWithTimeout(query);
+    return extractRecords(response)
+      .map((record) => normalizeAppointmentRecord(record))
+      .filter((record) => record.id);
+  } catch (error) {
+    console.error("[JobDirect] Failed to fetch appointments", error);
+    return [];
+  }
+}
+
+export async function createAppointmentRecord({ plugin, payload } = {}) {
+  const resolvedPlugin = resolvePlugin(plugin);
+  if (!resolvedPlugin?.switchTo) {
+    throw new Error("SDK plugin is not ready.");
+  }
+
+  const appointmentModel = resolvedPlugin.switchTo("PeterpmAppointment");
+  if (!appointmentModel?.mutation) {
+    throw new Error("Appointment model is unavailable.");
+  }
+
+  const mutation = await appointmentModel.mutation();
+  mutation.createOne(payload || {});
+  const result = await mutation.execute(true).toPromise();
+  if (!result || result?.isCancelling) {
+    throw new Error("Appointment create was cancelled.");
+  }
+
+  const failure = extractStatusFailure(result);
+  if (failure) {
+    throw new Error(
+      extractMutationErrorMessage(failure.statusMessage) || "Unable to create appointment."
+    );
+  }
+
+  const created =
+    findMutationData(result, "createAppointment") ??
+    findMutationData(result, "createAppointments") ??
+    findMutationDataByMatcher(result, (key) => /^create/i.test(key) && /appointment/i.test(key));
+
+  if (created === null) {
+    throw new Error("Unable to create appointment.");
+  }
+
+  const createdRecord = Array.isArray(created) ? created[0] || null : created;
+  const createdId = extractCreatedRecordId(result, "PeterpmAppointment");
+  const resolvedId = String(createdRecord?.id || createdRecord?.ID || createdId || "").trim();
+  if (!isPersistedId(resolvedId)) {
+    throw new Error("Appointment was not confirmed by server. Please try again.");
+  }
+
+  return normalizeAppointmentRecord({
+    ...(payload || {}),
+    ...(createdRecord && typeof createdRecord === "object" ? createdRecord : {}),
+    id: resolvedId,
+  });
+}
+
+export async function updateAppointmentRecord({ plugin, id, payload } = {}) {
+  const resolvedPlugin = resolvePlugin(plugin);
+  if (!resolvedPlugin?.switchTo) {
+    throw new Error("SDK plugin is not ready.");
+  }
+
+  const normalizedId = normalizeIdentifier(id);
+  if (!normalizedId) {
+    throw new Error("Appointment ID is missing.");
+  }
+
+  const appointmentModel = resolvedPlugin.switchTo("PeterpmAppointment");
+  if (!appointmentModel?.mutation) {
+    throw new Error("Appointment model is unavailable.");
+  }
+
+  const mutation = await appointmentModel.mutation();
+  mutation.update((query) => query.where("id", normalizedId).set(payload || {}));
+  const result = await mutation.execute(true).toPromise();
+  if (!result || result?.isCancelling) {
+    throw new Error("Appointment update was cancelled.");
+  }
+
+  const failure = extractStatusFailure(result);
+  if (failure) {
+    throw new Error(
+      extractMutationErrorMessage(failure.statusMessage) || "Unable to update appointment."
+    );
+  }
+
+  const updated =
+    findMutationData(result, "updateAppointment") ??
+    findMutationData(result, "updateAppointments") ??
+    findMutationDataByMatcher(result, (key) => /^update/i.test(key) && /appointment/i.test(key));
+  const updatedRecord = Array.isArray(updated) ? updated[0] || null : updated;
+  const updatedId = extractCreatedRecordId(result, "PeterpmAppointment");
+
+  if (updatedRecord === null || (!updatedRecord && !updatedId)) {
+    console.warn(
+      "[JobDirect] Appointment update returned no updated record. Treating as success.",
+      result
+    );
+  }
+
+  return normalizeAppointmentRecord({
+    ...(payload || {}),
+    ...(updatedRecord && typeof updatedRecord === "object" ? updatedRecord : {}),
+    id: updatedRecord?.id || updatedRecord?.ID || updatedId || normalizedId,
+  });
+}
+
+export async function deleteAppointmentRecord({ plugin, id } = {}) {
+  const resolvedPlugin = resolvePlugin(plugin);
+  if (!resolvedPlugin?.switchTo) {
+    throw new Error("SDK plugin is not ready.");
+  }
+
+  const normalizedId = normalizeIdentifier(id);
+  if (!normalizedId) {
+    throw new Error("Appointment ID is missing.");
+  }
+
+  const appointmentModel = resolvedPlugin.switchTo("PeterpmAppointment");
+  if (!appointmentModel?.mutation) {
+    throw new Error("Appointment model is unavailable.");
+  }
+
+  const mutation = await appointmentModel.mutation();
+  if (typeof mutation.delete !== "function") {
+    throw new Error("Appointment delete operation is unavailable.");
+  }
+  mutation.delete((query) => query.where("id", normalizedId));
+  const result = await mutation.execute(true).toPromise();
+
+  if (!result || result?.isCancelling) {
+    throw new Error("Appointment delete was cancelled.");
+  }
+
+  const failure = extractStatusFailure(result);
+  if (failure) {
+    throw new Error(
+      extractMutationErrorMessage(failure.statusMessage) || "Unable to delete appointment."
+    );
+  }
+
+  const deleted =
+    findMutationData(result, "deleteAppointment") ??
+    findMutationData(result, "deleteAppointments") ??
+    findMutationDataByMatcher(result, (key) => /^delete/i.test(key) && /appointment/i.test(key));
+  const deletedRecord = Array.isArray(deleted) ? deleted[0] || null : deleted;
+  const deletedId = String(
+    deletedRecord?.id ||
+      deletedRecord?.ID ||
+      extractCreatedRecordId(result, "PeterpmAppointment") ||
+      normalizedId
+  ).trim();
+  if (!deletedId) {
+    throw new Error("Unable to delete appointment.");
+  }
+
+  return deletedId;
+}
+
 function parseUploadFileObject(raw = null) {
   if (!raw) return null;
   if (Array.isArray(raw)) {

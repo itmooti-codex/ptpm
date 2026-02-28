@@ -21,7 +21,7 @@ export function JobDirectContent({
   onOpenAddPropertyModal,
 }) {
   return (
-    <div data-section="replaceable-section" className="space-y-4">
+    <div data-section="replaceable-section" className="space-y-4 pb-8">
       <Card className="flex flex-wrap items-center gap-2">
         <Button
           size="sm"
