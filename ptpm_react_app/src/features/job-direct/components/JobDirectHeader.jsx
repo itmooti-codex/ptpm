@@ -19,7 +19,7 @@ export function JobDirectHeader({
 }) {
   const { success, error } = useToast();
   const [isSaving, setIsSaving] = useState(false);
-  const nextLabel = navState.next ? SECTION_LABELS[navState.next] : "Done";
+  const nextLabel = navState.next ? `Next: ${SECTION_LABELS[navState.next]}` : "Next";
   const backLabel = navState.previous ? `Back: ${SECTION_LABELS[navState.previous]}` : "Back";
 
   const handleResetForm = () => {
@@ -107,7 +107,7 @@ export function JobDirectHeader({
             {backLabel}
           </Button>
           <Button variant="secondary" disabled={!navState.canGoNext} onClick={onNext}>
-            Next: {nextLabel}
+            {nextLabel}
             <HeaderNextIcon className="h-3.5 w-3.5 text-brand-primary" />
           </Button>
         </div>

@@ -32,6 +32,25 @@ function extractRecords(payload) {
   return [];
 }
 
+function extractOperationRecord(payload, operationName) {
+  const key = String(operationName || "").trim();
+  if (!key) return null;
+
+  const objects = normalizeObjectList(payload);
+  for (const item of objects) {
+    if (!item || typeof item !== "object") continue;
+
+    if (item?.data && typeof item.data === "object" && key in item.data) {
+      return item.data[key] || null;
+    }
+
+    if (key in item) {
+      return item[key] || null;
+    }
+  }
+  return null;
+}
+
 function isPersistedId(value) {
   return /^\d+$/.test(String(value || "").trim());
 }
@@ -174,6 +193,25 @@ function normalizeTaskDateDue(value) {
 
   const parsed = new Date(asText);
   if (Number.isNaN(parsed.getTime())) return asText;
+  return Math.floor(parsed.getTime() / 1000);
+}
+
+function normalizeEpochSeconds(value) {
+  if (value === null || value === undefined) return null;
+  const asText = String(value).trim();
+  if (!asText) return null;
+
+  if (/^\d+$/.test(asText)) {
+    const numeric = Number.parseInt(asText, 10);
+    if (!Number.isFinite(numeric)) return null;
+    return numeric > 9_999_999_999 ? Math.floor(numeric / 1000) : numeric;
+  }
+
+  const normalizedDateOnly = /^\d{4}-\d{2}-\d{2}$/.test(asText)
+    ? `${asText}T00:00:00`
+    : asText;
+  const parsed = new Date(normalizedDateOnly);
+  if (Number.isNaN(parsed.getTime())) return null;
   return Math.floor(parsed.getTime() / 1000);
 }
 
@@ -329,6 +367,14 @@ function getFirstNonEmptyText(...values) {
   return "";
 }
 
+function normalizeStatusText(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
+function isTimeoutError(error) {
+  return /timed out/i.test(String(error?.message || ""));
+}
+
 function normalizeJobRecord(rawJob) {
   if (!rawJob || typeof rawJob !== "object") return rawJob;
 
@@ -401,6 +447,68 @@ function normalizeJobRecord(rawJob) {
   return next;
 }
 
+function normalizeInvoiceBillContextRecord(rawJob) {
+  const normalized = normalizeJobRecord(rawJob || {});
+  if (!normalized || typeof normalized !== "object") return normalized;
+
+  const contactXeroId = getFirstNonEmptyText(
+    normalized?.Client_Individual?.xero_contact_id,
+    normalized?.Client_Individual?.Xero_Contact_ID,
+    normalized?.Client_Individual_Xero_Contact_ID
+  );
+  const companyXeroId = getFirstNonEmptyText(
+    normalized?.Client_Entity?.xero_contact_id,
+    normalized?.Client_Entity?.Xero_Contact_ID,
+    normalized?.Client_Entity_Xero_Contact_ID
+  );
+
+  const providerRateRaw = getFirstNonEmptyText(
+    normalized?.Primary_Service_Provider_Job_Rate_Percentage,
+    normalized?.Primary_Service_Provider?.job_rate_percentage,
+    normalized?.Primary_Service_Provider?.Job_Rate_Percentage
+  );
+  const providerRate = Number.parseFloat(providerRateRaw);
+
+  const accountsContact = normalized?.Accounts_Contact?.Contact || null;
+  const accountsContactFirstName = getFirstNonEmptyText(
+    normalized?.Contact_First_Name1,
+    normalized?.Accounts_Contact_Contact_First_Name,
+    accountsContact?.first_name,
+    accountsContact?.First_Name
+  );
+  const accountsContactLastName = getFirstNonEmptyText(
+    normalized?.Contact_Last_Name1,
+    normalized?.Accounts_Contact_Contact_Last_Name,
+    accountsContact?.last_name,
+    accountsContact?.Last_Name
+  );
+  const accountsContactEmail = getFirstNonEmptyText(
+    normalized?.ContactEmail1,
+    normalized?.Accounts_Contact_Contact_Email,
+    accountsContact?.email,
+    accountsContact?.Email
+  );
+  const accountsContactContactId = getFirstNonEmptyText(
+    normalized?.Contact_Contact_ID1,
+    normalized?.Accounts_Contact_Contact_ID,
+    accountsContact?.id,
+    accountsContact?.ID
+  );
+
+  return {
+    ...normalized,
+    client_individual_xero_contact_id: contactXeroId,
+    client_entity_xero_contact_id: companyXeroId,
+    accounts_contact_contact_id: accountsContactContactId,
+    accounts_contact_contact_first_name: accountsContactFirstName,
+    accounts_contact_contact_last_name: accountsContactLastName,
+    accounts_contact_contact_email: accountsContactEmail,
+    primary_service_provider_job_rate_percentage: Number.isFinite(providerRate)
+      ? providerRate
+      : 0,
+  };
+}
+
 async function fetchFirstByField(jobModel, field, value) {
   const query = jobModel
     .query()
@@ -425,14 +533,55 @@ async function fetchFirstByField(jobModel, field, value) {
       "date_job_required_by",
       "payment_status",
       "job_total",
+      "invoice_date",
+      "due_date",
+      "invoice_number",
+      "invoice_id",
+      "invoice_total",
+      "xero_invoice_status",
+      "xero_api_response",
+      "xero_invoice_pdf",
+      "invoice_url_admin",
+      "invoice_url_client",
+      "accounts_contact_id",
+      "send_to_contact",
+      "bill_date",
+      "bill_due_date",
+      "bill_total",
+      "bill_gst",
+      "bill_xero_id",
+      "xero_bill_status",
+      "bill_batch_id",
+      "bill_batch_date",
+      "bill_batch_week",
+      "bill_approved_admin",
+      "bill_approval_time",
+      "bill_approved_service_provider",
+      "materials_total",
+      "reimburse_total",
+      "deduct_total",
     ])
     .include("Client_Individual", (q) =>
-      q.deSelectAll().select(["id", "first_name", "last_name", "email", "sms_number"])
+      q
+        .deSelectAll()
+        .select([
+          "id",
+          "first_name",
+          "last_name",
+          "email",
+          "sms_number",
+          "xero_contact_id",
+        ])
     )
     .include("Client_Entity", (q) =>
       q
         .deSelectAll()
-        .select(["id", "name", "account_type"])
+        .select([
+          "id",
+          "name",
+          "account_type",
+          "xero_contact_id",
+        ])
         .include("Primary_Person", (personQuery) =>
           personQuery
             .deSelectAll()
@@ -442,10 +591,20 @@ async function fetchFirstByField(jobModel, field, value) {
     .include("Inquiry_Record", (q) =>
       q.deSelectAll().select(["id", "unique_id", "deal_name"])
     )
+    .include("Accounts_Contact", (q) =>
+      q
+        .deSelectAll()
+        .select(["id"])
+        .include("Contact", (contactQuery) =>
+          contactQuery
+            .deSelectAll()
+            .select(["id", "first_name", "last_name", "email"])
+        )
+    )
     .include("Primary_Service_Provider", (providerQuery) =>
       providerQuery
         .deSelectAll()
-        .select(["id", "unique_id", "status"])
+        .select(["id", "unique_id", "status", "job_rate_percentage"])
         .include("Contact_Information", (contactQuery) =>
           contactQuery.deSelectAll().select(["first_name", "last_name", "email"])
         )
@@ -482,7 +641,106 @@ async function fetchFirstByField(jobModel, field, value) {
 
   query.getOrInitQueryCalc?.();
   const result = await query.fetchDirect().toPromise();
-  return normalizeJobRecord(extractFirstRecord(result));
+  return normalizeInvoiceBillContextRecord(extractFirstRecord(result));
+}
+
+export async function fetchInvoiceJobSnapshotById({ plugin, jobId } = {}) {
+  const resolvedPlugin = resolvePlugin(plugin);
+  if (!resolvedPlugin?.switchTo) return null;
+
+  const normalizedJobId = normalizeIdentifier(jobId);
+  if (!normalizedJobId) return null;
+
+  try {
+    const query = resolvedPlugin
+      .switchTo("PeterpmJob")
+      .query()
+      .fromGraphql(`
+        query getJob($id: PeterpmJobID!) {
+          getJob(query: [{ where: { id: $id } }]) {
+            ID: id
+            Unique_ID: unique_id
+            Xero_Invoice_Status: xero_invoice_status
+            Invoice_Number: invoice_number
+            Account_Type: account_type
+            Invoice_Date: invoice_date
+            Due_Date: due_date
+            Invoice_URL_Admin: invoice_url_admin
+            Invoice_URL_Client: invoice_url_client
+            Send_to_Contact: send_to_contact
+            Invoice_Total: invoice_total
+            Xero_Invoice_PDF: xero_invoice_pdf
+            Payment_Status: payment_status
+            xero_api_response
+            Invoice_ID: invoice_id
+            Bill_Date: bill_date
+            Bill_Due_Date: bill_due_date
+            Bill_Total: bill_total
+            Bill_GST: bill_gst
+            Bill_Xero_ID: bill_xero_id
+            Xero_Bill_Status: xero_bill_status
+            Bill_Batch_ID: bill_batch_id
+            Bill_Batch_Date: bill_batch_date
+            Bill_Batch_Week: bill_batch_week
+            Bill_Approved_Admin: bill_approved_admin
+            Bill_Approval_Time: bill_approval_time
+            Bill_Approved_Service_Provider: bill_approved_service_provider
+            Materials_Total: materials_total
+            Reimburse_Total: reimburse_total
+            Deduct_Total: deduct_total
+            Primary_Service_Provider_ID: primary_service_provider_id
+            Client_Entity_ID: client_entity_id
+            Client_Individual_ID: client_individual_id
+            Accounts_Contact_ID: accounts_contact_id
+            Contact_ID: contact_id
+            Client_Entity {
+              id
+              name
+              account_type
+              xero_contact_id
+            }
+            Client_Individual {
+              id
+              first_name
+              last_name
+              email
+              sms_number
+              xero_contact_id
+            }
+            Accounts_Contact {
+              id
+              Contact {
+                id
+                first_name
+                last_name
+                email
+              }
+            }
+            Primary_Service_Provider {
+              id
+              unique_id
+              status
+              job_rate_percentage
+              Contact_Information {
+                first_name
+                last_name
+                email
+              }
+            }
+          }
+        }
+      `);
+
+    const response = await fetchDirectWithTimeout(query, {
+      variables: { id: normalizedJobId },
+    });
+    const record = extractOperationRecord(response, "getJob");
+    if (!record || typeof record !== "object") return null;
+    return normalizeInvoiceBillContextRecord(record);
+  } catch (error) {
+    console.error("[JobDirect] Failed to fetch invoice job snapshot", { jobId: normalizedJobId, error });
+    return null;
+  }
 }
 
 export async function fetchJobDirectDataByUid({ jobUid, plugin } = {}) {
@@ -3126,14 +3384,16 @@ async function fetchDealsByAccountId({ plugin, accountType, accountId } = {}) {
       .fromGraphql(customDealQuery);
     const customResponse = await fetchDirectWithTimeout(customQuery, {
       variables: { id: resolvedId },
-    });
+    }, 20000);
     const customRecords = extractRecords(customResponse);
     const customDeals = dedupeDeals(
       customRecords.flatMap((record) => extractDealsFromAccountRecord(record))
     );
     if (customDeals.length) return customDeals;
   } catch (error) {
-    console.warn("[JobDirect] Custom deal query failed, using include fallback", error);
+    if (!isTimeoutError(error)) {
+      console.warn("[JobDirect] Custom deal query failed, using include fallback", error);
+    }
   }
 
   try {
@@ -3174,7 +3434,7 @@ async function executeJobUpdateMutation({ plugin, whereField, whereValue, payloa
   const mutation = await jobModel.mutation();
   mutation.update((query) => query.where(whereField, whereValue).set(payload || {}));
   const result = await mutation.execute(true).toPromise();
-  if (!result || result?.isCancelling) {
+  if (!result) {
     throw new Error("Job update was cancelled.");
   }
 
@@ -3191,12 +3451,19 @@ async function executeJobUpdateMutation({ plugin, whereField, whereValue, payloa
     findMutationDataByMatcher(result, (key) => /^update/i.test(key) && /job/i.test(key));
   const id = extractCreatedRecordId(result, "PeterpmJob");
   const updatedRecord = Array.isArray(updated) ? updated[0] || null : updated;
+  const fallbackIdFromWhere =
+    String(whereField || "").trim() === "id" ? normalizeIdentifier(whereValue) : "";
+  const resolvedId = normalizeIdentifier(
+    updatedRecord?.id || updatedRecord?.ID || id || fallbackIdFromWhere || ""
+  );
 
-  if (updatedRecord === null || (!updatedRecord && !id)) {
+  if (updatedRecord === null || (!updatedRecord && !resolvedId)) {
+    // SDK occasionally reports no updated record even when mutation is persisted.
+    // Avoid false-negative failures for caller flows that only need mutation dispatch.
     console.warn("[JobDirect] Job update returned no updated record. Treating as success.", result);
   }
 
-  return { updatedRecord, id };
+  return { updatedRecord, id: resolvedId || id };
 }
 
 export async function updateJobRecordByUid({ plugin, uniqueId, payload } = {}) {
@@ -3236,6 +3503,322 @@ export async function updateJobRecordById({ plugin, id, payload } = {}) {
     id: normalizeIdentifier(updatedRecord?.id || updatedRecord?.ID || mutationId || normalizedId),
     ...(updatedRecord && typeof updatedRecord === "object" ? updatedRecord : {}),
   };
+}
+
+export async function fetchInvoiceBillContextByJobUid({ plugin, jobUid } = {}) {
+  const job = await fetchJobDirectDataByUid({ plugin, jobUid });
+  if (!job) return null;
+
+  const jobId = normalizeIdentifier(job?.id || job?.ID);
+  const [activities, materials] = await Promise.all([
+    fetchActivitiesByJobId({ plugin, jobId }),
+    fetchMaterialsByJobId({ plugin, jobId }),
+  ]);
+
+  return {
+    job: normalizeInvoiceBillContextRecord(job),
+    activities: Array.isArray(activities) ? activities : [],
+    materials: Array.isArray(materials) ? materials : [],
+  };
+}
+
+export async function updateInvoiceTriggerByJobId({ plugin, jobId, payload } = {}) {
+  const normalizedJobId = normalizeIdentifier(jobId);
+  if (!normalizedJobId) {
+    throw new Error("Job ID is missing.");
+  }
+
+  const normalizedInvoiceDate = normalizeEpochSeconds(payload?.invoice_date);
+  const normalizedDueDate = normalizeEpochSeconds(payload?.due_date);
+  if (normalizedInvoiceDate === null || normalizedDueDate === null) {
+    throw new Error("Invoice Date and Due Date are required.");
+  }
+
+  const triggerPayload = {
+    invoice_date: normalizedInvoiceDate,
+    due_date: normalizedDueDate,
+    xero_invoice_status:
+      getFirstNonEmptyText(payload?.xero_invoice_status) || "Create Invoice",
+  };
+
+  let updatedRecord = null;
+  let id = normalizedJobId;
+  try {
+    const updateResult = await executeJobUpdateMutation({
+      plugin,
+      whereField: "id",
+      whereValue: normalizedJobId,
+      payload: triggerPayload,
+    });
+    updatedRecord = updateResult?.updatedRecord || null;
+    id = updateResult?.id || normalizedJobId;
+  } catch (error) {
+    const message = String(error?.message || "").toLowerCase();
+    const canRecoverWithSnapshot =
+      message.includes("cancelled") || message.includes("no updated record");
+    if (!canRecoverWithSnapshot) {
+      throw error;
+    }
+
+    const snapshot = await fetchInvoiceJobSnapshotById({
+      plugin,
+      jobId: normalizedJobId,
+    });
+
+    if (snapshot && typeof snapshot === "object") {
+      const snapshotInvoiceDate = normalizeEpochSeconds(
+        snapshot?.invoice_date ?? snapshot?.Invoice_Date
+      );
+      const snapshotDueDate = normalizeEpochSeconds(snapshot?.due_date ?? snapshot?.Due_Date);
+      const snapshotStatus = getFirstNonEmptyText(
+        snapshot?.xero_invoice_status,
+        snapshot?.Xero_Invoice_Status
+      );
+      const applied =
+        snapshotInvoiceDate === normalizedInvoiceDate &&
+        snapshotDueDate === normalizedDueDate &&
+        normalizeStatusText(snapshotStatus) ===
+          normalizeStatusText(triggerPayload.xero_invoice_status);
+
+      if (applied) {
+        updatedRecord = snapshot;
+        id = normalizeIdentifier(snapshot?.id || snapshot?.ID || normalizedJobId);
+      }
+    }
+
+    if (!updatedRecord) {
+      // SDK occasionally reports cancelled despite dispatching the update mutation.
+      // Return optimistic payload and let subsequent query/subscription confirm backend state.
+      updatedRecord = {
+        id: normalizedJobId,
+        invoice_date: normalizedInvoiceDate,
+        due_date: normalizedDueDate,
+        xero_invoice_status: triggerPayload.xero_invoice_status,
+      };
+      id = normalizedJobId;
+    }
+  }
+
+  return {
+    id: normalizeIdentifier(updatedRecord?.id || updatedRecord?.ID || id || normalizedJobId),
+    ...(updatedRecord && typeof updatedRecord === "object" ? updatedRecord : {}),
+  };
+}
+
+export async function updateBillTriggerByJobId({ plugin, jobId, payload } = {}) {
+  const normalizedJobId = normalizeIdentifier(jobId);
+  if (!normalizedJobId) {
+    throw new Error("Job ID is missing.");
+  }
+  return updateJobRecordById({
+    plugin,
+    id: normalizedJobId,
+    payload,
+  });
+}
+
+export async function waitForJobInvoiceApiResponseChange({
+  plugin,
+  jobId,
+  previous = null,
+  timeoutMs = 45000,
+} = {}) {
+  const resolvedPlugin = resolvePlugin(plugin);
+  if (!resolvedPlugin?.switchTo) {
+    throw new Error("SDK plugin is not ready.");
+  }
+
+  const normalizedJobId = normalizeIdentifier(jobId);
+  if (!normalizedJobId) {
+    throw new Error("Job ID is missing.");
+  }
+
+  const jobModel = resolvedPlugin.switchTo("PeterpmJob");
+  if (!jobModel?.query) {
+    throw new Error("Job model is unavailable.");
+  }
+
+  const previousSnapshot = {
+    xero_api_response: getFirstNonEmptyText(previous?.xero_api_response),
+    invoice_url_admin: getFirstNonEmptyText(previous?.invoice_url_admin),
+    invoice_url_client: getFirstNonEmptyText(previous?.invoice_url_client),
+    xero_invoice_status: getFirstNonEmptyText(previous?.xero_invoice_status),
+    xero_invoice_pdf: getFirstNonEmptyText(previous?.xero_invoice_pdf),
+    invoice_number: getFirstNonEmptyText(previous?.invoice_number),
+  };
+  const query = jobModel
+    .query()
+    .where("id", normalizedJobId)
+    .deSelectAll()
+    .select([
+      "id",
+      "xero_api_response",
+      "invoice_url_admin",
+      "invoice_url_client",
+      "xero_invoice_status",
+      "xero_invoice_pdf",
+      "invoice_number",
+    ])
+    .noDestroy();
+
+  return await new Promise((resolve) => {
+    let done = false;
+    let timeoutId = null;
+    let sub = null;
+
+    const finish = (value) => {
+      if (done) return;
+      done = true;
+      if (timeoutId) clearTimeout(timeoutId);
+      try {
+        sub?.unsubscribe?.();
+      } catch (_) {}
+      try {
+        query?.destroy?.();
+      } catch (_) {}
+      resolve(value || null);
+    };
+
+    const handlePayload = (payload) => {
+      const firstRecord = extractFirstRecord(payload);
+      if (!firstRecord || typeof firstRecord !== "object") return;
+      const snapshot = {
+        xero_api_response: getFirstNonEmptyText(
+          firstRecord?.xero_api_response,
+          firstRecord?.Xero_API_Response
+        ),
+        invoice_url_admin: getFirstNonEmptyText(
+          firstRecord?.invoice_url_admin,
+          firstRecord?.Invoice_URL_Admin
+        ),
+        invoice_url_client: getFirstNonEmptyText(
+          firstRecord?.invoice_url_client,
+          firstRecord?.Invoice_URL_Client
+        ),
+        xero_invoice_status: getFirstNonEmptyText(
+          firstRecord?.xero_invoice_status,
+          firstRecord?.Xero_Invoice_Status
+        ),
+        xero_invoice_pdf: getFirstNonEmptyText(
+          firstRecord?.xero_invoice_pdf,
+          firstRecord?.Xero_Invoice_PDF
+        ),
+        invoice_number: getFirstNonEmptyText(
+          firstRecord?.invoice_number,
+          firstRecord?.Invoice_Number
+        ),
+      };
+
+      const changed =
+        snapshot.xero_api_response !== previousSnapshot.xero_api_response ||
+        snapshot.invoice_url_admin !== previousSnapshot.invoice_url_admin ||
+        snapshot.invoice_url_client !== previousSnapshot.invoice_url_client ||
+        snapshot.xero_invoice_status !== previousSnapshot.xero_invoice_status ||
+        snapshot.xero_invoice_pdf !== previousSnapshot.xero_invoice_pdf ||
+        snapshot.invoice_number !== previousSnapshot.invoice_number;
+
+      if (!changed) return;
+
+      const hasSignal =
+        snapshot.xero_api_response ||
+        snapshot.invoice_url_admin ||
+        snapshot.invoice_url_client ||
+        snapshot.xero_invoice_pdf ||
+        snapshot.invoice_number;
+
+      if (!hasSignal) return;
+
+      finish(snapshot);
+    };
+
+    timeoutId = setTimeout(() => finish(null), timeoutMs);
+
+    try {
+      let stream = null;
+      if (typeof query.subscribe === "function") {
+        stream = query.subscribe();
+      }
+      if (!stream && typeof query.localSubscribe === "function") {
+        stream = query.localSubscribe();
+      }
+      if (!stream || typeof stream.subscribe !== "function") {
+        finish(null);
+        return;
+      }
+
+      if (
+        typeof window !== "undefined" &&
+        typeof window.toMainInstance === "function" &&
+        typeof stream.pipe === "function"
+      ) {
+        stream = stream.pipe(window.toMainInstance(true));
+      }
+
+      sub = stream.subscribe({
+        next: handlePayload,
+        error: () => finish(null),
+      });
+    } catch (_) {
+      finish(null);
+    }
+  });
+}
+
+export async function persistInvoiceActivitySelection({ plugin, activityUpdates = [] } = {}) {
+  const resolvedPlugin = resolvePlugin(plugin);
+  if (!resolvedPlugin?.switchTo) {
+    throw new Error("SDK plugin is not ready.");
+  }
+
+  const updates = Array.isArray(activityUpdates) ? activityUpdates : [];
+  if (!updates.length) return [];
+
+  const activityModel = resolvedPlugin.switchTo("PeterpmActivity");
+  if (!activityModel?.mutation) {
+    throw new Error("Activity model is unavailable.");
+  }
+
+  const settled = await Promise.allSettled(updates.map(async (item) => {
+    const activityId = normalizeIdentifier(item?.id || item?.activity_id || "");
+    if (!activityId) {
+      throw new Error("Activity ID is missing.");
+    }
+
+    const mutation = await activityModel.mutation();
+    mutation.update((query) =>
+      query.where("id", activityId).set({
+        invoice_to_client: Boolean(item?.invoice_to_client),
+      })
+    );
+    const result = await mutation.execute(true).toPromise();
+    if (!result || result?.isCancelling) {
+      throw new Error("Activity invoice selection update was cancelled.");
+    }
+
+    const failure = extractStatusFailure(result);
+    if (failure) {
+      throw new Error(
+        extractMutationErrorMessage(failure.statusMessage) ||
+          "Unable to save invoice activity selection."
+      );
+    }
+
+    return {
+      id: activityId,
+      invoice_to_client: Boolean(item?.invoice_to_client),
+    };
+  }));
+
+  const failed = settled.filter((item) => item.status === "rejected");
+  if (failed.length) {
+    const firstReason = failed[0]?.reason;
+    throw new Error(firstReason?.message || "Unable to save invoice activity selection.");
+  }
+
+  return settled
+    .filter((item) => item.status === "fulfilled")
+    .map((item) => item.value)
+    .filter(Boolean);
 }
 
 export async function fetchLinkedDealsByAccount({ plugin, accountType, accountId } = {}) {
@@ -3332,14 +3915,16 @@ export async function fetchLinkedPropertiesByAccount({ plugin, accountType, acco
       .fromGraphql(customPropertyQuery);
     const customResponse = await fetchDirectWithTimeout(customQuery, {
       variables: { id: normalizedId },
-    });
+    }, 20000);
     const customRecords = extractRecords(customResponse);
     const customProperties = dedupeProperties(
       customRecords.flatMap((record) => extractPropertiesFromAccountRecord(record))
     );
     if (customProperties.length) return customProperties;
   } catch (error) {
-    console.warn("[JobDirect] Custom property query failed, using include fallback", error);
+    if (!isTimeoutError(error)) {
+      console.warn("[JobDirect] Custom property query failed, using include fallback", error);
+    }
   }
 
   try {

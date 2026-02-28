@@ -12,6 +12,7 @@ export function JobDirectContent({
   activeTab,
   jobData,
   plugin,
+  jobUid,
   preloadedLookupData,
   onSaveJob,
   onSubmitServiceProvider,
@@ -19,6 +20,7 @@ export function JobDirectContent({
   onOpenModal,
   onOpenContactDetailsModal,
   onOpenAddPropertyModal,
+  onExternalUnsavedChange,
 }) {
   return (
     <div data-section="replaceable-section" className="space-y-4 pb-8">
@@ -85,7 +87,14 @@ export function JobDirectContent({
         />
       ) : null}
       {activeSection === "uploads" ? <UploadsSection plugin={plugin} jobData={jobData} /> : null}
-      {activeSection === "invoice" ? <InvoiceSection /> : null}
+      <div className={activeSection === "invoice" ? "" : "hidden"}>
+        <InvoiceSection
+          plugin={plugin}
+          jobData={jobData}
+          jobUid={jobUid}
+          onExternalUnsavedChange={onExternalUnsavedChange}
+        />
+      </div>
     </div>
   );
 }

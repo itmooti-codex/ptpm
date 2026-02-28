@@ -199,3 +199,71 @@ export const MATERIAL_STATUS_OPTIONS = [
   },
   { value: "Paid", label: "Paid", color: "#475569", backgroundColor: "#E2E8F0" },
 ];
+
+export const XERO_INVOICE_STATUS_OPTIONS = [
+  { value: "Create Invoice", label: "Create Invoice", color: "#8e24aa", backgroundColor: "#e8d3ee" },
+  { value: "Update Invoice", label: "Update Invoice", color: "#8e24aa", backgroundColor: "#e8d3ee" },
+  { value: "Awaiting payment", label: "Awaiting payment", color: "#fb8c00", backgroundColor: "#fee8cc" },
+  { value: "Paid", label: "Paid", color: "#43a047", backgroundColor: "#d9ecda" },
+  { value: "Failed", label: "Failed", color: "#000000", backgroundColor: "#cccccc" },
+];
+
+export const PAYMENT_STATUS_OPTIONS = [
+  {
+    value: "Invoice Required",
+    label: "Invoice Required",
+    color: "#8e24aa",
+    backgroundColor: "#e8d3ee",
+  },
+  {
+    value: "Invoice Sent",
+    label: "Invoice Sent",
+    color: "#3949ab",
+    backgroundColor: "#d7dbee",
+  },
+  {
+    value: "Paid",
+    label: "Paid",
+    color: "#43a047",
+    backgroundColor: "#d9ecda",
+  },
+  {
+    value: "Overdue",
+    label: "Overdue",
+    color: "#f4511e",
+    backgroundColor: "#fddcd2",
+  },
+  {
+    value: "Written Off",
+    label: "Written Off",
+    color: "#fb8c00",
+    backgroundColor: "#fee8cc",
+  },
+  {
+    value: "Cancelled",
+    label: "Cancelled",
+    color: "#616161",
+    backgroundColor: "#dfdfdf",
+  },
+];
+
+export const XERO_BILL_STATUS_OPTIONS = [
+  {
+    value: "Create Bill Line Item",
+    label: "Create Bill Line Item",
+    color: "#8e24aa",
+    backgroundColor: "#e8d3ee",
+  },
+  {
+    value: "Update Bill Line Item",
+    label: "Update Bill Line Item",
+    color: "#8e24aa",
+    backgroundColor: "#e8d3ee",
+  },
+  { value: "Waiting Approval", label: "Waiting Approval", color: "#039be5", backgroundColor: "#cdebfa" },
+  { value: "Awaiting Payment", label: "Awaiting Payment", color: "#f4511e", backgroundColor: "#fddcd2" },
+  { value: "Paid", label: "Paid", color: "#43a047", backgroundColor: "#d9ecda" },
+  { value: "Failed", label: "Failed", color: "#000000", backgroundColor: "#cccccc" },
+  { value: "Not Synced", label: "Not Synced", color: "#475569", backgroundColor: "#f1f5f9" },
+  { value: "Pending", label: "Pending", color: "#1e88e5", backgroundColor: "#d2e7fa" },
+];
