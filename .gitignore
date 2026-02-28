@@ -1,6 +1,6 @@
-# Ignore rmd dynamic list table and SDK folders
+# Ignore rmd dynamic list table and root SDK folder
 rmd-dynamic-list-table/
-sdk/
+/sdk/
 z-new-version
 *node_modules
 
@@ -14,3 +14,7 @@ node_modules/
 dist/
 .env
 .DS_Store
+
+# Keep React source SDK files tracked
+!ptpm_react_app/src/features/job-direct/sdk/
+!ptpm_react_app/src/features/job-direct/sdk/*.js
