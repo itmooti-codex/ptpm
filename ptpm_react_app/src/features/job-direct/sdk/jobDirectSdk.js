@@ -138,6 +138,85 @@ function extractMutationErrorMessage(rawMessage = "") {
   return message;
 }
 
+function extractCancellationMessage(result, fallbackMessage) {
+  const failure = extractStatusFailure(result);
+  if (failure) {
+    return extractMutationErrorMessage(failure.statusMessage) || fallbackMessage;
+  }
+
+  const objects = normalizeObjectList(result);
+  for (const item of objects) {
+    const candidate =
+      item?.extensions?.statusMessage ||
+      item?.statusMessage ||
+      item?.error ||
+      item?.message ||
+      "";
+    if (typeof candidate === "function") continue;
+    const normalized = extractMutationErrorMessage(candidate);
+    if (/^function\s+[A-Za-z0-9_]+\s*\(/.test(normalized)) continue;
+    if (normalized) return normalized;
+  }
+
+  return fallbackMessage;
+}
+
+function normalizeTaskDateDue(value) {
+  if (value === null || value === undefined) return null;
+  const asText = String(value).trim();
+  if (!asText) return null;
+
+  if (/^\d+$/.test(asText)) {
+    const numeric = Number.parseInt(asText, 10);
+    if (!Number.isFinite(numeric)) return asText;
+    return numeric > 9_999_999_999 ? Math.floor(numeric / 1000) : numeric;
+  }
+
+  const parsed = new Date(asText);
+  if (Number.isNaN(parsed.getTime())) return asText;
+  return Math.floor(parsed.getTime() / 1000);
+}
+
+function normalizeTaskMutationPayload(payload = {}, { forCreate = false } = {}) {
+  const source = payload && typeof payload === "object" ? payload : {};
+  const next = {};
+
+  const subject = String(source?.subject || source?.Subject || "").trim();
+  const details = String(source?.details || source?.Details || "").trim();
+  const status = String(source?.status || source?.Status || "").trim();
+  const assigneeId = normalizeIdentifier(
+    source?.assignee_id || source?.Assignee_ID || source?.assigneeId
+  );
+  const dateDue = normalizeTaskDateDue(source?.date_due ?? source?.Date_Due ?? source?.due_date);
+
+  if (subject) next.subject = subject;
+  if (details) next.details = details;
+  if (status) next.status = status;
+  if (assigneeId !== "" && assigneeId !== null && assigneeId !== undefined) {
+    next.assignee_id = assigneeId;
+  }
+  if (dateDue !== undefined) {
+    next.date_due = dateDue;
+  }
+
+  if (forCreate) {
+    const jobId = normalizeIdentifier(
+      source?.Job_id ?? source?.job_id ?? source?.JobID ?? source?.jobId
+    );
+    const dealId = normalizeIdentifier(
+      source?.Deal_id ?? source?.deal_id ?? source?.DealID ?? source?.dealId
+    );
+    if (jobId !== "" && jobId !== null && jobId !== undefined) {
+      next.Job_id = jobId;
+    }
+    if (dealId !== "" && dealId !== null && dealId !== undefined) {
+      next.Deal_id = dealId;
+    }
+  }
+
+  return next;
+}
+
 function extractCreatedRecordId(payload, key) {
   const managed = payload?.mutations?.[key]?.managedData;
   if (managed && typeof managed === "object") {
@@ -644,6 +723,218 @@ export async function fetchServiceProvidersForSearch({ plugin } = {}) {
   }
 }
 
+function normalizeTaskRecord(rawTask = {}) {
+  return {
+    id: String(rawTask?.id || rawTask?.ID || "").trim(),
+    subject: String(rawTask?.subject || rawTask?.Subject || "").trim(),
+    status: String(rawTask?.status || rawTask?.Status || "").trim(),
+    assignee_id: String(rawTask?.assignee_id || rawTask?.Assignee_ID || "").trim(),
+    date_due: rawTask?.date_due || rawTask?.Date_Due || "",
+    details: String(rawTask?.details || rawTask?.Details || "").trim(),
+    assignee_first_name: String(
+      rawTask?.assignee_first_name || rawTask?.Assignee_First_Name || ""
+    ).trim(),
+    assignee_last_name: String(
+      rawTask?.assignee_last_name || rawTask?.Assignee_Last_Name || ""
+    ).trim(),
+    assignee_email: String(rawTask?.assignee_email || rawTask?.AssigneeEmail || "").trim(),
+  };
+}
+
+export async function fetchTasksByJobId({ plugin, jobId } = {}) {
+  const resolvedPlugin = resolvePlugin(plugin);
+  if (!resolvedPlugin?.switchTo) return [];
+
+  const normalizedJobId = normalizeIdentifier(jobId);
+  if (!normalizedJobId) return [];
+
+  try {
+    const taskModel = resolvedPlugin.switchTo("PeterpmTask");
+    const customQuery = taskModel
+      .query()
+      .fromGraphql(`
+        query calcTasks($Job_id: PeterpmJobID!) {
+          calcTasks(query: [{ where: { Job_id: $Job_id } }]) {
+            ID: field(arg: ["id"])
+            Status: field(arg: ["status"])
+            Subject: field(arg: ["subject"])
+            Assignee_ID: field(arg: ["assignee_id"])
+            Date_Due: field(arg: ["date_due"])
+            Details: field(arg: ["details"])
+            Assignee_First_Name: field(arg: ["Assignee", "first_name"])
+            Assignee_Last_Name: field(arg: ["Assignee", "last_name"])
+            AssigneeEmail: field(arg: ["Assignee", "email"])
+          }
+        }
+      `);
+
+    const response = await fetchDirectWithTimeout(customQuery, {
+      variables: { Job_id: normalizedJobId },
+    });
+    return extractRecords(response).map((record) => normalizeTaskRecord(record));
+  } catch (error) {
+    console.error("[JobDirect] Failed to fetch tasks", error);
+    return [];
+  }
+}
+
+export async function createTaskRecord({ plugin, payload } = {}) {
+  const resolvedPlugin = resolvePlugin(plugin);
+  if (!resolvedPlugin?.switchTo) {
+    throw new Error("SDK plugin is not ready.");
+  }
+
+  const taskModel = resolvedPlugin.switchTo("PeterpmTask");
+  if (!taskModel?.mutation) {
+    throw new Error("Task model is unavailable.");
+  }
+
+  const mutationPayload = normalizeTaskMutationPayload(payload, { forCreate: true });
+  if (!mutationPayload?.Job_id && !mutationPayload?.Deal_id) {
+    throw new Error("Task create is missing Job_id or Deal_id.");
+  }
+
+  const mutation = await taskModel.mutation();
+  mutation.createOne(mutationPayload);
+  const result = await mutation.execute(true).toPromise();
+  if (!result) throw new Error("Task create was cancelled.");
+
+  const failure = extractStatusFailure(result);
+  if (failure) {
+    throw new Error(
+      extractMutationErrorMessage(failure.statusMessage) || "Unable to create task."
+    );
+  }
+
+  const created =
+    findMutationData(result, "createTask") ??
+    findMutationData(result, "createTasks") ??
+    findMutationDataByMatcher(result, (key) => /^create/i.test(key) && /task/i.test(key));
+  if (created === null) {
+    throw new Error("Unable to create task.");
+  }
+
+  const createdRecord = Array.isArray(created) ? created[0] || null : created;
+  const createdId = extractCreatedRecordId(result, "PeterpmTask");
+  const resolvedId = String(createdRecord?.id || createdRecord?.ID || createdId || "").trim();
+
+  if (result?.isCancelling && !isPersistedId(resolvedId)) {
+    throw new Error(extractCancellationMessage(result, "Task create was cancelled."));
+  }
+
+  if (!isPersistedId(resolvedId)) {
+    throw new Error("Task was not confirmed by server. Please try again.");
+  }
+
+  return normalizeTaskRecord({
+    ...(mutationPayload || {}),
+    ...(createdRecord && typeof createdRecord === "object" ? createdRecord : {}),
+    id: resolvedId,
+  });
+}
+
+export async function updateTaskRecord({ plugin, id, payload } = {}) {
+  const resolvedPlugin = resolvePlugin(plugin);
+  if (!resolvedPlugin?.switchTo) {
+    throw new Error("SDK plugin is not ready.");
+  }
+
+  const normalizedId = normalizeIdentifier(id);
+  if (!normalizedId) {
+    throw new Error("Task ID is missing.");
+  }
+
+  const taskModel = resolvedPlugin.switchTo("PeterpmTask");
+  if (!taskModel?.mutation) {
+    throw new Error("Task model is unavailable.");
+  }
+
+  const mutationPayload = normalizeTaskMutationPayload(payload, { forCreate: false });
+  const mutation = await taskModel.mutation();
+  mutation.update((query) => query.where("id", normalizedId).set(mutationPayload));
+  const result = await mutation.execute(true).toPromise();
+  if (!result) throw new Error("Task update was cancelled.");
+
+  const failure = extractStatusFailure(result);
+  if (failure) {
+    throw new Error(
+      extractMutationErrorMessage(failure.statusMessage) || "Unable to update task."
+    );
+  }
+
+  const updated =
+    findMutationData(result, "updateTask") ??
+    findMutationData(result, "updateTasks") ??
+    findMutationDataByMatcher(result, (key) => /^update/i.test(key) && /task/i.test(key));
+  const updatedRecord = Array.isArray(updated) ? updated[0] || null : updated;
+  const updatedId = extractCreatedRecordId(result, "PeterpmTask");
+  const resolvedId = String(
+    updatedRecord?.id || updatedRecord?.ID || updatedId || normalizedId || ""
+  ).trim();
+
+  if (result?.isCancelling && !isPersistedId(resolvedId)) {
+    throw new Error(extractCancellationMessage(result, "Task update was cancelled."));
+  }
+
+  if (updatedRecord === null || (!updatedRecord && !updatedId)) {
+    console.warn("[JobDirect] Task update returned no updated record. Treating as success.", result);
+  }
+
+  return normalizeTaskRecord({
+    ...(mutationPayload || {}),
+    ...(updatedRecord && typeof updatedRecord === "object" ? updatedRecord : {}),
+    id: resolvedId || normalizedId,
+  });
+}
+
+export async function deleteTaskRecord({ plugin, id } = {}) {
+  const resolvedPlugin = resolvePlugin(plugin);
+  if (!resolvedPlugin?.switchTo) {
+    throw new Error("SDK plugin is not ready.");
+  }
+
+  const normalizedId = normalizeIdentifier(id);
+  if (!normalizedId) {
+    throw new Error("Task ID is missing.");
+  }
+
+  const taskModel = resolvedPlugin.switchTo("PeterpmTask");
+  if (!taskModel?.mutation) {
+    throw new Error("Task model is unavailable.");
+  }
+
+  const mutation = await taskModel.mutation();
+  if (typeof mutation.delete !== "function") {
+    throw new Error("Task delete operation is unavailable.");
+  }
+  mutation.delete((query) => query.where("id", normalizedId));
+  const result = await mutation.execute(true).toPromise();
+  if (!result) throw new Error("Task delete was cancelled.");
+
+  const failure = extractStatusFailure(result);
+  if (failure) {
+    throw new Error(
+      extractMutationErrorMessage(failure.statusMessage) || "Unable to delete task."
+    );
+  }
+
+  const deleted =
+    findMutationData(result, "deleteTask") ??
+    findMutationData(result, "deleteTasks") ??
+    findMutationDataByMatcher(result, (key) => /^delete/i.test(key) && /task/i.test(key));
+  const deletedRecord = Array.isArray(deleted) ? deleted[0] || null : deleted;
+  const deletedId = String(
+    deletedRecord?.id || deletedRecord?.ID || extractCreatedRecordId(result, "PeterpmTask") || normalizedId
+  ).trim();
+  if (result?.isCancelling && !deletedId) {
+    throw new Error(extractCancellationMessage(result, "Task delete was cancelled."));
+  }
+  if (!deletedId) {
+    throw new Error("Unable to delete task.");
+  }
+  return deletedId;
+}
+
 function normalizeAppointmentRecord(rawAppointment = {}) {
   const hostContact = rawAppointment?.Host?.Contact_Information || {};
   const primaryGuest = rawAppointment?.Primary_Guest || {};
@@ -668,7 +959,15 @@ function normalizeAppointmentRecord(rawAppointment = {}) {
       rawAppointment?.duration_minutes || rawAppointment?.Duration_Minutes || "0"
     ).trim(),
     event_color: String(
-      rawAppointment?.event_color || rawAppointment?.Event_Color || ""
+      rawAppointment?.event_color ||
+        rawAppointment?.Event_Color ||
+        rawAppointment?.event_colour ||
+        rawAppointment?.Event_Colour ||
+        rawAppointment?.google_calendar_event_color ||
+        rawAppointment?.Google_Calendar_Event_Color ||
+        rawAppointment?.google_calendar_color ||
+        rawAppointment?.Google_Calendar_Color ||
+        ""
     ).trim(),
     job_id: String(rawAppointment?.job_id || rawAppointment?.Job_ID || "").trim(),
     location_id: String(
@@ -742,6 +1041,8 @@ export async function fetchAppointmentsByJobId({ plugin, jobId } = {}) {
         "start_time",
         "end_time",
         "event_color",
+        "google_calendar_event_color",
+        "google_calendar_color",
         "duration_hours",
         "duration_minutes",
         "job_id",

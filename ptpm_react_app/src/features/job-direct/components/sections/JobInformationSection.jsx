@@ -121,6 +121,20 @@ function TrashIcon() {
   );
 }
 
+function CheckIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path
+        d="M20 7L9 18L4 13"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 function StarIcon({ active = false }) {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -933,6 +947,24 @@ function resolveAppointmentMappedOption(options = [], rawValue = "") {
   );
 }
 
+function getAppointmentEventColorValue(record = {}) {
+  const candidates = [
+    record?.event_color,
+    record?.Event_Color,
+    record?.event_colour,
+    record?.Event_Colour,
+    record?.google_calendar_event_color,
+    record?.Google_Calendar_Event_Color,
+    record?.google_calendar_color,
+    record?.Google_Calendar_Color,
+  ];
+  for (const value of candidates) {
+    const text = String(value || "").trim();
+    if (text) return text;
+  }
+  return "";
+}
+
 function parseAppointmentDateInputToUnix(value = "") {
   const text = String(value || "").trim();
   if (!text) return null;
@@ -980,10 +1012,10 @@ function formatAppointmentUnix(value = "") {
 
   const dd = String(date.getDate()).padStart(2, "0");
   const mm = String(date.getMonth() + 1).padStart(2, "0");
-  const yyyy = date.getFullYear();
+  const yy = String(date.getFullYear()).slice(-2);
   const hh = String(date.getHours()).padStart(2, "0");
   const mi = String(date.getMinutes()).padStart(2, "0");
-  return `${dd}/${mm}/${yyyy} ${hh}:${mi}`;
+  return `${dd}/${mm}/${yy} ${hh}:${mi}`;
 }
 
 function formatAppointmentDuration(hours = "", minutes = "") {
@@ -3072,7 +3104,7 @@ function AppointmentTab({
   return (
     <div
       data-job-section="job-section-appointment"
-      className="grid grid-cols-1 gap-4 xl:grid-cols-[460px_1fr]"
+      className="grid min-w-0 grid-cols-1 gap-4 xl:grid-cols-[460px_minmax(0,1fr)]"
     >
       <div className="space-y-4">
         <Card className="space-y-4">
@@ -3231,7 +3263,7 @@ function AppointmentTab({
         </Button>
       </div>
 
-      <Card className="space-y-4">
+      <Card className="min-w-0 space-y-4">
         <div className="text-base font-bold leading-4 text-neutral-700">Appointments</div>
 
         {isAppointmentsLoading ? (
@@ -3247,7 +3279,7 @@ function AppointmentTab({
         ) : null}
 
         {!isAppointmentsLoading && !appointmentsError ? (
-          <div className="overflow-x-auto">
+          <div className="w-full max-w-full overflow-x-auto">
             <table id="appointments-table" className="w-full min-w-[900px] table-fixed text-left text-sm text-slate-600">
               <thead className="border-b border-slate-200 text-slate-500">
                 <tr>
@@ -3272,9 +3304,10 @@ function AppointmentTab({
                   appointments.map((record) => {
                     const recordId = String(record?.id || "").trim();
                     const statusOption = getStatusOption(record?.status);
-                    const eventOption = getEventOption(record?.event_color);
+                    const rawEventColor = getAppointmentEventColorValue(record);
+                    const eventOption = getEventOption(rawEventColor);
                     const statusLabel = statusOption?.label || String(record?.status || "").trim() || "-";
-                    const eventLabel = eventOption?.label || String(record?.event_color || "").trim() || "-";
+                    const eventLabel = eventOption?.label || rawEventColor || "-";
                     const isCompleted = normalizeAppointmentValue(statusLabel) === "completed";
                     const locationName =
                       String(record?.location_name || "").trim() ||
@@ -3299,7 +3332,7 @@ function AppointmentTab({
                       <tr key={recordId} className="border-b border-slate-100 last:border-b-0">
                         <td className="px-2 py-3">
                           <span
-                            className="inline-flex rounded-full px-2 py-1 text-xs font-medium"
+                            className="inline-flex w-full items-center justify-center whitespace-nowrap rounded-full px-2 py-1 text-[11px] font-medium"
                             style={
                               statusOption
                                 ? {
@@ -3328,7 +3361,7 @@ function AppointmentTab({
                         <td className="px-2 py-3 text-slate-800">{guestName}</td>
                         <td className="px-2 py-3">
                           <span
-                            className="inline-flex rounded-full px-2 py-1 text-xs font-medium"
+                            className="inline-flex w-full items-center justify-center whitespace-nowrap rounded-full px-2 py-1 text-[11px] font-medium"
                             style={
                               eventOption
                                 ? {
@@ -3344,15 +3377,20 @@ function AppointmentTab({
                         <td className="px-2 py-3">
                           <div className="flex items-center justify-end gap-2">
                             {!isCompleted ? (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="h-7 px-2 text-xs"
+                              <button
+                                type="button"
+                                className="inline-flex h-7 w-7 items-center justify-center rounded border border-slate-300 bg-white text-slate-600 hover:border-emerald-300 hover:text-emerald-700 disabled:cursor-not-allowed disabled:opacity-40"
                                 onClick={() => handleMarkComplete(record)}
                                 disabled={updatingId === recordId || isDeleting}
+                                aria-label="Mark appointment complete"
+                                title="Complete"
                               >
-                                {updatingId === recordId ? "Saving..." : "Complete"}
-                              </Button>
+                                {updatingId === recordId ? (
+                                  <span className="inline-flex h-3.5 w-3.5 animate-spin rounded-full border-2 border-slate-300 border-t-slate-600" />
+                                ) : (
+                                  <CheckIcon />
+                                )}
+                              </button>
                             ) : null}
                             <button
                               type="button"

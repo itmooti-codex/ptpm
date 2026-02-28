@@ -1,5 +1,6 @@
 import { Modal } from "../../../../shared/components/ui/Modal.jsx";
 import { DealInformationModal } from "./DealInformationModal.jsx";
+import { TasksModal } from "./TasksModal.jsx";
 
 function PlaceholderModal({ open, onClose, title, body }) {
   return (
@@ -36,11 +37,11 @@ export function LegacyRuntimeModals({ modals, onClose, plugin, jobData }) {
         title="Wildlife Report"
         body="Legacy modal from createWildlifeReportModal()."
       />
-      <PlaceholderModal
+      <TasksModal
         open={modals.tasks}
         onClose={() => onClose("tasks")}
-        title="Tasks"
-        body="Legacy modal from createTasksModal()."
+        plugin={plugin}
+        jobData={jobData}
       />
     </>
   );
