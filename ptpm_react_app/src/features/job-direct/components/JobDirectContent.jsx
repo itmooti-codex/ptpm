@@ -74,8 +74,16 @@ export function JobDirectContent({
         />
       ) : null}
 
-      {activeSection === "add-activities" ? <AddActivitiesSection /> : null}
-      {activeSection === "add-materials" ? <AddMaterialsSection /> : null}
+      {activeSection === "add-activities" ? (
+        <AddActivitiesSection plugin={plugin} jobData={jobData} />
+      ) : null}
+      {activeSection === "add-materials" ? (
+        <AddMaterialsSection
+          plugin={plugin}
+          jobData={jobData}
+          preloadedLookupData={preloadedLookupData}
+        />
+      ) : null}
       {activeSection === "uploads" ? <UploadsSection plugin={plugin} jobData={jobData} /> : null}
       {activeSection === "invoice" ? <InvoiceSection /> : null}
     </div>

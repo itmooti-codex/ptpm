@@ -140,3 +140,62 @@ export const APPOINTMENT_DURATION_MINUTES_OPTIONS = [
   { value: "30", label: "30" },
   { value: "45", label: "45" },
 ];
+
+export const ACTIVITY_TASK_OPTIONS = [
+  { value: "Job 1", label: "Job 1" },
+  { value: "Job 2", label: "Job 2" },
+  { value: "Job 3", label: "Job 3" },
+  { value: "Job 4", label: "Job 4" },
+  { value: "Job 5", label: "Job 5" },
+];
+
+export const ACTIVITY_OPTION_OPTIONS = [
+  { value: "Option 1", label: "Option 1" },
+  { value: "Option 2", label: "Option 2" },
+  { value: "Option 3", label: "Option 3" },
+  { value: "Option 4", label: "Option 4" },
+  { value: "Option 5", label: "Option 5" },
+];
+
+export const ACTIVITY_STATUS_OPTIONS = [
+  { value: "Quoted", label: "Quoted", code: "584", color: "#8e24aa", backgroundColor: "#e8d3ee" },
+  {
+    value: "To Be Scheduled",
+    label: "To Be Scheduled",
+    code: "585",
+    color: "#fb8c00",
+    backgroundColor: "#fee8cc",
+  },
+  { value: "Reschedule", label: "Reschedule", code: "606", color: "#ff5722", backgroundColor: "#ffddd3" },
+  { value: "Scheduled", label: "Scheduled", code: "166", color: "#00acc1", backgroundColor: "#cceef3" },
+  { value: "Completed", label: "Completed", code: "165", color: "#43a047", backgroundColor: "#d9ecda" },
+  { value: "Cancelled", label: "Cancelled", code: "583", color: "#000000", backgroundColor: "#cccccc" },
+];
+
+export const MATERIAL_TRANSACTION_TYPE_OPTIONS = [
+  { value: "Reimburse", label: "Reimburse" },
+  { value: "Deduct", label: "Deduct" },
+];
+
+export const MATERIAL_TAX_OPTIONS = [
+  { value: "Exemptexpenses", label: "Exemptexpenses" },
+  { value: "Input", label: "Input" },
+];
+
+export const MATERIAL_STATUS_OPTIONS = [
+  { value: "New", label: "New", color: "#0369A1", backgroundColor: "#E0F2FE" },
+  { value: "In Progress", label: "In Progress", color: "#0E7490", backgroundColor: "#CFFAFE" },
+  {
+    value: "Pending Payment",
+    label: "Pending Payment",
+    color: "#B45309",
+    backgroundColor: "#FEF3C7",
+  },
+  {
+    value: "Assigned to Job",
+    label: "Assigned to Job",
+    color: "#166534",
+    backgroundColor: "#DCFCE7",
+  },
+  { value: "Paid", label: "Paid", color: "#475569", backgroundColor: "#E2E8F0" },
+];
