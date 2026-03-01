@@ -35,7 +35,7 @@ export function getInquiryColumns({ onView, onAddTask, onDelete, isBatchMode, so
     cols.push({
       key: "_select",
       header: "",
-      thClass: "w-8",
+      thClass: "w-[1%]",
       tdClass: "whitespace-nowrap",
       render: (row, { selectedIds, onToggleSelect }) => (
         <input
@@ -88,7 +88,7 @@ export function getInquiryColumns({ onView, onAddTask, onDelete, isBatchMode, so
     {
       key: "client",
       header: "Client",
-      thClass: "w-[35%]",
+      thClass: "w-[1%]",
       render: (row) => (
         <ClientCell
           name={row.clientName}
@@ -129,10 +129,10 @@ export function getInquiryColumns({ onView, onAddTask, onDelete, isBatchMode, so
     {
       key: "_actions",
       header: "Actions",
-      thClass: "w-[1%]",
-      tdClass: "whitespace-nowrap",
+      thClass: "w-[1%] text-right",
+      tdClass: "whitespace-nowrap text-right",
       render: (row) => (
-        <div className="flex items-center gap-1">
+        <div className="flex w-full items-center justify-end gap-1">
           <JobDirectIconActionButton title="View" onClick={() => onView?.(row)}>
             <EyeIcon />
           </JobDirectIconActionButton>

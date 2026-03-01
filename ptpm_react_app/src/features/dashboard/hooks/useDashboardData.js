@@ -2,6 +2,11 @@ import { useEffect, useState } from "react";
 import { extractFromPayload } from "../sdk/dashboardCore.js";
 import { TAB_IDS } from "../constants/tabs.js";
 import {
+  buildRowsCacheKey,
+  readDashboardCache,
+  writeDashboardCache,
+} from "../sdk/dashboardCache.js";
+import {
   buildDealsQuery,
   buildQuotesQuery,
   buildJobsQuery,
@@ -60,9 +65,28 @@ export function useDashboardData({
       return;
     }
 
-    setRows([]);
-    setTotalCount(null);
-    setIsLoading(true);
+    const rowsCacheKey = buildRowsCacheKey({
+      tab: activeTab,
+      filters: appliedFilters,
+      page: currentPage,
+      pageSize,
+      sort: sortOrder,
+    });
+    const cachedRowsState = readDashboardCache(rowsCacheKey, {
+      maxAgeMs: 2 * 60 * 1000,
+    });
+
+    if (cachedRowsState && Array.isArray(cachedRowsState.rows)) {
+      setRows(cachedRowsState.rows);
+      setTotalCount(
+        Number.isFinite(cachedRowsState.totalCount) ? cachedRowsState.totalCount : null
+      );
+      setIsLoading(false);
+    } else {
+      setRows([]);
+      setTotalCount(null);
+      setIsLoading(true);
+    }
     setError(null);
 
     let cancelled = false;
@@ -115,11 +139,20 @@ export function useDashboardData({
             const total = normalized.length;
             const start = Math.max(0, (currentPage - 1) * pageSize);
             const end = start + pageSize;
+            const pagedRows = normalized.slice(start, end);
             setTotalCount(total);
-            setRows(normalized.slice(start, end));
+            setRows(pagedRows);
+            writeDashboardCache(rowsCacheKey, {
+              rows: pagedRows,
+              totalCount: total,
+            });
           } else {
             setTotalCount(null);
             setRows(normalized);
+            writeDashboardCache(rowsCacheKey, {
+              rows: normalized,
+              totalCount: null,
+            });
           }
           setError(null);
           setIsLoading(false);

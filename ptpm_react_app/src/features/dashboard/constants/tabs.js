@@ -8,10 +8,10 @@ export const TAB_IDS = {
 };
 
 export const TAB_LABELS = {
-  [TAB_IDS.INQUIRY]: "Inquiry",
-  [TAB_IDS.QUOTE]: "Quote",
+  [TAB_IDS.INQUIRY]: "Inquiries",
+  [TAB_IDS.QUOTE]: "Quotes",
   [TAB_IDS.JOBS]: "Jobs",
-  [TAB_IDS.PAYMENT]: "Payment",
+  [TAB_IDS.PAYMENT]: "Payments",
   [TAB_IDS.ACTIVE_JOBS]: "Active Jobs",
   [TAB_IDS.URGENT_CALLS]: "Urgent Calls",
 };

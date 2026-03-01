@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../../shared/components/ui/Button.jsx";
 import { Modal } from "../../../shared/components/ui/Modal.jsx";
@@ -16,6 +16,7 @@ import {
   fetchCalendarDataByTab,
 } from "../sdk/dashboardSdk.js";
 import { TAB_IDS, TAB_LIST } from "../constants/tabs.js";
+import { readDashboardCache, writeDashboardCache } from "../sdk/dashboardCache.js";
 import { DashboardHeader } from "../components/DashboardHeader.jsx";
 import { DashboardSidebar } from "../components/DashboardSidebar.jsx";
 import { DashboardContent } from "../components/DashboardContent.jsx";
@@ -156,24 +157,60 @@ function downloadBlobFile(blob, filename) {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-export function DashboardPage() {
-  const navigate = useNavigate();
-  const { success, error: showError } = useToast();
-  const { plugin, isBootstrapping, statusText, error, serviceProviders } =
-    useDashboardBootstrap();
+const DASHBOARD_UI_PREFS_KEY = "ui-prefs";
+const DASHBOARD_TAB_COUNTS_KEY = "tab-counts";
+const DASHBOARD_CALENDAR_KEY_PREFIX = "calendar";
+const DASHBOARD_COUNTS_TTL_MS = 10 * 60 * 1000;
+const DASHBOARD_CALENDAR_TTL_MS = 5 * 60 * 1000;
 
-  const [activeTab, setActiveTab] = useState(TAB_IDS.INQUIRY);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(25);
-  const [sortOrder, setSortOrder] = useState("desc");
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [tabCounts, setTabCounts] = useState({
+function defaultTabCounts() {
+  return {
     [TAB_IDS.INQUIRY]: 0,
     [TAB_IDS.QUOTE]: 0,
     [TAB_IDS.JOBS]: 0,
     [TAB_IDS.PAYMENT]: 0,
     [TAB_IDS.ACTIVE_JOBS]: 0,
     [TAB_IDS.URGENT_CALLS]: 0,
+  };
+}
+
+function readUiPrefs() {
+  const cached = readDashboardCache(DASHBOARD_UI_PREFS_KEY, {
+    maxAgeMs: 90 * 24 * 60 * 60 * 1000,
+  });
+  return cached && typeof cached === "object" ? cached : {};
+}
+
+export function DashboardPage() {
+  const navigate = useNavigate();
+  const { success, error: showError } = useToast();
+  const { plugin, isBootstrapping, statusText, error, serviceProviders } =
+    useDashboardBootstrap();
+
+  const initialUiPrefs = useMemo(() => readUiPrefs(), []);
+  const [activeTab, setActiveTab] = useState(() => {
+    const tab = String(initialUiPrefs.activeTab || "").trim();
+    return TAB_LIST.includes(tab) ? tab : TAB_IDS.INQUIRY;
+  });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(() => {
+    const size = Number(initialUiPrefs.pageSize || 25);
+    return [5, 10, 25, 50].includes(size) ? size : 25;
+  });
+  const [sortOrder, setSortOrder] = useState(() => {
+    return initialUiPrefs.sortOrder === "asc" ? "asc" : "desc";
+  });
+  const [sidebarOpen, setSidebarOpen] = useState(() => {
+    return initialUiPrefs.sidebarOpen !== false;
+  });
+  const [tabCounts, setTabCounts] = useState(() => {
+    const cached = readDashboardCache(DASHBOARD_TAB_COUNTS_KEY, {
+      maxAgeMs: DASHBOARD_COUNTS_TTL_MS,
+    });
+    return {
+      ...defaultTabCounts(),
+      ...(cached && typeof cached === "object" ? cached : {}),
+    };
   });
   const [batchSelectedIds, setBatchSelectedIds] = useState([]);
   const [isBatchMode, setIsBatchMode] = useState(false);
@@ -188,7 +225,12 @@ export function DashboardPage() {
   const [isBatchDeleting, setIsBatchDeleting] = useState(false);
   const [isCreatingJob, setIsCreatingJob] = useState(false);
   const [batchDeleteModal, setBatchDeleteModal] = useState(false);
-  const [calendarData, setCalendarData] = useState({});
+  const [calendarData, setCalendarData] = useState(() => {
+    const cached = readDashboardCache(`${DASHBOARD_CALENDAR_KEY_PREFIX}:${activeTab}`, {
+      maxAgeMs: DASHBOARD_CALENDAR_TTL_MS,
+    });
+    return cached && typeof cached === "object" ? cached : {};
+  });
 
   const filterHook = useDashboardFilters();
   const currentFilters = filterHook.getFiltersForTab(activeTab);
@@ -198,6 +240,19 @@ export function DashboardPage() {
     setSortOrder((prev) => (prev === "desc" ? "asc" : "desc"));
     setCurrentPage(1);
   }, []);
+
+  useEffect(() => {
+    writeDashboardCache(DASHBOARD_UI_PREFS_KEY, {
+      activeTab,
+      pageSize,
+      sortOrder,
+      sidebarOpen,
+    });
+  }, [activeTab, pageSize, sortOrder, sidebarOpen]);
+
+  useEffect(() => {
+    writeDashboardCache(DASHBOARD_TAB_COUNTS_KEY, tabCounts);
+  }, [tabCounts]);
 
   const { rows, isLoading, totalCount: filteredTotalCount } = useDashboardData({
     plugin,
@@ -236,13 +291,22 @@ export function DashboardPage() {
   // Fetch calendar card counts for the active tab after primary data settles.
   useEffect(() => {
     if (!plugin) return;
+    const cached = readDashboardCache(`${DASHBOARD_CALENDAR_KEY_PREFIX}:${activeTab}`, {
+      maxAgeMs: DASHBOARD_CALENDAR_TTL_MS,
+    });
+    if (cached && typeof cached === "object") {
+      setCalendarData(cached);
+    }
     fetchCalendarDataByTab({
       plugin,
       activeTab,
       lookbackDays: 365,
       lookaheadDays: 365,
     })
-      .then(setCalendarData)
+      .then((nextCalendarData) => {
+        setCalendarData(nextCalendarData);
+        writeDashboardCache(`${DASHBOARD_CALENDAR_KEY_PREFIX}:${activeTab}`, nextCalendarData);
+      })
       .catch((err) => console.warn("[DashboardPage] fetchCalendarDataByTab failed:", err));
   }, [plugin, activeTab]);
 

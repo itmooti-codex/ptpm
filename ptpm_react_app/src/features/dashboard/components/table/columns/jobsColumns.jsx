@@ -28,14 +28,21 @@ function TrashIcon() {
   );
 }
 
-export function getJobsColumns({ onView, onAddTask, onDelete, isBatchMode }) {
+export function getJobsColumns({
+  onView,
+  onAddTask,
+  onDelete,
+  isBatchMode,
+  sortOrder = "desc",
+  onToggleSortOrder,
+}) {
   const cols = [];
 
   if (isBatchMode) {
     cols.push({
       key: "_select",
       header: "",
-      thClass: "w-8",
+      thClass: "w-[1%]",
       tdClass: "whitespace-nowrap",
       render: (row, { selectedIds, onToggleSelect }) => (
         <input
@@ -67,7 +74,18 @@ export function getJobsColumns({ onView, onAddTask, onDelete, isBatchMode }) {
     },
     {
       key: "date",
-      header: "Date",
+      header: (
+        <button
+          type="button"
+          className="flex items-center gap-1 uppercase tracking-wide hover:text-slate-800"
+          onClick={onToggleSortOrder}
+        >
+          Date
+          <span aria-label={sortOrder === "desc" ? "newest first" : "oldest first"}>
+            {sortOrder === "desc" ? "↓" : "↑"}
+          </span>
+        </button>
+      ),
       thClass: "w-[1%]",
       tdClass: "whitespace-nowrap",
       render: (row) => <span>{row.date ?? "—"}</span>,
@@ -75,7 +93,7 @@ export function getJobsColumns({ onView, onAddTask, onDelete, isBatchMode }) {
     {
       key: "client",
       header: "Client",
-      thClass: "w-[35%]",
+      thClass: "w-[1%]",
       render: (row) => (
         <ClientCell
           name={row.clientName}
@@ -114,10 +132,10 @@ export function getJobsColumns({ onView, onAddTask, onDelete, isBatchMode }) {
     {
       key: "_actions",
       header: "Actions",
-      thClass: "w-[1%]",
-      tdClass: "whitespace-nowrap",
+      thClass: "w-[1%] text-right",
+      tdClass: "whitespace-nowrap text-right",
       render: (row) => (
-        <div className="flex items-center gap-1">
+        <div className="flex w-full items-center justify-end gap-1">
           <JobDirectIconActionButton title="View" onClick={() => onView?.(row)}>
             <EyeIcon />
           </JobDirectIconActionButton>

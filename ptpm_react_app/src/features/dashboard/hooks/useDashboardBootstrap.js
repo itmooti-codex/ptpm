@@ -1,13 +1,22 @@
 import { useEffect, useState } from "react";
 import { useVitalStatsPlugin } from "../../job-direct/hooks/useVitalStatsPlugin.js";
 import { fetchServiceProviders } from "../sdk/dashboardSdk.js";
+import { readDashboardCache, writeDashboardCache } from "../sdk/dashboardCache.js";
+
+const SERVICE_PROVIDER_CACHE_KEY = "service-providers";
+const SERVICE_PROVIDER_CACHE_TTL_MS = 6 * 60 * 60 * 1000;
 
 export function useDashboardBootstrap() {
   const { plugin, isReady: isSdkReady, error: sdkError } = useVitalStatsPlugin();
   const [isBootstrapping, setIsBootstrapping] = useState(true);
   const [statusText, setStatusText] = useState("Starting app...");
   const [error, setError] = useState(null);
-  const [serviceProviders, setServiceProviders] = useState([]);
+  const [serviceProviders, setServiceProviders] = useState(() => {
+    const cached = readDashboardCache(SERVICE_PROVIDER_CACHE_KEY, {
+      maxAgeMs: SERVICE_PROVIDER_CACHE_TTL_MS,
+    });
+    return Array.isArray(cached) ? cached : [];
+  });
 
   // Unblock the dashboard as soon as the plugin is ready.
   useEffect(() => {
@@ -38,7 +47,9 @@ export function useDashboardBootstrap() {
       fetchServiceProviders({ plugin })
         .then((records) => {
           if (!isActive) return;
-          setServiceProviders(Array.isArray(records) ? records : []);
+          const next = Array.isArray(records) ? records : [];
+          setServiceProviders(next);
+          writeDashboardCache(SERVICE_PROVIDER_CACHE_KEY, next);
         })
         .catch((err) => {
           if (!isActive) return;

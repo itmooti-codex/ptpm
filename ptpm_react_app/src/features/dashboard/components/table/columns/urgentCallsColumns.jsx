@@ -19,7 +19,7 @@ function TaskIcon() {
   );
 }
 
-export function getUrgentCallsColumns({ onView, onAddTask }) {
+export function getUrgentCallsColumns({ onView, onAddTask, sortOrder = "desc", onToggleSortOrder }) {
   return [
     {
       key: "id",
@@ -29,13 +29,25 @@ export function getUrgentCallsColumns({ onView, onAddTask }) {
     },
     {
       key: "time",
-      header: "Time",
+      header: (
+        <button
+          type="button"
+          className="flex items-center gap-1 uppercase tracking-wide hover:text-slate-800"
+          onClick={onToggleSortOrder}
+        >
+          Time
+          <span aria-label={sortOrder === "desc" ? "newest first" : "oldest first"}>
+            {sortOrder === "desc" ? "↓" : "↑"}
+          </span>
+        </button>
+      ),
       thClass: "w-28",
       render: (row) => <span>{row.time ?? "—"}</span>,
     },
     {
       key: "client",
       header: "Client",
+      thClass: "w-[1%]",
       render: (row) => (
         <ClientCell
           name={row.clientName}
@@ -59,10 +71,11 @@ export function getUrgentCallsColumns({ onView, onAddTask }) {
     },
     {
       key: "_actions",
-      header: "",
-      thClass: "w-20",
+      header: "Actions",
+      thClass: "w-[1%] text-right",
+      tdClass: "whitespace-nowrap text-right",
       render: (row) => (
-        <div className="flex items-center gap-1">
+        <div className="flex w-full items-center justify-end gap-1">
           <JobDirectIconActionButton title="View" onClick={() => onView?.(row)}>
             <EyeIcon />
           </JobDirectIconActionButton>

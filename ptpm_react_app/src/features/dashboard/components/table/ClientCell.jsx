@@ -36,8 +36,10 @@ function MapPinIcon() {
 
 export function ClientCell({ name, phone, email, address }) {
   return (
-    <div className="min-w-0">
-      <div className="truncate font-medium text-slate-800">{name || "—"}</div>
+    <div className="min-w-0 max-w-[180px] overflow-hidden">
+      <div className="truncate font-medium text-slate-800" title={name || "—"}>
+        {name || "—"}
+      </div>
       <div className="mt-0.5 flex items-center gap-2">
         {phone && (
           <a
