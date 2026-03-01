@@ -34,19 +34,21 @@ export function useDashboardBootstrap() {
   useEffect(() => {
     if (!plugin) return;
     let isActive = true;
-
-    fetchServiceProviders({ plugin })
-      .then((records) => {
-        if (!isActive) return;
-        setServiceProviders(Array.isArray(records) ? records : []);
-      })
-      .catch((err) => {
-        if (!isActive) return;
-        console.error("[Dashboard] fetchServiceProviders failed", err);
-      });
+    const timer = setTimeout(() => {
+      fetchServiceProviders({ plugin })
+        .then((records) => {
+          if (!isActive) return;
+          setServiceProviders(Array.isArray(records) ? records : []);
+        })
+        .catch((err) => {
+          if (!isActive) return;
+          console.error("[Dashboard] fetchServiceProviders failed", err);
+        });
+    }, 2500);
 
     return () => {
       isActive = false;
+      clearTimeout(timer);
     };
   }, [plugin]);
 

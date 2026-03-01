@@ -28,6 +28,26 @@ export function useDashboardData({
   const [rows, setRows] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [totalCount, setTotalCount] = useState(null);
+
+  const hasActiveFilters = (() => {
+    const f = appliedFilters || {};
+    if (String(f.accountName || "").trim()) return true;
+    if (String(f.address || "").trim()) return true;
+    if (String(f.serviceman || "").trim()) return true;
+    if (String(f.quoteNumber || "").trim()) return true;
+    if (String(f.invoiceNumber || "").trim()) return true;
+    if (String(f.recommendation || "").trim()) return true;
+    if (String(f.priceMin || "").trim()) return true;
+    if (String(f.priceMax || "").trim()) return true;
+    if (String(f.dateFrom || "").trim()) return true;
+    if (String(f.dateTo || "").trim()) return true;
+    if (Array.isArray(f.statuses) && f.statuses.length) return true;
+    if (Array.isArray(f.serviceProviders) && f.serviceProviders.length) return true;
+    if (Array.isArray(f.accountTypes) && f.accountTypes.length) return true;
+    if (Array.isArray(f.sources) && f.sources.length) return true;
+    return false;
+  })();
 
   useEffect(() => {
     if (!plugin) return;
@@ -35,65 +55,105 @@ export function useDashboardData({
     const builder = TAB_QUERY_BUILDERS[activeTab];
     if (!builder) {
       setRows([]);
+      setTotalCount(null);
       setIsLoading(false);
       return;
     }
 
     setRows([]);
+    setTotalCount(null);
     setIsLoading(true);
     setError(null);
 
     let cancelled = false;
-    let rxSub = null;
-    let query = null;
+    let activeQuery = null;
+    let activeSubscription = null;
+    let loadTimeoutId = null;
 
     try {
-      const built = builder(plugin, appliedFilters, currentPage, pageSize, sortOrder);
-      query = built.query;
+      const queryPage = hasActiveFilters ? 1 : currentPage;
+      const queryPageSize = hasActiveFilters ? 1000 : pageSize;
+      const built = builder(plugin, appliedFilters, queryPage, queryPageSize, sortOrder);
+      const query = built.query;
       const { normalize } = built;
+      activeQuery = query;
 
-      // Subscribe to real-time server updates.
-      // The subscription fires immediately with current records, then on each change.
-      rxSub = query.subscribe().subscribe({
+      const subscribeSource =
+        (typeof query.subscribe === "function" && query.subscribe()) ||
+        (typeof query.localSubscribe === "function" && query.localSubscribe()) ||
+        null;
+
+      if (!subscribeSource || typeof subscribeSource.subscribe !== "function") {
+        throw new Error("Dashboard data stream is unavailable.");
+      }
+
+      let stream = subscribeSource;
+      if (
+        typeof window !== "undefined" &&
+        typeof window.toMainInstance === "function" &&
+        typeof stream.pipe === "function"
+      ) {
+        stream = stream.pipe(window.toMainInstance(true));
+      }
+
+      loadTimeoutId = setTimeout(() => {
+        if (cancelled) return;
+        setIsLoading(false);
+        setError(new Error("Dashboard query timed out waiting for data."));
+      }, 30000);
+
+      activeSubscription = stream.subscribe({
         next: (payload) => {
           if (cancelled) return;
+          if (loadTimeoutId) {
+            clearTimeout(loadTimeoutId);
+            loadTimeoutId = null;
+          }
           const records = extractFromPayload(payload);
-          console.debug(
-            "[useDashboardData] subscription emit:",
-            records.length,
-            "records",
-            payload
-          );
-          setRows(records.map(normalize));
+          const normalized = records.map(normalize);
+          if (hasActiveFilters) {
+            const total = normalized.length;
+            const start = Math.max(0, (currentPage - 1) * pageSize);
+            const end = start + pageSize;
+            setTotalCount(total);
+            setRows(normalized.slice(start, end));
+          } else {
+            setTotalCount(null);
+            setRows(normalized);
+          }
+          setError(null);
           setIsLoading(false);
         },
         error: (err) => {
           if (cancelled) return;
-          console.error("[useDashboardData] subscription error:", err);
+          if (loadTimeoutId) {
+            clearTimeout(loadTimeoutId);
+            loadTimeoutId = null;
+          }
+          console.error("[useDashboardData] query/subscribe error:", err);
           setError(err);
           setRows([]);
           setIsLoading(false);
         },
       });
     } catch (err) {
-      if (!cancelled) {
-        console.error("[useDashboardData] query build error:", err);
-        setError(err);
-        setRows([]);
-        setIsLoading(false);
-      }
+      console.error("[useDashboardData] query setup error:", err);
+      setError(err);
+      setRows([]);
+      setIsLoading(false);
     }
 
     return () => {
       cancelled = true;
-      rxSub?.unsubscribe?.();
+      if (loadTimeoutId) clearTimeout(loadTimeoutId);
       try {
-        query?.destroy?.();
-      } catch (_) {
-        // ignore destroy errors
-      }
+        activeSubscription?.unsubscribe?.();
+      } catch (_) {}
+      try {
+        activeQuery?.destroy?.();
+      } catch (_) {}
     };
-  }, [plugin, activeTab, appliedFilters, currentPage, pageSize, sortOrder]);
+  }, [plugin, activeTab, appliedFilters, currentPage, pageSize, sortOrder, hasActiveFilters]);
 
-  return { rows, isLoading, error };
+  return { rows, isLoading, error, totalCount };
 }

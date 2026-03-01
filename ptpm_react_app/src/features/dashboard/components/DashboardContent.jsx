@@ -6,8 +6,6 @@ import { DashboardTable } from "./table/DashboardTable.jsx";
 import { DashboardPagination } from "./pagination/DashboardPagination.jsx";
 import { CALENDAR_TABS } from "../constants/tabs.js";
 
-const PAGE_SIZE = 25;
-
 function FilterIcon() {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -26,10 +24,16 @@ export function DashboardContent({
   onTabChange,
   tabCounts,
   calendarData,
+  selectedDateFrom,
+  selectedDateTo,
+  onSelectCalendarRange,
+  onClearCalendarRange,
   activeChips,
   onRemoveChip,
   currentPage,
   onPageChange,
+  pageSize = 25,
+  onPageSizeChange,
   rows = [],
   totalCount = 0,
   totalPages = 1,
@@ -46,7 +50,7 @@ export function DashboardContent({
   onToggleSortOrder,
 }) {
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full min-h-0 flex-col">
       {/* Toolbar row */}
       <div className="flex items-center gap-2 border-b border-slate-200 bg-white px-4 py-2">
         {!sidebarOpen && (
@@ -63,9 +67,15 @@ export function DashboardContent({
         )}
       </div>
 
-      {/* Calendar — only for inquiry tab */}
+      {/* Calendar */}
       {CALENDAR_TABS.has(activeTab) && (
-        <DashboardCalendar calendarData={calendarData} />
+        <DashboardCalendar
+          calendarData={calendarData}
+          selectedDateFrom={selectedDateFrom}
+          selectedDateTo={selectedDateTo}
+          onSelectRange={onSelectCalendarRange}
+          onClearRange={onClearCalendarRange}
+        />
       )}
 
       {/* Tabs */}
@@ -83,7 +93,7 @@ export function DashboardContent({
       )}
 
       {/* Table */}
-      <div className="flex-1 overflow-auto bg-white">
+      <div className="min-h-0 flex-1 overflow-auto bg-white">
         <DashboardTable
           activeTab={activeTab}
           rows={rows}
@@ -104,8 +114,9 @@ export function DashboardContent({
         currentPage={currentPage}
         totalPages={totalPages}
         totalCount={totalCount}
-        pageSize={PAGE_SIZE}
+        pageSize={pageSize}
         onPageChange={onPageChange}
+        onPageSizeChange={onPageSizeChange}
       />
     </div>
   );

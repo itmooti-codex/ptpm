@@ -23,6 +23,7 @@ export function DashboardPagination({
   totalCount,
   pageSize,
   onPageChange,
+  onPageSizeChange,
 }) {
   if (totalPages <= 0) return null;
 
@@ -32,11 +33,27 @@ export function DashboardPagination({
 
   return (
     <div className="flex items-center justify-between border-t border-slate-200 bg-white px-4 py-2.5">
-      <span className="text-xs text-slate-500">
-        {totalCount === 0
-          ? "No records"
-          : `Showing ${from}–${to} of ${totalCount} records`}
-      </span>
+      <div className="flex items-center gap-3">
+        <span className="text-xs text-slate-500">
+          {totalCount === 0
+            ? "No records"
+            : `Showing ${from}–${to} of ${totalCount} records`}
+        </span>
+        <label className="flex items-center gap-1 text-xs text-slate-500">
+          <span>Per page</span>
+          <select
+            className="rounded border border-slate-300 bg-white px-1.5 py-1 text-xs text-slate-700"
+            value={pageSize}
+            onChange={(event) => onPageSizeChange?.(Number(event.target.value))}
+          >
+            {[5, 10, 25, 50].map((size) => (
+              <option key={size} value={size}>
+                {size}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
 
       <div className="flex items-center gap-1">
         <Button

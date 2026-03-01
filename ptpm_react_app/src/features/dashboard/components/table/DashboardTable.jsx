@@ -47,10 +47,10 @@ export function DashboardTable({
   const { visibleRows, hasMore, remainingCount, showMore } = useRenderWindow(rows);
 
   const handleToggleSelect = useCallback(
-    (id) => {
+    (rowKey) => {
       onBatchSelectionChange?.((prev) => {
         const ids = Array.isArray(prev) ? prev : [];
-        return ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id];
+        return ids.includes(rowKey) ? ids.filter((x) => x !== rowKey) : [...ids, rowKey];
       });
     },
     [onBatchSelectionChange]
@@ -73,8 +73,8 @@ export function DashboardTable({
   };
 
   return (
-    <div className="flex-1">
-      <JobDirectTable minWidthClass="min-w-[800px]">
+    <div className="flex h-full min-h-0 flex-1 flex-col">
+      <JobDirectTable minWidthClass="min-w-full" className="table-auto">
         <thead>
           <tr className="border-b border-slate-200 bg-slate-50">
             {columns.map((col) => (
@@ -102,7 +102,10 @@ export function DashboardTable({
                 className="hover:bg-slate-50"
               >
                 {columns.map((col) => (
-                  <td key={col.key} className="px-3 py-2.5 align-middle text-sm">
+                  <td
+                    key={col.key}
+                    className={`px-3 py-2.5 align-middle text-sm ${col.tdClass ?? ""}`}
+                  >
                     {col.render(row, rowCtx)}
                   </td>
                 ))}

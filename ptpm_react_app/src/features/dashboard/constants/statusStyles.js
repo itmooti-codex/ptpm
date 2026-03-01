@@ -31,6 +31,7 @@ const STATUS_STYLES = {
   Scheduled: { color: "#0d9488", backgroundColor: "#ccfbf1" },
   Reschedule: { color: "#dc2626", backgroundColor: "#fee2e2" },
   "In Progress": { color: "#0891b2", backgroundColor: "#cffafe" },
+  "In progress": { color: "#0891b2", backgroundColor: "#cffafe" },
   "Waiting For Payment": { color: "#9a3412", backgroundColor: "#ffedd5" },
 
   // Payment statuses

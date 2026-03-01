@@ -41,22 +41,15 @@ export const TAB_STATUS_OPTIONS = {
     "New",
     "Requested",
     "Sent",
-    "Accepted",
     "Declined",
-    "Expired",
-    "Cancelled",
   ],
   [TAB_IDS.JOBS]: [
-    "Quote",
     "On Hold",
     "Booked",
     "Call Back",
     "Scheduled",
     "Reschedule",
-    "In Progress",
-    "Waiting For Payment",
-    "Completed",
-    "Cancelled",
+    "Accepted",
   ],
   [TAB_IDS.PAYMENT]: [
     "Invoice Required",
@@ -64,9 +57,8 @@ export const TAB_STATUS_OPTIONS = {
     "Paid",
     "Overdue",
     "Written Off",
-    "Cancelled",
   ],
-  [TAB_IDS.ACTIVE_JOBS]: ["Booked", "In Progress"],
+  [TAB_IDS.ACTIVE_JOBS]: ["In Progress"],
   [TAB_IDS.URGENT_CALLS]: [],
 };
 
@@ -75,4 +67,10 @@ export const ACCOUNT_TYPE_OPTIONS = ["Individual", "Entity"];
 export const SOURCE_OPTIONS = ["Web Form", "Phone Call", "Email", "SMS"];
 
 export const PAYMENT_ONLY_TABS = new Set([TAB_IDS.PAYMENT, TAB_IDS.ACTIVE_JOBS]);
-export const CALENDAR_TABS = new Set([TAB_IDS.INQUIRY]);
+export const CALENDAR_TABS = new Set([
+  TAB_IDS.INQUIRY,
+  TAB_IDS.QUOTE,
+  TAB_IDS.JOBS,
+  TAB_IDS.PAYMENT,
+  TAB_IDS.ACTIVE_JOBS,
+]);

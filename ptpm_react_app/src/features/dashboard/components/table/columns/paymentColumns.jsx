@@ -36,12 +36,13 @@ export function getPaymentColumns({ onView, onAddTask, onDelete, isBatchMode }) 
       key: "_select",
       header: "",
       thClass: "w-8",
+      tdClass: "whitespace-nowrap",
       render: (row, { selectedIds, onToggleSelect }) => (
         <input
           type="checkbox"
           className="h-3.5 w-3.5 rounded border-slate-300 text-[#003882] focus:ring-[#003882]"
-          checked={selectedIds?.includes(row.id)}
-          onChange={() => onToggleSelect?.(row.id)}
+          checked={selectedIds?.includes(row.uid || row.id)}
+          onChange={() => onToggleSelect?.(row.uid || row.id)}
           onClick={(e) => e.stopPropagation()}
         />
       ),
@@ -51,19 +52,30 @@ export function getPaymentColumns({ onView, onAddTask, onDelete, isBatchMode }) 
   cols.push(
     {
       key: "id",
-      header: "#",
-      thClass: "w-16",
-      render: (row) => <span className="text-slate-400">{row.id ?? "—"}</span>,
+      header: "id",
+      thClass: "w-[1%]",
+      tdClass: "whitespace-nowrap",
+      render: (row) => (
+        <button
+          type="button"
+          className="font-medium text-[#003882] hover:underline"
+          onClick={() => onView?.(row)}
+        >
+          {row.uid || "—"}
+        </button>
+      ),
     },
     {
       key: "date",
       header: "Date",
-      thClass: "w-24",
+      thClass: "w-[1%]",
+      tdClass: "whitespace-nowrap",
       render: (row) => <span>{row.date ?? "—"}</span>,
     },
     {
       key: "client",
       header: "Client",
+      thClass: "w-[35%]",
       render: (row) => (
         <ClientCell
           name={row.clientName}
@@ -76,13 +88,15 @@ export function getPaymentColumns({ onView, onAddTask, onDelete, isBatchMode }) 
     {
       key: "invoiceNumber",
       header: "Invoice #",
-      thClass: "w-28",
+      thClass: "w-[1%]",
+      tdClass: "whitespace-nowrap",
       render: (row) => <span className="font-mono text-xs">{row.invoiceNumber ?? "—"}</span>,
     },
     {
       key: "amount",
       header: "Amount",
-      thClass: "w-24",
+      thClass: "w-[1%]",
+      tdClass: "whitespace-nowrap",
       render: (row) => (
         <span className="font-medium text-slate-800">
           {row.amount != null ? `$${Number(row.amount).toFixed(2)}` : "—"}
@@ -92,7 +106,8 @@ export function getPaymentColumns({ onView, onAddTask, onDelete, isBatchMode }) 
     {
       key: "paid",
       header: "Paid",
-      thClass: "w-24",
+      thClass: "w-[1%]",
+      tdClass: "whitespace-nowrap",
       render: (row) => (
         <span className="font-medium text-slate-800">
           {row.paid != null ? `$${Number(row.paid).toFixed(2)}` : "—"}
@@ -102,7 +117,8 @@ export function getPaymentColumns({ onView, onAddTask, onDelete, isBatchMode }) 
     {
       key: "balance",
       header: "Balance",
-      thClass: "w-24",
+      thClass: "w-[1%]",
+      tdClass: "whitespace-nowrap",
       render: (row) => {
         const bal = row.balance ?? 0;
         return (
@@ -115,7 +131,8 @@ export function getPaymentColumns({ onView, onAddTask, onDelete, isBatchMode }) 
     {
       key: "status",
       header: "Status",
-      thClass: "w-32",
+      thClass: "w-[1%]",
+      tdClass: "whitespace-nowrap",
       render: (row) => (
         <JobDirectStatusBadge
           label={row.status}
@@ -125,8 +142,9 @@ export function getPaymentColumns({ onView, onAddTask, onDelete, isBatchMode }) 
     },
     {
       key: "_actions",
-      header: "",
-      thClass: "w-24",
+      header: "Actions",
+      thClass: "w-[1%]",
+      tdClass: "whitespace-nowrap",
       render: (row) => (
         <div className="flex items-center gap-1">
           <JobDirectIconActionButton title="View" onClick={() => onView?.(row)}>

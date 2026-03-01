@@ -9,12 +9,13 @@ import { useDashboardBootstrap } from "../hooks/useDashboardBootstrap.js";
 import { useDashboardFilters } from "../hooks/useDashboardFilters.js";
 import { useDashboardData } from "../hooks/useDashboardData.js";
 import {
-  cancelInquiryById,
+  cancelDashboardRecord,
+  cancelDashboardRecordsByUniqueIds,
   createJobRecord,
-  fetchTabCounts,
-  fetchInquiryCalendarData,
+  fetchTabCountByTab,
+  fetchCalendarDataByTab,
 } from "../sdk/dashboardSdk.js";
-import { TAB_IDS } from "../constants/tabs.js";
+import { TAB_IDS, TAB_LIST } from "../constants/tabs.js";
 import { DashboardHeader } from "../components/DashboardHeader.jsx";
 import { DashboardSidebar } from "../components/DashboardSidebar.jsx";
 import { DashboardContent } from "../components/DashboardContent.jsx";
@@ -52,6 +53,109 @@ function FullPageError({
   );
 }
 
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+function normalizeMoney(value) {
+  const n = Number(value ?? 0);
+  if (!Number.isFinite(n)) return "";
+  return n.toFixed(2);
+}
+
+function getTableExportSchema(activeTab) {
+  if (activeTab === TAB_IDS.INQUIRY) {
+    return [
+      ["ID", (r) => r.uid || ""],
+      ["Date", (r) => r.date || ""],
+      ["Client", (r) => r.clientName || ""],
+      ["Phone", (r) => r.phone || ""],
+      ["Email", (r) => r.email || ""],
+      ["Address", (r) => r.address || ""],
+      ["Source", (r) => r.source || ""],
+      ["Status", (r) => r.status || ""],
+      ["Service Provider", (r) => r.serviceProvider || ""],
+    ];
+  }
+  if (activeTab === TAB_IDS.QUOTE) {
+    return [
+      ["ID", (r) => r.uid || ""],
+      ["Date", (r) => r.date || ""],
+      ["Client", (r) => r.clientName || ""],
+      ["Phone", (r) => r.phone || ""],
+      ["Email", (r) => r.email || ""],
+      ["Address", (r) => r.address || ""],
+      ["Quote #", (r) => r.quoteNumber || ""],
+      ["Amount", (r) => normalizeMoney(r.amount)],
+      ["Status", (r) => r.status || ""],
+    ];
+  }
+  if (activeTab === TAB_IDS.PAYMENT) {
+    return [
+      ["ID", (r) => r.uid || ""],
+      ["Date", (r) => r.date || ""],
+      ["Client", (r) => r.clientName || ""],
+      ["Phone", (r) => r.phone || ""],
+      ["Email", (r) => r.email || ""],
+      ["Address", (r) => r.address || ""],
+      ["Invoice #", (r) => r.invoiceNumber || ""],
+      ["Amount", (r) => normalizeMoney(r.amount)],
+      ["Paid", (r) => normalizeMoney(r.paid)],
+      ["Balance", (r) => normalizeMoney(r.balance)],
+      ["Status", (r) => r.status || ""],
+    ];
+  }
+  if (activeTab === TAB_IDS.ACTIVE_JOBS) {
+    return [
+      ["ID", (r) => r.uid || ""],
+      ["Scheduled", (r) => r.scheduledDate || ""],
+      ["Client", (r) => r.clientName || ""],
+      ["Phone", (r) => r.phone || ""],
+      ["Email", (r) => r.email || ""],
+      ["Address", (r) => r.address || ""],
+      ["Status", (r) => r.status || ""],
+      ["Service Provider", (r) => r.serviceProvider || ""],
+      ["Invoice #", (r) => r.invoiceNumber || ""],
+    ];
+  }
+  return [
+    ["ID", (r) => r.uid || ""],
+    ["Date", (r) => r.date || ""],
+    ["Client", (r) => r.clientName || ""],
+    ["Phone", (r) => r.phone || ""],
+    ["Email", (r) => r.email || ""],
+    ["Address", (r) => r.address || ""],
+    ["Job #", (r) => r.jobNumber || ""],
+    ["Status", (r) => r.status || ""],
+    ["Service Provider", (r) => r.serviceProvider || ""],
+  ];
+}
+
+function toCsvBlob(headers, rows) {
+  const escape = (value) => `"${String(value ?? "").replaceAll('"', '""')}"`;
+  const lines = [
+    headers.map(escape).join(","),
+    ...rows.map((row) => row.map(escape).join(",")),
+  ];
+  return new Blob([`\uFEFF${lines.join("\n")}`], { type: "text/csv;charset=utf-8;" });
+}
+
+function downloadBlobFile(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = filename;
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
 export function DashboardPage() {
   const navigate = useNavigate();
   const { success, error: showError } = useToast();
@@ -60,6 +164,7 @@ export function DashboardPage() {
 
   const [activeTab, setActiveTab] = useState(TAB_IDS.INQUIRY);
   const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
   const [sortOrder, setSortOrder] = useState("desc");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [tabCounts, setTabCounts] = useState({
@@ -72,57 +177,86 @@ export function DashboardPage() {
   });
   const [batchSelectedIds, setBatchSelectedIds] = useState([]);
   const [isBatchMode, setIsBatchMode] = useState(false);
-  const [taskModal, setTaskModal] = useState({ open: false, row: null });
+  const [taskModal, setTaskModal] = useState({
+    open: false,
+    row: null,
+    contextType: "job",
+    contextId: "",
+  });
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [isDeletingInquiry, setIsDeletingInquiry] = useState(false);
+  const [isBatchDeleting, setIsBatchDeleting] = useState(false);
   const [isCreatingJob, setIsCreatingJob] = useState(false);
   const [batchDeleteModal, setBatchDeleteModal] = useState(false);
   const [calendarData, setCalendarData] = useState({});
 
   const filterHook = useDashboardFilters();
+  const currentFilters = filterHook.getFiltersForTab(activeTab);
+  const currentAppliedFilters = filterHook.getAppliedFiltersForTab(activeTab);
 
   const handleToggleSortOrder = useCallback(() => {
     setSortOrder((prev) => (prev === "desc" ? "asc" : "desc"));
     setCurrentPage(1);
   }, []);
 
-  const { rows, isLoading } = useDashboardData({
+  const { rows, isLoading, totalCount: filteredTotalCount } = useDashboardData({
     plugin,
     activeTab,
-    appliedFilters: filterHook.appliedFilters,
+    appliedFilters: currentAppliedFilters,
     currentPage,
-    pageSize: 25,
+    pageSize,
     sortOrder,
   });
 
-  // Fetch tab count badges once when plugin is ready (calc queries, no re-fetch on tab switch)
+  // Preload tab counts on page load (sequential to avoid API spikes).
   useEffect(() => {
     if (!plugin) return;
-    fetchTabCounts({ plugin })
-      .then((counts) => {
-        setTabCounts({
-          [TAB_IDS.INQUIRY]: counts.inquiry,
-          [TAB_IDS.QUOTE]: counts.quote,
-          [TAB_IDS.JOBS]: counts.jobs,
-          [TAB_IDS.PAYMENT]: counts.payment,
-          [TAB_IDS.ACTIVE_JOBS]: counts["active-jobs"],
-          [TAB_IDS.URGENT_CALLS]: counts["urgent-calls"],
-        });
-      })
-      .catch((err) => console.warn("[DashboardPage] fetchTabCounts failed:", err));
+    let cancelled = false;
+    const tabsForCounts = TAB_LIST.filter((tabId) => tabId !== TAB_IDS.URGENT_CALLS);
+    (async () => {
+      for (const tabId of tabsForCounts) {
+        try {
+          const count = await fetchTabCountByTab({ plugin, tabId });
+          if (cancelled) return;
+          setTabCounts((prev) => ({
+            ...prev,
+            [tabId]: Number.isFinite(count) ? count : 0,
+          }));
+        } catch (err) {
+          if (cancelled) return;
+          console.warn(`[DashboardPage] fetchTabCountByTab failed for ${tabId}:`, err);
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [plugin]);
 
-  // Fetch per-day inquiry counts for calendar badges (inquiry tab only).
+  // Fetch calendar card counts for the active tab after primary data settles.
   useEffect(() => {
     if (!plugin) return;
-    fetchInquiryCalendarData({ plugin })
+    fetchCalendarDataByTab({
+      plugin,
+      activeTab,
+      lookbackDays: 365,
+      lookaheadDays: 365,
+    })
       .then(setCalendarData)
-      .catch((err) => console.warn("[DashboardPage] fetchInquiryCalendarData failed:", err));
-  }, [plugin]);
+      .catch((err) => console.warn("[DashboardPage] fetchCalendarDataByTab failed:", err));
+  }, [plugin, activeTab]);
 
   // Derive pagination from tab count badge (calc total)
-  const totalCount = tabCounts[activeTab] ?? 0;
-  const totalPages = Math.max(1, Math.ceil(totalCount / 25));
+  const totalCount = Number.isFinite(filteredTotalCount)
+    ? filteredTotalCount
+    : (tabCounts[activeTab] ?? 0);
+  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
 
   const handleTabChange = useCallback(
     (tab) => {
@@ -134,35 +268,52 @@ export function DashboardPage() {
     []
   );
 
-  const handleOpenTaskModal = useCallback((row) => {
-    setTaskModal({ open: true, row: row || null });
-  }, []);
+  const handleOpenTaskModal = useCallback(
+    (row) => {
+      if (!row?.id) return;
+      const contextType = activeTab === TAB_IDS.INQUIRY ? "deal" : "job";
+      setTaskModal({
+        open: true,
+        row: row || null,
+        contextType,
+        contextId: row.id,
+      });
+    },
+    [activeTab]
+  );
 
   const handleCloseTaskModal = useCallback(() => {
-    setTaskModal({ open: false, row: null });
+    setTaskModal({ open: false, row: null, contextType: "job", contextId: "" });
   }, []);
 
   const handleOpenDeleteModal = useCallback((row) => {
     if (!row?.id) return;
-    setDeleteTarget(row);
-  }, []);
+    setDeleteTarget({
+      ...row,
+      tabId: activeTab,
+    });
+  }, [activeTab]);
 
   const handleConfirmDeleteInquiry = useCallback(async () => {
     if (!plugin || !deleteTarget?.id || isDeletingInquiry) return;
     setIsDeletingInquiry(true);
     try {
-      await cancelInquiryById({ plugin, dealId: deleteTarget.id });
-      success("Inquiry cancelled", "Inquiry status has been updated to Cancelled.");
+      await cancelDashboardRecord({
+        plugin,
+        tabId: deleteTarget.tabId,
+        recordId: deleteTarget.id,
+      });
+      success("Record cancelled", "Status has been updated to Cancelled.");
       setDeleteTarget(null);
       setTabCounts((prev) => ({
         ...prev,
-        [TAB_IDS.INQUIRY]: Math.max(0, (prev?.[TAB_IDS.INQUIRY] ?? 0) - 1),
+        [deleteTarget.tabId]: Math.max(0, (prev?.[deleteTarget.tabId] ?? 0) - 1),
       }));
     } catch (deleteError) {
-      console.error("[Dashboard] Failed to cancel inquiry", deleteError);
+      console.error("[Dashboard] Failed to cancel record", deleteError);
       showError(
         "Delete failed",
-        deleteError?.message || "Unable to cancel inquiry."
+        deleteError?.message || "Unable to cancel record."
       );
     } finally {
       setIsDeletingInquiry(false);
@@ -193,20 +344,138 @@ export function DashboardPage() {
   }, []);
 
   const handleBatchDeleteConfirm = useCallback(() => {
-    setBatchDeleteModal(false);
-    setBatchSelectedIds([]);
-    setIsBatchMode(false);
-  }, []);
+    if (!plugin || !batchSelectedIds.length || isBatchDeleting) return;
+    setIsBatchDeleting(true);
+    cancelDashboardRecordsByUniqueIds({
+      plugin,
+      tabId: activeTab,
+      uniqueIds: batchSelectedIds,
+    })
+      .then(({ cancelled }) => {
+        success("Records cancelled", `${cancelled || 0} record(s) were marked as Cancelled.`);
+        setBatchDeleteModal(false);
+        setBatchSelectedIds([]);
+        setIsBatchMode(false);
+        setTabCounts((prev) => ({
+          ...prev,
+          [activeTab]: Math.max(0, (prev?.[activeTab] ?? 0) - batchSelectedIds.length),
+        }));
+      })
+      .catch((batchError) => {
+        console.error("[Dashboard] Failed batch cancel", batchError);
+        showError("Batch delete failed", batchError?.message || "Unable to cancel selected records.");
+      })
+      .finally(() => setIsBatchDeleting(false));
+  }, [
+    plugin,
+    batchSelectedIds,
+    isBatchDeleting,
+    activeTab,
+    success,
+    showError,
+  ]);
 
   const handleApplyFilters = useCallback(() => {
-    filterHook.applyFilters();
+    filterHook.applyFilters(activeTab);
     setCurrentPage(1);
-  }, [filterHook]);
+  }, [filterHook, activeTab]);
 
   const handleResetFilters = useCallback(() => {
-    filterHook.resetFilters();
+    filterHook.resetFilters(activeTab);
     setCurrentPage(1);
-  }, [filterHook]);
+  }, [filterHook, activeTab]);
+
+  const handleSelectCalendarRange = useCallback(
+    ({ dateFrom = "", dateTo = "" } = {}) => {
+      filterHook.applyDateRange(activeTab, { dateFrom, dateTo });
+      setCurrentPage(1);
+    },
+    [filterHook, activeTab]
+  );
+
+  const handleClearCalendarRange = useCallback(() => {
+    filterHook.applyDateRange(activeTab, { dateFrom: "", dateTo: "" });
+    setCurrentPage(1);
+  }, [filterHook, activeTab]);
+
+  const handlePageSizeChange = useCallback((nextSize) => {
+    const size = Number(nextSize);
+    if (![5, 10, 25, 50].includes(size)) return;
+    setPageSize(size);
+    setCurrentPage(1);
+  }, []);
+
+  const handleViewRecord = useCallback(
+    (row) => {
+      const uid = String(row?.uid || "").trim();
+      if (!uid || activeTab === TAB_IDS.INQUIRY) return;
+      navigate(`/job-direct/${encodeURIComponent(uid)}`);
+    },
+    [activeTab, navigate]
+  );
+
+  const handlePrintCurrentTable = useCallback(() => {
+    const schema = getTableExportSchema(activeTab);
+    const headers = schema.map(([label]) => label);
+    const dataRows = rows.map((row) => schema.map(([, getter]) => getter(row)));
+    const popup = window.open(
+      "",
+      "_blank",
+      "width=1080,height=720,scrollbars=yes,resizable=yes"
+    );
+    if (!popup) {
+      showError("Popup blocked", "Please allow popups to print the current table.");
+      return;
+    }
+    const tableHead = headers.map((h) => `<th>${escapeHtml(h)}</th>`).join("");
+    const tableBody = dataRows
+      .map(
+        (cells) =>
+          `<tr>${cells.map((cell) => `<td>${escapeHtml(cell)}</td>`).join("")}</tr>`
+      )
+      .join("");
+    popup.document.write(`
+      <html>
+        <head>
+          <title>Dashboard List</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 18px; color: #1f2937; }
+            h1 { font-size: 16px; margin: 0 0 12px; }
+            table { width: 100%; border-collapse: collapse; font-size: 12px; }
+            th, td { border: 1px solid #d1d5db; padding: 6px 8px; text-align: left; vertical-align: top; }
+            th { background: #f3f4f6; }
+          </style>
+        </head>
+        <body>
+          <h1>Dashboard List (${escapeHtml(activeTab)})</h1>
+          <table>
+            <thead><tr>${tableHead}</tr></thead>
+            <tbody>${tableBody}</tbody>
+          </table>
+        </body>
+      </html>
+    `);
+    popup.document.close();
+    popup.focus();
+    popup.print();
+  }, [activeTab, rows, showError]);
+
+  const handleExportCurrentTable = useCallback(() => {
+    const schema = getTableExportSchema(activeTab);
+    const headers = schema.map(([label]) => label);
+    const dataRows = rows.map((row) => schema.map(([, getter]) => getter(row)));
+    const blob = toCsvBlob(headers, dataRows);
+    const dateTag = new Date().toISOString().slice(0, 10);
+    downloadBlobFile(blob, `ecoaccess-report-${activeTab}-${dateTag}.csv`);
+  }, [activeTab, rows]);
+
+  const handleExportServiceProviders = useCallback(() => {
+    const headers = ["ID", "Service Provider"];
+    const dataRows = (serviceProviders || []).map((item) => [item.id || "", item.name || ""]);
+    const blob = toCsvBlob(headers, dataRows);
+    const dateTag = new Date().toISOString().slice(0, 10);
+    downloadBlobFile(blob, `service-provider-list-${dateTag}.csv`);
+  }, [serviceProviders]);
 
   if (isBootstrapping || isCreatingJob) {
     const loaderText = isCreatingJob ? "Creating job..." : statusText;
@@ -224,7 +493,7 @@ export function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 font-['Inter']">
+    <div className="flex h-[100dvh] max-h-[100dvh] flex-col overflow-hidden bg-slate-50 font-['Inter']">
       <GlobalTopHeader />
       <DashboardHeader
         onEnableBatchDelete={handleEnableBatchDelete}
@@ -232,15 +501,20 @@ export function DashboardPage() {
         batchSelectedCount={batchSelectedIds.length}
         onBatchDeleteClick={() => setBatchDeleteModal(true)}
         onCreateJob={handleCreateJob}
+        onPrintCurrentTable={handlePrintCurrentTable}
+        onExportCurrentTable={handleExportCurrentTable}
+        onExportServiceProviders={handleExportServiceProviders}
       />
 
-      <div className="flex h-[calc(100vh-56px)]">
+      <div className="flex min-h-0 flex-1">
         {sidebarOpen && (
           <DashboardSidebar
             activeTab={activeTab}
-            filters={filterHook.filters}
-            onPatchFilter={filterHook.patchFilter}
-            onToggleArrayFilter={filterHook.toggleArrayFilter}
+            filters={currentFilters}
+            onPatchFilter={(key, value) => filterHook.patchFilter(activeTab, key, value)}
+            onToggleArrayFilter={(key, value) =>
+              filterHook.toggleArrayFilter(activeTab, key, value)
+            }
             onApply={handleApplyFilters}
             onReset={handleResetFilters}
             onClose={() => setSidebarOpen(false)}
@@ -248,16 +522,22 @@ export function DashboardPage() {
           />
         )}
 
-        <main className="flex min-w-0 flex-1 flex-col overflow-auto">
+        <main className="flex min-w-0 flex-1 flex-col overflow-hidden">
           <DashboardContent
             activeTab={activeTab}
             onTabChange={handleTabChange}
             tabCounts={tabCounts}
             calendarData={calendarData}
-            activeChips={filterHook.getActiveChips(filterHook.appliedFilters, { serviceProviders })}
-            onRemoveChip={filterHook.removeAppliedFilter}
+            selectedDateFrom={currentAppliedFilters?.dateFrom || ""}
+            selectedDateTo={currentAppliedFilters?.dateTo || ""}
+            onSelectCalendarRange={handleSelectCalendarRange}
+            onClearCalendarRange={handleClearCalendarRange}
+            activeChips={filterHook.getActiveChips(currentAppliedFilters, { serviceProviders })}
+            onRemoveChip={(key, value) => filterHook.removeAppliedFilter(activeTab, key, value)}
             currentPage={currentPage}
             onPageChange={setCurrentPage}
+            pageSize={pageSize}
+            onPageSizeChange={handlePageSizeChange}
             rows={rows}
             totalCount={totalCount}
             totalPages={totalPages}
@@ -266,8 +546,8 @@ export function DashboardPage() {
             batchSelectedIds={batchSelectedIds}
             onBatchSelectionChange={setBatchSelectedIds}
             onOpenTaskModal={handleOpenTaskModal}
-            onDeleteInquiry={activeTab === TAB_IDS.INQUIRY ? handleOpenDeleteModal : undefined}
-            onViewInquiry={activeTab === TAB_IDS.INQUIRY ? () => {} : undefined}
+            onDeleteInquiry={activeTab === TAB_IDS.URGENT_CALLS ? undefined : handleOpenDeleteModal}
+            onViewInquiry={handleViewRecord}
             sidebarOpen={sidebarOpen}
             onToggleSidebar={() => setSidebarOpen((prev) => !prev)}
             sortOrder={sortOrder}
@@ -278,8 +558,8 @@ export function DashboardPage() {
 
       <TasksModal
         open={taskModal.open}
-        contextType="deal"
-        contextId={taskModal.row?.id || ""}
+        contextType={taskModal.contextType || "job"}
+        contextId={taskModal.contextId || ""}
         plugin={plugin}
         onClose={handleCloseTaskModal}
       />
@@ -290,7 +570,7 @@ export function DashboardPage() {
           if (isDeletingInquiry) return;
           setDeleteTarget(null);
         }}
-        title="Delete Inquiry?"
+        title="Cancel Record?"
         widthClass="max-w-md"
         footer={
           <div className="flex justify-end gap-2">
@@ -313,14 +593,18 @@ export function DashboardPage() {
         }
       >
         <p className="text-sm text-slate-600">
-          Are you sure you want to delete this inquiry?
+          Are you sure you want to mark this record as Cancelled?
         </p>
       </Modal>
 
       <DashboardBatchDeleteModal
         open={batchDeleteModal}
         count={batchSelectedIds.length}
-        onClose={() => setBatchDeleteModal(false)}
+        isProcessing={isBatchDeleting}
+        onClose={() => {
+          if (isBatchDeleting) return;
+          setBatchDeleteModal(false);
+        }}
         onConfirm={handleBatchDeleteConfirm}
       />
     </div>

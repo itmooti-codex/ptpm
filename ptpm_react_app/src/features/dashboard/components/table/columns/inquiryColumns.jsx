@@ -36,12 +36,13 @@ export function getInquiryColumns({ onView, onAddTask, onDelete, isBatchMode, so
       key: "_select",
       header: "",
       thClass: "w-8",
+      tdClass: "whitespace-nowrap",
       render: (row, { selectedIds, onToggleSelect }) => (
         <input
           type="checkbox"
           className="h-3.5 w-3.5 rounded border-slate-300 text-[#003882] focus:ring-[#003882]"
-          checked={selectedIds?.includes(row.id)}
-          onChange={() => onToggleSelect?.(row.id)}
+          checked={selectedIds?.includes(row.uid || row.id)}
+          onChange={() => onToggleSelect?.(row.uid || row.id)}
           onClick={(e) => e.stopPropagation()}
         />
       ),
@@ -52,7 +53,8 @@ export function getInquiryColumns({ onView, onAddTask, onDelete, isBatchMode, so
     {
       key: "id",
       header: "id",
-      thClass: "w-32",
+      thClass: "w-[1%]",
+      tdClass: "whitespace-nowrap",
       render: (row) => (
         <button
           type="button"
@@ -77,7 +79,8 @@ export function getInquiryColumns({ onView, onAddTask, onDelete, isBatchMode, so
           </span>
         </button>
       ),
-      thClass: "w-28",
+      thClass: "w-[1%]",
+      tdClass: "whitespace-nowrap",
       render: (row) => (
         <span className="whitespace-nowrap text-slate-600">{row.date ?? "—"}</span>
       ),
@@ -85,7 +88,7 @@ export function getInquiryColumns({ onView, onAddTask, onDelete, isBatchMode, so
     {
       key: "client",
       header: "Client",
-      thClass: "max-w-[200px]",
+      thClass: "w-[35%]",
       render: (row) => (
         <ClientCell
           name={row.clientName}
@@ -98,13 +101,15 @@ export function getInquiryColumns({ onView, onAddTask, onDelete, isBatchMode, so
     {
       key: "source",
       header: "Source",
-      thClass: "w-28",
+      thClass: "w-[1%]",
+      tdClass: "whitespace-nowrap",
       render: (row) => <span className="text-slate-600">{row.source ?? "—"}</span>,
     },
     {
       key: "status",
       header: "Status",
-      thClass: "w-44",
+      thClass: "w-[1%]",
+      tdClass: "whitespace-nowrap",
       render: (row) => (
         <JobDirectStatusBadge
           label={row.status}
@@ -115,15 +120,17 @@ export function getInquiryColumns({ onView, onAddTask, onDelete, isBatchMode, so
     {
       key: "serviceProvider",
       header: "Service Provider",
-      thClass: "w-36",
+      thClass: "w-[1%]",
+      tdClass: "whitespace-nowrap",
       render: (row) => (
         <span className="truncate text-slate-600">{row.serviceProvider ?? "—"}</span>
       ),
     },
     {
       key: "_actions",
-      header: "",
-      thClass: "w-20",
+      header: "Actions",
+      thClass: "w-[1%]",
+      tdClass: "whitespace-nowrap",
       render: (row) => (
         <div className="flex items-center gap-1">
           <JobDirectIconActionButton title="View" onClick={() => onView?.(row)}>

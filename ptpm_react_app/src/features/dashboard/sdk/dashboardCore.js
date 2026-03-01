@@ -29,6 +29,26 @@ export function toPromiseLike(result) {
   return Promise.resolve(result);
 }
 
+export async function fetchDirectWithTimeout(query, options = null, timeoutMs = 30000) {
+  if (!query?.fetchDirect) {
+    throw new Error("Invalid query object for fetchDirect.");
+  }
+  const request = options ? query.fetchDirect(options) : query.fetchDirect();
+  const requestPromise = toPromiseLike(request);
+  let timeoutId = null;
+  try {
+    const timeoutPromise = new Promise((_, reject) => {
+      timeoutId = setTimeout(() => {
+        requestPromise?.cancel?.();
+        reject(new Error(`Query request timed out after ${timeoutMs}ms.`));
+      }, timeoutMs);
+    });
+    return await Promise.race([requestPromise, timeoutPromise]);
+  } finally {
+    if (timeoutId) clearTimeout(timeoutId);
+  }
+}
+
 // Extracts a flat array of records from any Budibase SDK response shape.
 function extractRecords(res) {
   if (!res) return [];
@@ -56,6 +76,10 @@ function extractRecords(res) {
 // fetchDirect() resolves to {resp: [...]}.
 export function extractFromPayload(payload) {
   if (!payload) return [];
+  const extracted = extractRecords(payload);
+  if (Array.isArray(extracted) && extracted.length > 0) {
+    return extracted;
+  }
   // SDK payload.records: Object keyed by record ID
   if (
     payload?.records != null &&
@@ -64,7 +88,7 @@ export function extractFromPayload(payload) {
   ) {
     return Object.values(payload.records);
   }
-  return extractRecords(payload);
+  return [];
 }
 
 // Fetches the total count from a calc query built with fromGraphql() or
@@ -72,7 +96,7 @@ export function extractFromPayload(payload) {
 // The calc response shape: {resp: [{totalCount: N}]}
 export async function fetchCalcCount(query) {
   try {
-    const res = await toPromiseLike(query.fetchDirect());
+    const res = await fetchDirectWithTimeout(query);
     const rows = extractRecords(res);
     if (rows.length === 0) return 0;
     const first = rows[0];
@@ -102,9 +126,9 @@ export function toEpochRange(dateFrom, dateTo) {
     const d = new Date(iso);
     if (isNaN(d.getTime())) return null;
     if (endOfDay) {
-      d.setUTCHours(23, 59, 59, 999);
+      d.setHours(23, 59, 59, 999);
     } else {
-      d.setUTCHours(0, 0, 0, 0);
+      d.setHours(0, 0, 0, 0);
     }
     return Math.floor(d.getTime() / 1000);
   }

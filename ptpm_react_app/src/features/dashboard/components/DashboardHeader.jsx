@@ -85,17 +85,19 @@ export function DashboardHeader({
   batchSelectedCount = 0,
   onBatchDeleteClick,
   onCreateJob,
+  onPrintCurrentTable,
+  onExportCurrentTable,
+  onExportServiceProviders,
 }) {
   const createItems = [
     { label: "New Inquiry", onClick: () => {} },
-    { label: "New Quote", onClick: () => {} },
-    { label: "New Job", onClick: () => onCreateJob?.() },
+    { label: "New Quote/Job", onClick: () => onCreateJob?.() },
   ];
 
   const printItems = [
-    { label: "Print List", onClick: () => {} },
-    { label: "Ecoaccess Report (XLSX)", onClick: () => {} },
-    { label: "Serviceman's List (XLSX)", onClick: () => {} },
+    { label: "Print List", onClick: () => onPrintCurrentTable?.() },
+    { label: "Ecoaccess Report (XLSX)", onClick: () => onExportCurrentTable?.() },
+    { label: "Service Provider List (XLSX)", onClick: () => onExportServiceProviders?.() },
   ];
 
   const batchItems = [
@@ -125,4 +127,3 @@ export function DashboardHeader({
     </header>
   );
 }
-
