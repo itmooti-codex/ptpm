@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button } from "../../../../shared/components/ui/Button.jsx";
-import { Card } from "../../../../shared/components/ui/Card.jsx";
 import { CheckboxField } from "../../../../shared/components/ui/CheckboxField.jsx";
 import { ColorSelectField } from "../../../../shared/components/ui/ColorSelectField.jsx";
 import { InputField } from "../../../../shared/components/ui/InputField.jsx";
@@ -8,6 +7,28 @@ import { Modal } from "../../../../shared/components/ui/Modal.jsx";
 import { SelectField } from "../../../../shared/components/ui/SelectField.jsx";
 import { TextareaField } from "../../../../shared/components/ui/TextareaField.jsx";
 import { useToast } from "../../../../shared/providers/ToastProvider.jsx";
+import { useJobDirectSelector, useJobDirectStoreActions } from "../../hooks/useJobDirectStore.jsx";
+import { showMutationErrorToast } from "../../utils/mutationFeedback.js";
+import {
+  EditActionIcon,
+  EyeActionIcon,
+  TrashActionIcon,
+} from "../icons/ActionIcons.jsx";
+import {
+  JobDirectCardFormPanel,
+  JobDirectCardTablePanel,
+  JobDirectFormActionsRow,
+  JobDirectSplitSection,
+} from "../primitives/JobDirectLayout.jsx";
+import {
+  JobDirectEmptyTableRow,
+  JobDirectIconActionButton,
+  JobDirectStatusBadge,
+  JobDirectTable,
+  resolveStatusStyle,
+  useRenderWindow,
+} from "../primitives/JobDirectTable.jsx";
+import { selectActivities } from "../../state/selectors.js";
 import {
   ACTIVITY_OPTION_OPTIONS,
   ACTIVITY_STATUS_OPTIONS,
@@ -16,7 +37,6 @@ import {
 import {
   createActivityRecord,
   deleteActivityRecord,
-  fetchActivitiesByJobId,
   fetchServicesForActivities,
   updateActivityRecord,
 } from "../../sdk/jobDirectSdk.js";
@@ -139,19 +159,6 @@ function normalizeServiceRecord(record = {}) {
   };
 }
 
-function statusStyle(value) {
-  const normalized = toText(value).toLowerCase();
-  const match = ACTIVITY_STATUS_OPTIONS.find(
-    (item) => toText(item.value).toLowerCase() === normalized
-  );
-  if (!match) return null;
-  return {
-    color: match.color,
-    backgroundColor: match.backgroundColor,
-    borderColor: match.color,
-  };
-}
-
 function defaultActivityForm() {
   return {
     id: "",
@@ -171,18 +178,6 @@ function defaultActivityForm() {
     include_in_quote_subtotal: true,
     include_in_quote: false,
   };
-}
-
-function hasMeaningfulActivity(activity) {
-  if (!activity || typeof activity !== "object") return false;
-  return Boolean(
-    toText(activity?.id || activity?.ID) ||
-      toText(activity?.task || activity?.Task) ||
-      toText(activity?.option || activity?.Option) ||
-      toText(activity?.service_name || activity?.Service_Service_Name) ||
-      toText(activity?.activity_status || activity?.Activity_Status) ||
-      toText(activity?.activity_price || activity?.Activity_Price)
-  );
 }
 
 function createFormFromActivity(activity = {}, serviceMap = new Map()) {
@@ -233,48 +228,6 @@ function createFormFromActivity(activity = {}, serviceMap = new Map()) {
   };
 }
 
-function EyeIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M1.5 12C1.5 12 5.5 5.5 12 5.5C18.5 5.5 22.5 12 22.5 12C22.5 12 18.5 18.5 12 18.5C5.5 18.5 1.5 12 1.5 12Z"
-        stroke="currentColor"
-        strokeWidth="1.6"
-      />
-      <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.6" />
-    </svg>
-  );
-}
-
-function EditIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M4 20H8L19 9C19.5304 8.46957 19.8284 7.75035 19.8284 7C19.8284 6.24965 19.5304 5.53043 19 5C18.4696 4.46957 17.7504 4.17157 17 4.17157C16.2496 4.17157 15.5304 4.46957 15 5L4 16V20Z"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path d="M13.5 6.5L17.5 10.5" stroke="currentColor" strokeWidth="1.7" />
-    </svg>
-  );
-}
-
-function TrashIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M4 7H20M9 7V5C9 4.44772 9.44772 4 10 4H14C14.5523 4 15 4.44772 15 5V7M7 7L8 19C8.04343 19.5523 8.50736 20 9.0616 20H14.9384C15.4926 20 15.9566 19.5523 16 19L17 7"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
 function CheckIndicator({ active }) {
   return (
     <span
@@ -301,14 +254,24 @@ function CheckIndicator({ active }) {
 export function AddActivitiesSection({ plugin, jobData }) {
   const jobId = toText(jobData?.id || jobData?.ID);
   const { success, error } = useToast();
+  const storeActions = useJobDirectStoreActions();
+  const activities = useJobDirectSelector(selectActivities);
   const [services, setServices] = useState([]);
-  const [activities, setActivities] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeActionId, setActiveActionId] = useState("");
   const [viewActivity, setViewActivity] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [form, setForm] = useState(defaultActivityForm);
+  const {
+    hasMore: hasMoreActivities,
+    remainingCount: remainingActivitiesCount,
+    showMore: showMoreActivities,
+    shouldWindow: isActivitiesWindowed,
+    visibleRows: visibleActivities,
+  } = useRenderWindow(activities, {
+    threshold: 180,
+    pageSize: 120,
+  });
 
   const serviceById = useMemo(() => {
     const map = new Map();
@@ -350,33 +313,18 @@ export function AddActivitiesSection({ plugin, jobData }) {
       setServices(normalized);
     } catch (loadError) {
       console.error("[JobDirect] Failed to load services", loadError);
-      error("Unable to load services", loadError?.message || "Please try again.");
+      showMutationErrorToast(error, {
+        title: "Unable to load services",
+        error: loadError,
+        fallbackMessage: "Please try again.",
+      });
     }
   }, [plugin, error]);
-
-  const loadActivities = useCallback(async () => {
-    if (!plugin || !jobId) {
-      setActivities([]);
-      return;
-    }
-    setIsLoading(true);
-    try {
-      const records = await fetchActivitiesByJobId({ plugin, jobId: toId(jobId) });
-      const nextRecords = Array.isArray(records) ? records.filter(hasMeaningfulActivity) : [];
-      setActivities(nextRecords);
-    } catch (loadError) {
-      console.error("[JobDirect] Failed to load activities", loadError);
-      error("Unable to load activities", loadError?.message || "Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [plugin, jobId, error]);
 
   useEffect(() => {
     if (!plugin || !jobId) return;
     loadServices();
-    loadActivities();
-  }, [plugin, jobId, loadServices, loadActivities]);
+  }, [plugin, jobId, loadServices]);
 
   const handlePrimaryServiceChange = useCallback(
     (event) => {
@@ -481,30 +429,34 @@ export function AddActivitiesSection({ plugin, jobData }) {
 
       setIsSubmitting(true);
       try {
+        let savedActivity = null;
         if (isEditing) {
-          await updateActivityRecord({
+          savedActivity = await updateActivityRecord({
             plugin,
             id: toId(form.id),
             payload,
           });
           success("Activity updated", "Activity changes have been saved.");
         } else {
-          await createActivityRecord({ plugin, payload });
+          savedActivity = await createActivityRecord({ plugin, payload });
           success("Activity added", "New activity created successfully.");
         }
+        if (savedActivity) {
+          storeActions.upsertEntityRecord("activities", savedActivity, { idField: "id" });
+        }
         resetForm();
-        await loadActivities();
       } catch (submitError) {
         console.error("[JobDirect] Activity save failed", submitError);
-        error(
-          isEditing ? "Update failed" : "Create failed",
-          submitError?.message || "Unable to save activity."
-        );
+        showMutationErrorToast(error, {
+          title: isEditing ? "Update failed" : "Create failed",
+          error: submitError,
+          fallbackMessage: "Unable to save activity.",
+        });
       } finally {
         setIsSubmitting(false);
       }
     },
-    [plugin, jobId, form, isEditing, loadActivities, success, error, resetForm]
+    [plugin, jobId, form, isEditing, storeActions, success, error, resetForm]
   );
 
   const handleDelete = useCallback(async () => {
@@ -513,27 +465,31 @@ export function AddActivitiesSection({ plugin, jobData }) {
 
     setActiveActionId(targetId);
     try {
-      await deleteActivityRecord({ plugin, id: toId(targetId) });
+      const deletedId = await deleteActivityRecord({ plugin, id: toId(targetId) });
       success("Activity deleted", "Activity has been removed.");
+      const normalizedDeletedId = toText(deletedId || targetId);
+      const nextActivities = (activities || []).filter(
+        (item) => toText(item?.id || item?.ID) !== normalizedDeletedId
+      );
+      storeActions.replaceEntityCollection("activities", nextActivities);
       if (toText(form.id) === targetId) resetForm();
-      await loadActivities();
     } catch (deleteError) {
       console.error("[JobDirect] Failed to delete activity", deleteError);
-      error("Delete failed", deleteError?.message || "Unable to delete activity.");
+      showMutationErrorToast(error, {
+        title: "Delete failed",
+        error: deleteError,
+        fallbackMessage: "Unable to delete activity.",
+      });
     } finally {
       setActiveActionId("");
       setDeleteTarget(null);
     }
-  }, [deleteTarget, plugin, form.id, resetForm, loadActivities, success, error]);
+  }, [deleteTarget, plugin, activities, form.id, resetForm, storeActions, success, error]);
 
   return (
     <>
-      <section data-section="add-activities" className="grid grid-cols-1 gap-4 xl:grid-cols-[440px_1fr]">
-        <Card className="space-y-4">
-          <h3 className="type-subheadline text-slate-800">
-            {isEditing ? "Edit Activity" : "Add New Activity"}
-          </h3>
-
+      <JobDirectSplitSection dataSection="add-activities">
+        <JobDirectCardFormPanel title={isEditing ? "Edit Activity" : "Add New Activity"}>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <SelectField
@@ -666,21 +622,19 @@ export function AddActivitiesSection({ plugin, jobData }) {
               />
             </div>
 
-            <div className="flex items-center justify-end gap-2 border-t border-slate-200 pt-4">
+            <JobDirectFormActionsRow>
               <Button type="button" variant="ghost" onClick={resetForm} disabled={isSubmitting}>
                 Cancel
               </Button>
               <Button type="submit" variant="primary" disabled={isSubmitting || !jobId}>
                 {isSubmitting ? "Saving..." : isEditing ? "Update" : "Add"}
               </Button>
-            </div>
+            </JobDirectFormActionsRow>
           </form>
-        </Card>
+        </JobDirectCardFormPanel>
 
-        <Card>
-          <h3 className="type-subheadline mb-3 text-slate-800">Activities</h3>
-          <div className="w-full overflow-x-auto">
-            <table className="table-fixed w-full min-w-[920px] text-left text-sm text-slate-600">
+        <JobDirectCardTablePanel title="Activities">
+          <JobDirectTable className="table-fixed" minWidthClass="min-w-[920px]">
               <thead className="border-b border-slate-200 text-slate-500">
                 <tr>
                   <th className="w-[11%] px-2 py-2">Task</th>
@@ -693,19 +647,13 @@ export function AddActivitiesSection({ plugin, jobData }) {
                 </tr>
               </thead>
               <tbody>
-                {isLoading ? (
-                  <tr>
-                    <td className="px-2 py-3 text-slate-400" colSpan={7}>
-                      Loading activities...
-                    </td>
-                  </tr>
-                ) : activities.length ? (
-                  activities.map((activity) => {
+                {visibleActivities.length ? (
+                  visibleActivities.map((activity) => {
                     const activityId = toText(activity?.id || activity?.ID);
                     const status = toText(
                       activity?.activity_status || activity?.Activity_Status || activity?.status
                     );
-                    const style = statusStyle(status);
+                    const style = resolveStatusStyle(status, ACTIVITY_STATUS_OPTIONS);
                     const isBusy = Boolean(activityId) && activeActionId === activityId;
                     return (
                       <tr key={activityId || `${activity.task}-${activity.option}`} className="border-b border-slate-100">
@@ -719,12 +667,7 @@ export function AddActivitiesSection({ plugin, jobData }) {
                           {toText(activity?.service_name) || "-"}
                         </td>
                         <td className="px-2 py-3 align-middle">
-                          <span
-                            className="inline-flex rounded-full px-2 py-1 text-xs font-medium"
-                            style={style || undefined}
-                          >
-                            {status || "-"}
-                          </span>
+                          <JobDirectStatusBadge label={status || "-"} style={style} />
                         </td>
                         <td className="px-2 py-3 align-middle text-slate-700">
                           {formatCurrency(activity?.activity_price)}
@@ -741,49 +684,53 @@ export function AddActivitiesSection({ plugin, jobData }) {
                         </td>
                         <td className="px-2 py-3 align-middle">
                           <div className="flex justify-end gap-1">
-                            <button
-                              type="button"
-                              className="inline-flex h-7 w-7 items-center justify-center rounded border border-slate-300 bg-white text-slate-600 hover:border-slate-400 hover:text-slate-800"
+                            <JobDirectIconActionButton
                               onClick={() => setViewActivity(activity)}
                               title="View Activity"
                             >
-                              <EyeIcon />
-                            </button>
-                            <button
-                              type="button"
-                              className="inline-flex h-7 w-7 items-center justify-center rounded border border-slate-300 bg-white text-slate-600 hover:border-slate-400 hover:text-slate-800 disabled:cursor-not-allowed disabled:opacity-40"
+                              <EyeActionIcon />
+                            </JobDirectIconActionButton>
+                            <JobDirectIconActionButton
                               onClick={() => handleEdit(activity)}
                               disabled={isSubmitting || isBusy}
                               title="Edit Activity"
                             >
-                              <EditIcon />
-                            </button>
-                            <button
-                              type="button"
-                              className="inline-flex h-7 w-7 items-center justify-center rounded border border-slate-300 bg-white text-rose-600 hover:border-rose-300 hover:text-rose-700 disabled:cursor-not-allowed disabled:opacity-40"
+                              <EditActionIcon />
+                            </JobDirectIconActionButton>
+                            <JobDirectIconActionButton
+                              variant="danger"
                               onClick={() => setDeleteTarget(activity)}
                               disabled={isSubmitting || isBusy}
                               title="Delete Activity"
                             >
-                              <TrashIcon />
-                            </button>
+                              <TrashActionIcon />
+                            </JobDirectIconActionButton>
                           </div>
                         </td>
                       </tr>
                     );
                   })
                 ) : (
-                  <tr>
-                    <td className="px-2 py-3 text-slate-400" colSpan={7}>
-                      No activities found.
-                    </td>
-                  </tr>
+                  <JobDirectEmptyTableRow colSpan={7} message="No activities found." />
                 )}
               </tbody>
-            </table>
-          </div>
-        </Card>
-      </section>
+          </JobDirectTable>
+          {hasMoreActivities ? (
+            <div className="mt-3 flex items-center justify-between gap-2 text-xs text-slate-500">
+              <span>
+                Showing {visibleActivities.length} of {activities.length} activities
+              </span>
+              <Button type="button" variant="outline" onClick={showMoreActivities}>
+                Load {Math.min(remainingActivitiesCount, 120)} more
+              </Button>
+            </div>
+          ) : isActivitiesWindowed ? (
+            <div className="mt-3 text-xs text-slate-500">
+              Showing all {activities.length} activities.
+            </div>
+          ) : null}
+        </JobDirectCardTablePanel>
+      </JobDirectSplitSection>
 
       <Modal
         open={Boolean(viewActivity)}

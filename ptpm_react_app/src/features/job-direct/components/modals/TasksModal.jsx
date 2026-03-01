@@ -6,7 +6,24 @@ import { Modal } from "../../../../shared/components/ui/Modal.jsx";
 import { TextareaField } from "../../../../shared/components/ui/TextareaField.jsx";
 import { useToast } from "../../../../shared/providers/ToastProvider.jsx";
 import {
+  JobDirectEmptyTableRow,
+  JobDirectIconActionButton,
+  JobDirectStatusBadge,
+  JobDirectTable,
+  useRenderWindow,
+} from "../primitives/JobDirectTable.jsx";
+import {
+  JobDirectFormActionsRow,
+  JobDirectMutedPanel,
+  JobDirectPlainPanel,
+} from "../primitives/JobDirectLayout.jsx";
+import {
+  CheckActionIcon,
+  EditActionIcon,
+} from "../icons/ActionIcons.jsx";
+import {
   createTaskRecord,
+  fetchTasksByDealId,
   fetchTasksByJobId,
   updateTaskRecord,
 } from "../../sdk/jobDirectSdk.js";
@@ -106,35 +123,6 @@ function statusBadgeClass(status) {
     return "bg-slate-200 text-slate-700";
   }
   return "bg-amber-100 text-amber-700";
-}
-
-function EditIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M4 20H8L19 9C19.5304 8.46957 19.8284 7.75035 19.8284 7C19.8284 6.24965 19.5304 5.53043 19 5C18.4696 4.46957 17.7504 4.17157 17 4.17157C16.2496 4.17157 15.5304 4.46957 15 5L4 16V20Z"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path d="M13.5 6.5L17.5 10.5" stroke="currentColor" strokeWidth="1.7" />
-    </svg>
-  );
-}
-
-function CheckIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M20 7L9 18L4 13"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
 }
 
 function AssigneeSearchField({
@@ -250,8 +238,22 @@ function hasMeaningfulTaskData(task) {
   );
 }
 
-export function TasksModal({ open, onClose, plugin, jobData }) {
-  const jobId = toString(jobData?.id || jobData?.ID);
+export function TasksModal({
+  open,
+  onClose,
+  plugin,
+  jobData,
+  contextType = "job",
+  contextId = "",
+}) {
+  const normalizedContextType = toString(contextType).toLowerCase() === "deal" ? "deal" : "job";
+  const recordId =
+    toString(contextId) ||
+    toString(
+      normalizedContextType === "deal"
+        ? jobData?.inquiry_record_id || jobData?.Inquiry_Record_ID
+        : jobData?.id || jobData?.ID
+    );
   const assignees = useMemo(() => normalizeAssignees(assigneesJson), []);
   const assigneeById = useMemo(() => {
     const map = new Map();
@@ -262,8 +264,8 @@ export function TasksModal({ open, onClose, plugin, jobData }) {
   }, [assignees]);
 
   const { success, error } = useToast();
+  const [isLoadingTasks, setIsLoadingTasks] = useState(false);
   const [tasks, setTasks] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeTaskId, setActiveTaskId] = useState("");
   const [taskFilter, setTaskFilter] = useState("all");
@@ -276,38 +278,44 @@ export function TasksModal({ open, onClose, plugin, jobData }) {
   }, []);
 
   const loadTasks = useCallback(async () => {
-    if (!plugin || !jobId) {
+    if (!plugin || !recordId) {
       setTasks([]);
-      return;
+      return [];
     }
 
-    setIsLoading(true);
+    setIsLoadingTasks(true);
     try {
-      const records = await fetchTasksByJobId({ plugin, jobId });
-      const nextTasks = Array.isArray(records) ? records.filter(hasMeaningfulTaskData) : [];
-      setTasks(nextTasks);
+      const records =
+        normalizedContextType === "deal"
+          ? await fetchTasksByDealId({ plugin, dealId: recordId })
+          : await fetchTasksByJobId({ plugin, jobId: recordId });
+      const normalized = Array.isArray(records) ? records.filter(hasMeaningfulTaskData) : [];
+      setTasks(normalized);
+      return normalized;
     } catch (loadError) {
-      console.error("[JobDirect] Failed to load tasks", loadError);
-      error("Unable to load tasks", loadError?.message || "Please try again.");
+      console.error("[JobDirect] Failed loading tasks", loadError);
+      setTasks([]);
+      return [];
     } finally {
-      setIsLoading(false);
+      setIsLoadingTasks(false);
     }
-  }, [plugin, jobId, error]);
+  }, [plugin, recordId, normalizedContextType]);
+
+  useEffect(() => {
+    if (!open) {
+      resetForm();
+      setTasks([]);
+      setActiveTaskId("");
+      setIsSubmitting(false);
+      setIsLoadingTasks(false);
+      setTaskFilter("all");
+    }
+  }, [open, resetForm]);
 
   useEffect(() => {
     if (!open) return;
     loadTasks();
   }, [open, loadTasks]);
-
-  useEffect(() => {
-    if (!open) {
-      resetForm();
-      setActiveTaskId("");
-      setIsLoading(false);
-      setIsSubmitting(false);
-      setTaskFilter("all");
-    }
-  }, [open, resetForm]);
 
   const getAssigneeName = useCallback(
     (task) => {
@@ -341,8 +349,13 @@ export function TasksModal({ open, onClose, plugin, jobData }) {
         error("SDK unavailable", "Please wait for SDK initialization.");
         return;
       }
-      if (!jobId) {
-        error("Missing job", "Job ID is required to save task.");
+      if (!recordId) {
+        error(
+          normalizedContextType === "deal" ? "Missing inquiry" : "Missing job",
+          normalizedContextType === "deal"
+            ? "Inquiry ID is required to save task."
+            : "Job ID is required to save task."
+        );
         return;
       }
 
@@ -366,8 +379,12 @@ export function TasksModal({ open, onClose, plugin, jobData }) {
         date_due: form.dueDate,
         assignee_id: assigneeId,
         details: toString(form.details),
-        job_id: jobId,
       };
+      if (normalizedContextType === "deal") {
+        payload.deal_id = recordId;
+      } else {
+        payload.job_id = recordId;
+      }
 
       setIsSubmitting(true);
       try {
@@ -378,8 +395,8 @@ export function TasksModal({ open, onClose, plugin, jobData }) {
           await createTaskRecord({ plugin, payload });
           success("Task added", "New task created successfully.");
         }
-        resetForm();
         await loadTasks();
+        resetForm();
       } catch (submitError) {
         console.error("[JobDirect] Task save failed", submitError);
         error(
@@ -390,7 +407,17 @@ export function TasksModal({ open, onClose, plugin, jobData }) {
         setIsSubmitting(false);
       }
     },
-    [plugin, jobId, form, isEditing, loadTasks, resetForm, success, error]
+    [
+      plugin,
+      recordId,
+      normalizedContextType,
+      form,
+      isEditing,
+      loadTasks,
+      resetForm,
+      success,
+      error,
+    ]
   );
 
   const handleMarkComplete = useCallback(
@@ -400,15 +427,18 @@ export function TasksModal({ open, onClose, plugin, jobData }) {
 
       setActiveTaskId(id);
       try {
-        await updateTaskRecord({
+        const updatedTask = await updateTaskRecord({
           plugin,
           id,
           payload: {
             status: "Completed",
           },
         });
-        success("Task completed", "Task status set to Completed.");
+        if (!updatedTask?.id) {
+          throw new Error("Task update was not confirmed.");
+        }
         await loadTasks();
+        success("Task completed", "Task status set to Completed.");
       } catch (completeError) {
         console.error("[JobDirect] Mark complete failed", completeError);
         error("Update failed", completeError?.message || "Unable to mark task complete.");
@@ -416,99 +446,115 @@ export function TasksModal({ open, onClose, plugin, jobData }) {
         setActiveTaskId("");
       }
     },
-    [plugin, success, error, loadTasks]
+    [plugin, loadTasks, success, error]
+  );
+
+  const normalizedTasks = useMemo(
+    () => (Array.isArray(tasks) ? tasks.filter(hasMeaningfulTaskData) : []),
+    [tasks]
   );
 
   const filteredTasks = useMemo(() => {
-    if (taskFilter === "all") return tasks;
-    return tasks.filter((task) => {
+    if (taskFilter === "all") return normalizedTasks;
+    return normalizedTasks.filter((task) => {
       const status = toString(task?.status).toLowerCase();
       if (taskFilter === "completed") return status === "completed";
       if (taskFilter === "open") return status === "open";
       return true;
     });
-  }, [tasks, taskFilter]);
+  }, [normalizedTasks, taskFilter]);
+  const {
+    hasMore: hasMoreTasks,
+    remainingCount: remainingTasksCount,
+    showMore: showMoreTasks,
+    shouldWindow: isTasksWindowed,
+    visibleRows: visibleTasks,
+  } = useRenderWindow(filteredTasks, {
+    threshold: 160,
+    pageSize: 100,
+  });
 
   const emptyMessage =
     taskFilter === "completed"
       ? "No completed tasks found."
       : taskFilter === "open"
         ? "No open tasks found."
-        : "No tasks found for this job.";
+        : normalizedContextType === "deal"
+          ? "No tasks found for this inquiry."
+          : "No tasks found for this job.";
 
   return (
     <Modal open={open} onClose={onClose} title="Tasks" widthClass="max-w-6xl">
       <div className="space-y-6">
-        <form
-          onSubmit={handleSubmit}
-          className="rounded border border-slate-200 bg-slate-50 p-4"
-        >
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <InputField
-              label="Subject"
-              value={form.subject}
-              onChange={(event) =>
-                setForm((prev) => ({
-                  ...prev,
-                  subject: event.target.value,
-                }))
-              }
-              placeholder="Task subject"
-              disabled={isSubmitting}
-            />
+        <JobDirectMutedPanel>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <InputField
+                label="Subject"
+                value={form.subject}
+                onChange={(event) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    subject: event.target.value,
+                  }))
+                }
+                placeholder="Task subject"
+                disabled={isSubmitting}
+              />
 
-            <InputField
-              label="Due Date"
-              type="date"
-              value={form.dueDate}
-              onChange={(event) =>
-                setForm((prev) => ({
-                  ...prev,
-                  dueDate: event.target.value,
-                }))
-              }
-              disabled={isSubmitting}
-            />
+              <InputField
+                label="Due Date"
+                type="date"
+                value={form.dueDate}
+                onChange={(event) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    dueDate: event.target.value,
+                  }))
+                }
+                disabled={isSubmitting}
+              />
 
-            <AssigneeSearchField
-              label="Assignee"
-              options={assignees}
-              selectedId={form.assigneeId}
-              onSelect={(assigneeId) =>
-                setForm((prev) => ({
-                  ...prev,
-                  assigneeId,
-                }))
-              }
-              disabled={isSubmitting}
-            />
+              <AssigneeSearchField
+                label="Assignee"
+                options={assignees}
+                selectedId={form.assigneeId}
+                onSelect={(assigneeId) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    assigneeId,
+                  }))
+                }
+                disabled={isSubmitting}
+              />
 
-            <TextareaField
-              label="Details"
-              rows={3}
-              value={form.details}
-              onChange={(event) =>
-                setForm((prev) => ({
-                  ...prev,
-                  details: event.target.value,
-                }))
-              }
-              placeholder="Task details"
-              disabled={isSubmitting}
-            />
-          </div>
+              <TextareaField
+                label="Details"
+                rows={3}
+                value={form.details}
+                onChange={(event) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    details: event.target.value,
+                  }))
+                }
+                placeholder="Task details"
+                disabled={isSubmitting}
+              />
+            </div>
 
-          <div className="mt-4 flex flex-wrap justify-end gap-2">
-            <Button type="button" variant="ghost" onClick={resetForm} disabled={isSubmitting}>
-              Clear
-            </Button>
-            <Button type="submit" variant="primary" disabled={isSubmitting || !jobId}>
-              {isSubmitting ? "Saving..." : isEditing ? "Update Task" : "Add Task"}
-            </Button>
-          </div>
-        </form>
+            <JobDirectFormActionsRow className="mt-4 flex-wrap">
+              <Button type="button" variant="ghost" onClick={resetForm} disabled={isSubmitting}>
+                Clear
+              </Button>
+              <Button type="submit" variant="primary" disabled={isSubmitting || !recordId}>
+                {isSubmitting ? "Saving..." : isEditing ? "Update Task" : "Add Task"}
+              </Button>
+            </JobDirectFormActionsRow>
+          </form>
+        </JobDirectMutedPanel>
 
-        <div className="rounded border border-slate-200 bg-white p-3">
+        <JobDirectPlainPanel>
           <div className="mb-3 flex items-center gap-2 border-b border-slate-200 pb-3">
             {[
               { id: "all", label: "All" },
@@ -532,8 +578,7 @@ export function TasksModal({ open, onClose, plugin, jobData }) {
               );
             })}
           </div>
-          <div className="w-full overflow-x-auto">
-            <table className="w-full min-w-[700px] text-left text-sm text-slate-600">
+          <JobDirectTable minWidthClass="min-w-[700px]">
               <thead className="border-b border-slate-200 text-slate-500">
                 <tr>
                   <th className="px-2 py-2">Subject</th>
@@ -545,14 +590,10 @@ export function TasksModal({ open, onClose, plugin, jobData }) {
                 </tr>
               </thead>
               <tbody>
-                {isLoading ? (
-                  <tr>
-                    <td colSpan={6} className="px-2 py-3 text-slate-400">
-                      Loading tasks...
-                    </td>
-                  </tr>
-                ) : filteredTasks.length ? (
-                  filteredTasks.map((task) => {
+                {isLoadingTasks ? (
+                  <JobDirectEmptyTableRow colSpan={6} message="Loading tasks..." />
+                ) : visibleTasks.length ? (
+                  visibleTasks.map((task) => {
                     const taskId = toString(task?.id);
                     const isBusy = Boolean(taskId) && activeTaskId === taskId;
                     const isCompleted = toString(task?.status).toLowerCase() === "completed";
@@ -564,25 +605,23 @@ export function TasksModal({ open, onClose, plugin, jobData }) {
                         <td className="px-2 py-3 align-middle">{getAssigneeName(task)}</td>
                         <td className="px-2 py-3 align-middle">{toString(task?.details) || "-"}</td>
                         <td className="px-2 py-3 align-middle">
-                          <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${statusBadgeClass(task?.status)}`}>
-                            {toString(task?.status) || "Pending"}
-                          </span>
+                          <JobDirectStatusBadge
+                            className={statusBadgeClass(task?.status)}
+                            label={toString(task?.status) || "Pending"}
+                          />
                         </td>
                         <td className="px-2 py-3 align-middle">
                           <div className="flex flex-wrap justify-end gap-1">
-                            <button
-                              type="button"
-                              className="inline-flex h-7 w-7 items-center justify-center rounded border border-slate-300 bg-white text-slate-600 hover:border-slate-400 hover:text-slate-800 disabled:cursor-not-allowed disabled:opacity-40"
+                            <JobDirectIconActionButton
                               onClick={() => handleEditTask(task)}
                               disabled={isSubmitting || isBusy || !taskId || isCompleted}
                               aria-label="Edit task"
                               title="Edit Task"
                             >
-                              <EditIcon />
-                            </button>
-                            <button
-                              type="button"
-                              className="inline-flex h-7 w-7 items-center justify-center rounded border border-slate-300 bg-white text-slate-600 hover:border-emerald-300 hover:text-emerald-700 disabled:cursor-not-allowed disabled:opacity-40"
+                              <EditActionIcon />
+                            </JobDirectIconActionButton>
+                            <JobDirectIconActionButton
+                              variant="success"
                               onClick={() => handleMarkComplete(task)}
                               disabled={isSubmitting || isBusy || isCompleted || !taskId}
                               aria-label="Mark task complete"
@@ -591,25 +630,34 @@ export function TasksModal({ open, onClose, plugin, jobData }) {
                               {isBusy ? (
                                 <span className="inline-flex h-3.5 w-3.5 animate-spin rounded-full border-2 border-slate-300 border-t-slate-600" />
                               ) : (
-                                <CheckIcon />
+                                <CheckActionIcon />
                               )}
-                            </button>
+                            </JobDirectIconActionButton>
                           </div>
                         </td>
                       </tr>
                     );
                   })
                 ) : (
-                  <tr>
-                    <td colSpan={6} className="px-2 py-3 text-slate-400">
-                      {emptyMessage}
-                    </td>
-                  </tr>
+                  <JobDirectEmptyTableRow colSpan={6} message={emptyMessage} />
                 )}
               </tbody>
-            </table>
-          </div>
-        </div>
+          </JobDirectTable>
+          {hasMoreTasks ? (
+            <div className="mt-3 flex items-center justify-between gap-2 text-xs text-slate-500">
+              <span>
+                Showing {visibleTasks.length} of {filteredTasks.length} tasks
+              </span>
+              <Button type="button" variant="outline" onClick={showMoreTasks}>
+                Load {Math.min(remainingTasksCount, 100)} more
+              </Button>
+            </div>
+          ) : isTasksWindowed ? (
+            <div className="mt-3 text-xs text-slate-500">
+              Showing all {filteredTasks.length} tasks.
+            </div>
+          ) : null}
+        </JobDirectPlainPanel>
       </div>
     </Modal>
   );

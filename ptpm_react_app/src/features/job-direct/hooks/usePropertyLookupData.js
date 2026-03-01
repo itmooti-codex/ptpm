@@ -1,5 +1,14 @@
-import { useEffect, useMemo, useState } from "react";
-import { fetchPropertiesForSearch } from "../sdk/jobDirectSdk.js";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  fetchPropertiesForSearch,
+  subscribePropertiesForSearch,
+} from "../sdk/jobDirectSdk.js";
+import {
+  useJobDirectSelector,
+  useJobDirectStoreActions,
+} from "./useJobDirectStore.jsx";
+import { selectProperties } from "../state/selectors.js";
+import { registerSharedLookupSubscription } from "./lookupRealtimeRegistry.js";
 
 const EMPTY_LIST = [];
 
@@ -123,32 +132,69 @@ export function usePropertyLookupData(
   plugin,
   { initialProperties = EMPTY_LIST, skipInitialFetch = false } = {}
 ) {
+  const actions = useJobDirectStoreActions();
+  const storeProperties = useJobDirectSelector(selectProperties);
+
   const normalizedInitialProperties = useMemo(
     () => (initialProperties || []).map((item) => normalizeProperty(item)),
     [initialProperties]
   );
-  const [properties, setProperties] = useState(() =>
-    dedupeRecords(normalizedInitialProperties, createPropertyLookupKey)
+  const properties = useMemo(
+    () =>
+      dedupeRecords(
+        (storeProperties || []).map((item) => normalizeProperty(item)),
+        createPropertyLookupKey
+      ),
+    [storeProperties]
   );
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const nextProperties = dedupeRecords(normalizedInitialProperties, createPropertyLookupKey);
-    setProperties((previous) =>
-      areListsEqualByKey(previous, nextProperties, createPropertyLookupKey)
-        ? previous
-        : nextProperties
-    );
-  }, [normalizedInitialProperties]);
+    if (!normalizedInitialProperties.length) return;
+    if (
+      properties.length &&
+      areListsEqualByKey(properties, normalizedInitialProperties, createPropertyLookupKey)
+    ) {
+      return;
+    }
+    if (!properties.length) {
+      actions.replaceEntityCollection("properties", normalizedInitialProperties);
+    }
+  }, [actions, properties, normalizedInitialProperties]);
+
+  useEffect(() => {
+    if (!plugin) return undefined;
+
+    const releasePropertiesSubscription = registerSharedLookupSubscription({
+      key: "lookup:properties",
+      start: () =>
+        subscribePropertiesForSearch({
+          plugin,
+          onChange: (records) => {
+            const normalized = (records || []).map((item) => normalizeProperty(item));
+            actions.replaceEntityCollection(
+              "properties",
+              dedupeRecords(normalized, createPropertyLookupKey)
+            );
+          },
+          onError: (lookupError) => {
+            console.error("[JobDirect] Property lookup subscription failed", lookupError);
+          },
+        }),
+    });
+
+    return () => {
+      releasePropertiesSubscription();
+    };
+  }, [actions, plugin]);
 
   useEffect(() => {
     let isActive = true;
     if (!plugin) {
-      setProperties([]);
       return undefined;
     }
 
-    if (skipInitialFetch && normalizedInitialProperties.length > 0) {
+    if (skipInitialFetch && properties.length > 0) {
       setIsLoading(false);
       return undefined;
     }
@@ -158,7 +204,10 @@ export function usePropertyLookupData(
       .then((records) => {
         if (!isActive) return;
         const normalizedProperties = (records || []).map((item) => normalizeProperty(item));
-        setProperties(dedupeRecords(normalizedProperties, createPropertyLookupKey));
+        actions.replaceEntityCollection(
+          "properties",
+          dedupeRecords(normalizedProperties, createPropertyLookupKey)
+        );
       })
       .catch((error) => {
         if (!isActive) return;
@@ -172,13 +221,13 @@ export function usePropertyLookupData(
     return () => {
       isActive = false;
     };
-  }, [plugin, skipInitialFetch, normalizedInitialProperties.length]);
+  }, [actions, plugin, properties.length, skipInitialFetch]);
 
-  const addProperty = (newProperty) => {
+  const addProperty = useCallback((newProperty) => {
     const normalized = normalizeProperty(newProperty);
-    setProperties((prev) => dedupeRecords([normalized, ...prev], createPropertyLookupKey));
+    actions.upsertEntityRecord("properties", normalized, { idField: "id" });
     return normalized;
-  };
+  }, [actions]);
 
   return {
     properties,

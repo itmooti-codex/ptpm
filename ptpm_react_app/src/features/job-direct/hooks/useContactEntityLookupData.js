@@ -1,8 +1,16 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   fetchCompaniesForSearch,
   fetchContactsForSearch,
+  subscribeCompaniesForSearch,
+  subscribeContactsForSearch,
 } from "../sdk/jobDirectSdk.js";
+import {
+  useJobDirectSelector,
+  useJobDirectStoreActions,
+} from "./useJobDirectStore.jsx";
+import { selectCompanies, selectContacts } from "../state/selectors.js";
+import { registerSharedLookupSubscription } from "./lookupRealtimeRegistry.js";
 
 const EMPTY_LIST = [];
 
@@ -113,6 +121,10 @@ export function useContactEntityLookupData(
     skipInitialFetch = false,
   } = {}
 ) {
+  const actions = useJobDirectStoreActions();
+  const storeContacts = useJobDirectSelector(selectContacts);
+  const storeCompanies = useJobDirectSelector(selectCompanies);
+
   const normalizedInitialContacts = useMemo(
     () => (initialContacts || []).map((item) => normalizeContact(item)),
     [initialContacts]
@@ -121,42 +133,93 @@ export function useContactEntityLookupData(
     () => (initialCompanies || []).map((item) => normalizeCompany(item)),
     [initialCompanies]
   );
-  const [contacts, setContacts] = useState(() =>
-    dedupeRecords(normalizedInitialContacts, createContactLookupKey)
+  const contacts = useMemo(
+    () =>
+      dedupeRecords((storeContacts || []).map((item) => normalizeContact(item)), createContactLookupKey),
+    [storeContacts]
   );
-  const [companies, setCompanies] = useState(() =>
-    dedupeRecords(normalizedInitialCompanies, createCompanyLookupKey)
+  const companies = useMemo(
+    () =>
+      dedupeRecords((storeCompanies || []).map((item) => normalizeCompany(item)), createCompanyLookupKey),
+    [storeCompanies]
   );
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const nextContacts = dedupeRecords(normalizedInitialContacts, createContactLookupKey);
-    setContacts((previous) =>
-      areListsEqualByKey(previous, nextContacts, createContactLookupKey) ? previous : nextContacts
-    );
-  }, [normalizedInitialContacts]);
+    if (!normalizedInitialContacts.length) return;
+    if (contacts.length && areListsEqualByKey(contacts, normalizedInitialContacts, createContactLookupKey)) {
+      return;
+    }
+    if (!contacts.length) {
+      actions.replaceEntityCollection("contacts", normalizedInitialContacts);
+    }
+  }, [actions, contacts, normalizedInitialContacts]);
 
   useEffect(() => {
-    const nextCompanies = dedupeRecords(normalizedInitialCompanies, createCompanyLookupKey);
-    setCompanies((previous) =>
-      areListsEqualByKey(previous, nextCompanies, createCompanyLookupKey)
-        ? previous
-        : nextCompanies
-    );
-  }, [normalizedInitialCompanies]);
+    if (!normalizedInitialCompanies.length) return;
+    if (
+      companies.length &&
+      areListsEqualByKey(companies, normalizedInitialCompanies, createCompanyLookupKey)
+    ) {
+      return;
+    }
+    if (!companies.length) {
+      actions.replaceEntityCollection("companies", normalizedInitialCompanies);
+    }
+  }, [actions, companies, normalizedInitialCompanies]);
+
+  useEffect(() => {
+    if (!plugin) return undefined;
+
+    const releaseContactsSubscription = registerSharedLookupSubscription({
+      key: "lookup:contacts",
+      start: () =>
+        subscribeContactsForSearch({
+          plugin,
+          onChange: (records) => {
+            const normalized = (records || []).map((item) => normalizeContact(item));
+            actions.replaceEntityCollection(
+              "contacts",
+              dedupeRecords(normalized, createContactLookupKey)
+            );
+          },
+          onError: (lookupError) => {
+            console.error("[JobDirect] Contact lookup subscription failed", lookupError);
+          },
+        }),
+    });
+
+    const releaseCompaniesSubscription = registerSharedLookupSubscription({
+      key: "lookup:companies",
+      start: () =>
+        subscribeCompaniesForSearch({
+          plugin,
+          onChange: (records) => {
+            const normalized = (records || []).map((item) => normalizeCompany(item));
+            actions.replaceEntityCollection(
+              "companies",
+              dedupeRecords(normalized, createCompanyLookupKey)
+            );
+          },
+          onError: (lookupError) => {
+            console.error("[JobDirect] Company lookup subscription failed", lookupError);
+          },
+        }),
+    });
+
+    return () => {
+      releaseContactsSubscription();
+      releaseCompaniesSubscription();
+    };
+  }, [actions, plugin]);
 
   useEffect(() => {
     let isActive = true;
     if (!plugin) {
-      setContacts([]);
-      setCompanies([]);
       return undefined;
     }
 
-    if (
-      skipInitialFetch &&
-      (normalizedInitialContacts.length > 0 || normalizedInitialCompanies.length > 0)
-    ) {
+    if (skipInitialFetch && (contacts.length > 0 || companies.length > 0)) {
       setIsLoading(false);
       return undefined;
     }
@@ -170,8 +233,14 @@ export function useContactEntityLookupData(
         if (!isActive) return;
         const normalizedContacts = (contactRecords || []).map((item) => normalizeContact(item));
         const normalizedCompanies = (companyRecords || []).map((item) => normalizeCompany(item));
-        setContacts(dedupeRecords(normalizedContacts, createContactLookupKey));
-        setCompanies(dedupeRecords(normalizedCompanies, createCompanyLookupKey));
+        actions.replaceEntityCollection(
+          "contacts",
+          dedupeRecords(normalizedContacts, createContactLookupKey)
+        );
+        actions.replaceEntityCollection(
+          "companies",
+          dedupeRecords(normalizedCompanies, createCompanyLookupKey)
+        );
       })
       .catch((error) => {
         if (!isActive) return;
@@ -186,23 +255,24 @@ export function useContactEntityLookupData(
       isActive = false;
     };
   }, [
+    actions,
+    contacts.length,
+    companies.length,
     plugin,
     skipInitialFetch,
-    normalizedInitialContacts.length,
-    normalizedInitialCompanies.length,
   ]);
 
-  const addContact = (newContact) => {
+  const addContact = useCallback((newContact) => {
     const normalized = normalizeContact(newContact);
-    setContacts((prev) => dedupeRecords([normalized, ...prev], createContactLookupKey));
+    actions.upsertEntityRecord("contacts", normalized, { idField: "id" });
     return normalized;
-  };
+  }, [actions]);
 
-  const addCompany = (newCompany) => {
+  const addCompany = useCallback((newCompany) => {
     const normalized = normalizeCompany(newCompany);
-    setCompanies((prev) => dedupeRecords([normalized, ...prev], createCompanyLookupKey));
+    actions.upsertEntityRecord("companies", normalized, { idField: "id" });
     return normalized;
-  };
+  }, [actions]);
 
   return {
     contacts,

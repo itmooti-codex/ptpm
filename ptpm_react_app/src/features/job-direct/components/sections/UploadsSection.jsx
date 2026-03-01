@@ -4,6 +4,12 @@ import { Card } from "../../../../shared/components/ui/Card.jsx";
 import { Modal } from "../../../../shared/components/ui/Modal.jsx";
 import { useToast } from "../../../../shared/providers/ToastProvider.jsx";
 import {
+  useJobDirectSelector,
+  useJobDirectStoreActions,
+} from "../../hooks/useJobDirectStore.jsx";
+import { selectJobUploads } from "../../state/selectors.js";
+import { useRenderWindow } from "../primitives/JobDirectTable.jsx";
+import {
   createJobUploadFromFile,
   deleteUploadRecord,
   fetchJobUploads,
@@ -50,9 +56,20 @@ function formatFileSize(size) {
   return `${(value / (1024 * 1024)).toFixed(1)} MB`;
 }
 
+function dedupeUploadRecords(records = []) {
+  const map = new Map();
+  (Array.isArray(records) ? records : []).forEach((item, index) => {
+    const key = String(item?.id || item?.url || `upload-${index}`).trim();
+    if (!key || map.has(key)) return;
+    map.set(key, item);
+  });
+  return Array.from(map.values());
+}
+
 export function UploadsSection({ plugin, jobData }) {
   const { success, error } = useToast();
-  const [uploads, setUploads] = useState([]);
+  const storeActions = useJobDirectStoreActions();
+  const uploads = useJobDirectSelector(selectJobUploads);
   const [pendingUploads, setPendingUploads] = useState([]);
   const [isDropActive, setIsDropActive] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -63,11 +80,31 @@ export function UploadsSection({ plugin, jobData }) {
   const inputRef = useRef(null);
   const pendingUploadsRef = useRef([]);
   const jobId = useMemo(() => normalizeJobId(jobData), [jobData]);
+  const {
+    hasMore: hasMorePendingUploads,
+    remainingCount: remainingPendingUploadsCount,
+    showMore: showMorePendingUploads,
+    shouldWindow: isPendingUploadsWindowed,
+    visibleRows: visiblePendingUploads,
+  } = useRenderWindow(pendingUploads, {
+    threshold: 150,
+    pageSize: 100,
+  });
+  const {
+    hasMore: hasMoreExistingUploads,
+    remainingCount: remainingExistingUploadsCount,
+    showMore: showMoreExistingUploads,
+    shouldWindow: isExistingUploadsWindowed,
+    visibleRows: visibleExistingUploads,
+  } = useRenderWindow(uploads, {
+    threshold: 150,
+    pageSize: 100,
+  });
 
   useEffect(() => {
     let isActive = true;
     if (!plugin || !jobId) {
-      setUploads([]);
+      storeActions.replaceEntityCollection("jobUploads", []);
       setLoadError("");
       setIsLoading(false);
       return undefined;
@@ -78,12 +115,12 @@ export function UploadsSection({ plugin, jobData }) {
     fetchJobUploads({ plugin, jobId })
       .then((records) => {
         if (!isActive) return;
-        setUploads(records || []);
+        storeActions.replaceEntityCollection("jobUploads", records || []);
       })
       .catch((fetchError) => {
         if (!isActive) return;
         console.error("[JobDirect] Failed loading job uploads", fetchError);
-        setUploads([]);
+        storeActions.replaceEntityCollection("jobUploads", []);
         setLoadError("Unable to load uploads.");
       })
       .finally(() => {
@@ -94,7 +131,7 @@ export function UploadsSection({ plugin, jobData }) {
     return () => {
       isActive = false;
     };
-  }, [plugin, jobId]);
+  }, [plugin, jobId, storeActions]);
 
   useEffect(() => {
     pendingUploadsRef.current = pendingUploads;
@@ -221,15 +258,10 @@ export function UploadsSection({ plugin, jobData }) {
     }
 
     if (created.length) {
-      setUploads((previous) => {
-        const map = new Map();
-        [...created, ...(previous || [])].forEach((item, index) => {
-          const key = String(item?.id || item?.url || `upload-${index}`).trim();
-          if (!key || map.has(key)) return;
-          map.set(key, item);
-        });
-        return Array.from(map.values());
-      });
+      storeActions.replaceEntityCollection(
+        "jobUploads",
+        dedupeUploadRecords([...created, ...(uploads || [])])
+      );
     }
 
     setPendingUploads(failed);
@@ -262,8 +294,9 @@ export function UploadsSection({ plugin, jobData }) {
     setIsDeleting(true);
     try {
       await deleteUploadRecord({ plugin, id: deleteTarget.id });
-      setUploads((previous) =>
-        (previous || []).filter(
+      storeActions.replaceEntityCollection(
+        "jobUploads",
+        (uploads || []).filter(
           (item) => String(item?.id || "").trim() !== String(deleteTarget?.id || "").trim()
         )
       );
@@ -334,14 +367,14 @@ export function UploadsSection({ plugin, jobData }) {
                 </tr>
               </thead>
               <tbody>
-                {!pendingUploads.length ? (
+                {!visiblePendingUploads.length ? (
                   <tr>
                     <td className="px-2 py-3 text-slate-400" colSpan={3}>
                       No pending files.
                     </td>
                   </tr>
                 ) : (
-                  pendingUploads.map((record) => (
+                  visiblePendingUploads.map((record) => (
                     <tr key={record.id} className="border-b border-slate-100 last:border-b-0">
                       <td className="px-2 py-3 break-all">{record.name}</td>
                       <td className="px-2 py-3">{formatFileSize(record.size)}</td>
@@ -377,6 +410,20 @@ export function UploadsSection({ plugin, jobData }) {
               </tbody>
             </table>
           </div>
+          {hasMorePendingUploads ? (
+            <div className="flex items-center justify-between gap-2 text-xs text-slate-500">
+              <span>
+                Showing {visiblePendingUploads.length} of {pendingUploads.length} pending uploads
+              </span>
+              <Button type="button" variant="outline" onClick={showMorePendingUploads}>
+                Load {Math.min(remainingPendingUploadsCount, 100)} more
+              </Button>
+            </div>
+          ) : isPendingUploadsWindowed ? (
+            <div className="text-xs text-slate-500">
+              Showing all {pendingUploads.length} pending uploads.
+            </div>
+          ) : null}
         </div>
       </Card>
 
@@ -404,67 +451,83 @@ export function UploadsSection({ plugin, jobData }) {
         ) : null}
 
         {jobId && !isLoading && !loadError ? (
-          <div className="overflow-x-auto">
-            <table className="table-fixed w-full text-left text-sm text-slate-600">
-              <thead className="border-b border-slate-200 text-slate-500">
-                <tr>
-                  <th className="w-1/4 px-2 py-2">Type</th>
-                  <th className="w-2/4 px-2 py-2">Name</th>
-                  <th className="w-1/4 px-2 py-2 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {!uploads.length ? (
+          <>
+            <div className="overflow-x-auto">
+              <table className="table-fixed w-full text-left text-sm text-slate-600">
+                <thead className="border-b border-slate-200 text-slate-500">
                   <tr>
-                    <td className="px-2 py-3 text-slate-400" colSpan={3}>
-                      No uploads available.
-                    </td>
+                    <th className="w-1/4 px-2 py-2">Type</th>
+                    <th className="w-2/4 px-2 py-2">Name</th>
+                    <th className="w-1/4 px-2 py-2 text-right">Actions</th>
                   </tr>
-                ) : (
-                  uploads.map((record, index) => {
-                    const uploadId = String(record?.id || "").trim();
-                    const uploadUrl = String(record?.url || "").trim();
-                    return (
-                      <tr
-                        key={`${uploadId || uploadUrl || "upload"}-${index}`}
-                        className="border-b border-slate-100 last:border-b-0"
-                      >
-                        <td className="px-2 py-3">{record?.type || "File"}</td>
-                        <td className="px-2 py-3 break-all">{record?.name || "Upload"}</td>
-                        <td className="px-2 py-3">
-                          <div className="flex w-full items-center justify-end gap-2">
-                            <button
-                              type="button"
-                              className="inline-flex h-7 w-7 items-center justify-center rounded border border-slate-300 bg-white text-slate-600 hover:border-slate-400 hover:text-slate-800 disabled:cursor-not-allowed disabled:opacity-40"
-                              onClick={() => {
-                                if (!uploadUrl) return;
-                                window.open(uploadUrl, "_blank", "noopener,noreferrer");
-                              }}
-                              aria-label="View upload"
-                              title="View Upload"
-                              disabled={!uploadUrl}
-                            >
-                              <EyeIcon />
-                            </button>
-                            <button
-                              type="button"
-                              className="inline-flex h-7 w-7 items-center justify-center rounded border border-slate-300 bg-white text-slate-600 hover:border-red-300 hover:text-red-700 disabled:cursor-not-allowed disabled:opacity-40"
-                              onClick={() => setDeleteTarget(record)}
-                              aria-label="Delete upload"
-                              title="Delete Upload"
-                              disabled={!uploadId}
-                            >
-                              <TrashIcon />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {!visibleExistingUploads.length ? (
+                    <tr>
+                      <td className="px-2 py-3 text-slate-400" colSpan={3}>
+                        No uploads available.
+                      </td>
+                    </tr>
+                  ) : (
+                    visibleExistingUploads.map((record, index) => {
+                      const uploadId = String(record?.id || "").trim();
+                      const uploadUrl = String(record?.url || "").trim();
+                      return (
+                        <tr
+                          key={`${uploadId || uploadUrl || "upload"}-${index}`}
+                          className="border-b border-slate-100 last:border-b-0"
+                        >
+                          <td className="px-2 py-3">{record?.type || "File"}</td>
+                          <td className="px-2 py-3 break-all">{record?.name || "Upload"}</td>
+                          <td className="px-2 py-3">
+                            <div className="flex w-full items-center justify-end gap-2">
+                              <button
+                                type="button"
+                                className="inline-flex h-7 w-7 items-center justify-center rounded border border-slate-300 bg-white text-slate-600 hover:border-slate-400 hover:text-slate-800 disabled:cursor-not-allowed disabled:opacity-40"
+                                onClick={() => {
+                                  if (!uploadUrl) return;
+                                  window.open(uploadUrl, "_blank", "noopener,noreferrer");
+                                }}
+                                aria-label="View upload"
+                                title="View Upload"
+                                disabled={!uploadUrl}
+                              >
+                                <EyeIcon />
+                              </button>
+                              <button
+                                type="button"
+                                className="inline-flex h-7 w-7 items-center justify-center rounded border border-slate-300 bg-white text-slate-600 hover:border-red-300 hover:text-red-700 disabled:cursor-not-allowed disabled:opacity-40"
+                                onClick={() => setDeleteTarget(record)}
+                                aria-label="Delete upload"
+                                title="Delete Upload"
+                                disabled={!uploadId}
+                              >
+                                <TrashIcon />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+            {hasMoreExistingUploads ? (
+              <div className="flex items-center justify-between gap-2 text-xs text-slate-500">
+                <span>
+                  Showing {visibleExistingUploads.length} of {uploads.length} uploads
+                </span>
+                <Button type="button" variant="outline" onClick={showMoreExistingUploads}>
+                  Load {Math.min(remainingExistingUploadsCount, 100)} more
+                </Button>
+              </div>
+            ) : isExistingUploadsWindowed ? (
+              <div className="text-xs text-slate-500">
+                Showing all {uploads.length} uploads.
+              </div>
+            ) : null}
+          </>
         ) : null}
       </Card>
 

@@ -1,22 +1,41 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "../../../../shared/components/ui/Button.jsx";
-import { Card } from "../../../../shared/components/ui/Card.jsx";
 import { ColorSelectField } from "../../../../shared/components/ui/ColorSelectField.jsx";
 import { InputField } from "../../../../shared/components/ui/InputField.jsx";
 import { Modal } from "../../../../shared/components/ui/Modal.jsx";
 import { SelectField } from "../../../../shared/components/ui/SelectField.jsx";
 import { TextareaField } from "../../../../shared/components/ui/TextareaField.jsx";
 import { useToast } from "../../../../shared/providers/ToastProvider.jsx";
+import { useJobDirectSelector, useJobDirectStoreActions } from "../../hooks/useJobDirectStore.jsx";
+import { useServiceProviderLookupData } from "../../hooks/useServiceProviderLookupData.js";
+import { showMutationErrorToast } from "../../utils/mutationFeedback.js";
+import {
+  DocumentActionIcon,
+  EditActionIcon,
+  EyeActionIcon,
+  TrashActionIcon,
+} from "../icons/ActionIcons.jsx";
+import {
+  JobDirectCardFormPanel,
+  JobDirectCardTablePanel,
+  JobDirectFormActionsRow,
+  JobDirectSplitSection,
+} from "../primitives/JobDirectLayout.jsx";
+import {
+  JobDirectEmptyTableRow,
+  JobDirectIconActionButton,
+  JobDirectTable,
+  useRenderWindow,
+} from "../primitives/JobDirectTable.jsx";
 import {
   MATERIAL_STATUS_OPTIONS,
   MATERIAL_TAX_OPTIONS,
   MATERIAL_TRANSACTION_TYPE_OPTIONS,
 } from "../../constants/options.js";
+import { selectMaterials } from "../../state/selectors.js";
 import {
   createMaterialRecord,
   deleteMaterialRecord,
-  fetchMaterialsByJobId,
-  fetchServiceProvidersForSearch,
   uploadMaterialFile,
   updateMaterialRecord,
 } from "../../sdk/jobDirectSdk.js";
@@ -205,37 +224,6 @@ function resolveTaxPayloadValue(rawValue) {
   return matched ? toText(matched.label) : toText(rawValue);
 }
 
-function normalizeServiceProviderRecord(rawProvider = {}) {
-  const firstName = toText(
-    rawProvider?.first_name ||
-      rawProvider?.First_Name ||
-      rawProvider?.contact_information_first_name ||
-      rawProvider?.Contact_Information_First_Name ||
-      rawProvider?.Contact_Information?.first_name
-  );
-  const lastName = toText(
-    rawProvider?.last_name ||
-      rawProvider?.Last_Name ||
-      rawProvider?.contact_information_last_name ||
-      rawProvider?.Contact_Information_Last_Name ||
-      rawProvider?.Contact_Information?.last_name
-  );
-
-  return {
-    id: toText(rawProvider?.id || rawProvider?.ID),
-    first_name: firstName,
-    last_name: lastName,
-    label: [firstName, lastName].filter(Boolean).join(" ").trim() || "Unknown provider",
-    phone: toText(
-      rawProvider?.sms_number ||
-        rawProvider?.SMS_Number ||
-        rawProvider?.contact_information_sms_number ||
-        rawProvider?.Contact_Information_SMS_Number ||
-        rawProvider?.Contact_Information?.sms_number
-    ),
-  };
-}
-
 function defaultMaterialForm() {
   return {
     id: "",
@@ -249,77 +237,6 @@ function defaultMaterialForm() {
     file: "",
     file_payload: "",
   };
-}
-
-function hasMeaningfulMaterial(material) {
-  if (!material || typeof material !== "object") return false;
-  return Boolean(
-    toText(material?.id || material?.ID) ||
-      toText(material?.material_name || material?.Material_Name) ||
-      toText(material?.total || material?.Total) ||
-      toText(material?.transaction_type || material?.Transaction_Type) ||
-      toText(material?.tax || material?.Tax) ||
-      toText(material?.provider_name) ||
-      resolveMaterialFileUrl(material)
-  );
-}
-
-function EyeIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M1.5 12C1.5 12 5.5 5.5 12 5.5C18.5 5.5 22.5 12 22.5 12C22.5 12 18.5 18.5 12 18.5C5.5 18.5 1.5 12 1.5 12Z"
-        stroke="currentColor"
-        strokeWidth="1.6"
-      />
-      <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.6" />
-    </svg>
-  );
-}
-
-function EditIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M4 20H8L19 9C19.5304 8.46957 19.8284 7.75035 19.8284 7C19.8284 6.24965 19.5304 5.53043 19 5C18.4696 4.46957 17.7504 4.17157 17 4.17157C16.2496 4.17157 15.5304 4.46957 15 5L4 16V20Z"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path d="M13.5 6.5L17.5 10.5" stroke="currentColor" strokeWidth="1.7" />
-    </svg>
-  );
-}
-
-function TrashIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M4 7H20M9 7V5C9 4.44772 9.44772 4 10 4H14C14.5523 4 15 4.44772 15 5V7M7 7L8 19C8.04343 19.5523 8.50736 20 9.0616 20H14.9384C15.4926 20 15.9566 19.5523 16 19L17 7"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function DocumentIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M7 3.5H13.5L18.5 8.5V20.5H7V3.5Z"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinejoin="round"
-      />
-      <path d="M13.5 3.5V8.5H18.5" stroke="currentColor" strokeWidth="1.6" />
-      <path d="M9.5 12.5H15.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      <path d="M9.5 15.5H14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-    </svg>
-  );
 }
 
 function SearchIcon() {
@@ -445,10 +362,13 @@ function ServiceProviderSearch({
 export function AddMaterialsSection({ plugin, jobData, preloadedLookupData }) {
   const jobId = toText(jobData?.id || jobData?.ID);
   const { success, error } = useToast();
+  const storeActions = useJobDirectStoreActions();
+  const materials = useJobDirectSelector(selectMaterials);
+  const { serviceProviders, addServiceProvider } = useServiceProviderLookupData(plugin, {
+    initialProviders: preloadedLookupData?.serviceProviders || [],
+    skipInitialFetch: true,
+  });
   const fileInputRef = useRef(null);
-  const [materials, setMaterials] = useState([]);
-  const [serviceProviders, setServiceProviders] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStage, setSubmitStage] = useState("");
   const [activeActionId, setActiveActionId] = useState("");
@@ -458,6 +378,16 @@ export function AddMaterialsSection({ plugin, jobData, preloadedLookupData }) {
   const [editBaseline, setEditBaseline] = useState(null);
   const [pendingFile, setPendingFile] = useState(null);
   const [isFileCleared, setIsFileCleared] = useState(false);
+  const {
+    hasMore: hasMoreMaterials,
+    remainingCount: remainingMaterialsCount,
+    showMore: showMoreMaterials,
+    shouldWindow: isMaterialsWindowed,
+    visibleRows: visibleMaterials,
+  } = useRenderWindow(materials, {
+    threshold: 180,
+    pageSize: 120,
+  });
 
   const isEditing = Boolean(form.id);
 
@@ -477,75 +407,18 @@ export function AddMaterialsSection({ plugin, jobData, preloadedLookupData }) {
     if (fileInputRef.current) fileInputRef.current.value = "";
   }, []);
 
-  const loadMaterials = useCallback(async () => {
-    if (!plugin || !jobId) {
-      setMaterials([]);
-      return;
-    }
-    setIsLoading(true);
-    try {
-      const records = await fetchMaterialsByJobId({
-        plugin,
-        jobId: toId(jobId),
-      });
-      const nextRecords = Array.isArray(records) ? records.filter(hasMeaningfulMaterial) : [];
-      setMaterials(nextRecords);
-    } catch (loadError) {
-      console.error("[JobDirect] Failed to load materials", loadError);
-      error("Unable to load materials", loadError?.message || "Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [plugin, jobId, error]);
-
-  const loadServiceProviders = useCallback(async () => {
-    if (!plugin) return;
-    try {
-      const records = await fetchServiceProvidersForSearch({ plugin });
-      const normalized = (Array.isArray(records) ? records : [])
-        .map((item) => normalizeServiceProviderRecord(item))
-        .filter((item) => item.id);
-      setServiceProviders(normalized);
-    } catch (loadError) {
-      console.error("[JobDirect] Failed to load service providers", loadError);
-      error("Unable to load service providers", loadError?.message || "Please try again.");
-    }
-  }, [plugin, error]);
-
-  useEffect(() => {
-    const preloadedProviders = Array.isArray(preloadedLookupData?.serviceProviders)
-      ? preloadedLookupData.serviceProviders
-      : [];
-    if (!preloadedProviders.length) return;
-    setServiceProviders((prev) => {
-      if (prev.length) return prev;
-      return preloadedProviders
-        .map((item) => normalizeServiceProviderRecord(item))
-        .filter((item) => item.id);
-    });
-  }, [preloadedLookupData?.serviceProviders]);
-
-  useEffect(() => {
-    if (!plugin || !jobId) return;
-    loadMaterials();
-    loadServiceProviders();
-  }, [plugin, jobId, loadMaterials, loadServiceProviders]);
-
   const handleEdit = useCallback(
     (material) => {
       const providerId = toText(material?.service_provider_id || material?.Service_Provider_ID);
       const providerLabel = toText(material?.provider_name);
       if (providerId && providerLabel && !providerById.has(providerId)) {
-        setServiceProviders((prev) => [
-          ...prev,
-          {
-            id: providerId,
-            first_name: providerLabel,
-            last_name: "",
-            label: providerLabel,
-            phone: "",
-          },
-        ]);
+        addServiceProvider({
+          id: providerId,
+          first_name: providerLabel,
+          last_name: "",
+          label: providerLabel,
+          sms_number: "",
+        });
       }
 
       const baselineFilePayload =
@@ -585,7 +458,7 @@ export function AddMaterialsSection({ plugin, jobData, preloadedLookupData }) {
       setIsFileCleared(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
     },
-    [providerById]
+    [addServiceProvider, providerById]
   );
 
   const handleSubmit = useCallback(
@@ -681,24 +554,30 @@ export function AddMaterialsSection({ plugin, jobData, preloadedLookupData }) {
         setSubmitStage("saving");
 
         if (isEditing) {
-          await updateMaterialRecord({
+          const updatedMaterial = await updateMaterialRecord({
             plugin,
             id: toId(form.id),
             payload,
           });
+          if (updatedMaterial) {
+            storeActions.upsertEntityRecord("materials", updatedMaterial, { idField: "id" });
+          }
           success("Material updated", "Material changes have been saved.");
         } else {
-          await createMaterialRecord({ plugin, payload });
+          const createdMaterial = await createMaterialRecord({ plugin, payload });
+          if (createdMaterial) {
+            storeActions.upsertEntityRecord("materials", createdMaterial, { idField: "id" });
+          }
           success("Material added", "New material created successfully.");
         }
         resetForm();
-        await loadMaterials();
       } catch (submitError) {
         console.error("[JobDirect] Material save failed", submitError);
-        error(
-          isEditing ? "Update failed" : "Create failed",
-          submitError?.message || "Unable to save material."
-        );
+        showMutationErrorToast(error, {
+          title: isEditing ? "Update failed" : "Create failed",
+          error: submitError,
+          fallbackMessage: "Unable to save material.",
+        });
       } finally {
         setIsSubmitting(false);
         setSubmitStage("");
@@ -713,7 +592,7 @@ export function AddMaterialsSection({ plugin, jobData, preloadedLookupData }) {
       isFileCleared,
       isEditing,
       resetForm,
-      loadMaterials,
+      storeActions,
       success,
       error,
     ]
@@ -725,21 +604,29 @@ export function AddMaterialsSection({ plugin, jobData, preloadedLookupData }) {
 
     setActiveActionId(targetId);
     try {
-      await deleteMaterialRecord({
+      const deletedId = await deleteMaterialRecord({
         plugin,
         id: toId(targetId),
       });
       success("Material deleted", "Material has been removed.");
+      const normalizedDeletedId = toText(deletedId || targetId);
+      const nextMaterials = (materials || []).filter(
+        (item) => toText(item?.id || item?.ID) !== normalizedDeletedId
+      );
+      storeActions.replaceEntityCollection("materials", nextMaterials);
       if (toText(form.id) === targetId) resetForm();
-      await loadMaterials();
     } catch (deleteError) {
       console.error("[JobDirect] Failed to delete material", deleteError);
-      error("Delete failed", deleteError?.message || "Unable to delete material.");
+      showMutationErrorToast(error, {
+        title: "Delete failed",
+        error: deleteError,
+        fallbackMessage: "Unable to delete material.",
+      });
     } finally {
       setActiveActionId("");
       setDeleteTarget(null);
     }
-  }, [deleteTarget, plugin, form.id, resetForm, loadMaterials, success, error]);
+  }, [deleteTarget, plugin, materials, form.id, resetForm, storeActions, success, error]);
 
   const currentFileUrl = toText(form.file);
   const displayedFileName = pendingFile?.file?.name || getFileNameFromUrl(currentFileUrl);
@@ -747,12 +634,8 @@ export function AddMaterialsSection({ plugin, jobData, preloadedLookupData }) {
 
   return (
     <>
-      <section data-section="add-materials" className="grid grid-cols-1 gap-4 xl:grid-cols-[440px_1fr]">
-        <Card className="space-y-4">
-          <h3 className="type-subheadline text-slate-800">
-            {isEditing ? "Edit Material" : "Add Material"}
-          </h3>
-
+      <JobDirectSplitSection dataSection="add-materials">
+        <JobDirectCardFormPanel title={isEditing ? "Edit Material" : "Add Material"}>
           <form onSubmit={handleSubmit} className="space-y-4">
             <InputField
               label="Material Name"
@@ -865,7 +748,7 @@ export function AddMaterialsSection({ plugin, jobData, preloadedLookupData }) {
                       title="View Receipt"
                       aria-label="View Receipt"
                     >
-                      <EyeIcon />
+                      <EyeActionIcon />
                     </button>
                     <button
                       type="button"
@@ -884,14 +767,14 @@ export function AddMaterialsSection({ plugin, jobData, preloadedLookupData }) {
                       title="Remove Receipt"
                       aria-label="Remove Receipt"
                     >
-                      <TrashIcon />
+                      <TrashActionIcon />
                     </button>
                   </div>
                 ) : null}
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-2 border-t border-slate-200 pt-4">
+            <JobDirectFormActionsRow>
               <Button type="button" variant="ghost" onClick={resetForm} disabled={isSubmitting}>
                 Cancel
               </Button>
@@ -904,14 +787,12 @@ export function AddMaterialsSection({ plugin, jobData, preloadedLookupData }) {
                     ? "Update"
                     : "Add"}
               </Button>
-            </div>
+            </JobDirectFormActionsRow>
           </form>
-        </Card>
+        </JobDirectCardFormPanel>
 
-        <Card>
-          <h3 className="type-subheadline mb-3 text-slate-800">Materials</h3>
-          <div className="w-full overflow-x-auto">
-            <table className="table-fixed w-full min-w-[920px] text-left text-sm text-slate-600">
+        <JobDirectCardTablePanel title="Materials">
+          <JobDirectTable className="table-fixed" minWidthClass="min-w-[920px]">
               <thead className="border-b border-slate-200 text-slate-500">
                 <tr>
                   <th className="w-[22%] px-2 py-2">Material Name</th>
@@ -923,14 +804,8 @@ export function AddMaterialsSection({ plugin, jobData, preloadedLookupData }) {
                 </tr>
               </thead>
               <tbody>
-                {isLoading ? (
-                  <tr>
-                    <td className="px-2 py-3 text-slate-400" colSpan={6}>
-                      Loading materials...
-                    </td>
-                  </tr>
-                ) : materials.length ? (
-                  materials.map((material) => {
+                {visibleMaterials.length ? (
+                  visibleMaterials.map((material) => {
                     const materialId = toText(material?.id || material?.ID);
                     const isBusy = Boolean(materialId) && activeActionId === materialId;
                     const materialFileUrl = resolveMaterialFileUrl(material);
@@ -959,60 +834,62 @@ export function AddMaterialsSection({ plugin, jobData, preloadedLookupData }) {
                         <td className="px-2 py-3 align-middle">
                           <div className="flex justify-end gap-1">
                             {materialFileUrl ? (
-                              <button
-                                type="button"
-                                className="inline-flex h-7 w-7 items-center justify-center rounded border border-slate-300 bg-white text-slate-600 hover:border-slate-400 hover:text-slate-800"
+                              <JobDirectIconActionButton
                                 onClick={() => {
                                   window.open(materialFileUrl, "_blank", "noopener,noreferrer");
                                 }}
                                 title="View Receipt"
                               >
-                                <DocumentIcon />
-                              </button>
+                                <DocumentActionIcon />
+                              </JobDirectIconActionButton>
                             ) : null}
-                            <button
-                              type="button"
-                              className="inline-flex h-7 w-7 items-center justify-center rounded border border-slate-300 bg-white text-slate-600 hover:border-slate-400 hover:text-slate-800"
+                            <JobDirectIconActionButton
                               onClick={() => setViewMaterial(material)}
                               title="View Material"
                             >
-                              <EyeIcon />
-                            </button>
-                            <button
-                              type="button"
-                              className="inline-flex h-7 w-7 items-center justify-center rounded border border-slate-300 bg-white text-slate-600 hover:border-slate-400 hover:text-slate-800 disabled:cursor-not-allowed disabled:opacity-40"
+                              <EyeActionIcon />
+                            </JobDirectIconActionButton>
+                            <JobDirectIconActionButton
                               onClick={() => handleEdit(material)}
                               disabled={isSubmitting || isBusy}
                               title="Edit Material"
                             >
-                              <EditIcon />
-                            </button>
-                            <button
-                              type="button"
-                              className="inline-flex h-7 w-7 items-center justify-center rounded border border-slate-300 bg-white text-rose-600 hover:border-rose-300 hover:text-rose-700 disabled:cursor-not-allowed disabled:opacity-40"
+                              <EditActionIcon />
+                            </JobDirectIconActionButton>
+                            <JobDirectIconActionButton
+                              variant="danger"
                               onClick={() => setDeleteTarget(material)}
                               disabled={isSubmitting || isBusy}
                               title="Delete Material"
                             >
-                              <TrashIcon />
-                            </button>
+                              <TrashActionIcon />
+                            </JobDirectIconActionButton>
                           </div>
                         </td>
                       </tr>
                     );
                   })
                 ) : (
-                  <tr>
-                    <td className="px-2 py-3 text-slate-400" colSpan={6}>
-                      No materials found.
-                    </td>
-                  </tr>
+                  <JobDirectEmptyTableRow colSpan={6} message="No materials found." />
                 )}
               </tbody>
-            </table>
-          </div>
-        </Card>
-      </section>
+          </JobDirectTable>
+          {hasMoreMaterials ? (
+            <div className="mt-3 flex items-center justify-between gap-2 text-xs text-slate-500">
+              <span>
+                Showing {visibleMaterials.length} of {materials.length} materials
+              </span>
+              <Button type="button" variant="outline" onClick={showMoreMaterials}>
+                Load {Math.min(remainingMaterialsCount, 120)} more
+              </Button>
+            </div>
+          ) : isMaterialsWindowed ? (
+            <div className="mt-3 text-xs text-slate-500">
+              Showing all {materials.length} materials.
+            </div>
+          ) : null}
+        </JobDirectCardTablePanel>
+      </JobDirectSplitSection>
 
       <Modal
         open={Boolean(viewMaterial)}

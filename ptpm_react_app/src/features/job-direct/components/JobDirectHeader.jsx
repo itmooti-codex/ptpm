@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "../../../shared/components/ui/Button.jsx";
 import { useToast } from "../../../shared/providers/ToastProvider.jsx";
 import { SECTION_LABELS } from "../constants/navigation.js";
+import { showMutationErrorToast } from "../utils/mutationFeedback.js";
 import {
   HeaderBackIcon,
   HeaderNextIcon,
@@ -65,7 +67,11 @@ export function JobDirectHeader({
       await onSave();
       success("Saved", "Job updated successfully.");
     } catch (saveError) {
-      error("Save failed", saveError?.message || "Unable to save job right now.");
+      showMutationErrorToast(error, {
+        title: "Save failed",
+        error: saveError,
+        fallbackMessage: "Unable to save job right now.",
+      });
     } finally {
       setIsSaving(false);
     }
@@ -75,13 +81,10 @@ export function JobDirectHeader({
     <header className="border-b border-slate-300 bg-brand-primary px-6 py-4 text-white">
       <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4">
         <div className="justify-self-start">
-          <a
-            href="https://my.awesomate.pro/admin/dashboard"
-            className="type-headline inline-flex items-center gap-3"
-          >
+          <Link to="/" className="type-headline inline-flex items-center gap-3">
             <TitleBackIcon className="h-6 w-6 text-white" />
             <span>New Job Direct</span>
-          </a>
+          </Link>
         </div>
 
         <div className="justify-self-center text-xs font-medium text-amber-100">

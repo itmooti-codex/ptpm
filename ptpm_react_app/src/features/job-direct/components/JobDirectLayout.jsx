@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { PageScaffold } from "../../../shared/layout/PageScaffold.jsx";
 import { useJobDirectState } from "../hooks/useJobDirectState.js";
+import { useJobDirectRealtimeSync } from "../hooks/useJobDirectRealtimeSync.js";
 import { JobDirectContent } from "./JobDirectContent.jsx";
 import { JobDirectHeader } from "./JobDirectHeader.jsx";
 import { ContactDetailsModal } from "./modals/ContactDetailsModal.jsx";
@@ -9,6 +10,8 @@ import { LegacyRuntimeModals } from "./modals/LegacyRuntimeModals.jsx";
 import { MODAL_KEYS } from "../constants/navigation.js";
 import { JobDirectSidebar } from "./JobDirectSidebar.jsx";
 import { updateJobRecordById, updateJobRecordByUid } from "../sdk/jobDirectSdk.js";
+import { useJobDirectSelector, useJobDirectStoreActions } from "../hooks/useJobDirectStore.jsx";
+import { selectJobEntity, selectOverviewDraft } from "../state/selectors.js";
 import {
   JOB_STATUS_OPTIONS,
   JOB_TYPE_OPTIONS,
@@ -33,6 +36,16 @@ function resolveDropdownLabel(options = [], rawValue = "") {
   return matchedOption ? String(matchedOption.label || "").trim() : value;
 }
 
+function resolveDropdownValue(options = [], rawValue = "") {
+  const value = String(rawValue || "").trim();
+  if (!value) return "";
+  const byValue = options.find((option) => toText(option?.value) === value);
+  if (byValue) return toText(byValue.value);
+  const byLabel = options.find((option) => toText(option?.label).toLowerCase() === value.toLowerCase());
+  if (byLabel) return toText(byLabel.value);
+  return value;
+}
+
 const TRACKED_SAVE_FIELDS = [
   "account_type",
   "client_id",
@@ -45,15 +58,45 @@ const TRACKED_SAVE_FIELDS = [
   "inquiry_record_id",
 ];
 
-function buildTrackedSaveSnapshot(root) {
-  if (!root) return "";
-  return TRACKED_SAVE_FIELDS.map((field) => {
-    const value = String(root.querySelector(`[data-field="${field}"]`)?.value || "").trim();
-    return `${field}=${value}`;
-  }).join("|");
+const TRACKED_SAVE_FIELD_SET = new Set(TRACKED_SAVE_FIELDS);
+
+function pickTrackedDraftFields(source = {}) {
+  return TRACKED_SAVE_FIELDS.reduce((acc, field) => {
+    acc[field] = toText(source?.[field]);
+    return acc;
+  }, {});
+}
+
+function areTrackedDraftFieldsEqual(a = {}, b = {}) {
+  return TRACKED_SAVE_FIELDS.every((field) => toText(a?.[field]) === toText(b?.[field]));
+}
+
+function createOverviewDraftFromJob(job = {}) {
+  return {
+    account_type: toText(job?.account_type || job?.Account_Type) || "Contact",
+    client_id: toText(job?.client_individual_id || job?.Client_Individual_ID),
+    company_id: toText(job?.client_entity_id || job?.Client_Entity_ID),
+    job_status: resolveDropdownValue(
+      JOB_STATUS_OPTIONS,
+      toText(job?.job_status || job?.Job_Status)
+    ),
+    priority: resolveDropdownValue(PRIORITY_OPTIONS, toText(job?.priority || job?.Priority)),
+    job_type: resolveDropdownValue(JOB_TYPE_OPTIONS, toText(job?.job_type || job?.Job_Type)),
+    primary_service_provider_id: toText(
+      job?.primary_service_provider_id || job?.Primary_Service_Provider_ID
+    ),
+    property_id: toText(job?.property_id || job?.Property_ID),
+    inquiry_record_id: toText(job?.inquiry_record_id || job?.Inquiry_Record_ID),
+  };
 }
 
 export function JobDirectLayout({ jobData, plugin, jobUid, preloadedLookupData }) {
+  const storeActions = useJobDirectStoreActions();
+  useJobDirectRealtimeSync({ plugin, initialJobData: jobData });
+  const storeJobEntity = useJobDirectSelector(selectJobEntity);
+  const overviewDraft = useJobDirectSelector(selectOverviewDraft);
+  const activeJobData = storeJobEntity || jobData || null;
+
   const {
     activeSection,
     activeTab,
@@ -78,8 +121,7 @@ export function JobDirectLayout({ jobData, plugin, jobUid, preloadedLookupData }
   });
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [hasExternalUnsavedChanges, setHasExternalUnsavedChanges] = useState(false);
-  const baselineSnapshotRef = useRef("");
-  const hasBaselineRef = useRef(false);
+  const overviewBaselineRef = useRef(pickTrackedDraftFields({}));
 
   const openContactDetailsModal = ({ mode = "individual", onSave = null } = {}) => {
     setContactDetailsContext({ mode, onSave });
@@ -99,38 +141,75 @@ export function JobDirectLayout({ jobData, plugin, jobUid, preloadedLookupData }
     closeModal(MODAL_KEYS.addProperty);
   };
 
-  const captureCurrentSnapshot = useCallback(() => {
-    const root = document.querySelector('[data-page="new-direct-job"]');
-    return buildTrackedSaveSnapshot(root);
-  }, []);
+  const commitOverviewBaseline = useCallback(
+    (nextSource = null) => {
+      const baselineFields = pickTrackedDraftFields(nextSource || overviewDraft || {});
+      overviewBaselineRef.current = baselineFields;
+      storeActions.setDraft("overview", {
+        ...(overviewDraft || {}),
+        ...baselineFields,
+        dirty: false,
+      });
+      setHasUnsavedChanges(false);
+    },
+    [overviewDraft, storeActions]
+  );
 
-  const commitBaseline = useCallback(() => {
-    const snapshot = captureCurrentSnapshot();
-    baselineSnapshotRef.current = snapshot;
-    hasBaselineRef.current = true;
+  const applyOverviewDraftPatch = useCallback(
+    (patch = {}, { markDirty = true } = {}) => {
+      const patchObject = patch && typeof patch === "object" ? patch : {};
+      const currentFields = pickTrackedDraftFields(overviewDraft || {});
+      const nextFields = { ...currentFields };
+      let hasFieldChange = false;
+
+      Object.entries(patchObject).forEach(([key, value]) => {
+        if (!TRACKED_SAVE_FIELD_SET.has(key)) return;
+        const normalizedValue = toText(value);
+        if (toText(nextFields[key]) === normalizedValue) return;
+        nextFields[key] = normalizedValue;
+        hasFieldChange = true;
+      });
+
+      const nextDirty = markDirty
+        ? !areTrackedDraftFieldsEqual(nextFields, overviewBaselineRef.current || {})
+        : false;
+
+      if (!hasFieldChange && Boolean(overviewDraft?.dirty) === Boolean(nextDirty)) return;
+
+      storeActions.setDraft("overview", {
+        ...(overviewDraft || {}),
+        ...nextFields,
+        dirty: nextDirty,
+      });
+      setHasUnsavedChanges(Boolean(nextDirty));
+    },
+    [overviewDraft, storeActions]
+  );
+
+  const handleOverviewDraftChange = useCallback(
+    (patch = {}) => {
+      applyOverviewDraftPatch(patch, { markDirty: true });
+    },
+    [applyOverviewDraftPatch]
+  );
+
+  useEffect(() => {
+    if (overviewDraft?.dirty) return;
+    const nextBaseline = createOverviewDraftFromJob(activeJobData || {});
+    if (areTrackedDraftFieldsEqual(nextBaseline, overviewBaselineRef.current || {})) return;
+    overviewBaselineRef.current = nextBaseline;
+    storeActions.setDraft("overview", {
+      ...(overviewDraft || {}),
+      ...nextBaseline,
+      dirty: false,
+    });
     setHasUnsavedChanges(false);
-  }, [captureCurrentSnapshot]);
-
-  const refreshUnsavedState = useCallback(() => {
-    if (!hasBaselineRef.current) return;
-    const currentSnapshot = captureCurrentSnapshot();
-    setHasUnsavedChanges(currentSnapshot !== baselineSnapshotRef.current);
-  }, [captureCurrentSnapshot]);
+    setHasExternalUnsavedChanges(false);
+  }, [activeJobData, overviewDraft, storeActions]);
 
   useEffect(() => {
-    const timerId = window.setTimeout(() => {
-      commitBaseline();
-      setHasExternalUnsavedChanges(false);
-    }, 0);
-    return () => window.clearTimeout(timerId);
-  }, [jobData, commitBaseline]);
-
-  useEffect(() => {
-    const intervalId = window.setInterval(() => {
-      refreshUnsavedState();
-    }, 350);
-    return () => window.clearInterval(intervalId);
-  }, [refreshUnsavedState]);
+    setHasUnsavedChanges(Boolean(overviewDraft?.dirty));
+  }, [overviewDraft?.dirty]);
 
   useEffect(() => {
     const handleBeforeUnload = (event) => {
@@ -143,60 +222,78 @@ export function JobDirectLayout({ jobData, plugin, jobUid, preloadedLookupData }
   }, [hasUnsavedChanges, hasExternalUnsavedChanges]);
 
   const handleSaveJob = async () => {
-    const uniqueId = String(jobUid || jobData?.unique_id || jobData?.Unique_ID || "").trim();
-    const jobId = normalizeId(jobData?.id || jobData?.ID || "");
+    const uniqueId = String(
+      jobUid || activeJobData?.unique_id || activeJobData?.Unique_ID || ""
+    ).trim();
+    const jobId = normalizeId(activeJobData?.id || activeJobData?.ID || "");
     if (!uniqueId) {
       throw new Error("Job UID is missing from URL.");
     }
     if (!plugin) {
       throw new Error("SDK is still initializing. Please try again.");
     }
-
-    const root = document.querySelector('[data-page="new-direct-job"]');
-    if (!root) {
-      throw new Error("Unable to read job form values.");
-    }
-
-    const getFieldElement = (field) => root.querySelector(`[data-field="${field}"]`);
-    const getFieldValue = (field) => toText(getFieldElement(field)?.value);
+    const getFieldValue = (field, fallback = "") => toText(overviewDraft?.[field]) || fallback;
+    const fallbackJobStatus = resolveDropdownValue(
+      JOB_STATUS_OPTIONS,
+      toText(activeJobData?.job_status || activeJobData?.Job_Status)
+    );
+    const fallbackPriority = resolveDropdownValue(
+      PRIORITY_OPTIONS,
+      toText(activeJobData?.priority || activeJobData?.Priority)
+    );
+    const fallbackJobType = resolveDropdownValue(
+      JOB_TYPE_OPTIONS,
+      toText(activeJobData?.job_type || activeJobData?.Job_Type)
+    );
 
     const accountType =
       getFieldValue("account_type") ||
-      toText(jobData?.account_type || jobData?.Account_Type);
+      toText(activeJobData?.account_type || activeJobData?.Account_Type);
     const clientIndividualId =
       getFieldValue("client_id") ||
-      toText(jobData?.client_individual_id || jobData?.Client_Individual_ID);
+      toText(activeJobData?.client_individual_id || activeJobData?.Client_Individual_ID);
     const clientEntityId =
       getFieldValue("company_id") ||
-      toText(jobData?.client_entity_id || jobData?.Client_Entity_ID);
+      toText(activeJobData?.client_entity_id || activeJobData?.Client_Entity_ID);
+    const rawJobStatus = getFieldValue("job_status", fallbackJobStatus);
+    const rawPriority = getFieldValue("priority", fallbackPriority);
+    const rawJobType = getFieldValue("job_type", fallbackJobType);
     const jobStatus = resolveDropdownLabel(
       JOB_STATUS_OPTIONS,
-      getFieldValue("job_status") || toText(jobData?.job_status || jobData?.Job_Status)
+      rawJobStatus
     );
     const priority = resolveDropdownLabel(
       PRIORITY_OPTIONS,
-      getFieldValue("priority") || toText(jobData?.priority || jobData?.Priority)
+      rawPriority
     );
     const jobType = resolveDropdownLabel(
       JOB_TYPE_OPTIONS,
-      getFieldValue("job_type") || toText(jobData?.job_type || jobData?.Job_Type)
+      rawJobType
     );
-    const propertyIdField = root.querySelector('[data-field="property_id"]');
-    const propertyId = propertyIdField
-      ? String(propertyIdField.value || "").trim()
-      : toText(jobData?.property_id || jobData?.Property_ID);
-    const inquiryRecordIdField = root.querySelector('[data-field="inquiry_record_id"]');
-    const inquiryRecordId = inquiryRecordIdField
-      ? String(inquiryRecordIdField.value || "").trim()
-      : toText(jobData?.inquiry_record_id || jobData?.Inquiry_Record_ID);
-    const primaryServiceProviderIdField = root.querySelector(
-      '[data-field="primary_service_provider_id"]'
+    const propertyId = getFieldValue(
+      "property_id",
+      toText(activeJobData?.property_id || activeJobData?.Property_ID)
     );
-    const primaryServiceProviderId = primaryServiceProviderIdField
-      ? String(primaryServiceProviderIdField.value || "").trim()
-      : toText(
-          jobData?.primary_service_provider_id || jobData?.Primary_Service_Provider_ID
-        );
+    const inquiryRecordId = getFieldValue(
+      "inquiry_record_id",
+      toText(activeJobData?.inquiry_record_id || activeJobData?.Inquiry_Record_ID)
+    );
+    const primaryServiceProviderId = getFieldValue(
+      "primary_service_provider_id",
+      toText(activeJobData?.primary_service_provider_id || activeJobData?.Primary_Service_Provider_ID)
+    );
+
+    const nextDraftFields = {
+      account_type: accountType,
+      client_id: clientIndividualId,
+      company_id: clientEntityId,
+      job_status: rawJobStatus,
+      priority: rawPriority,
+      job_type: rawJobType,
+      primary_service_provider_id: primaryServiceProviderId,
+      property_id: propertyId,
+      inquiry_record_id: inquiryRecordId,
+    };
 
     const payload = {};
 
@@ -226,7 +323,7 @@ export function JobDirectLayout({ jobData, plugin, jobUid, preloadedLookupData }
     }
 
     if (!Object.keys(payload).length) {
-      commitBaseline();
+      commitOverviewBaseline(nextDraftFields);
       return;
     }
 
@@ -243,7 +340,7 @@ export function JobDirectLayout({ jobData, plugin, jobUid, preloadedLookupData }
         payload,
       });
     }
-    commitBaseline();
+    commitOverviewBaseline(nextDraftFields);
   };
 
   const handleSubmitServiceProvider = async () => {
@@ -251,22 +348,14 @@ export function JobDirectLayout({ jobData, plugin, jobUid, preloadedLookupData }
       throw new Error("SDK is still initializing. Please try again.");
     }
 
-    const jobId = normalizeId(jobData?.id || jobData?.ID || "");
+    const jobId = normalizeId(activeJobData?.id || activeJobData?.ID || "");
     if (!jobId) {
       throw new Error("Job ID is missing.");
     }
 
-    const root = document.querySelector('[data-page="new-direct-job"]');
-    if (!root) {
-      throw new Error("Unable to read service provider value.");
-    }
-
-    const providerField = root.querySelector('[data-field="primary_service_provider_id"]');
-    if (!providerField) {
-      throw new Error("Service provider field is unavailable.");
-    }
-
-    const providerId = String(providerField.value || "").trim();
+    const providerId =
+      toText(overviewDraft?.primary_service_provider_id) ||
+      toText(activeJobData?.primary_service_provider_id || activeJobData?.Primary_Service_Provider_ID);
     await updateJobRecordById({
       plugin,
       id: jobId,
@@ -274,8 +363,10 @@ export function JobDirectLayout({ jobData, plugin, jobUid, preloadedLookupData }
         primary_service_provider_id: providerId ? normalizeId(providerId) : null,
       },
     });
-
-    commitBaseline();
+    commitOverviewBaseline({
+      ...pickTrackedDraftFields(overviewDraft || {}),
+      primary_service_provider_id: providerId,
+    });
   };
 
   return (
@@ -302,7 +393,7 @@ export function JobDirectLayout({ jobData, plugin, jobUid, preloadedLookupData }
         <JobDirectContent
           activeSection={activeSection}
           activeTab={activeTab}
-          jobData={jobData}
+          jobData={activeJobData}
           plugin={plugin}
           jobUid={jobUid}
           preloadedLookupData={preloadedLookupData}
@@ -313,6 +404,7 @@ export function JobDirectLayout({ jobData, plugin, jobUid, preloadedLookupData }
           onOpenContactDetailsModal={openContactDetailsModal}
           onOpenAddPropertyModal={openAddPropertyModal}
           onExternalUnsavedChange={setHasExternalUnsavedChanges}
+          onOverviewDraftChange={handleOverviewDraftChange}
         />
       </PageScaffold>
 
@@ -340,7 +432,12 @@ export function JobDirectLayout({ jobData, plugin, jobUid, preloadedLookupData }
         onClose={closeAddPropertyModal}
       />
 
-      <LegacyRuntimeModals modals={modals} onClose={closeModal} plugin={plugin} jobData={jobData} />
+      <LegacyRuntimeModals
+        modals={modals}
+        onClose={closeModal}
+        plugin={plugin}
+        jobData={activeJobData}
+      />
     </>
   );
 }
