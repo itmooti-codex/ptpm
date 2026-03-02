@@ -62,7 +62,11 @@ export function resolveStatusStyle(value, options = []) {
   };
 }
 
-export function JobDirectTable({ minWidthClass = "min-w-[920px]", className = "", children }) {
+export function JobDirectTable({
+  minWidthClass = "min-w-[920px]",
+  className = "",
+  children,
+}) {
   const tableClassName = `w-full ${minWidthClass} text-left text-sm text-slate-600 ${className}`.trim();
   return (
     <div className="w-full overflow-x-auto">
