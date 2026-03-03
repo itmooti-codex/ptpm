@@ -4,8 +4,20 @@ import { Card } from "../../../../shared/components/ui/Card.jsx";
 import { Modal } from "../../../../shared/components/ui/Modal.jsx";
 import { useToast } from "../../../../shared/providers/ToastProvider.jsx";
 import {
+  ANNOUNCEMENT_EVENT_KEYS,
+} from "../../../../shared/announcements/announcementTypes.js";
+import { emitAnnouncement } from "../../../../shared/announcements/announcementEmitter.js";
+import {
+  useJobDirectSelector,
+  useJobDirectStoreActions,
+} from "../../hooks/useJobDirectStore.jsx";
+import { selectJobUploads } from "../../state/selectors.js";
+import { useRenderWindow } from "../primitives/JobDirectTable.jsx";
+import {
+  createInquiryUploadFromFile,
   createJobUploadFromFile,
   deleteUploadRecord,
+  fetchInquiryUploads,
   fetchJobUploads,
 } from "../../sdk/jobDirectSdk.js";
 
@@ -36,10 +48,14 @@ function TrashIcon() {
   );
 }
 
-function normalizeJobId(jobData = null) {
-  const raw = String(jobData?.id || jobData?.ID || "").trim();
+function normalizeRecordId(value = "") {
+  const raw = String(value || "").trim();
   if (!raw) return "";
   return /^\d+$/.test(raw) ? String(Number.parseInt(raw, 10)) : raw;
+}
+
+function normalizeJobId(jobData = null) {
+  return normalizeRecordId(jobData?.id || jobData?.ID || "");
 }
 
 function formatFileSize(size) {
@@ -50,9 +66,29 @@ function formatFileSize(size) {
   return `${(value / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-export function UploadsSection({ plugin, jobData }) {
+function dedupeUploadRecords(records = []) {
+  const map = new Map();
+  (Array.isArray(records) ? records : []).forEach((item, index) => {
+    const key = String(item?.id || item?.url || `upload-${index}`).trim();
+    if (!key || map.has(key)) return;
+    map.set(key, item);
+  });
+  return Array.from(map.values());
+}
+
+export function UploadsSection({
+  plugin,
+  jobData,
+  additionalCreatePayload = null,
+  uploadsMode = "job",
+  inquiryId = "",
+  inquiryUid = "",
+  linkedJobId = "",
+  highlightUploadId = "",
+}) {
   const { success, error } = useToast();
-  const [uploads, setUploads] = useState([]);
+  const storeActions = useJobDirectStoreActions();
+  const uploads = useJobDirectSelector(selectJobUploads);
   const [pendingUploads, setPendingUploads] = useState([]);
   const [isDropActive, setIsDropActive] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -60,14 +96,53 @@ export function UploadsSection({ plugin, jobData }) {
   const [isUploading, setIsUploading] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const sectionRef = useRef(null);
   const inputRef = useRef(null);
   const pendingUploadsRef = useRef([]);
   const jobId = useMemo(() => normalizeJobId(jobData), [jobData]);
+  const normalizedInquiryId = useMemo(() => normalizeRecordId(inquiryId), [inquiryId]);
+  const normalizedLinkedJobId = useMemo(() => normalizeRecordId(linkedJobId), [linkedJobId]);
+  const inquiryIdFromPayload = useMemo(
+    () =>
+      normalizeRecordId(
+        additionalCreatePayload?.inquiry_id ||
+          additionalCreatePayload?.Inquiry_ID ||
+          additionalCreatePayload?.inquiry_record_id ||
+          additionalCreatePayload?.Inquiry_Record_ID
+      ),
+    [additionalCreatePayload]
+  );
+  const mode = String(uploadsMode || "job").trim().toLowerCase() === "inquiry" ? "inquiry" : "job";
+  const isInquiryMode = mode === "inquiry";
+  const targetRecordId = isInquiryMode ? normalizedInquiryId : jobId;
+  const normalizedHighlightUploadId = normalizeRecordId(highlightUploadId);
+  const announcementInquiryId = isInquiryMode ? normalizedInquiryId : inquiryIdFromPayload;
+  const announcementJobId = isInquiryMode ? normalizedLinkedJobId : jobId;
+  const {
+    hasMore: hasMorePendingUploads,
+    remainingCount: remainingPendingUploadsCount,
+    showMore: showMorePendingUploads,
+    shouldWindow: isPendingUploadsWindowed,
+    visibleRows: visiblePendingUploads,
+  } = useRenderWindow(pendingUploads, {
+    threshold: 150,
+    pageSize: 100,
+  });
+  const {
+    hasMore: hasMoreExistingUploads,
+    remainingCount: remainingExistingUploadsCount,
+    showMore: showMoreExistingUploads,
+    shouldWindow: isExistingUploadsWindowed,
+    visibleRows: visibleExistingUploads,
+  } = useRenderWindow(uploads, {
+    threshold: 150,
+    pageSize: 100,
+  });
 
   useEffect(() => {
     let isActive = true;
-    if (!plugin || !jobId) {
-      setUploads([]);
+    if (!plugin || !targetRecordId) {
+      storeActions.replaceEntityCollection("jobUploads", []);
       setLoadError("");
       setIsLoading(false);
       return undefined;
@@ -75,15 +150,19 @@ export function UploadsSection({ plugin, jobData }) {
 
     setIsLoading(true);
     setLoadError("");
-    fetchJobUploads({ plugin, jobId })
+    const fetchPromise = isInquiryMode
+      ? fetchInquiryUploads({ plugin, inquiryId: normalizedInquiryId })
+      : fetchJobUploads({ plugin, jobId });
+
+    fetchPromise
       .then((records) => {
         if (!isActive) return;
-        setUploads(records || []);
+        storeActions.replaceEntityCollection("jobUploads", records || []);
       })
       .catch((fetchError) => {
         if (!isActive) return;
         console.error("[JobDirect] Failed loading job uploads", fetchError);
-        setUploads([]);
+        storeActions.replaceEntityCollection("jobUploads", []);
         setLoadError("Unable to load uploads.");
       })
       .finally(() => {
@@ -94,7 +173,7 @@ export function UploadsSection({ plugin, jobData }) {
     return () => {
       isActive = false;
     };
-  }, [plugin, jobId]);
+  }, [plugin, targetRecordId, isInquiryMode, normalizedInquiryId, jobId, storeActions]);
 
   useEffect(() => {
     pendingUploadsRef.current = pendingUploads;
@@ -116,18 +195,52 @@ export function UploadsSection({ plugin, jobData }) {
       });
       return [];
     });
-  }, [jobId]);
+  }, [targetRecordId]);
+
+  useEffect(() => {
+    if (!normalizedHighlightUploadId || !hasMoreExistingUploads) return;
+    const hasVisibleHighlightedRow = visibleExistingUploads.some(
+      (record) => normalizeRecordId(record?.id || record?.ID) === normalizedHighlightUploadId
+    );
+    if (hasVisibleHighlightedRow) return;
+    showMoreExistingUploads();
+  }, [
+    normalizedHighlightUploadId,
+    hasMoreExistingUploads,
+    visibleExistingUploads,
+    showMoreExistingUploads,
+  ]);
+
+  useEffect(() => {
+    if (!normalizedHighlightUploadId) return;
+    const timeoutId = window.setTimeout(() => {
+      const root = sectionRef.current;
+      if (!root) return;
+      const matches = Array.from(root.querySelectorAll('[data-ann-kind="upload"]'));
+      const target = matches.find(
+        (node) =>
+          String(node?.getAttribute("data-ann-id") || "").trim() === normalizedHighlightUploadId
+      );
+      if (target && typeof target.scrollIntoView === "function") {
+        target.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
+      }
+    }, 80);
+    return () => window.clearTimeout(timeoutId);
+  }, [normalizedHighlightUploadId, visibleExistingUploads.length]);
 
   const triggerFilePicker = () => {
-    if (!jobId) {
-      error("Cannot upload", "Job record is not loaded yet.");
+    if (!targetRecordId) {
+      error(
+        "Cannot upload",
+        isInquiryMode ? "Inquiry record is not loaded yet." : "Job record is not loaded yet."
+      );
       return;
     }
     inputRef.current?.click();
   };
 
   const queuePendingFiles = (files = []) => {
-    if (!files.length || !jobId) return;
+    if (!files.length || !targetRecordId) return;
     setPendingUploads((previous) => {
       const existingSignatures = new Set(
         previous.map((item) => `${item.name}::${item.size}::${item.type}::${item.lastModified}`)
@@ -161,7 +274,7 @@ export function UploadsSection({ plugin, jobData }) {
   const handleDropZoneDragOver = (event) => {
     event.preventDefault();
     event.stopPropagation();
-    if (!jobId || isUploading) return;
+    if (!targetRecordId || isUploading) return;
     if (!isDropActive) setIsDropActive(true);
   };
 
@@ -175,7 +288,7 @@ export function UploadsSection({ plugin, jobData }) {
     event.preventDefault();
     event.stopPropagation();
     setIsDropActive(false);
-    if (!jobId || isUploading) return;
+    if (!targetRecordId || isUploading) return;
     const files = Array.from(event?.dataTransfer?.files || []);
     queuePendingFiles(files);
   };
@@ -195,7 +308,7 @@ export function UploadsSection({ plugin, jobData }) {
   };
 
   const savePendingUploads = async () => {
-    if (!plugin || !jobId || !pendingUploads.length || isUploading) return;
+    if (!plugin || !targetRecordId || !pendingUploads.length || isUploading) return;
 
     setIsUploading(true);
     setLoadError("");
@@ -204,12 +317,27 @@ export function UploadsSection({ plugin, jobData }) {
 
     for (const pending of pendingUploads) {
       try {
-        const saved = await createJobUploadFromFile({
-          plugin,
-          jobId,
-          file: pending.file,
-          uploadPath: `job-uploads/${jobId}`,
-        });
+        const effectiveAdditionalPayload = {
+          ...(additionalCreatePayload && typeof additionalCreatePayload === "object"
+            ? additionalCreatePayload
+            : {}),
+          ...(isInquiryMode && normalizedLinkedJobId ? { job_id: normalizedLinkedJobId } : {}),
+        };
+        const saved = isInquiryMode
+          ? await createInquiryUploadFromFile({
+              plugin,
+              inquiryId: normalizedInquiryId,
+              file: pending.file,
+              uploadPath: `inquiry-uploads/${normalizedInquiryId || inquiryUid || "inquiry"}`,
+              additionalPayload: effectiveAdditionalPayload,
+            })
+          : await createJobUploadFromFile({
+              plugin,
+              jobId,
+              file: pending.file,
+              uploadPath: `job-uploads/${jobId}`,
+              additionalPayload: effectiveAdditionalPayload,
+            });
         if (saved) created.push(saved);
         if (pending?.previewUrl) URL.revokeObjectURL(pending.previewUrl);
       } catch (uploadError) {
@@ -221,14 +349,30 @@ export function UploadsSection({ plugin, jobData }) {
     }
 
     if (created.length) {
-      setUploads((previous) => {
-        const map = new Map();
-        [...created, ...(previous || [])].forEach((item, index) => {
-          const key = String(item?.id || item?.url || `upload-${index}`).trim();
-          if (!key || map.has(key)) return;
-          map.set(key, item);
-        });
-        return Array.from(map.values());
+      storeActions.replaceEntityCollection(
+        "jobUploads",
+        dedupeUploadRecords([...created, ...(uploads || [])])
+      );
+      const createdUploadIds = created
+        .map((record) => normalizeRecordId(record?.id || record?.ID))
+        .filter(Boolean);
+      emitAnnouncement({
+        plugin,
+        eventKey: ANNOUNCEMENT_EVENT_KEYS.UPLOAD_ADDED,
+        quoteJobId: announcementJobId,
+        inquiryId: announcementInquiryId,
+        focusId: createdUploadIds.length === 1 ? createdUploadIds[0] : "",
+        focusIds: createdUploadIds,
+        dedupeEntityId:
+          createdUploadIds.join(",") || `${announcementJobId}:${announcementInquiryId}:upload_batch`,
+        title: created.length > 1 ? "New uploads added" : "New upload added",
+        content:
+          created.length > 1
+            ? `${created.length} files were uploaded.`
+            : "A new file was uploaded.",
+        logContext: "job-direct:UploadsSection:savePendingUploads",
+      }).catch((announcementError) => {
+        console.warn("[JobDirect] Upload announcement emit failed", announcementError);
       });
     }
 
@@ -238,8 +382,8 @@ export function UploadsSection({ plugin, jobData }) {
       success(
         created.length > 1 ? "Uploads added" : "Upload added",
         created.length > 1
-          ? `${created.length} files were uploaded to this job.`
-          : "File was uploaded to this job."
+          ? `${created.length} files were uploaded to this ${isInquiryMode ? "inquiry" : "job"}.`
+          : `File was uploaded to this ${isInquiryMode ? "inquiry" : "job"}.`
       );
     }
 
@@ -262,8 +406,9 @@ export function UploadsSection({ plugin, jobData }) {
     setIsDeleting(true);
     try {
       await deleteUploadRecord({ plugin, id: deleteTarget.id });
-      setUploads((previous) =>
-        (previous || []).filter(
+      storeActions.replaceEntityCollection(
+        "jobUploads",
+        (uploads || []).filter(
           (item) => String(item?.id || "").trim() !== String(deleteTarget?.id || "").trim()
         )
       );
@@ -278,7 +423,11 @@ export function UploadsSection({ plugin, jobData }) {
   };
 
   return (
-    <section data-section="uploads" className="grid grid-cols-1 gap-4 xl:grid-cols-[480px_1fr]">
+    <section
+      ref={sectionRef}
+      data-section="uploads"
+      className="grid grid-cols-1 gap-4 xl:grid-cols-[480px_1fr]"
+    >
       <Card className="space-y-4">
         <h3 className="type-subheadline text-slate-800">Upload Files</h3>
         <div
@@ -297,7 +446,7 @@ export function UploadsSection({ plugin, jobData }) {
             className="mt-4"
             variant="secondary"
             onClick={triggerFilePicker}
-            disabled={!jobId || isUploading}
+            disabled={!targetRecordId || isUploading}
           >
             Choose Files
           </Button>
@@ -319,7 +468,7 @@ export function UploadsSection({ plugin, jobData }) {
               size="sm"
               variant="primary"
               onClick={savePendingUploads}
-              disabled={!jobId || !pendingUploads.length || isUploading}
+              disabled={!targetRecordId || !pendingUploads.length || isUploading}
             >
               {isUploading ? "Saving..." : "Save Uploads"}
             </Button>
@@ -334,14 +483,14 @@ export function UploadsSection({ plugin, jobData }) {
                 </tr>
               </thead>
               <tbody>
-                {!pendingUploads.length ? (
+                {!visiblePendingUploads.length ? (
                   <tr>
                     <td className="px-2 py-3 text-slate-400" colSpan={3}>
                       No pending files.
                     </td>
                   </tr>
                 ) : (
-                  pendingUploads.map((record) => (
+                  visiblePendingUploads.map((record) => (
                     <tr key={record.id} className="border-b border-slate-100 last:border-b-0">
                       <td className="px-2 py-3 break-all">{record.name}</td>
                       <td className="px-2 py-3">{formatFileSize(record.size)}</td>
@@ -377,6 +526,20 @@ export function UploadsSection({ plugin, jobData }) {
               </tbody>
             </table>
           </div>
+          {hasMorePendingUploads ? (
+            <div className="flex items-center justify-between gap-2 text-xs text-slate-500">
+              <span>
+                Showing {visiblePendingUploads.length} of {pendingUploads.length} pending uploads
+              </span>
+              <Button type="button" variant="outline" onClick={showMorePendingUploads}>
+                Load {Math.min(remainingPendingUploadsCount, 100)} more
+              </Button>
+            </div>
+          ) : isPendingUploadsWindowed ? (
+            <div className="text-xs text-slate-500">
+              Showing all {pendingUploads.length} pending uploads.
+            </div>
+          ) : null}
         </div>
       </Card>
 
@@ -385,86 +548,110 @@ export function UploadsSection({ plugin, jobData }) {
           <h3 className="type-subheadline text-slate-800">Existing Uploads</h3>
         </div>
 
-        {!jobId ? (
+        {!targetRecordId ? (
           <div className="rounded-lg border border-slate-200 p-6 text-sm text-slate-400">
-            Job is not loaded yet.
+            {isInquiryMode ? "Inquiry is not loaded yet." : "Job is not loaded yet."}
           </div>
         ) : null}
 
-        {jobId && isLoading ? (
+        {targetRecordId && isLoading ? (
           <div className="rounded-lg border border-slate-200 p-6 text-sm text-slate-500">
             Loading uploads...
           </div>
         ) : null}
 
-        {jobId && !isLoading && loadError ? (
+        {targetRecordId && !isLoading && loadError ? (
           <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-sm text-red-700">
             {loadError}
           </div>
         ) : null}
 
-        {jobId && !isLoading && !loadError ? (
-          <div className="overflow-x-auto">
-            <table className="table-fixed w-full text-left text-sm text-slate-600">
-              <thead className="border-b border-slate-200 text-slate-500">
-                <tr>
-                  <th className="w-1/4 px-2 py-2">Type</th>
-                  <th className="w-2/4 px-2 py-2">Name</th>
-                  <th className="w-1/4 px-2 py-2 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {!uploads.length ? (
+        {targetRecordId && !isLoading && !loadError ? (
+          <>
+            <div className="overflow-x-auto">
+              <table className="table-fixed w-full text-left text-sm text-slate-600">
+                <thead className="border-b border-slate-200 text-slate-500">
                   <tr>
-                    <td className="px-2 py-3 text-slate-400" colSpan={3}>
-                      No uploads available.
-                    </td>
+                    <th className="w-1/4 px-2 py-2">Type</th>
+                    <th className="w-2/4 px-2 py-2">Name</th>
+                    <th className="w-1/4 px-2 py-2 text-right">Actions</th>
                   </tr>
-                ) : (
-                  uploads.map((record, index) => {
-                    const uploadId = String(record?.id || "").trim();
-                    const uploadUrl = String(record?.url || "").trim();
-                    return (
-                      <tr
-                        key={`${uploadId || uploadUrl || "upload"}-${index}`}
-                        className="border-b border-slate-100 last:border-b-0"
-                      >
-                        <td className="px-2 py-3">{record?.type || "File"}</td>
-                        <td className="px-2 py-3 break-all">{record?.name || "Upload"}</td>
-                        <td className="px-2 py-3">
-                          <div className="flex w-full items-center justify-end gap-2">
-                            <button
-                              type="button"
-                              className="inline-flex h-7 w-7 items-center justify-center rounded border border-slate-300 bg-white text-slate-600 hover:border-slate-400 hover:text-slate-800 disabled:cursor-not-allowed disabled:opacity-40"
-                              onClick={() => {
-                                if (!uploadUrl) return;
-                                window.open(uploadUrl, "_blank", "noopener,noreferrer");
-                              }}
-                              aria-label="View upload"
-                              title="View Upload"
-                              disabled={!uploadUrl}
-                            >
-                              <EyeIcon />
-                            </button>
-                            <button
-                              type="button"
-                              className="inline-flex h-7 w-7 items-center justify-center rounded border border-slate-300 bg-white text-slate-600 hover:border-red-300 hover:text-red-700 disabled:cursor-not-allowed disabled:opacity-40"
-                              onClick={() => setDeleteTarget(record)}
-                              aria-label="Delete upload"
-                              title="Delete Upload"
-                              disabled={!uploadId}
-                            >
-                              <TrashIcon />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {!visibleExistingUploads.length ? (
+                    <tr>
+                      <td className="px-2 py-3 text-slate-400" colSpan={3}>
+                        No uploads available.
+                      </td>
+                    </tr>
+                  ) : (
+                    visibleExistingUploads.map((record, index) => {
+                      const uploadId = String(record?.id || "").trim();
+                      const uploadUrl = String(record?.url || "").trim();
+                      const isHighlighted =
+                        Boolean(normalizedHighlightUploadId) &&
+                        normalizeRecordId(uploadId) === normalizedHighlightUploadId;
+                      return (
+                        <tr
+                          key={`${uploadId || uploadUrl || "upload"}-${index}`}
+                          data-ann-kind="upload"
+                          data-ann-id={normalizeRecordId(uploadId)}
+                          data-ann-highlighted={isHighlighted ? "true" : "false"}
+                          className={`border-b border-slate-100 last:border-b-0 ${
+                            isHighlighted ? "bg-amber-50" : ""
+                          }`}
+                        >
+                          <td className="px-2 py-3">{record?.type || "File"}</td>
+                          <td className="px-2 py-3 break-all">{record?.name || "Upload"}</td>
+                          <td className="px-2 py-3">
+                            <div className="flex w-full items-center justify-end gap-2">
+                              <button
+                                type="button"
+                                className="inline-flex h-7 w-7 items-center justify-center rounded border border-slate-300 bg-white text-slate-600 hover:border-slate-400 hover:text-slate-800 disabled:cursor-not-allowed disabled:opacity-40"
+                                onClick={() => {
+                                  if (!uploadUrl) return;
+                                  window.open(uploadUrl, "_blank", "noopener,noreferrer");
+                                }}
+                                aria-label="View upload"
+                                title="View Upload"
+                                disabled={!uploadUrl}
+                              >
+                                <EyeIcon />
+                              </button>
+                              <button
+                                type="button"
+                                className="inline-flex h-7 w-7 items-center justify-center rounded border border-slate-300 bg-white text-slate-600 hover:border-red-300 hover:text-red-700 disabled:cursor-not-allowed disabled:opacity-40"
+                                onClick={() => setDeleteTarget(record)}
+                                aria-label="Delete upload"
+                                title="Delete Upload"
+                                disabled={!uploadId}
+                              >
+                                <TrashIcon />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+            {hasMoreExistingUploads ? (
+              <div className="flex items-center justify-between gap-2 text-xs text-slate-500">
+                <span>
+                  Showing {visibleExistingUploads.length} of {uploads.length} uploads
+                </span>
+                <Button type="button" variant="outline" onClick={showMoreExistingUploads}>
+                  Load {Math.min(remainingExistingUploadsCount, 100)} more
+                </Button>
+              </div>
+            ) : isExistingUploadsWindowed ? (
+              <div className="text-xs text-slate-500">
+                Showing all {uploads.length} uploads.
+              </div>
+            ) : null}
+          </>
         ) : null}
       </Card>
 

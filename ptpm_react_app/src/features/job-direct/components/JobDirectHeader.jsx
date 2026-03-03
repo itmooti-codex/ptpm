@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "../../../shared/components/ui/Button.jsx";
 import { useToast } from "../../../shared/providers/ToastProvider.jsx";
 import { SECTION_LABELS } from "../constants/navigation.js";
+import { showMutationErrorToast } from "../utils/mutationFeedback.js";
 import {
   HeaderBackIcon,
   HeaderNextIcon,
@@ -15,15 +17,21 @@ export function JobDirectHeader({
   onBack,
   onNext,
   onSave,
+  title = "New Job Direct",
+  sectionLabels = SECTION_LABELS,
+  pageDataAttr = "new-direct-job",
+  saveEnabled = true,
   hasUnsavedChanges = false,
 }) {
   const { success, error } = useToast();
   const [isSaving, setIsSaving] = useState(false);
-  const nextLabel = navState.next ? `Next: ${SECTION_LABELS[navState.next]}` : "Next";
-  const backLabel = navState.previous ? `Back: ${SECTION_LABELS[navState.previous]}` : "Back";
+  const nextLabel = navState.next ? `Next: ${sectionLabels[navState.next] || navState.next}` : "Next";
+  const backLabel = navState.previous
+    ? `Back: ${sectionLabels[navState.previous] || navState.previous}`
+    : "Back";
 
   const handleResetForm = () => {
-    const root = document.querySelector('[data-page="new-direct-job"]');
+    const root = document.querySelector(`[data-page="${pageDataAttr}"]`);
     if (!root) return;
 
     const fields = root.querySelectorAll("input, textarea, select");
@@ -54,6 +62,7 @@ export function JobDirectHeader({
   };
 
   const handleSave = async () => {
+    if (!saveEnabled) return;
     if (isSaving) return;
     if (typeof onSave !== "function") {
       error("Save failed", "Save action is not available.");
@@ -65,7 +74,11 @@ export function JobDirectHeader({
       await onSave();
       success("Saved", "Job updated successfully.");
     } catch (saveError) {
-      error("Save failed", saveError?.message || "Unable to save job right now.");
+      showMutationErrorToast(error, {
+        title: "Save failed",
+        error: saveError,
+        fallbackMessage: "Unable to save job right now.",
+      });
     } finally {
       setIsSaving(false);
     }
@@ -75,13 +88,10 @@ export function JobDirectHeader({
     <header className="border-b border-slate-300 bg-brand-primary px-6 py-4 text-white">
       <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4">
         <div className="justify-self-start">
-          <a
-            href="https://my.awesomate.pro/admin/dashboard"
-            className="type-headline inline-flex items-center gap-3"
-          >
+          <Link to="/" className="type-headline inline-flex items-center gap-3">
             <TitleBackIcon className="h-6 w-6 text-white" />
-            <span>New Job Direct</span>
-          </a>
+            <span>{title}</span>
+          </Link>
         </div>
 
         <div className="justify-self-center text-xs font-medium text-amber-100">
@@ -97,7 +107,7 @@ export function JobDirectHeader({
             variant="ghost"
             className="border border-white text-white disabled:cursor-not-allowed disabled:opacity-70"
             onClick={handleSave}
-            disabled={isSaving}
+            disabled={isSaving || !saveEnabled}
           >
             <HeaderSaveIcon className="h-3.5 w-3.5 text-white" />
             {isSaving ? "Saving..." : "Save"}

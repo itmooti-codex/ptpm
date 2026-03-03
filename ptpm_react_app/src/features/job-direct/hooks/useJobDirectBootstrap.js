@@ -9,6 +9,7 @@ import {
 
 const LOOKUP_CACHE_TTL_MS = 5 * 60 * 1000;
 const LOOKUP_CACHE_KEY = "ptpm:job-direct:lookup-cache:v2";
+const ENABLE_BACKGROUND_LOOKUP_PRELOAD = false;
 
 function getDefaultLookupData() {
   return {
@@ -64,25 +65,19 @@ function writeLookupCache(lookupData) {
 }
 
 async function fetchLookupDataWithStatus(plugin, setStatusText) {
-  const nextLookupData = getDefaultLookupData();
-
-  setStatusText("Fetching contact data...");
-  nextLookupData.contacts = await fetchContactsForSearch({ plugin });
-
-  setStatusText("Fetching company data...");
-  nextLookupData.companies = await fetchCompaniesForSearch({ plugin });
-
-  setStatusText("Fetching property data...");
-  nextLookupData.properties = await fetchPropertiesForSearch({ plugin });
-
-  setStatusText("Fetching service provider data...");
-  nextLookupData.serviceProviders = await fetchServiceProvidersForSearch({ plugin });
+  setStatusText("Fetching lookup data...");
+  const [contacts, companies, properties, serviceProviders] = await Promise.all([
+    fetchContactsForSearch({ plugin }),
+    fetchCompaniesForSearch({ plugin }),
+    fetchPropertiesForSearch({ plugin }),
+    fetchServiceProvidersForSearch({ plugin }),
+  ]);
 
   return {
-    contacts: toSafeArray(nextLookupData.contacts),
-    companies: toSafeArray(nextLookupData.companies),
-    properties: toSafeArray(nextLookupData.properties),
-    serviceProviders: toSafeArray(nextLookupData.serviceProviders),
+    contacts: toSafeArray(contacts),
+    companies: toSafeArray(companies),
+    properties: toSafeArray(properties),
+    serviceProviders: toSafeArray(serviceProviders),
   };
 }
 
@@ -93,7 +88,7 @@ export function useJobDirectBootstrap({
   sdkError,
 } = {}) {
   const [isBootstrapping, setIsBootstrapping] = useState(true);
-  const [statusText, setStatusText] = useState("Initializing SDK...");
+  const [statusText, setStatusText] = useState("Starting app...");
   const [error, setError] = useState(null);
   const [jobData, setJobData] = useState(null);
   const [lookupData, setLookupData] = useState(getDefaultLookupData());
@@ -117,7 +112,7 @@ export function useJobDirectBootstrap({
     }
 
     if (!isSdkReady || !plugin) {
-      setStatusText("Initializing SDK...");
+      setStatusText("Starting app...");
       setIsBootstrapping(true);
       return undefined;
     }
@@ -129,22 +124,30 @@ export function useJobDirectBootstrap({
       setStatusText("Fetching job data...");
       const nextJobData = await fetchJobDirectDataByUid({ jobUid, plugin });
       if (!isActive) return;
+      setJobData(nextJobData);
 
       const cachedLookupData = readLookupCache();
       if (cachedLookupData) {
         setStatusText("Applying cached lookup data...");
         setLookupData(cachedLookupData);
+        setStatusText("Preparing page...");
+        setIsBootstrapping(false);
       } else {
-        const fetchedLookupData = await fetchLookupDataWithStatus(plugin, setStatusText);
-        if (!isActive) return;
-        setLookupData(fetchedLookupData);
-        writeLookupCache(fetchedLookupData);
+        setStatusText("Preparing page...");
+        setIsBootstrapping(false);
+        if (ENABLE_BACKGROUND_LOOKUP_PRELOAD) {
+          fetchLookupDataWithStatus(plugin, setStatusText)
+            .then((fetchedLookupData) => {
+              if (!isActive) return;
+              setLookupData(fetchedLookupData);
+              writeLookupCache(fetchedLookupData);
+            })
+            .catch((lookupError) => {
+              if (!isActive) return;
+              console.warn("[JobDirect] Lookup background fetch failed", lookupError);
+            });
+        }
       }
-
-      if (!isActive) return;
-      setJobData(nextJobData);
-      setStatusText("Preparing page...");
-      setIsBootstrapping(false);
     })().catch((bootstrapError) => {
       if (!isActive) return;
       console.error("[JobDirect] Bootstrap failed", bootstrapError);

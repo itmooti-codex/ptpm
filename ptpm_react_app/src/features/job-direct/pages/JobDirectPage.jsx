@@ -1,8 +1,11 @@
 import { useEffect } from "react";
 import { JobDirectLayout } from "../components/JobDirectLayout.jsx";
 import { useJobDirectBootstrap } from "../hooks/useJobDirectBootstrap.js";
+import { JobDirectStoreProvider } from "../hooks/useJobDirectStore.jsx";
 import { useJobUid } from "../hooks/useJobUid.js";
 import { useVitalStatsPlugin } from "../hooks/useVitalStatsPlugin.js";
+import { getFriendlyServiceMessage } from "../../../shared/utils/userFacingErrors.js";
+import { GlobalTopHeader } from "../../../shared/layout/GlobalTopHeader.jsx";
 
 function FullPageLoader({ title = "Loading job...", description = "" }) {
   return (
@@ -70,16 +73,17 @@ export function JobDirectPage() {
     return (
       <FullPageError
         title="Missing job UID."
-        description='Add `?jobuid=YOUR_UID` in the URL to open a job.'
+        description='Open `/job-direct/JOB_UID` or add `?jobuid=JOB_UID` in the URL.'
       />
     );
   }
 
   if (bootstrapError) {
+    const friendlyMessage = getFriendlyServiceMessage(bootstrapError);
     return (
       <FullPageError
-        title="Unable to load job data."
-        description={bootstrapError?.message || "Please refresh and try again."}
+        title={friendlyMessage ? "Temporary maintenance" : "Unable to load job data."}
+        description={friendlyMessage || "Please refresh and try again."}
       />
     );
   }
@@ -94,19 +98,28 @@ export function JobDirectPage() {
   }
 
   return (
-    <main
-      className="min-h-screen w-full bg-slate-50 font-['Inter']"
-      data-page="new-direct-job"
-      data-jobuid={jobUid || ""}
-      data-sdk-ready={isSdkReady ? "true" : "false"}
-      data-job-loaded={jobData ? "true" : "false"}
-    >
-      <JobDirectLayout
-        jobData={jobData}
-        plugin={plugin}
-        jobUid={jobUid}
-        preloadedLookupData={lookupData}
-      />
-    </main>
+    <>
+      <GlobalTopHeader />
+      <main
+        className="min-h-screen w-full bg-slate-50 font-['Inter']"
+        data-page="new-direct-job"
+        data-jobuid={jobUid || ""}
+        data-sdk-ready={isSdkReady ? "true" : "false"}
+        data-job-loaded={jobData ? "true" : "false"}
+      >
+        <JobDirectStoreProvider
+          jobUid={jobUid}
+          jobData={jobData}
+          lookupData={lookupData}
+        >
+          <JobDirectLayout
+            jobData={jobData}
+            plugin={plugin}
+            jobUid={jobUid}
+            preloadedLookupData={lookupData}
+          />
+        </JobDirectStoreProvider>
+      </main>
+    </>
   );
 }

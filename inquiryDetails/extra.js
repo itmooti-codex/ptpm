@@ -540,3 +540,24 @@ document.addEventListener("DOMContentLoaded", () => {
   initPropertyContactStars();
   initRecommendationCard();
 });
+
+
+  const contact = document.querySelector('[data-section="contact"]');
+  const company = document.querySelector('[data-section="company"]');
+  const bodycorp = document.querySelector('[data-section="bodycorp"]');
+  let accountType = "[accounttype]";
+  let companyAccountType = "[companyaccounttype]";
+  if (accountType == "Contact") {
+    contact.classList.remove("hidden");
+    contact.classList.add("flex");
+  }
+
+  if (accountType == "Company") {
+    companyAccountType.classList.add("flex");
+    if (
+      companyAccountType == "Body Corp" ||
+      companyAccountType == "Body Corp Company"
+    ) {
+      bodycorp.classList.add("flex");
+    }
+  }
